@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Titillium_Web } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { MotionProvider } from "@/components/motion-provider";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { CookieConsent } from "@/components/cookie-consent";
 import { siteConfig } from "@/lib/site-config";
@@ -43,12 +44,14 @@ export default function RootLayout({
   return (
     <html lang="de" className={`${titillium.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          {children}
-        </ThemeProvider>
-        <CookieConsent>
-          <GoogleAnalytics />
-        </CookieConsent>
+        <MotionProvider>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+            {children}
+          </ThemeProvider>
+          <CookieConsent>
+            <GoogleAnalytics />
+          </CookieConsent>
+        </MotionProvider>
       </body>
     </html>
   );

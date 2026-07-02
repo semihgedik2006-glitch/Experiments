@@ -90,15 +90,21 @@ Im Zweifel von einem Anwalt prüfen lassen.
 
 ## Schritt 4: Logo & Bilder einbinden
 
-1. Lade dein Logo und Studio-Fotos von [www.körperformen.com](https://www.körperformen.com) herunter
+✅ **Das echte Logo ist bereits eingebunden** (`public/logo-dark.svg` für dunklen
+Hintergrund, `public/logo-light.svg` für hellen Hintergrund - `src/components/logo.tsx`
+wechselt automatisch je nach Dark-/Light-Mode). Es wurde von eurer bestehenden
+Seite körperformen.com übernommen.
+
+Was noch fehlt, sind echte **Studio-Fotos** (aktuell nur Platzhalter/kein Bild):
+
+1. Lade Studio-Fotos von [www.körperformen.com](https://www.körperformen.com) herunter
    (oder frage die Agentur/Zentrale nach den Originaldateien - wichtig wegen Bildrechten!)
-2. Lege die Dateien im Ordner `public/` ab, z.B. `public/logo.svg`, `public/studio-1.jpg`
-3. Binde sie in den Komponenten ein, z.B. im Header (`src/components/layout/header.tsx`):
+2. Lege die Dateien im Ordner `public/` ab, z.B. `public/studio-1.jpg`
+3. Binde sie in den passenden Komponenten ein, z.B. auf der Studio- oder Über-uns-Seite:
 
 ```tsx
 import Image from "next/image";
-// statt des Text-Logos:
-<Image src="/logo.svg" alt="Körperformen" width={140} height={32} />
+<Image src="/studio-1.jpg" alt="Körperformen Studio Hürth" width={800} height={600} />
 ```
 
 ---

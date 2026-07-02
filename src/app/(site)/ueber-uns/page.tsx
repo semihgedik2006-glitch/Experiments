@@ -41,6 +41,10 @@ export default function UeberUnsPage() {
             deinem Ziel näher - egal ob Abnehmen, Muskelaufbau oder ein
             gesünderer Rücken.
           </p>
+          <p className="mt-4 max-w-2xl font-semibold text-lime">
+            Körperformen - der Vorreiter für gesundheitsorientiertes EMS
+            Training.
+          </p>
         </Container>
       </section>
 

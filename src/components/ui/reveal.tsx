@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
+import { motion, type Variants } from "motion/react";
 import type { ReactNode } from "react";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;

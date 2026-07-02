@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Clock, HeartPulse, Users, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";

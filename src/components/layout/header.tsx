@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { mainNav } from "@/lib/site-config";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SearchOverlay } from "@/components/search/search-overlay";
+import { Logo } from "@/components/logo";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -16,8 +17,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight transition-transform hover:scale-105">
-          Körper<span className="text-lime">formen</span>
+        <Link href="/" className="transition-transform hover:scale-105">
+          <Logo className="h-8 w-auto" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
@@ -32,11 +33,15 @@ export function Header() {
                 }`}
               >
                 {item.label}
-                <span
-                  className={`absolute -bottom-1 left-0 h-px bg-lime transition-all duration-300 ${
-                    active ? "w-full" : "w-0 group-hover:w-full"
-                  }`}
-                />
+                {active ? (
+                  <motion.span
+                    layoutId="nav-active-pill"
+                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    className="absolute -bottom-1 left-0 h-px w-full bg-lime"
+                  />
+                ) : (
+                  <span className="absolute -bottom-1 left-0 h-px w-0 bg-lime transition-all duration-300 group-hover:w-full" />
+                )}
               </Link>
             );
           })}

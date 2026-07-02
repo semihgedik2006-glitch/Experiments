@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "Körperformen",
-  tagline: "EMS Training in Köln, Hürth & Brühl",
+  tagline: "Der Vorreiter für gesundheitsorientiertes EMS Training",
   description:
     "Körperformen ist dein EMS-Studio für effektives Training in nur 20 Minuten pro Woche. Abnehmen, Muskeln aufbauen und Rückenschmerzen lindern - ohne Zeitaufwand im klassischen Fitnessstudio.",
   url: "https://www.koerperformen.com",
@@ -17,12 +17,12 @@ export const siteConfig = {
     "Personal Training",
   ],
   contact: {
-    phone: "+49 2233 000000",
+    phone: "+49 2233 9667181",
     email: "info@koerperformen.com",
   },
   social: {
-    instagram: "https://instagram.com/koerperformen",
-    facebook: "https://facebook.com/koerperformen",
+    instagram: "https://instagram.com/koerperformen_huerth",
+    facebook: "https://facebook.com/koerperformen.huerth",
     tiktok: "https://tiktok.com/@koerperformen",
   },
 };

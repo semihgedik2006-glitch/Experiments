@@ -2,15 +2,14 @@ import Link from "next/link";
 import { siteConfig, mainNav } from "@/lib/site-config";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { InstagramIcon, FacebookIcon, TikTokIcon } from "@/components/icons/social-icons";
+import { Logo } from "@/components/logo";
 
 export function Footer() {
   return (
     <footer className="border-t border-border bg-surface">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-4">
         <div>
-          <p className="text-lg font-semibold tracking-tight">
-            Körper<span className="text-lime">formen</span>
-          </p>
+          <Logo className="h-8 w-auto" />
           <p className="mt-3 max-w-xs text-sm text-muted">{siteConfig.tagline}</p>
           <div className="mt-5 flex gap-3">
             <a

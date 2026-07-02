@@ -27,7 +27,9 @@ export default async function ImpressumPage() {
             <p className="mt-2">
               {studio?.name ?? "Körperformen"}
               <br />
-              {studio?.street ?? "Musterstraße 1"}
+              Inhaber/Geschäftsführer: Marcel Almeida
+              <br />
+              {studio?.street ?? "Krankenhausstr. 111"}
               <br />
               {studio?.postalCode ?? "50354"} {studio?.city ?? "Hürth"}
             </p>
@@ -52,7 +54,8 @@ export default async function ImpressumPage() {
           <div>
             <h2 className="font-semibold text-foreground">Verantwortlich für den Inhalt</h2>
             <p className="mt-2">
-              gemäß § 55 Abs. 2 RStV: [Name, Anschrift ergänzen]
+              gemäß § 55 Abs. 2 RStV: Marcel Almeida, {studio?.street ?? "Krankenhausstr. 111"},{" "}
+              {studio?.postalCode ?? "50354"} {studio?.city ?? "Hürth"}
             </p>
           </div>
 

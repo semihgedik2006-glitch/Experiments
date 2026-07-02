@@ -22,15 +22,15 @@ async function main() {
     await prisma.studioLocation.create({
       data: {
         name: "Körperformen Hürth",
-        street: "Musterstraße 1",
+        street: "Krankenhausstr. 111",
         postalCode: "50354",
         city: "Hürth",
-        phone: "+49 2233 000000",
+        phone: "+49 2233 9667181",
         email: "info@koerperformen.com",
         mapEmbedUrl:
-          "https://www.google.com/maps?q=H%C3%BCrth&output=embed",
+          "https://www.google.com/maps?q=Krankenhausstr.+111,+50354+H%C3%BCrth&output=embed",
         openingHours:
-          "Montag - Freitag: 09:00 - 21:00 Uhr\nSamstag: 09:00 - 14:00 Uhr\nSonntag: geschlossen",
+          "Montag - Freitag: 08:00 - 21:00 Uhr\nSamstag: 10:00 - 16:00 Uhr\nSonntag: geschlossen",
       },
     });
     console.log("Studio-Standort angelegt.");
