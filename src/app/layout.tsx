@@ -3,6 +3,7 @@ import { Titillium_Web } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { GoogleAnalytics } from "@/components/google-analytics";
+import { CookieConsent } from "@/components/cookie-consent";
 import { siteConfig } from "@/lib/site-config";
 
 const titillium = Titillium_Web({
@@ -45,7 +46,9 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           {children}
         </ThemeProvider>
-        <GoogleAnalytics />
+        <CookieConsent>
+          <GoogleAnalytics />
+        </CookieConsent>
       </body>
     </html>
   );

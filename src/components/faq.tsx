@@ -11,7 +11,7 @@ export function Faq() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="py-24">
+    <section id="faq" className="scroll-mt-24 py-24">
       <Container className="max-w-3xl">
         <Reveal>
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Häufige Fragen</h2>

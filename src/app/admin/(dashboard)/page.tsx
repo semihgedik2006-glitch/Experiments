@@ -2,16 +2,18 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminDashboardPage() {
-  const [pendingBookings, unreadMessages, subscribers, publishedPosts] = await Promise.all([
+  const [pendingBookings, unreadMessages, subscribers, publishedPosts, pendingComments] = await Promise.all([
     prisma.booking.count({ where: { status: "PENDING" } }),
     prisma.contactMessage.count({ where: { read: false } }),
     prisma.newsletterSubscriber.count(),
     prisma.blogPost.count({ where: { published: true } }),
+    prisma.comment.count({ where: { approved: false } }),
   ]);
 
   const cards = [
     { label: "Offene Buchungsanfragen", value: pendingBookings, href: "/admin/bookings" },
     { label: "Ungelesene Nachrichten", value: unreadMessages, href: "/admin/nachrichten" },
+    { label: "Kommentare zur Freigabe", value: pendingComments, href: "/admin/kommentare" },
     { label: "Newsletter-Abonnenten", value: subscribers, href: "/admin/newsletter" },
     { label: "Veröffentlichte Blogartikel", value: publishedPosts, href: "/admin/blog" },
   ];

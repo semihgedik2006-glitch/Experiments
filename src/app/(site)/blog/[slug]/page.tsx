@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { MessageCircle } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { getPostBySlug } from "@/lib/data";
+import { CommentForm } from "@/components/comment-form";
+import { getPostBySlug, getApprovedComments } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -24,6 +26,8 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await getPostBySlug(slug);
   if (!post) return notFound();
 
+  const comments = await getApprovedComments(post.id);
+
   return (
     <article className="py-20">
       <Container className="max-w-2xl">
@@ -43,6 +47,34 @@ export default async function BlogPostPage({ params }: Props) {
           <Button href="/probetermin" className="mt-4">
             Probetermin buchen
           </Button>
+        </div>
+
+        <div className="mt-16 border-t border-border pt-10">
+          <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight">
+            <MessageCircle size={20} className="text-lime" />
+            {comments.length > 0 ? `${comments.length} Kommentare` : "Kommentare"}
+          </h2>
+
+          <div className="mt-6 space-y-5">
+            {comments.map((comment) => (
+              <div key={comment.id} className="rounded-2xl border border-border bg-surface-raised p-5">
+                <div className="flex items-baseline justify-between gap-4">
+                  <p className="text-sm font-semibold">{comment.authorName}</p>
+                  <p className="text-xs text-muted">{formatDate(comment.createdAt)}</p>
+                </div>
+                <p className="mt-2 text-sm text-muted">{comment.content}</p>
+              </div>
+            ))}
+            {comments.length === 0 && (
+              <p className="text-sm text-muted">
+                Noch keine Kommentare - sei die/der Erste!
+              </p>
+            )}
+          </div>
+
+          <div className="mt-8">
+            <CommentForm postId={post.id} slug={post.slug} />
+          </div>
         </div>
       </Container>
     </article>

@@ -28,3 +28,10 @@ export async function getPublishedPosts(limit?: number) {
 export async function getPostBySlug(slug: string) {
   return prisma.blogPost.findFirst({ where: { slug, published: true } });
 }
+
+export async function getApprovedComments(postId: string) {
+  return prisma.comment.findMany({
+    where: { postId, approved: true },
+    orderBy: { createdAt: "desc" },
+  });
+}

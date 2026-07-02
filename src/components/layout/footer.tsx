@@ -79,6 +79,11 @@ export function Footer() {
                 Datenschutz
               </Link>
             </li>
+            <li>
+              <Link href="/agb" className="hover:text-foreground">
+                AGB
+              </Link>
+            </li>
           </ul>
         </div>
 

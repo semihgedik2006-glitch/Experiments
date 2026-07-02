@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { mainNav } from "@/lib/site-config";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SearchOverlay } from "@/components/search/search-overlay";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -42,6 +43,7 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-4 md:flex">
+          <SearchOverlay />
           <ThemeToggle />
           <Link
             href="/probetermin"
@@ -51,25 +53,28 @@ export function Header() {
           </Link>
         </div>
 
-        <button
-          type="button"
-          className="flex items-center justify-center md:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Menü öffnen"
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={open ? "close" : "open"}
-              initial={{ opacity: 0, rotate: -90 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: 90 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-center justify-center"
-            >
-              {open ? <X size={22} /> : <Menu size={22} />}
-            </motion.span>
-          </AnimatePresence>
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <SearchOverlay />
+          <button
+            type="button"
+            className="flex items-center justify-center"
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Menü öffnen"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={open ? "close" : "open"}
+                initial={{ opacity: 0, rotate: -90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 90 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center justify-center"
+              >
+                {open ? <X size={22} /> : <Menu size={22} />}
+              </motion.span>
+            </AnimatePresence>
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>

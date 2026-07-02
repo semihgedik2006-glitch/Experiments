@@ -47,6 +47,10 @@ npx prisma migrate deploy
 npm run db:seed
 ```
 
+   💡 Nach jedem `git pull` lohnt sich zusätzlich ein kurzer Check, ob es
+   neue Datenbank-Änderungen gibt: `npx prisma migrate deploy` erneut
+   ausführen (schadet nie, macht nichts kaputt, wenn nichts Neues da ist).
+
 4. Entwicklungsserver starten:
 
 ```bash
