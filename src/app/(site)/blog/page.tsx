@@ -1,0 +1,51 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { Container } from "@/components/ui/container";
+import { getPublishedPosts } from "@/lib/data";
+import { formatDate } from "@/lib/format";
+
+export const metadata: Metadata = {
+  title: "Blog",
+  description: "Trainingstipps, EMS-Wissen und Neuigkeiten von Körperformen.",
+};
+
+export default async function BlogPage() {
+  const posts = await getPublishedPosts();
+
+  return (
+    <section className="py-20">
+      <Container>
+        <h1 className="text-4xl font-black tracking-tight md:text-5xl">
+          Der <span className="text-lime">Blog</span>
+        </h1>
+        <p className="mt-4 max-w-xl text-muted">
+          Alles rund um EMS-Training, Ernährung und ein gesünderes Leben.
+        </p>
+
+        {posts.length === 0 ? (
+          <p className="mt-16 text-muted">Bald erscheinen hier die ersten Artikel.</p>
+        ) : (
+          <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <Link
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className="flex flex-col rounded-2xl border border-border bg-surface p-6 transition-transform hover:-translate-y-1"
+              >
+                <span className="text-xs text-muted">
+                  {post.publishedAt ? formatDate(post.publishedAt) : ""}
+                </span>
+                <h2 className="mt-3 text-lg font-semibold">{post.title}</h2>
+                <p className="mt-2 text-sm text-muted">{post.excerpt}</p>
+                <span className="mt-4 inline-flex items-center gap-1 text-sm text-lime">
+                  Weiterlesen <ArrowRight size={14} />
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </Container>
+    </section>
+  );
+}
