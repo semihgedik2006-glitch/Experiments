@@ -6,8 +6,8 @@ import type { ReactNode } from "react";
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: easeOut } },
+  hidden: { opacity: 0, y: 48, scale: 0.96 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.65, ease: easeOut } },
 };
 
 export function Reveal({
@@ -36,7 +36,7 @@ export function Reveal({
 const containerVariants: Variants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.12 },
+    transition: { staggerChildren: 0.15 },
   },
 };
 

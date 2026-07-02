@@ -32,7 +32,7 @@ export async function BlogTeaser() {
             <Reveal key={post.id} delay={index * 0.1}>
               <Link
                 href={`/blog/${post.slug}`}
-                className="flex h-full flex-col rounded-2xl border border-border bg-surface-raised p-6 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-lime/5"
+                className="flex h-full flex-col rounded-2xl border border-border bg-surface-raised p-6 shadow-sm transition-all duration-300 hover:-translate-y-3 hover:scale-[1.02] hover:shadow-2xl hover:shadow-lime/10"
               >
                 <span className="text-xs text-muted">
                   {post.publishedAt ? formatDate(post.publishedAt) : ""}

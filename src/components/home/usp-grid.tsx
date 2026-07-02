@@ -36,13 +36,13 @@ export function UspGrid() {
           {items.map(({ icon: Icon, title, text }) => (
             <StaggerItem key={title}>
               <motion.div
-                whileHover={{ y: -6, scale: 1.02 }}
-                transition={{ duration: 0.25, ease: "easeOut" }}
-                className="h-full rounded-2xl border border-border bg-surface-raised p-6 shadow-sm transition-shadow hover:shadow-xl hover:shadow-lime/5"
+                whileHover={{ y: -10, scale: 1.04 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="h-full rounded-2xl border border-border bg-surface-raised p-6 shadow-sm transition-shadow hover:shadow-2xl hover:shadow-lime/10"
               >
                 <motion.div
-                  whileHover={{ scale: 1.1, rotate: -6 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  whileHover={{ scale: 1.2, rotate: -12 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
                   className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/15 text-lime"
                 >
                   <Icon size={20} />

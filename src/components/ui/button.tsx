@@ -36,9 +36,9 @@ export function Button({
       <MotionLink
         href={href}
         className={classes}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.97 }}
-        transition={{ duration: 0.15, ease: "easeOut" }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.94 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
       >
         {children}
       </MotionLink>
@@ -47,9 +47,9 @@ export function Button({
 
   return (
     <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.97 }}
-      transition={{ duration: 0.15, ease: "easeOut" }}
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.94 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       type={type ?? "button"}
       className={classes}
       {...props}
