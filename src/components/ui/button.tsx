@@ -1,10 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+
+const MotionLink = motion(Link);
 
 type Variant = "primary" | "secondary" | "ghost";
 
 const variantClasses: Record<Variant, string> = {
-  primary: "bg-lime text-[#0d0d0f] hover:scale-105",
+  primary: "bg-lime text-[#0d0d0f]",
   secondary: "border border-border text-foreground hover:border-lime hover:text-lime",
   ghost: "text-foreground hover:text-lime",
 };
@@ -24,19 +29,32 @@ export function Button({
   type?: "button" | "submit";
   [key: string]: unknown;
 }) {
-  const classes = `inline-flex items-center justify-center gap-2 rounded-full px-7 py-3 text-sm font-semibold transition-all duration-200 ${variantClasses[variant]} ${className}`;
+  const classes = `inline-flex items-center justify-center gap-2 rounded-full px-7 py-3 text-sm font-semibold transition-colors duration-200 ${variantClasses[variant]} ${className}`;
 
   if (href) {
     return (
-      <Link href={href} className={classes}>
+      <MotionLink
+        href={href}
+        className={classes}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.97 }}
+        transition={{ duration: 0.15, ease: "easeOut" }}
+      >
         {children}
-      </Link>
+      </MotionLink>
     );
   }
 
   return (
-    <button type={type ?? "button"} className={classes} {...props}>
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+      type={type ?? "button"}
+      className={classes}
+      {...props}
+    >
       {children}
-    </button>
+    </motion.button>
   );
 }

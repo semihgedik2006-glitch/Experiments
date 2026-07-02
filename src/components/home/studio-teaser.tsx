@@ -1,6 +1,7 @@
 import { MapPin, Phone, Clock } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/ui/reveal";
 import { getStudio } from "@/lib/data";
 
 export async function StudioTeaser() {
@@ -10,7 +11,7 @@ export async function StudioTeaser() {
   return (
     <section className="py-24">
       <Container className="grid gap-10 md:grid-cols-2 md:items-center">
-        <div>
+        <Reveal>
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
             Dein Studio in {studio.city}
           </h2>
@@ -41,9 +42,9 @@ export async function StudioTeaser() {
           <Button href="/studio" variant="secondary" className="mt-8">
             Studio &amp; Anfahrt ansehen
           </Button>
-        </div>
+        </Reveal>
 
-        <div className="overflow-hidden rounded-2xl border border-border">
+        <Reveal delay={0.15} className="overflow-hidden rounded-2xl border border-border">
           <iframe
             src={studio.mapEmbedUrl}
             title="Studio Standort auf Google Maps"
@@ -51,7 +52,7 @@ export async function StudioTeaser() {
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

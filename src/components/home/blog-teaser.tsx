@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { Reveal } from "@/components/ui/reveal";
 import { getPublishedPosts } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 
@@ -11,7 +12,7 @@ export async function BlogTeaser() {
   return (
     <section className="border-t border-border bg-surface py-24">
       <Container>
-        <div className="mb-16 flex items-end justify-between">
+        <Reveal className="mb-16 flex items-end justify-between">
           <div>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Aus dem Blog</h2>
             <p className="mt-4 max-w-xl text-muted">
@@ -24,24 +25,25 @@ export async function BlogTeaser() {
           >
             Alle Artikel <ArrowRight size={14} />
           </Link>
-        </div>
+        </Reveal>
 
         <div className="grid gap-6 md:grid-cols-3">
-          {posts.map((post) => (
-            <Link
-              key={post.id}
-              href={`/blog/${post.slug}`}
-              className="flex flex-col rounded-2xl border border-border bg-surface-raised p-6 transition-transform hover:-translate-y-1"
-            >
-              <span className="text-xs text-muted">
-                {post.publishedAt ? formatDate(post.publishedAt) : ""}
-              </span>
-              <h3 className="mt-3 text-lg font-semibold">{post.title}</h3>
-              <p className="mt-2 text-sm text-muted">{post.excerpt}</p>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm text-lime">
-                Weiterlesen <ArrowRight size={14} />
-              </span>
-            </Link>
+          {posts.map((post, index) => (
+            <Reveal key={post.id} delay={index * 0.1}>
+              <Link
+                href={`/blog/${post.slug}`}
+                className="flex h-full flex-col rounded-2xl border border-border bg-surface-raised p-6 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-lime/5"
+              >
+                <span className="text-xs text-muted">
+                  {post.publishedAt ? formatDate(post.publishedAt) : ""}
+                </span>
+                <h3 className="mt-3 text-lg font-semibold">{post.title}</h3>
+                <p className="mt-2 text-sm text-muted">{post.excerpt}</p>
+                <span className="mt-4 inline-flex items-center gap-1 text-sm text-lime">
+                  Weiterlesen <ArrowRight size={14} />
+                </span>
+              </Link>
+            </Reveal>
           ))}
         </div>
       </Container>

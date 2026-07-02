@@ -1,4 +1,8 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
+import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 
 const steps = [
   {
@@ -22,7 +26,7 @@ export function HowItWorks() {
   return (
     <section className="py-24">
       <Container>
-        <div className="mb-16 max-w-2xl">
+        <Reveal className="mb-16 max-w-2xl">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
             So einfach startest du mit EMS
           </h2>
@@ -30,17 +34,23 @@ export function HowItWorks() {
             Elektro-Muskel-Stimulation aktiviert bis zu 90% deiner Muskelfasern
             gleichzeitig - deutlich mehr als klassisches Training.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="grid gap-10 md:grid-cols-3">
+        <Stagger className="grid gap-10 md:grid-cols-3">
           {steps.map(({ step, title, text }) => (
-            <div key={step}>
-              <span className="text-5xl font-black text-lime">{step}</span>
+            <StaggerItem key={step}>
+              <motion.span
+                whileHover={{ scale: 1.08 }}
+                transition={{ duration: 0.25 }}
+                className="inline-block text-5xl font-black text-lime"
+              >
+                {step}
+              </motion.span>
               <h3 className="mt-4 text-xl font-semibold">{title}</h3>
               <p className="mt-2 text-sm text-muted">{text}</p>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </Container>
     </section>
   );
