@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { EmsVest } from "@/components/home/ems-vest";
+import { LightningStrike } from "@/components/home/lightning-strike";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
@@ -23,18 +24,20 @@ export function Hero() {
   return (
     <section ref={sectionRef} className="relative overflow-hidden bg-background">
       <motion.div
-        className="pointer-events-none absolute -top-32 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full opacity-20 blur-[120px]"
+        className="pointer-events-none absolute -top-32 left-1/2 h-[700px] w-[1000px] -translate-x-1/2 rounded-full opacity-25 blur-[110px]"
         style={{
           background: "radial-gradient(circle, var(--color-lime), transparent 70%)",
           y: glowY,
         }}
         animate={{
-          scale: [1, 1.25, 0.95, 1],
-          opacity: [0.2, 0.35, 0.18, 0.2],
-          x: [0, 40, -30, 0],
+          scale: [1, 1.35, 0.85, 1.2, 1],
+          opacity: [0.18, 0.32, 0.12, 0.28, 0.18],
+          x: [0, 60, -50, 25, 0],
         }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
+
+      <LightningStrike />
 
       <motion.div style={{ y: contentY, opacity: contentOpacity }}>
         <Container className="relative flex flex-col items-center py-28 text-center md:py-40">
@@ -48,20 +51,47 @@ export function Hero() {
           </motion.span>
 
           <motion.h1
-            initial={{ opacity: 0, y: 40, scale: 0.94 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: easeOut }}
+            initial={{ opacity: 0, y: 60, scale: 0.85, rotate: -3 }}
+            animate={{ opacity: 1, y: 0, scale: [0.85, 1.08, 0.97, 1.02, 1], rotate: [-3, 1.5, -1, 0.5, 0] }}
+            transition={{ duration: 1, delay: 0.1, ease: easeOut }}
             className="max-w-4xl text-5xl font-black leading-[1.05] tracking-tight md:text-7xl"
           >
-            20 Minuten Training.
+            <motion.span
+              className="inline-block"
+              animate={{ opacity: [1, 1, 0.2, 1, 0.3, 1, 1, 0.4, 1] }}
+              transition={{
+                duration: 2.2,
+                repeat: Infinity,
+                repeatDelay: 3.5,
+                delay: 1.2,
+                times: [0, 0.4, 0.43, 0.47, 0.55, 0.59, 0.75, 0.79, 1],
+                ease: "linear",
+              }}
+            >
+              20 Minuten Training.
+            </motion.span>
             <br />
             <motion.span
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.45, ease: easeOut }}
-              className="inline-block text-lime"
+              transition={{ duration: 0.7, delay: 0.5, ease: easeOut }}
+              className="relative inline-block text-lime"
+              style={{ textShadow: "0 0 24px var(--color-lime)" }}
             >
-              Ein sichtbarer Unterschied.
+              <motion.span
+                className="inline-block"
+                animate={{ opacity: [1, 1, 0.35, 1, 0.25, 1, 1, 0.5, 1] }}
+                transition={{
+                  duration: 2.4,
+                  repeat: Infinity,
+                  repeatDelay: 3.2,
+                  delay: 2,
+                  times: [0, 0.42, 0.45, 0.49, 0.58, 0.62, 0.78, 0.82, 1],
+                  ease: "linear",
+                }}
+              >
+                Ein sichtbarer Unterschied.
+              </motion.span>
             </motion.span>
           </motion.h1>
 

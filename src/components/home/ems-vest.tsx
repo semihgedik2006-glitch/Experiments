@@ -10,26 +10,26 @@ type Pad = { id: string; cx: number; cy: number; wire: string; delay: number };
 // control unit on the belt and its own pulse timing offset.
 const pads: Pad[] = [
   { id: "chest-l", cx: 78, cy: 100, wire: "M100,155 C90,140 82,125 78,100", delay: 0 },
-  { id: "chest-r", cx: 122, cy: 100, wire: "M100,155 C110,140 118,125 122,100", delay: 0.35 },
-  { id: "abs", cx: 100, cy: 132, wire: "M100,155 L100,132", delay: 0.7 },
-  { id: "oblique-l", cx: 62, cy: 138, wire: "M100,155 C85,150 70,145 62,138", delay: 1.05 },
-  { id: "oblique-r", cx: 138, cy: 138, wire: "M100,155 C115,150 130,145 138,138", delay: 1.4 },
-  { id: "trap-l", cx: 69, cy: 52, wire: "M100,155 C85,120 72,90 69,52", delay: 1.75 },
-  { id: "trap-r", cx: 131, cy: 52, wire: "M100,155 C115,120 128,90 131,52", delay: 2.1 },
+  { id: "chest-r", cx: 122, cy: 100, wire: "M100,155 C110,140 118,125 122,100", delay: 0.2 },
+  { id: "abs", cx: 100, cy: 132, wire: "M100,155 L100,132", delay: 0.4 },
+  { id: "oblique-l", cx: 62, cy: 138, wire: "M100,155 C85,150 70,145 62,138", delay: 0.6 },
+  { id: "oblique-r", cx: 138, cy: 138, wire: "M100,155 C115,150 130,145 138,138", delay: 0.8 },
+  { id: "trap-l", cx: 69, cy: 52, wire: "M100,155 C85,120 72,90 69,52", delay: 1.0 },
+  { id: "trap-r", cx: 131, cy: 52, wire: "M100,155 C115,120 128,90 131,52", delay: 1.2 },
 ];
 
-const CYCLE = 2.8;
+const CYCLE = 1.5;
 
 function Spark({ cx, cy }: { cx: number; cy: number }) {
-  const lines = [0, 60, 120, 180, 240, 300];
+  const lines = [0, 45, 90, 135, 180, 225, 270, 315];
   return (
     <g>
       {lines.map((angle) => {
         const rad = (angle * Math.PI) / 180;
         const x1 = cx + Math.cos(rad) * 6;
         const y1 = cy + Math.sin(rad) * 6;
-        const x2 = cx + Math.cos(rad) * 13;
-        const y2 = cy + Math.sin(rad) * 13;
+        const x2 = cx + Math.cos(rad) * 20;
+        const y2 = cy + Math.sin(rad) * 20;
         return (
           <line
             key={angle}
@@ -38,12 +38,30 @@ function Spark({ cx, cy }: { cx: number; cy: number }) {
             x2={x2}
             y2={y2}
             stroke="var(--color-lime)"
-            strokeWidth={1.5}
+            strokeWidth={2}
             strokeLinecap="round"
+            style={{ filter: "drop-shadow(0 0 4px var(--color-lime))" }}
           />
         );
       })}
     </g>
+  );
+}
+
+function ShockRing({ cx, cy, delay }: { cx: number; cy: number; delay: number }) {
+  return (
+    <motion.circle
+      cx={cx}
+      cy={cy}
+      r={7}
+      fill="none"
+      stroke="var(--color-lime)"
+      strokeWidth={1.5}
+      initial={{ opacity: 0, scale: 0.6 }}
+      animate={{ opacity: [0, 0.8, 0], scale: [0.6, 2.6, 3.2] }}
+      transition={{ duration: CYCLE, repeat: Infinity, ease: "easeOut", delay }}
+      style={{ transformOrigin: `${cx}px ${cy}px` }}
+    />
   );
 }
 
@@ -54,8 +72,8 @@ function ElectrodePad({ cx, cy, delay }: Pad) {
       cy={cy}
       r={7}
       fill="var(--color-lime)"
-      style={{ filter: "drop-shadow(0 0 6px var(--color-lime))" }}
-      animate={{ opacity: [0.35, 1, 0.35], scale: [0.85, 1.15, 0.85] }}
+      style={{ filter: "drop-shadow(0 0 12px var(--color-lime))" }}
+      animate={{ opacity: [0.3, 1, 0.3], scale: [0.7, 1.55, 0.7] }}
       transition={{ duration: CYCLE, repeat: Infinity, ease: "easeInOut", delay }}
     />
   );
@@ -68,11 +86,12 @@ function Wire({ d, delay }: { d: string; delay: number }) {
       <motion.path
         d={d}
         stroke="var(--color-lime)"
-        strokeWidth={2}
+        strokeWidth={2.5}
         fill="none"
         strokeLinecap="round"
-        strokeDasharray="10 120"
-        animate={{ strokeDashoffset: [130, -10] }}
+        strokeDasharray="14 110"
+        style={{ filter: "drop-shadow(0 0 5px var(--color-lime))" }}
+        animate={{ strokeDashoffset: [130, -14] }}
         transition={{ duration: CYCLE, repeat: Infinity, ease: "linear", delay }}
       />
     </>
@@ -81,7 +100,7 @@ function Wire({ d, delay }: { d: string; delay: number }) {
 
 function useTiltTransform(value: MotionValue<number>) {
   const spring = useSpring(value, { stiffness: 150, damping: 15, mass: 0.4 });
-  return useTransform(spring, [-0.5, 0.5], [-10, 10]);
+  return useTransform(spring, [-0.5, 0.5], [-16, 16]);
 }
 
 export function EmsVest() {
@@ -109,10 +128,19 @@ export function EmsVest() {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ rotateX, rotateY, perspective: 800 }}
-      animate={{ y: [0, -10, 0] }}
-      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-      className="mx-auto w-full max-w-[220px] sm:max-w-[260px]"
+      animate={{ y: [0, -14, 0], rotate: [0, -1.2, 1.2, -0.6, 0] }}
+      transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+      className="relative mx-auto w-full max-w-[260px] sm:max-w-[320px]"
     >
+      {/* Glow behind the vest that throbs with the whole cycle */}
+      <motion.div
+        className="pointer-events-none absolute inset-0 -z-10 rounded-full blur-3xl"
+        style={{ background: "radial-gradient(circle, var(--color-lime), transparent 70%)" }}
+        initial={{ opacity: 0.15, scale: 0.8 }}
+        animate={{ opacity: [0.15, 0.55, 0.15], scale: [0.8, 1.15, 0.8] }}
+        transition={{ duration: CYCLE, repeat: Infinity, ease: "easeInOut" }}
+      />
+
       <svg viewBox="0 0 200 260" className="h-auto w-full overflow-visible">
         {/* Wires from the control unit to each electrode */}
         {pads.map((pad) => (
@@ -166,26 +194,28 @@ export function EmsVest() {
           height="22"
           rx="6"
           fill="var(--foreground)"
-          animate={{ opacity: [0.85, 1, 0.85] }}
+          animate={{ opacity: [0.85, 1, 0.85], scale: [1, 1.06, 1] }}
           transition={{ duration: CYCLE, repeat: Infinity, ease: "easeInOut" }}
+          style={{ transformOrigin: "100px 153px" }}
         />
         <motion.circle
           cx="100"
           cy="153"
-          r="3"
+          r="3.5"
           fill="var(--color-lime)"
-          style={{ filter: "drop-shadow(0 0 5px var(--color-lime))" }}
-          animate={{ opacity: [0.4, 1, 0.4] }}
+          style={{ filter: "drop-shadow(0 0 8px var(--color-lime))" }}
+          animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.4, 0.8] }}
           transition={{ duration: CYCLE, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        {/* Electrode pads + spark bursts, timed to each pad's pulse */}
+        {/* Electrode pads + shockwaves + spark bursts, timed to each pad's pulse */}
         {pads.map((pad) => (
           <g key={pad.id}>
+            <ShockRing cx={pad.cx} cy={pad.cy} delay={pad.delay} />
             <ElectrodePad {...pad} />
             <motion.g
-              animate={{ opacity: [0, 0, 1, 0, 0] }}
-              transition={{ duration: CYCLE, repeat: Infinity, ease: "linear", delay: pad.delay, times: [0, 0.38, 0.5, 0.62, 1] }}
+              animate={{ opacity: [0, 0, 1, 1, 0, 0] }}
+              transition={{ duration: CYCLE, repeat: Infinity, ease: "linear", delay: pad.delay, times: [0, 0.32, 0.42, 0.5, 0.58, 1] }}
             >
               <Spark cx={pad.cx} cy={pad.cy} />
             </motion.g>

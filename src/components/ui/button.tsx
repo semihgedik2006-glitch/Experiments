@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 
 type Variant = "primary" | "secondary" | "ghost";
 
