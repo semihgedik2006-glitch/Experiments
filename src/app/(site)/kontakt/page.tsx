@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { ContactForm } from "@/components/contact-form";
+import { LottieBox } from "@/components/lottie-box";
 import { getStudio } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -46,6 +47,8 @@ export default async function KontaktPage() {
               </li>
             </ul>
           )}
+
+          <LottieBox src="/lottie/contact.json" className="mt-8 w-full max-w-sm" />
         </div>
 
         <ContactForm />

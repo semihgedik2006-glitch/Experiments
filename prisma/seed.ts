@@ -59,34 +59,59 @@ async function main() {
     console.log(`${slots.length} Verfügbarkeits-Slots angelegt.`);
   }
 
-  const existingPosts = await prisma.blogPost.count();
-  if (existingPosts === 0) {
-    await prisma.blogPost.createMany({
-      data: [
-        {
-          slug: "was-ist-ems-training",
-          title: "Was ist EMS-Training und wie funktioniert es?",
-          excerpt:
-            "EMS steht für Elektro-Muskel-Stimulation. Wir erklären, wie das Training funktioniert und warum 20 Minuten pro Woche ausreichen.",
-          content:
-            "EMS-Training kombiniert klassische Bewegungsübungen mit elektrischen Impulsen, die über eine spezielle Weste direkt auf die Muskulatur wirken. Dadurch werden bis zu 90% der Muskelfasern aktiviert - deutlich mehr als beim klassischen Training. Das Ergebnis: ein intensives Ganzkörpertraining in nur 20 Minuten, einmal pro Woche.",
-          published: true,
-          publishedAt: new Date(),
-        },
-        {
-          slug: "ems-fuer-berufstaetige",
-          title: "EMS-Training für Berufstätige mit wenig Zeit",
-          excerpt:
-            "Kein Zeitaufwand für Anfahrt, Umziehen oder lange Trainingseinheiten. So passt effektives Training in einen vollen Alltag.",
-          content:
-            "Gerade für Berufstätige zwischen 30 und 70 Jahren ist Zeit die knappste Ressource. Ein EMS-Training bei Körperformen dauert inklusive Beratung nur rund 20 Minuten - ganz ohne stundenlange Einheiten im Fitnessstudio. So bleibt Training auch im stressigen Alltag machbar.",
-          published: true,
-          publishedAt: new Date(),
-        },
-      ],
+  // Artikel werden per Slug upserted - `npm run db:seed` kann also jederzeit
+  // erneut laufen und ergänzt nur, was fehlt, ohne Bestehendes zu überschreiben.
+  const articles = [
+    {
+      slug: "was-ist-ems-training",
+      title: "Was ist EMS-Training und wie funktioniert es?",
+      excerpt:
+        "EMS steht für Elektro-Muskel-Stimulation. Wir erklären, wie das Training funktioniert und warum 20 Minuten pro Woche ausreichen.",
+      content:
+        "EMS-Training kombiniert klassische Bewegungsübungen mit elektrischen Impulsen, die über eine spezielle Weste direkt auf die Muskulatur wirken. Dadurch werden bis zu 90% der Muskelfasern aktiviert - deutlich mehr als beim klassischen Training. Das Ergebnis: ein intensives Ganzkörpertraining in nur 20 Minuten, einmal pro Woche.",
+    },
+    {
+      slug: "ems-fuer-berufstaetige",
+      title: "EMS-Training für Berufstätige mit wenig Zeit",
+      excerpt:
+        "Kein Zeitaufwand für Anfahrt, Umziehen oder lange Trainingseinheiten. So passt effektives Training in einen vollen Alltag.",
+      content:
+        "Gerade für Berufstätige zwischen 30 und 70 Jahren ist Zeit die knappste Ressource. Ein EMS-Training bei Körperformen dauert inklusive Beratung nur rund 20 Minuten - ganz ohne stundenlange Einheiten im Fitnessstudio. So bleibt Training auch im stressigen Alltag machbar.",
+    },
+    {
+      slug: "ems-gegen-rueckenschmerzen",
+      title: "EMS gegen Rückenschmerzen: Was steckt dahinter?",
+      excerpt:
+        "Rund 80% der Deutschen kennen Rückenschmerzen. Warum EMS-Training gerade die tiefe Rumpfmuskulatur erreicht, die klassisches Training oft verfehlt.",
+      content:
+        "Wer viel sitzt, kennt das Ziehen im unteren Rücken. Die Ursache ist selten ein einzelnes Ereignis, sondern meist eine schwache tiefliegende Rumpfmuskulatur, die die Wirbelsäule nicht mehr ausreichend stützt.\nGenau hier liegt die Stärke von EMS: Die elektrischen Impulse erreichen auch die tiefen Muskelschichten, die mit klassischen Übungen nur schwer gezielt trainierbar sind. Studien der Deutschen Sporthochschule Köln zeigen, dass regelmäßiges EMS-Training Rückenbeschwerden deutlich reduzieren kann.\nWichtig ist die richtige Betreuung: Bei Körperformen wird jede Einheit 1:1 begleitet, die Impulsstärke individuell dosiert und die Übungsauswahl an dein Beschwerdebild angepasst.\nUnser Tipp: Ergänze das wöchentliche Training mit kleinen Gewohnheiten im Alltag - regelmäßig aufstehen, Schulterkreisen am Schreibtisch, ein kurzer Spaziergang in der Mittagspause. Die Kombination macht den Unterschied.",
+    },
+    {
+      slug: "abnehmen-mit-ems",
+      title: "Abnehmen mit EMS: realistisch erklärt",
+      excerpt:
+        "Kann man mit 20 Minuten pro Woche wirklich abnehmen? Ja - aber anders, als die Werbung mancher Anbieter verspricht. Ein ehrlicher Blick.",
+      content:
+        "Vorweg die ehrliche Antwort: EMS ist kein Wundermittel. Abnehmen funktioniert nur mit einem Kaloriendefizit - daran ändert auch die beste Technologie nichts.\nWas EMS aber besser kann als fast jedes andere Training: In kurzer Zeit viel Muskulatur aktivieren. Mehr Muskelmasse bedeutet einen höheren Grundumsatz - dein Körper verbrennt also auch in Ruhe mehr Kalorien. Genau dieser Effekt macht EMS zu einem starken Partner beim Abnehmen.\nDazu kommt der Nachbrenneffekt: Nach einer intensiven EMS-Einheit arbeitet dein Stoffwechsel noch Stunden auf erhöhtem Niveau.\nUnsere Empfehlung für nachhaltige Ergebnisse: wöchentliches EMS-Training für den Muskelerhalt, dazu eine eiweißreiche, alltagstaugliche Ernährung ohne Verbote - und Geduld. Ein halbes Kilo pro Woche ist realistisch und bleibt dauerhaft unten. Bei deinem Probetermin sprechen wir offen über deine Ziele und was in welchem Zeitraum erreichbar ist.",
+    },
+    {
+      slug: "5-mythen-ueber-ems",
+      title: "5 Mythen über EMS-Training im Faktencheck",
+      excerpt:
+        "Strom am Körper? Da halten sich hartnäckige Gerüchte. Wir räumen mit den fünf häufigsten Mythen auf.",
+      content:
+        "Mythos 1: 'EMS ist gefährlich.' Falsch. Die Impulse sind niederfrequent und wirken nur auf die Skelettmuskulatur. In Physiotherapie und Reha wird die Methode seit Jahrzehnten eingesetzt. Wichtig ist professionelle Betreuung - bei uns Standard.\nMythos 2: 'Das ist nur was für Profisportler.' Im Gegenteil: Die meisten unserer Mitglieder sind Berufstätige zwischen 30 und 70, viele davon Einsteiger. Das Training wird an jedes Level angepasst.\nMythos 3: 'Man muss sich dabei nicht bewegen.' Doch. EMS verstärkt aktive Bewegungen - wer nur schlaff herumsteht, verschenkt den Großteil des Effekts. Deshalb führst du bei uns einfache Übungen aus, während die Impulse arbeiten.\nMythos 4: '20 Minuten können nicht reichen.' Können sie - weil bis zu 90% der Muskelfasern gleichzeitig arbeiten statt nacheinander. Die Intensität ersetzt die Dauer.\nMythos 5: 'EMS ersetzt jede Bewegung im Alltag.' Nein. EMS ist ein hocheffizientes Krafttraining, aber Spazierengehen, Radfahren und Treppensteigen bleiben wertvoll für Herz und Kreislauf. Die Kombination macht dich fit.",
+    },
+  ];
+
+  for (const article of articles) {
+    await prisma.blogPost.upsert({
+      where: { slug: article.slug },
+      update: {},
+      create: { ...article, published: true, publishedAt: new Date() },
     });
-    console.log("Beispiel-Blogartikel angelegt.");
   }
+  console.log(`${articles.length} Blogartikel geprüft/angelegt.`);
 }
 
 main()

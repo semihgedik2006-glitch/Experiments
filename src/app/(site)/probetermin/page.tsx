@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { BookingForm } from "@/components/booking/booking-form";
+import { LottieBox } from "@/components/lottie-box";
 import { getUpcomingSlots } from "@/lib/data";
 import { formatDateShort } from "@/lib/format";
 
@@ -46,7 +47,9 @@ export default async function ProbeterminPage() {
           kennen. Wir bestätigen deinen Wunschtermin anschließend persönlich.
         </p>
 
-        <div className="mt-12">
+        <LottieBox src="/lottie/booking.json" className="mx-auto w-full max-w-xs" />
+
+        <div className="mt-6">
           <BookingForm days={days} />
         </div>
       </Container>

@@ -75,6 +75,49 @@ export default function UeberUnsPage() {
       </section>
 
       <section className="border-t border-border bg-surface py-20">
+        <Container>
+          <h2 className="text-3xl font-bold tracking-tight">Dein Team vor Ort</h2>
+          <p className="mt-4 max-w-2xl text-muted">
+            Bei uns trainierst du nie anonym: Jede Einheit wird persönlich
+            begleitet - vom ersten Probetraining bis zum hundertsten Termin.
+          </p>
+
+          {/* Platzhalter-Team: Namen/Fotos vor Livegang durch echte ersetzen */}
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                initials: "MA",
+                name: "Marcel Almeida",
+                role: "Inhaber & Geschäftsführer",
+                text: "Führt das Studio in Hürth und brennt seit Jahren für gesundheitsorientiertes EMS-Training.",
+              },
+              {
+                initials: "T1",
+                name: "Dein/e Trainer/in",
+                role: "EMS-Coach (Platzhalter)",
+                text: "Zertifizierte EMS-Betreuung, Trainingsplanung und Motivation bei jeder Einheit.",
+              },
+              {
+                initials: "T2",
+                name: "Dein/e Trainer/in",
+                role: "EMS-Coach (Platzhalter)",
+                text: "Begleitet dich 1:1 durchs Training und passt jede Übung an deine Tagesform an.",
+              },
+            ].map((member) => (
+              <div key={member.role} className="rounded-2xl border border-border bg-surface-raised p-6">
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-lime/15 text-lg font-bold text-lime">
+                  {member.initials}
+                </span>
+                <h3 className="mt-4 text-lg font-semibold">{member.name}</h3>
+                <p className="text-sm text-lime">{member.role}</p>
+                <p className="mt-2 text-sm text-muted">{member.text}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      <section className="border-t border-border py-20">
         <Container className="flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold tracking-tight">Lerne uns persönlich kennen</h2>
           <p className="mt-4 max-w-md text-muted">

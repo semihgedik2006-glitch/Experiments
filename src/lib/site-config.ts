@@ -29,8 +29,10 @@ export const siteConfig = {
 
 export const mainNav = [
   { label: "Home", href: "/" },
+  { label: "EMS-Training", href: "/ems-training" },
   { label: "Studio", href: "/studio" },
   { label: "Preise", href: "/preise" },
+  { label: "Erfolge", href: "/erfolgsgeschichten" },
   { label: "Über uns", href: "/ueber-uns" },
   { label: "Blog", href: "/blog" },
   { label: "Kontakt", href: "/kontakt" },
