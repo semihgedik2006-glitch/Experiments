@@ -21,6 +21,12 @@ export function Hero() {
   const contentY = useTransform(scrollYProgress, [0, 1], [0, 80]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
+  // Big logo stays fully visible until the visitor actually scrolls, then
+  // shrinks and flies up toward the header in step with the scroll position.
+  const logoOpacity = useTransform(scrollYProgress, [0, 0.14], [1, 0]);
+  const logoScale = useTransform(scrollYProgress, [0, 0.16], [1, 0.22]);
+  const logoY = useTransform(scrollYProgress, [0, 0.16], [0, -280]);
+
   return (
     <section ref={sectionRef} className="relative overflow-hidden bg-background">
       <motion.div
@@ -39,18 +45,14 @@ export function Hero() {
 
       <LightningStrike />
 
-      {/* Big logo intro: shown large first, then shrinks and flies up toward
-          the header, handing off to the headline growing in underneath it. */}
+      {/* Big logo intro: stays fully visible until the visitor scrolls, then
+          shrinks and flies up toward the header in sync with scroll position. */}
       <motion.div
         className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 0 }}
-        transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
+        style={{ opacity: logoOpacity }}
       >
         <motion.div
-          initial={{ scale: 1, y: 0, filter: "drop-shadow(0 0 0px var(--color-lime))" }}
-          animate={{ scale: 0.22, y: -280, filter: "drop-shadow(0 0 18px var(--color-lime))" }}
-          transition={{ duration: 0.9, delay: 0.45, ease: easeOut }}
+          style={{ scale: logoScale, y: logoY, filter: "drop-shadow(0 0 14px var(--color-lime))" }}
         >
           <Logo className="h-24 w-auto sm:h-32 md:h-40" />
         </motion.div>
