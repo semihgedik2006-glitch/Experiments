@@ -80,6 +80,9 @@ export function SearchOverlay() {
             className="fixed inset-0 z-[200] flex items-start justify-center bg-black/60 px-4 pt-24 backdrop-blur-sm"
           >
             <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Website durchsuchen"
               initial={{ opacity: 0, y: -30, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.96 }}

@@ -8,6 +8,7 @@ import { Menu, X } from "lucide-react";
 import { mainNav } from "@/lib/site-config";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SearchOverlay } from "@/components/search/search-overlay";
+import { ScrollProgress } from "@/components/scroll-progress";
 import { Logo } from "@/components/logo";
 
 export function Header() {
@@ -16,6 +17,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+      <ScrollProgress />
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link href="/" className="transition-transform hover:scale-105">
           <Logo className="h-8 w-auto" />

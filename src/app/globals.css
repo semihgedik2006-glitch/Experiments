@@ -42,6 +42,26 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Tailwind v4 preflight sets buttons to cursor: default - restore the
+   expected pointer affordance on all interactive elements. */
+button:not(:disabled),
+[role="button"]:not(:disabled) {
+  cursor: pointer;
+}
+
+/* Consistent, brand-colored keyboard focus indicator everywhere. */
+:focus-visible {
+  outline: 2px solid var(--color-lime);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .font-display {
   font-family: var(--font-display), var(--font-sans), Arial, Helvetica, sans-serif;
 }

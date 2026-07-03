@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Newspaper } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { getPublishedPosts } from "@/lib/data";
 import { formatDate } from "@/lib/format";
@@ -24,7 +24,16 @@ export default async function BlogPage() {
         </p>
 
         {posts.length === 0 ? (
-          <p className="mt-16 text-muted">Bald erscheinen hier die ersten Artikel.</p>
+          <div className="mt-16 flex flex-col items-center rounded-2xl border border-dashed border-border bg-surface px-6 py-16 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-lime/15 text-lime">
+              <Newspaper size={22} />
+            </div>
+            <p className="mt-5 font-semibold">Die ersten Artikel sind in Arbeit</p>
+            <p className="mt-2 max-w-sm text-sm text-muted">
+              Hier erscheinen bald Trainingstipps und EMS-Wissen. Bis dahin:
+              Melde dich für den Newsletter an, dann verpasst du nichts.
+            </p>
+          </div>
         ) : (
           <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (

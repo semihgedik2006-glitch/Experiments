@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "motion/react";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { Container } from "@/components/ui/container";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 
@@ -23,8 +24,18 @@ const steps = [
 ];
 
 export function HowItWorks() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
+  // Decorative blob drifts slower than the content for a parallax depth cue.
+  const blobY = useTransform(scrollYProgress, [0, 1], [80, -80]);
+
   return (
-    <section className="py-24">
+    <section ref={sectionRef} className="relative overflow-hidden py-24">
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute -right-40 top-1/4 h-[380px] w-[380px] rounded-full opacity-10 blur-[100px]"
+        style={{ background: "radial-gradient(circle, var(--color-lime), transparent 70%)", y: blobY }}
+      />
       <Container>
         <Reveal className="mb-16 max-w-2xl">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">

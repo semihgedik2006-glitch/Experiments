@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { motion } from "motion/react";
+import { CheckCircle2 } from "lucide-react";
 import { createBooking } from "@/lib/actions/booking";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
@@ -21,10 +23,23 @@ export function BookingForm({ days }: { days: DayGroup[] }) {
 
   if (state.ok) {
     return (
-      <div className="rounded-2xl border border-lime bg-surface p-10 text-center">
-        <h3 className="text-xl font-semibold text-lime">Anfrage gesendet!</h3>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="rounded-2xl border border-lime bg-surface p-10 text-center"
+      >
+        <motion.div
+          initial={{ scale: 0, rotate: -30 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 18, delay: 0.15 }}
+          className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-lime/15 text-lime"
+        >
+          <CheckCircle2 size={30} />
+        </motion.div>
+        <h3 className="mt-5 text-xl font-semibold text-lime">Anfrage gesendet!</h3>
         <p className="mt-3 text-muted">{state.message}</p>
-      </div>
+      </motion.div>
     );
   }
 
@@ -120,7 +135,15 @@ export function BookingForm({ days }: { days: DayGroup[] }) {
       </div>
 
       {state.message && !state.ok && (
-        <p className="text-sm text-red-500">{state.message}</p>
+        <motion.p
+          key={state.message}
+          animate={{ x: [0, -8, 8, -5, 5, 0] }}
+          transition={{ duration: 0.4 }}
+          role="alert"
+          className="text-sm text-red-500"
+        >
+          {state.message}
+        </motion.p>
       )}
 
       <button
