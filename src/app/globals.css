@@ -5,6 +5,7 @@
 :root {
   --color-lime: #c3f53c;
   --color-lime-dim: #a3d92f;
+  --color-electric-blue: #4fa8ff;
 
   --background: #ffffff;
   --surface: #f4f4f5;
@@ -32,11 +33,17 @@
   --color-border: var(--border-color);
   --color-lime: var(--color-lime);
   --color-lime-dim: var(--color-lime-dim);
+  --color-electric-blue: var(--color-electric-blue);
   --font-sans: var(--font-titillium);
+  --font-display: var(--font-orbitron);
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
 body {

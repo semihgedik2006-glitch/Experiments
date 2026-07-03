@@ -4,7 +4,6 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { EmsVest } from "@/components/home/ems-vest";
 import { LightningStrike } from "@/components/home/lightning-strike";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
@@ -50,11 +49,13 @@ export function Hero() {
             EMS-Studio in Hürth &middot; Köln &middot; Brühl
           </motion.span>
 
+          {/* Emerges from the logo up in the header: starts tiny/blurred near the nav, then grows into place. */}
           <motion.h1
-            initial={{ opacity: 0, y: 60, scale: 0.85, rotate: -3 }}
-            animate={{ opacity: 1, y: 0, scale: [0.85, 1.08, 0.97, 1.02, 1], rotate: [-3, 1.5, -1, 0.5, 0] }}
-            transition={{ duration: 1, delay: 0.1, ease: easeOut }}
-            className="max-w-4xl text-5xl font-black leading-[1.05] tracking-tight md:text-7xl"
+            initial={{ opacity: 0, y: -210, scale: 0.16, filter: "blur(6px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: 1.15, delay: 0.15, ease: easeOut }}
+            style={{ transformOrigin: "top center" }}
+            className="font-display max-w-4xl text-5xl font-black leading-[1.05] tracking-tight md:text-7xl"
           >
             <motion.span
               className="inline-block"
@@ -63,7 +64,7 @@ export function Hero() {
                 duration: 2.2,
                 repeat: Infinity,
                 repeatDelay: 3.5,
-                delay: 1.2,
+                delay: 1.4,
                 times: [0, 0.4, 0.43, 0.47, 0.55, 0.59, 0.75, 0.79, 1],
                 ease: "linear",
               }}
@@ -74,7 +75,7 @@ export function Hero() {
             <motion.span
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.5, ease: easeOut }}
+              transition={{ duration: 0.7, delay: 0.75, ease: easeOut }}
               className="relative inline-block text-lime"
               style={{ textShadow: "0 0 24px var(--color-lime)" }}
             >
@@ -85,7 +86,7 @@ export function Hero() {
                   duration: 2.4,
                   repeat: Infinity,
                   repeatDelay: 3.2,
-                  delay: 2,
+                  delay: 2.2,
                   times: [0, 0.42, 0.45, 0.49, 0.58, 0.62, 0.78, 0.82, 1],
                   ease: "linear",
                 }}
@@ -115,18 +116,6 @@ export function Hero() {
             <Button href="/studio" variant="secondary">
               Studio finden
             </Button>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.55, ease: easeOut }}
-            className="mt-16"
-          >
-            <EmsVest />
-            <p className="mt-3 text-xs uppercase tracking-widest text-muted">
-              Elektro-Muskel-Stimulation live
-            </p>
           </motion.div>
         </Container>
       </motion.div>

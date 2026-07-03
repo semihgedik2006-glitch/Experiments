@@ -1,4 +1,5 @@
 import { Hero } from "@/components/home/hero";
+import { VestScrollShowcase } from "@/components/home/vest-scroll-showcase";
 import { UspGrid } from "@/components/home/usp-grid";
 import { HowItWorks } from "@/components/home/how-it-works";
 import { StudioTeaser } from "@/components/home/studio-teaser";
@@ -10,6 +11,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <VestScrollShowcase />
       <UspGrid />
       <HowItWorks />
       <StudioTeaser />

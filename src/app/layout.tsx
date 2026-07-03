@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Titillium_Web } from "next/font/google";
+import { Titillium_Web, Orbitron } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MotionProvider } from "@/components/motion-provider";
@@ -11,6 +11,12 @@ const titillium = Titillium_Web({
   variable: "--font-titillium",
   subsets: ["latin"],
   weight: ["300", "400", "600", "700", "900"],
+});
+
+const orbitron = Orbitron({
+  variable: "--font-orbitron",
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -42,7 +48,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de" className={`${titillium.variable} h-full antialiased`} suppressHydrationWarning>
+    <html
+      lang="de"
+      className={`${titillium.variable} ${orbitron.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <body className="min-h-full flex flex-col">
         <MotionProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
