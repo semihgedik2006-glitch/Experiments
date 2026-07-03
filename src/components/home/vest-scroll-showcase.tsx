@@ -1,51 +1,83 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import { motion, useTransform, useScroll, type MotionValue } from "motion/react";
 import { Button } from "@/components/ui/button";
 
-type Pad = { id: string; x: number; y: number; start: number };
+type Pad = { id: string; cx: number; cy: number; wire: string; start: number };
 
-// Positions are best-guess percentages over the photo, matched to where the
-// electrode pads sit on the real vest. Nudge x/y here if they drift once you
-// see the real image in place.
+// Coordinates in the 0-200 x 0-260 viewBox, matched to where the electrode
+// pads sit on a real EMS vest (shoulders, chest, abs/obliques).
 const pads: Pad[] = [
-  { id: "shoulder-l", x: 18, y: 34, start: 0.04 },
-  { id: "shoulder-r", x: 82, y: 34, start: 0.09 },
-  { id: "chest-l-upper", x: 39, y: 32, start: 0.14 },
-  { id: "chest-r-upper", x: 61, y: 32, start: 0.19 },
-  { id: "chest-l-lower", x: 41, y: 39, start: 0.24 },
-  { id: "chest-r-lower", x: 59, y: 39, start: 0.29 },
-  { id: "ab-l-upper", x: 35, y: 57, start: 0.4 },
-  { id: "ab-r-upper", x: 65, y: 55, start: 0.45 },
-  { id: "ab-l-lower", x: 37, y: 68, start: 0.5 },
-  { id: "ab-r-lower", x: 63, y: 67, start: 0.55 },
+  { id: "shoulder-l", cx: 36, cy: 88, wire: "M100,150 C70,125 50,105 36,88", start: 0.04 },
+  { id: "shoulder-r", cx: 164, cy: 88, wire: "M100,150 C130,125 150,105 164,88", start: 0.09 },
+  { id: "chest-l-upper", cx: 78, cy: 82, wire: "M100,150 C90,120 82,98 78,82", start: 0.14 },
+  { id: "chest-r-upper", cx: 122, cy: 82, wire: "M100,150 C110,120 118,98 122,82", start: 0.19 },
+  { id: "chest-l-lower", cx: 82, cy: 101, wire: "M100,150 C92,130 85,113 82,101", start: 0.24 },
+  { id: "chest-r-lower", cx: 118, cy: 101, wire: "M100,150 C108,130 115,113 118,101", start: 0.29 },
+  { id: "ab-l", cx: 70, cy: 148, wire: "M100,150 L70,148", start: 0.4 },
+  { id: "ab-r", cx: 130, cy: 143, wire: "M100,150 L130,143", start: 0.45 },
+  { id: "waist-l", cx: 74, cy: 177, wire: "M100,150 C90,166 80,174 74,177", start: 0.5 },
+  { id: "waist-r", cx: 126, cy: 174, wire: "M100,150 C110,166 120,171 126,174", start: 0.55 },
 ];
 
-function PadGlow({ pad, progress }: { pad: Pad; progress: MotionValue<number> }) {
-  const opacity = useTransform(progress, [pad.start, pad.start + 0.04], [0, 1]);
-  const scale = useTransform(progress, [pad.start, pad.start + 0.04], [0.3, 1]);
-  const ringScale = useTransform(progress, [pad.start, pad.start + 0.15], [0.6, 2.4]);
-  const ringOpacity = useTransform(progress, [pad.start, pad.start + 0.03, pad.start + 0.15], [0, 0.6, 0]);
-
+function Wire({ d, progress, start }: { d: string; progress: MotionValue<number>; start: number }) {
+  const pathLength = useTransform(progress, [start, start + 0.04], [0, 1]);
+  const opacity = useTransform(progress, [start, start + 0.01], [0, 1]);
   return (
     <>
-      <motion.div
-        className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-lime"
-        style={{ left: `${pad.x}%`, top: `${pad.y}%`, opacity: ringOpacity, scale: ringScale }}
+      <path d={d} stroke="var(--border-color)" strokeWidth={2} fill="none" strokeLinecap="round" />
+      <motion.path
+        d={d}
+        stroke="var(--color-lime)"
+        strokeWidth={2}
+        fill="none"
+        strokeLinecap="round"
+        style={{ pathLength, opacity, filter: "drop-shadow(0 0 4px var(--color-lime))" }}
       />
-      <motion.div
-        className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-lime"
+    </>
+  );
+}
+
+function ElectrodePad({ pad, progress }: { pad: Pad; progress: MotionValue<number> }) {
+  const { cx, cy, start } = pad;
+  const opacity = useTransform(progress, [start, start + 0.04], [0, 1]);
+  const scale = useTransform(progress, [start, start + 0.04], [0.3, 1]);
+  const ringScale = useTransform(progress, [start, start + 0.18], [0.6, 3]);
+  const ringOpacity = useTransform(progress, [start, start + 0.03, start + 0.18], [0, 0.6, 0]);
+  const flashOpacity = useTransform(progress, [start, start + 0.015, start + 0.03, start + 0.06], [0, 1, 1, 0]);
+
+  return (
+    <g>
+      <motion.circle
+        cx={cx}
+        cy={cy}
+        r={7}
+        fill="none"
+        stroke="var(--color-lime)"
+        strokeWidth={1.5}
+        style={{ opacity: ringOpacity, scale: ringScale, transformOrigin: `${cx}px ${cy}px` }}
+      />
+      <motion.circle
+        cx={cx}
+        cy={cy}
+        r={7}
+        fill="var(--color-lime)"
         style={{
-          left: `${pad.x}%`,
-          top: `${pad.y}%`,
           opacity,
           scale,
+          transformOrigin: `${cx}px ${cy}px`,
           filter: "drop-shadow(0 0 8px var(--color-lime))",
         }}
       />
-    </>
+      <motion.circle
+        cx={cx}
+        cy={cy}
+        r={12}
+        fill="white"
+        style={{ opacity: flashOpacity, filter: "blur(3px)" }}
+      />
+    </g>
   );
 }
 
@@ -56,6 +88,8 @@ export function VestScrollShowcase() {
   const percentLabel = useTransform(scrollYProgress, (v) => `${Math.round(Math.min(Math.max(v, 0), 1) * 100)}%`);
   const vestScale = useTransform(scrollYProgress, [0, 0.15, 0.9, 1], [0.85, 1, 1, 1.04]);
   const vestRotate = useTransform(scrollYProgress, [0, 1], [-4, 4]);
+  const controllerOpacity = useTransform(scrollYProgress, [0, 0.05], [0.85, 1]);
+  const controllerDotOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.4, 0.8, 1]);
 
   const cta1Opacity = useTransform(scrollYProgress, [0.3, 0.38, 0.56, 0.64], [0, 1, 1, 0]);
   const cta1Y = useTransform(scrollYProgress, [0.3, 0.38], [14, 0]);
@@ -75,19 +109,40 @@ export function VestScrollShowcase() {
 
         <motion.div
           style={{ scale: vestScale, rotate: vestRotate }}
-          className="relative aspect-[3/4] w-full max-w-[240px] sm:max-w-[300px]"
+          className="relative w-full max-w-[240px] sm:max-w-[300px]"
         >
-          <Image
-            src="/ems-vest.png"
-            alt="Körperformen EMS-Weste"
-            fill
-            priority
-            sizes="(max-width: 640px) 240px, 300px"
-            className="select-none object-contain"
-          />
-          {pads.map((pad) => (
-            <PadGlow key={pad.id} pad={pad} progress={scrollYProgress} />
-          ))}
+          <svg viewBox="0 0 200 260" className="h-auto w-full overflow-visible">
+            {pads.map((pad) => (
+              <Wire key={pad.id} d={pad.wire} progress={scrollYProgress} start={pad.start} />
+            ))}
+
+            {/* Sleeves with velcro straps */}
+            <rect x="30" y="72" width="34" height="34" rx="10" fill="var(--surface-raised)" stroke="var(--border-color)" strokeWidth={2.5} transform="rotate(-18 47 89)" />
+            <rect x="40" y="86" width="14" height="6" rx="3" fill="var(--border-color)" transform="rotate(-18 47 89)" />
+            <rect x="136" y="72" width="34" height="34" rx="10" fill="var(--surface-raised)" stroke="var(--border-color)" strokeWidth={2.5} transform="rotate(18 153 89)" />
+            <rect x="146" y="86" width="14" height="6" rx="3" fill="var(--border-color)" transform="rotate(18 153 89)" />
+
+            {/* Torso with V-neck */}
+            <path
+              d="M70,60 L100,92 L130,60 L162,74 L162,220 Q162,232 150,232 L50,232 Q38,232 38,220 L38,74 Z"
+              fill="var(--surface-raised)"
+              stroke="var(--border-color)"
+              strokeWidth={2.5}
+            />
+
+            {/* Waist straps */}
+            <rect x="42" y="140" width="116" height="10" rx="5" fill="var(--surface)" stroke="var(--border-color)" strokeWidth={1.5} />
+            <rect x="42" y="172" width="116" height="10" rx="5" fill="var(--surface)" stroke="var(--border-color)" strokeWidth={1.5} />
+
+            {/* Chest controller unit */}
+            <motion.rect x="84" y="132" width="32" height="38" rx="6" fill="var(--foreground)" style={{ opacity: controllerOpacity }} />
+            <rect x="89" y="138" width="22" height="14" rx="2" fill="var(--background)" />
+            <motion.circle cx="100" cy="160" r="3" fill="var(--color-lime)" style={{ opacity: controllerDotOpacity, filter: "drop-shadow(0 0 5px var(--color-lime))" }} />
+
+            {pads.map((pad) => (
+              <ElectrodePad key={pad.id} pad={pad} progress={scrollYProgress} />
+            ))}
+          </svg>
         </motion.div>
 
         <div className="mt-6 flex items-center gap-3">
