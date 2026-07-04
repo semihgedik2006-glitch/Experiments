@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { CursorGlow } from "@/components/cursor-glow";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       >
         Zum Inhalt springen
       </a>
+      <CursorGlow />
       <Header />
       <main id="main-content" className="flex-1">
         {children}

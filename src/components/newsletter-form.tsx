@@ -16,6 +16,7 @@ export function NewsletterForm() {
           name="email"
           required
           placeholder="deine@email.de"
+          suppressHydrationWarning
           className="w-full bg-transparent px-4 py-2 text-sm outline-none"
         />
         <button

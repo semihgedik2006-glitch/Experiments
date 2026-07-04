@@ -79,6 +79,18 @@ button:not(:disabled),
   border-radius: 2px;
 }
 
+/* Soft brand glow while typing - kicks in on focus for every field. */
+input,
+textarea,
+select {
+  transition: border-color 0.2s ease, box-shadow 0.25s ease;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-lime) 22%, transparent);
+}
+
 .font-display {
   font-family: var(--font-display), var(--font-sans), Arial, Helvetica, sans-serif;
 }

@@ -5,12 +5,13 @@ import { motion, useScroll, useTransform, type Variants } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { Logo } from "@/components/logo";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 const lineVariants: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.09 } },
+  visible: { transition: { staggerChildren: 0.09, delayChildren: 1.8 } },
 };
 
 const wordVariants: Variants = {
@@ -79,11 +80,26 @@ export function Hero() {
       <div aria-hidden className="hero-grid pointer-events-none absolute inset-0 opacity-40" />
 
       <motion.div style={{ y: contentY, opacity: contentOpacity }} className="w-full">
-        <Container className="flex flex-col items-center py-28 text-center md:py-32">
+        <Container className="flex flex-col items-center py-24 text-center md:py-28">
+          {/* Logo opens the page big and alone, then settles into place as
+              part of the normal flow - it can never overlap the headline. */}
+          <motion.div
+            initial={{ opacity: 0, scale: 2.1, y: 150 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{
+              opacity: { duration: 0.7, ease: "easeOut" },
+              scale: { duration: 0.9, delay: 1.0, ease: easeOut },
+              y: { duration: 0.9, delay: 1.0, ease: easeOut },
+            }}
+            className="mb-10"
+          >
+            <Logo className="h-14 w-auto sm:h-16" />
+          </motion.div>
+
           <motion.span
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: easeOut }}
+            transition={{ duration: 0.6, delay: 1.6, ease: easeOut }}
             className="mb-8 rounded-full border border-border bg-surface-raised/60 px-4 py-1.5 text-xs uppercase tracking-widest text-muted backdrop-blur"
           >
             EMS-Studio in Hürth &middot; Köln &middot; Brühl
@@ -103,7 +119,7 @@ export function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.7, ease: easeOut }}
+            transition={{ duration: 0.7, delay: 2.5, ease: easeOut }}
             className="mt-8 max-w-xl text-lg text-muted"
           >
             Effektives EMS-Training für Berufstätige mit wenig Zeit. Einmal pro
@@ -113,7 +129,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.85, ease: easeOut }}
+            transition={{ duration: 0.7, delay: 2.65, ease: easeOut }}
             className="mt-10 flex flex-col gap-4 sm:flex-row"
           >
             <Button href="/probetermin">Kostenlosen Probetermin buchen</Button>
@@ -133,7 +149,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.6, duration: 0.6 }}
+          transition={{ delay: 3.2, duration: 0.6 }}
           className="flex flex-col items-center gap-1 text-muted"
         >
           <span className="text-[10px] uppercase tracking-[0.25em]">Scroll</span>
