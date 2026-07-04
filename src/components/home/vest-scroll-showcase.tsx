@@ -53,7 +53,7 @@ function Wire({ d, progress, start }: { d: string; progress: MotionValue<number>
   const opacity = useTransform(progress, [start, start + 0.01], [0, 1]);
   return (
     <>
-      <path d={d} stroke="var(--border-color)" strokeWidth={2} fill="none" strokeLinecap="round" />
+      <path d={d} stroke="var(--vest-line)" strokeWidth={2} fill="none" strokeLinecap="round" />
       <motion.path
         d={d}
         stroke="var(--color-lime)"
@@ -85,7 +85,7 @@ function ElectrodePad({ pad, progress }: { pad: Pad; progress: MotionValue<numbe
         strokeWidth={1.5}
         style={{ opacity: ringOpacity, scale: ringScale, transformOrigin: `${cx}px ${cy}px` }}
       />
-      <circle cx={cx} cy={cy} r={9} fill="var(--surface)" stroke="var(--border-color)" strokeWidth={1} />
+      <circle cx={cx} cy={cy} r={9} fill="#17171a" stroke="var(--vest-line)" strokeWidth={1} />
       <motion.circle
         cx={cx}
         cy={cy}
@@ -130,7 +130,7 @@ function GroupLabel({
       textAnchor="middle"
       fontSize={7}
       letterSpacing={0.5}
-      fill="var(--muted)"
+      fill="#9a9aa2"
       style={{ opacity, textTransform: "uppercase" }}
     >
       {children}
@@ -193,12 +193,12 @@ export function VestScrollShowcase() {
           <svg viewBox="0 0 200 260" className="h-auto w-full overflow-visible">
             <defs>
               <linearGradient id="vestFabric" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="var(--surface-raised)" />
-                <stop offset="55%" stopColor="var(--surface-raised)" />
-                <stop offset="100%" stopColor="var(--surface)" />
+                <stop offset="0%" stopColor="var(--vest-shell)" />
+                <stop offset="55%" stopColor="var(--vest-shell)" />
+                <stop offset="100%" stopColor="var(--vest-panel)" />
               </linearGradient>
               <pattern id="meshPattern" width={5} height={5} patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
-                <line x1="0" y1="0" x2="0" y2="5" stroke="var(--border-color)" strokeWidth={1} />
+                <line x1="0" y1="0" x2="0" y2="5" stroke="var(--vest-line)" strokeWidth={1} />
               </pattern>
               <radialGradient id="vestVignette" cx="50%" cy="35%" r="75%">
                 <stop offset="60%" stopColor="black" stopOpacity={0} />
@@ -212,58 +212,58 @@ export function VestScrollShowcase() {
 
             {/* Sleeves with layered velcro straps */}
             <g transform="rotate(-18 47 89)">
-              <rect x="28" y="70" width="36" height="36" rx="11" fill="url(#vestFabric)" stroke="var(--border-color)" strokeWidth={2.5} />
-              <rect x="38" y="80" width="16" height="4.5" rx="2" fill="var(--border-color)" />
-              <rect x="38" y="87" width="16" height="4.5" rx="2" fill="var(--border-color)" />
-              <rect x="38" y="94" width="16" height="4.5" rx="2" fill="var(--border-color)" />
+              <rect x="28" y="70" width="36" height="36" rx="11" fill="url(#vestFabric)" stroke="var(--vest-line)" strokeWidth={2.5} />
+              <rect x="38" y="80" width="16" height="4.5" rx="2" fill="var(--vest-line)" />
+              <rect x="38" y="87" width="16" height="4.5" rx="2" fill="var(--vest-line)" />
+              <rect x="38" y="94" width="16" height="4.5" rx="2" fill="var(--vest-line)" />
             </g>
             <g transform="rotate(18 153 89)">
-              <rect x="136" y="70" width="36" height="36" rx="11" fill="url(#vestFabric)" stroke="var(--border-color)" strokeWidth={2.5} />
-              <rect x="146" y="80" width="16" height="4.5" rx="2" fill="var(--border-color)" />
-              <rect x="146" y="87" width="16" height="4.5" rx="2" fill="var(--border-color)" />
-              <rect x="146" y="94" width="16" height="4.5" rx="2" fill="var(--border-color)" />
+              <rect x="136" y="70" width="36" height="36" rx="11" fill="url(#vestFabric)" stroke="var(--vest-line)" strokeWidth={2.5} />
+              <rect x="146" y="80" width="16" height="4.5" rx="2" fill="var(--vest-line)" />
+              <rect x="146" y="87" width="16" height="4.5" rx="2" fill="var(--vest-line)" />
+              <rect x="146" y="94" width="16" height="4.5" rx="2" fill="var(--vest-line)" />
             </g>
 
             {/* Torso with V-neck */}
             <path
               d="M70,60 L100,92 L130,60 L162,74 L162,220 Q162,232 150,232 L50,232 Q38,232 38,220 L38,74 Z"
               fill="url(#vestFabric)"
-              stroke="var(--border-color)"
+              stroke="var(--vest-line)"
               strokeWidth={2.5}
             />
             {/* Stitching along the hem and collar */}
             <path
               d="M74,66 L100,96 L126,66 M42,78 L42,218 Q42,226 50,226 M158,78 L158,218 Q158,226 150,226"
               fill="none"
-              stroke="var(--border-color)"
+              stroke="var(--vest-line)"
               strokeWidth={1}
               strokeDasharray="2.5 3"
               opacity={0.7}
             />
             {/* Center zipper */}
-            <line x1="100" y1="92" x2="100" y2="226" stroke="var(--border-color)" strokeWidth={1.2} strokeDasharray="1 2.5" />
-            <rect x="96" y="88" width="8" height="9" rx="2" fill="var(--muted)" />
+            <line x1="100" y1="92" x2="100" y2="226" stroke="var(--vest-line)" strokeWidth={1.2} strokeDasharray="1 2.5" />
+            <rect x="96" y="88" width="8" height="9" rx="2" fill="#6b6b74" />
 
             {/* Mesh ventilation side panels */}
-            <rect x="45" y="110" width="12" height="90" rx="6" fill="url(#meshPattern)" stroke="var(--border-color)" strokeWidth={1} opacity={0.8} />
-            <rect x="143" y="110" width="12" height="90" rx="6" fill="url(#meshPattern)" stroke="var(--border-color)" strokeWidth={1} opacity={0.8} />
+            <rect x="45" y="110" width="12" height="90" rx="6" fill="url(#meshPattern)" stroke="var(--vest-line)" strokeWidth={1} opacity={0.8} />
+            <rect x="143" y="110" width="12" height="90" rx="6" fill="url(#meshPattern)" stroke="var(--vest-line)" strokeWidth={1} opacity={0.8} />
 
             {/* Waist straps with buckles */}
-            <rect x="42" y="140" width="116" height="10" rx="5" fill="var(--surface)" stroke="var(--border-color)" strokeWidth={1.5} />
-            <rect x="36" y="138.5" width="7" height="13" rx="2" fill="var(--muted)" />
-            <rect x="157" y="138.5" width="7" height="13" rx="2" fill="var(--muted)" />
-            <rect x="42" y="172" width="116" height="10" rx="5" fill="var(--surface)" stroke="var(--border-color)" strokeWidth={1.5} />
-            <rect x="36" y="170.5" width="7" height="13" rx="2" fill="var(--muted)" />
-            <rect x="157" y="170.5" width="7" height="13" rx="2" fill="var(--muted)" />
+            <rect x="42" y="140" width="116" height="10" rx="5" fill="var(--vest-strap)" stroke="var(--vest-line)" strokeWidth={1.5} />
+            <rect x="36" y="138.5" width="7" height="13" rx="2" fill="#6b6b74" />
+            <rect x="157" y="138.5" width="7" height="13" rx="2" fill="#6b6b74" />
+            <rect x="42" y="172" width="116" height="10" rx="5" fill="var(--vest-strap)" stroke="var(--vest-line)" strokeWidth={1.5} />
+            <rect x="36" y="170.5" width="7" height="13" rx="2" fill="#6b6b74" />
+            <rect x="157" y="170.5" width="7" height="13" rx="2" fill="#6b6b74" />
 
             {/* Chest controller unit */}
             <motion.g style={{ opacity: controllerOpacity }}>
-              <rect x="83" y="131" width="34" height="40" rx="7" fill="var(--foreground)" />
-              <rect x="88" y="137" width="24" height="15" rx="2" fill="var(--background)" />
+              <rect x="83" y="131" width="34" height="40" rx="7" fill="#0d0d0f" />
+              <rect x="88" y="137" width="24" height="15" rx="2" fill="#1c1c21" />
               <path d="M90,148 L94,142 L98,146 L102,138 L106,144 L110,140" stroke="var(--color-lime)" strokeWidth={1} fill="none" opacity={0.8} />
-              <circle cx="92" cy="161" r="3" fill="var(--surface)" stroke="var(--muted)" strokeWidth={0.75} />
-              <circle cx="100" cy="161" r="3" fill="var(--surface)" stroke="var(--muted)" strokeWidth={0.75} />
-              <circle cx="108" cy="161" r="3" fill="var(--surface)" stroke="var(--muted)" strokeWidth={0.75} />
+              <circle cx="92" cy="161" r="3" fill="#2c2c33" stroke="#6b6b74" strokeWidth={0.75} />
+              <circle cx="100" cy="161" r="3" fill="#2c2c33" stroke="#6b6b74" strokeWidth={0.75} />
+              <circle cx="108" cy="161" r="3" fill="#2c2c33" stroke="#6b6b74" strokeWidth={0.75} />
             </motion.g>
             <motion.circle cx="100" cy="134.5" r="2" fill="var(--color-lime)" style={{ opacity: controllerDotOpacity, filter: "drop-shadow(0 0 5px var(--color-lime))" }} />
 

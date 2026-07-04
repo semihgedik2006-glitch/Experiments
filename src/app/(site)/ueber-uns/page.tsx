@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { Zap, ShieldCheck, Target } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -60,17 +61,19 @@ export default function UeberUnsPage() {
             und zeiteffizient ist.
           </p>
 
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
+          <Stagger className="mt-14 grid gap-6 md:grid-cols-3">
             {values.map(({ icon: Icon, title, text }) => (
-              <div key={title} className="rounded-2xl border border-border bg-surface p-6">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/15 text-lime">
-                  <Icon size={20} />
+              <StaggerItem key={title} className="h-full">
+                <div className="h-full rounded-2xl border border-border bg-surface p-6">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/15 text-lime">
+                    <Icon size={20} />
+                  </div>
+                  <h3 className="mt-5 text-lg font-semibold">{title}</h3>
+                  <p className="mt-2 text-sm text-muted">{text}</p>
                 </div>
-                <h3 className="mt-5 text-lg font-semibold">{title}</h3>
-                <p className="mt-2 text-sm text-muted">{text}</p>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </Container>
       </section>
 
@@ -83,7 +86,7 @@ export default function UeberUnsPage() {
           </p>
 
           {/* Platzhalter-Team: Namen/Fotos vor Livegang durch echte ersetzen */}
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <Stagger className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
                 initials: "MA",
@@ -104,16 +107,18 @@ export default function UeberUnsPage() {
                 text: "Begleitet dich 1:1 durchs Training und passt jede Übung an deine Tagesform an.",
               },
             ].map((member) => (
-              <div key={member.role} className="rounded-2xl border border-border bg-surface-raised p-6">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-lime/15 text-lg font-bold text-lime">
-                  {member.initials}
-                </span>
-                <h3 className="mt-4 text-lg font-semibold">{member.name}</h3>
-                <p className="text-sm text-lime">{member.role}</p>
-                <p className="mt-2 text-sm text-muted">{member.text}</p>
-              </div>
+              <StaggerItem key={member.role} className="h-full">
+                <div className="h-full rounded-2xl border border-border bg-surface-raised p-6">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-lime/15 text-lg font-bold text-lime">
+                    {member.initials}
+                  </span>
+                  <h3 className="mt-4 text-lg font-semibold">{member.name}</h3>
+                  <p className="text-sm text-lime">{member.role}</p>
+                  <p className="mt-2 text-sm text-muted">{member.text}</p>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </Container>
       </section>
 

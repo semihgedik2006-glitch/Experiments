@@ -28,8 +28,7 @@ export default function NotFound() {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.7, delay: 0.15, ease: easeOut }}
-        className="font-display mt-10 text-8xl font-black text-lime md:text-9xl"
-        style={{ textShadow: "0 0 32px var(--color-lime)" }}
+        className="font-display text-glow mt-10 text-8xl font-black text-lime md:text-9xl"
       >
         404
       </motion.p>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Newspaper } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { getPublishedPosts } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 
@@ -35,24 +36,25 @@ export default async function BlogPage() {
             </p>
           </div>
         ) : (
-          <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Stagger className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/blog/${post.slug}`}
-                className="flex flex-col rounded-2xl border border-border bg-surface p-6 transition-transform hover:-translate-y-1"
-              >
-                <span className="text-xs text-muted">
-                  {post.publishedAt ? formatDate(post.publishedAt) : ""}
-                </span>
-                <h2 className="mt-3 text-lg font-semibold">{post.title}</h2>
-                <p className="mt-2 text-sm text-muted">{post.excerpt}</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm text-lime">
-                  Weiterlesen <ArrowRight size={14} />
-                </span>
-              </Link>
+              <StaggerItem key={post.id} className="h-full">
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="flex h-full flex-col rounded-2xl border border-border bg-surface p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-lime/5"
+                >
+                  <span className="text-xs text-muted">
+                    {post.publishedAt ? formatDate(post.publishedAt) : ""}
+                  </span>
+                  <h2 className="mt-3 text-lg font-semibold">{post.title}</h2>
+                  <p className="mt-2 flex-1 text-sm text-muted">{post.excerpt}</p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm text-lime">
+                    Weiterlesen <ArrowRight size={14} />
+                  </span>
+                </Link>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         )}
       </Container>
     </section>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/ui/reveal";
 import { getStudio } from "@/lib/data";
 import { notFound } from "next/navigation";
 
@@ -31,7 +32,7 @@ export default async function StudioPage() {
 
       <section className="py-20">
         <Container className="grid gap-10 md:grid-cols-2">
-          <div className="overflow-hidden rounded-2xl border border-border">
+          <Reveal className="overflow-hidden rounded-2xl border border-border">
             <iframe
               src={studio.mapEmbedUrl}
               title="Studio Standort auf Google Maps"
@@ -39,9 +40,9 @@ export default async function StudioPage() {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
-          </div>
+          </Reveal>
 
-          <div className="rounded-2xl border border-border bg-surface p-8">
+          <Reveal delay={0.15} className="rounded-2xl border border-border bg-surface p-8">
             <h2 className="text-xl font-semibold">{studio.name}</h2>
 
             <ul className="mt-6 space-y-5 text-sm">
@@ -74,7 +75,7 @@ export default async function StudioPage() {
             <Button href="/probetermin" className="mt-8 w-full">
               Probetermin in {studio.city} buchen
             </Button>
-          </div>
+          </Reveal>
         </Container>
       </section>
     </>

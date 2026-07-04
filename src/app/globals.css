@@ -3,8 +3,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --color-lime: #c3f53c;
-  --color-lime-dim: #a3d92f;
+  /* Light theme uses the darker green from the original Körperformen logo -
+     neon lime has almost no contrast on white. */
+  --color-lime: #93c02f;
+  --color-lime-dim: #7da428;
   --color-electric-blue: #4fa8ff;
 
   --background: #ffffff;
@@ -13,15 +15,30 @@
   --foreground: #121214;
   --muted: #63636b;
   --border-color: #e4e4e7;
+
+  /* Ambient glows need far less presence on white backgrounds. */
+  --aurora-opacity: 0.16;
+
+  /* The EMS vest is physically black - it keeps one fixed dark palette
+     in both themes instead of inverting with the surface colors. */
+  --vest-shell: #26262b;
+  --vest-panel: #1e1e22;
+  --vest-line: #45454d;
+  --vest-strap: #33333a;
 }
 
 .dark {
+  --color-lime: #c3f53c;
+  --color-lime-dim: #a3d92f;
+
   --background: #0d0d0f;
   --surface: #17171a;
   --surface-raised: #1e1e22;
   --foreground: #f5f5f7;
   --muted: #9a9aa2;
   --border-color: #2a2a2f;
+
+  --aurora-opacity: 0.28;
 }
 
 @theme inline {
@@ -64,6 +81,24 @@ button:not(:disabled),
 
 .font-display {
   font-family: var(--font-display), var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Neon glow reads as broken on light backgrounds - dark theme only. */
+.text-glow {
+  text-shadow: none;
+}
+.dark .text-glow {
+  text-shadow: 0 0 24px var(--color-lime);
+}
+
+/* Fine blueprint grid behind the hero, fading out toward the edges. */
+.hero-grid {
+  background-image:
+    linear-gradient(var(--border-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
 }
 
 body {

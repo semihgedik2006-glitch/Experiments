@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/ui/reveal";
 import { Faq } from "@/components/faq";
 
 export const metadata: Metadata = {
@@ -37,7 +38,7 @@ export default function PreisePage() {
       <section className="py-20">
         <Container>
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
-            <div>
+            <Reveal>
               <h2 className="text-2xl font-bold tracking-tight">Das ist immer inklusive</h2>
               <ul className="mt-6 space-y-4">
                 {highlights.map((item) => (
@@ -47,9 +48,9 @@ export default function PreisePage() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </Reveal>
 
-            <div className="rounded-2xl border border-lime bg-surface p-8 text-center">
+            <Reveal delay={0.15} className="rounded-2xl border border-lime bg-surface p-8 text-center">
               <h3 className="text-xl font-semibold">Dein persönliches Angebot</h3>
               <p className="mt-3 text-sm text-muted">
                 In einem unverbindlichen Probetermin lernst du das Studio kennen
@@ -59,7 +60,7 @@ export default function PreisePage() {
               <Button href="/probetermin" className="mt-6 w-full">
                 Kostenlosen Probetermin buchen
               </Button>
-            </div>
+            </Reveal>
           </div>
         </Container>
       </section>

@@ -1,13 +1,37 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion, useScroll, useTransform, type Variants } from "motion/react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { LightningStrike } from "@/components/home/lightning-strike";
-import { Logo } from "@/components/logo";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
+
+const lineVariants: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.09 } },
+};
+
+const wordVariants: Variants = {
+  hidden: { y: "110%" },
+  visible: { y: 0, transition: { duration: 0.7, ease: easeOut } },
+};
+
+function StaggeredLine({ text, className }: { text: string; className?: string }) {
+  return (
+    <span className={className}>
+      {text.split(" ").map((word, index) => (
+        <span key={index} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+          <motion.span variants={wordVariants} className="inline-block">
+            {word}
+            {" "}
+          </motion.span>
+        </span>
+      ))}
+    </span>
+  );
+}
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -16,127 +40,110 @@ export function Hero() {
     offset: ["start start", "end start"],
   });
 
-  // Parallax: background glow drifts slower than the foreground content while scrolling past the hero.
-  const glowY = useTransform(scrollYProgress, [0, 1], [0, 160]);
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, 80]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-
-  // Big logo stays fully visible until the visitor actually scrolls, then
-  // shrinks and flies up toward the header in step with the scroll position.
-  const logoOpacity = useTransform(scrollYProgress, [0, 0.14], [1, 0]);
-  const logoScale = useTransform(scrollYProgress, [0, 0.16], [1, 0.22]);
-  const logoY = useTransform(scrollYProgress, [0, 0.16], [0, -280]);
+  // Parallax: backdrop drifts slower than the content while scrolling away.
+  const auroraY = useTransform(scrollYProgress, [0, 1], [0, 140]);
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  const cueOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-background">
+    <section
+      ref={sectionRef}
+      className="relative flex min-h-[92vh] items-center overflow-hidden bg-background"
+    >
+      {/* Aurora backdrop: two soft color fields drifting slowly. */}
       <motion.div
-        className="pointer-events-none absolute -top-32 left-1/2 h-[700px] w-[1000px] -translate-x-1/2 rounded-full opacity-25 blur-[110px]"
+        aria-hidden
+        className="pointer-events-none absolute -top-40 left-[8%] h-[560px] w-[560px] rounded-full blur-[130px]"
         style={{
-          background: "radial-gradient(circle, var(--color-lime), transparent 70%)",
-          y: glowY,
+          background: "radial-gradient(circle, var(--color-lime), transparent 65%)",
+          opacity: "var(--aurora-opacity)",
+          y: auroraY,
         }}
-        animate={{
-          scale: [1, 1.35, 0.85, 1.2, 1],
-          opacity: [0.18, 0.32, 0.12, 0.28, 0.18],
-          x: [0, 60, -50, 25, 0],
+        animate={{ x: [0, 60, -20, 0], scale: [1, 1.15, 0.95, 1] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-52 right-[4%] h-[620px] w-[620px] rounded-full blur-[140px]"
+        style={{
+          background: "radial-gradient(circle, var(--color-electric-blue), transparent 65%)",
+          opacity: "calc(var(--aurora-opacity) * 0.55)",
+          y: auroraY,
         }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ x: [0, -50, 30, 0], scale: [1, 0.9, 1.1, 1] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <LightningStrike />
+      {/* Blueprint grid, masked so it dissolves toward the edges. */}
+      <div aria-hidden className="hero-grid pointer-events-none absolute inset-0 opacity-40" />
 
-      {/* Big logo intro: stays fully visible until the visitor scrolls, then
-          shrinks and flies up toward the header in sync with scroll position. */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
-        style={{ opacity: logoOpacity }}
-      >
-        <motion.div
-          style={{ scale: logoScale, y: logoY, filter: "drop-shadow(0 0 14px var(--color-lime))" }}
-        >
-          <Logo className="h-24 w-auto sm:h-32 md:h-40" />
-        </motion.div>
-      </motion.div>
-
-      <motion.div style={{ y: contentY, opacity: contentOpacity }}>
-        <Container className="relative flex flex-col items-center py-28 text-center md:py-40">
+      <motion.div style={{ y: contentY, opacity: contentOpacity }} className="w-full">
+        <Container className="flex flex-col items-center py-28 text-center md:py-32">
           <motion.span
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.9, ease: easeOut }}
-            className="mb-6 rounded-full border border-border px-4 py-1 text-xs uppercase tracking-widest text-muted"
+            transition={{ duration: 0.6, ease: easeOut }}
+            className="mb-8 rounded-full border border-border bg-surface-raised/60 px-4 py-1.5 text-xs uppercase tracking-widest text-muted backdrop-blur"
           >
             EMS-Studio in Hürth &middot; Köln &middot; Brühl
           </motion.span>
 
-          {/* Grows in right as the big logo above finishes shrinking away. */}
           <motion.h1
-            initial={{ opacity: 0, y: 24, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: 1.0, ease: easeOut }}
-            className="font-display max-w-4xl text-5xl font-black leading-[1.05] tracking-tight md:text-7xl"
+            initial="hidden"
+            animate="visible"
+            variants={lineVariants}
+            className="font-display max-w-5xl text-[2.6rem] font-black leading-[1.08] tracking-tight sm:text-6xl md:text-7xl"
           >
-            <motion.span
-              className="inline-block"
-              animate={{ opacity: [1, 1, 0.2, 1, 0.3, 1, 1, 0.4, 1] }}
-              transition={{
-                duration: 2.2,
-                repeat: Infinity,
-                repeatDelay: 3.5,
-                delay: 2.2,
-                times: [0, 0.4, 0.43, 0.47, 0.55, 0.59, 0.75, 0.79, 1],
-                ease: "linear",
-              }}
-            >
-              20 Minuten Training.
-            </motion.span>
+            <StaggeredLine text="20 Minuten Training." />
             <br />
-            <motion.span
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 1.4, ease: easeOut }}
-              className="relative inline-block text-lime"
-              style={{ textShadow: "0 0 24px var(--color-lime)" }}
-            >
-              <motion.span
-                className="inline-block"
-                animate={{ opacity: [1, 1, 0.35, 1, 0.25, 1, 1, 0.5, 1] }}
-                transition={{
-                  duration: 2.4,
-                  repeat: Infinity,
-                  repeatDelay: 3.2,
-                  delay: 2.8,
-                  times: [0, 0.42, 0.45, 0.49, 0.58, 0.62, 0.78, 0.82, 1],
-                  ease: "linear",
-                }}
-              >
-                Ein sichtbarer Unterschied.
-              </motion.span>
-            </motion.span>
+            <StaggeredLine text="Ein sichtbarer Unterschied." className="text-glow text-lime" />
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 28 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 1.15, ease: easeOut }}
-            className="mt-6 max-w-xl text-lg text-muted"
+            transition={{ duration: 0.7, delay: 0.7, ease: easeOut }}
+            className="mt-8 max-w-xl text-lg text-muted"
           >
             Effektives EMS-Training für Berufstätige mit wenig Zeit. Einmal pro
             Woche, gelenkschonend, individuell betreut - bei Körperformen.
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 28 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 1.25, ease: easeOut }}
+            transition={{ duration: 0.7, delay: 0.85, ease: easeOut }}
             className="mt-10 flex flex-col gap-4 sm:flex-row"
           >
             <Button href="/probetermin">Kostenlosen Probetermin buchen</Button>
-            <Button href="/studio" variant="secondary">
-              Studio finden
+            <Button href="/ems-training" variant="secondary">
+              Wie EMS funktioniert
             </Button>
           </motion.div>
         </Container>
+      </motion.div>
+
+      {/* Scroll cue - fades out as soon as the visitor starts scrolling. */}
+      <motion.div
+        aria-hidden
+        style={{ opacity: cueOpacity }}
+        className="absolute bottom-7 left-1/2 -translate-x-1/2"
+      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.6, duration: 0.6 }}
+          className="flex flex-col items-center gap-1 text-muted"
+        >
+          <span className="text-[10px] uppercase tracking-[0.25em]">Scroll</span>
+          <motion.span
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ChevronDown size={18} />
+          </motion.span>
+        </motion.div>
       </motion.div>
     </section>
   );
