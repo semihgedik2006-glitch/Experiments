@@ -59,6 +59,14 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Native UI (scrollbars, form controls, autofill) follows the active theme. */
+:root {
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
