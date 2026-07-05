@@ -18,20 +18,21 @@ model AdminUser {
 }
 
 model StudioLocation {
-  id           String             @id @default(cuid())
-  name         String
-  street       String
-  postalCode   String
-  city         String
-  phone        String
-  email        String
-  mapEmbedUrl  String
-  openingHours String
-  latitude     Float?
-  longitude    Float?
-  sortOrder    Int                @default(0)
-  updatedAt    DateTime           @updatedAt
-  slots        AvailabilitySlot[]
+  id            String             @id @default(cuid())
+  name          String
+  street        String
+  postalCode    String
+  city          String
+  phone         String
+  email         String
+  mapEmbedUrl   String
+  openingHours  String
+  latitude      Float?
+  longitude     Float?
+  sortOrder     Int                @default(0)
+  updatedAt     DateTime           @updatedAt
+  slots         AvailabilitySlot[]
+  slotTemplates SlotTemplate[]
 }
 
 enum BookingStatus {
@@ -40,16 +41,33 @@ enum BookingStatus {
   CANCELLED
 }
 
-model AvailabilitySlot {
-  id        String         @id @default(cuid())
-  studio    StudioLocation @relation(fields: [studioId], references: [id], onDelete: Cascade)
+// A recurring weekly pattern (e.g. "every Monday 09:00-09:30") that
+// automatically keeps generating real AvailabilitySlot rows going
+// forward, until the template itself is deleted.
+model SlotTemplate {
+  id        String             @id @default(cuid())
+  studio    StudioLocation     @relation(fields: [studioId], references: [id], onDelete: Cascade)
   studioId  String
-  date      DateTime
+  weekday   Int // 0 = Sonntag ... 6 = Samstag
   startTime String
   endTime   String
-  capacity  Int            @default(1)
-  bookings  Booking[]
-  createdAt DateTime       @default(now())
+  capacity  Int                @default(1)
+  createdAt DateTime           @default(now())
+  slots     AvailabilitySlot[]
+}
+
+model AvailabilitySlot {
+  id         String        @id @default(cuid())
+  studio     StudioLocation @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  studioId   String
+  template   SlotTemplate?  @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  templateId String?
+  date       DateTime
+  startTime  String
+  endTime    String
+  capacity   Int            @default(1)
+  bookings   Booking[]
+  createdAt  DateTime       @default(now())
 }
 
 model Booking {
