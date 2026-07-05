@@ -25,7 +25,7 @@ export default async function AdminBookingsPage({
   const [studios, bookings] = await Promise.all([
     prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.booking.findMany({
-      where: studioFilter ? { slot: { studioId: studioFilter } } : undefined,
+      where: studioFilter ? { slot: { is: { studioId: studioFilter } } } : undefined,
       include: { slot: { include: { studio: true } } },
       orderBy: { createdAt: "desc" },
     }),
@@ -73,9 +73,15 @@ export default async function AdminBookingsPage({
                   {booking.email} &middot; {booking.phone}
                 </p>
                 <p className="mt-2 text-sm">
-                  Termin: {formatDate(booking.slot.date)} um {booking.slot.startTime} Uhr
-                  {studios.length > 1 && (
-                    <span className="text-muted"> &middot; {booking.slot.studio.name}</span>
+                  {booking.slot ? (
+                    <>
+                      Termin: {formatDate(booking.slot.date)} um {booking.slot.startTime} Uhr
+                      {studios.length > 1 && (
+                        <span className="text-muted"> &middot; {booking.slot.studio.name}</span>
+                      )}
+                    </>
+                  ) : (
+                    <span className="text-muted">Kein bestimmter Termin - individuell abzustimmen</span>
                   )}
                 </p>
                 {booking.message && (
@@ -110,6 +116,21 @@ export default async function AdminBookingsPage({
                 >
                   <button className="rounded-full border border-border px-4 py-2 text-xs font-semibold">
                     Ablehnen
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {booking.status === "CONFIRMED" && (
+              <div className="mt-4">
+                <form
+                  action={async () => {
+                    "use server";
+                    await updateBookingStatus(booking.id, "CANCELLED");
+                  }}
+                >
+                  <button className="rounded-full border border-border px-4 py-2 text-xs font-semibold text-red-500 hover:border-red-500">
+                    Stornieren
                   </button>
                 </form>
               </div>

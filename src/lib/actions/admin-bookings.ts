@@ -24,9 +24,9 @@ export async function updateBookingStatus(id: string, status: BookingStatus) {
       await sendBookingConfirmedEmail({
         to: booking.email,
         name: booking.name,
-        dateLabel: formatDate(booking.slot.date),
-        startTime: booking.slot.startTime,
-        studioName: booking.slot.studio.name,
+        dateLabel: booking.slot ? formatDate(booking.slot.date) : null,
+        startTime: booking.slot?.startTime ?? null,
+        studioName: booking.slot?.studio.name ?? null,
       });
     } catch (error) {
       // The booking status is already saved - a flaky email provider

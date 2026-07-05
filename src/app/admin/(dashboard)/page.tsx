@@ -22,7 +22,7 @@ export default async function AdminDashboardPage() {
     prisma.comment.count({ where: { approved: false } }),
     prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.booking.findMany({
-      where: { status: { not: "CANCELLED" }, slot: { date: { gte: startOfToday } } },
+      where: { status: { not: "CANCELLED" }, slot: { is: { date: { gte: startOfToday } } } },
       include: { slot: { include: { studio: true } } },
       orderBy: [{ slot: { date: "asc" } }, { slot: { startTime: "asc" } }],
       take: 5,
@@ -65,7 +65,7 @@ export default async function AdminDashboardPage() {
           <p className="mt-4 text-sm text-muted">Aktuell stehen keine bestätigten oder offenen Termine an.</p>
         ) : (
           <ul className="mt-4 space-y-3">
-            {upcomingBookings.map((booking) => (
+            {upcomingBookings.map((booking) => booking.slot && (
               <li
                 key={booking.id}
                 className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3 text-sm last:border-0 last:pb-0"

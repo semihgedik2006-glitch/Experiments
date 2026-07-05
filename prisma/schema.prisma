@@ -54,8 +54,8 @@ model AvailabilitySlot {
 
 model Booking {
   id        String            @id @default(cuid())
-  slot      AvailabilitySlot  @relation(fields: [slotId], references: [id], onDelete: Cascade)
-  slotId    String
+  slot      AvailabilitySlot? @relation(fields: [slotId], references: [id], onDelete: SetNull)
+  slotId    String?
   name      String
   email     String
   phone     String

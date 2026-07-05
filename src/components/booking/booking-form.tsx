@@ -15,7 +15,7 @@ type DayGroup = {
 const initialState: ActionResult = { ok: false, message: "" };
 
 export function BookingForm({ days }: { days: DayGroup[] }) {
-  const [selectedDay, setSelectedDay] = useState(days[0]?.dateKey ?? "");
+  const [selectedDay, setSelectedDay] = useState("");
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [state, formAction, pending] = useActionState(createBooking, initialState);
 
@@ -43,60 +43,64 @@ export function BookingForm({ days }: { days: DayGroup[] }) {
     );
   }
 
-  if (days.length === 0) {
-    return (
-      <div className="rounded-2xl border border-border bg-surface p-10 text-center text-muted">
-        Aktuell sind keine freien Termine verfügbar. Kontaktiere uns gerne direkt
-        über die Kontaktseite.
-      </div>
-    );
-  }
-
   return (
     <form action={formAction} className="space-y-8">
-      <div>
-        <p className="mb-3 text-sm font-semibold">1. Tag wählen</p>
-        <div className="flex flex-wrap gap-2">
-          {days.map((day) => (
-            <button
-              key={day.dateKey}
-              type="button"
-              onClick={() => {
-                setSelectedDay(day.dateKey);
-                setSelectedSlotId(null);
-              }}
-              className={`rounded-full border px-4 py-2 text-sm transition-colors ${
-                selectedDay === day.dateKey
-                  ? "border-lime bg-lime text-[#0d0d0f]"
-                  : "border-border hover:border-lime"
-              }`}
-            >
-              {day.dateLabel}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {activeDay && (
-        <div>
-          <p className="mb-3 text-sm font-semibold">2. Uhrzeit wählen</p>
-          <div className="flex flex-wrap gap-2">
-            {activeDay.slots.map((slot) => (
-              <button
-                key={slot.id}
-                type="button"
-                onClick={() => setSelectedSlotId(slot.id)}
-                className={`rounded-full border px-4 py-2 text-sm transition-colors ${
-                  selectedSlotId === slot.id
-                    ? "border-lime bg-lime text-[#0d0d0f]"
-                    : "border-border hover:border-lime"
-                }`}
-              >
-                {slot.startTime}
-              </button>
-            ))}
+      {days.length > 0 ? (
+        <>
+          <div>
+            <p className="mb-1 text-sm font-semibold">1. Bevorzugter Tag</p>
+            <p className="mb-3 text-xs text-muted">
+              Optional - ohne Auswahl vereinbaren wir den genauen Termin persönlich mit dir.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {days.map((day) => (
+                <button
+                  key={day.dateKey}
+                  type="button"
+                  onClick={() => {
+                    setSelectedDay(selectedDay === day.dateKey ? "" : day.dateKey);
+                    setSelectedSlotId(null);
+                  }}
+                  className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                    selectedDay === day.dateKey
+                      ? "border-lime bg-lime text-[#0d0d0f]"
+                      : "border-border hover:border-lime"
+                  }`}
+                >
+                  {day.dateLabel}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+
+          {activeDay && (
+            <div>
+              <p className="mb-1 text-sm font-semibold">2. Bevorzugte Uhrzeit</p>
+              <p className="mb-3 text-xs text-muted">Optional - auch hier reicht eine grobe Vorstellung.</p>
+              <div className="flex flex-wrap gap-2">
+                {activeDay.slots.map((slot) => (
+                  <button
+                    key={slot.id}
+                    type="button"
+                    onClick={() => setSelectedSlotId(selectedSlotId === slot.id ? null : slot.id)}
+                    className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                      selectedSlotId === slot.id
+                        ? "border-lime bg-lime text-[#0d0d0f]"
+                        : "border-border hover:border-lime"
+                    }`}
+                  >
+                    {slot.startTime}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <p className="text-sm text-muted">
+          Aktuell sind keine festen Termine hinterlegt - schick uns einfach deine Daten,
+          wir vereinbaren einen Probetermin persönlich mit dir.
+        </p>
       )}
 
       <input type="hidden" name="slotId" value={selectedSlotId ?? ""} />
@@ -148,7 +152,7 @@ export function BookingForm({ days }: { days: DayGroup[] }) {
 
       <button
         type="submit"
-        disabled={pending || !selectedSlotId}
+        disabled={pending}
         className="w-full rounded-full bg-lime px-7 py-3 text-sm font-semibold text-[#0d0d0f] transition-opacity disabled:opacity-50"
       >
         {pending ? "Wird gesendet..." : "Probetermin anfragen"}

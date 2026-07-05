@@ -8,27 +8,29 @@ export async function createBooking(
   _prevState: ActionResult | undefined,
   formData: FormData,
 ): Promise<ActionResult> {
-  const slotId = String(formData.get("slotId") ?? "");
+  const slotId = String(formData.get("slotId") ?? "").trim() || null;
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
   const message = String(formData.get("message") ?? "").trim();
 
-  if (!slotId || !name || !email || !phone) {
-    return { ok: false, message: "Bitte fülle alle Pflichtfelder aus und wähle einen Termin." };
+  if (!name || !email || !phone) {
+    return { ok: false, message: "Bitte fülle alle Pflichtfelder aus." };
   }
 
-  const slot = await prisma.availabilitySlot.findUnique({
-    where: { id: slotId },
-    include: { bookings: { where: { status: { not: "CANCELLED" } } } },
-  });
+  if (slotId) {
+    const slot = await prisma.availabilitySlot.findUnique({
+      where: { id: slotId },
+      include: { bookings: { where: { status: { not: "CANCELLED" } } } },
+    });
 
-  if (!slot) {
-    return { ok: false, message: "Dieser Termin existiert nicht mehr. Bitte wähle einen anderen." };
-  }
+    if (!slot) {
+      return { ok: false, message: "Dieser Termin existiert nicht mehr. Bitte wähle einen anderen." };
+    }
 
-  if (slot.bookings.length >= slot.capacity) {
-    return { ok: false, message: "Dieser Termin ist leider bereits ausgebucht. Bitte wähle einen anderen." };
+    if (slot.bookings.length >= slot.capacity) {
+      return { ok: false, message: "Dieser Termin ist leider bereits ausgebucht. Bitte wähle einen anderen." };
+    }
   }
 
   await prisma.booking.create({
