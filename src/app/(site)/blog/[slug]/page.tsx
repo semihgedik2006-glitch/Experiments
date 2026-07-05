@@ -4,6 +4,7 @@ import { MessageCircle } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { CommentForm } from "@/components/comment-form";
+import { CommentReplyToggle } from "@/components/comment-reply-toggle";
 import { getPostBySlug, getApprovedComments } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 
@@ -63,6 +64,29 @@ export default async function BlogPostPage({ params }: Props) {
                   <p className="text-xs text-muted">{formatDate(comment.createdAt)}</p>
                 </div>
                 <p className="mt-2 text-sm text-muted">{comment.content}</p>
+
+                {comment.replies.length > 0 && (
+                  <div className="mt-4 space-y-4 border-l-2 border-lime/30 pl-4">
+                    {comment.replies.map((reply) => (
+                      <div key={reply.id}>
+                        <div className="flex items-baseline justify-between gap-4">
+                          <p className="text-sm font-semibold">
+                            {reply.authorName}
+                            {reply.isTeam && (
+                              <span className="ml-2 rounded-full bg-lime/15 px-2 py-0.5 text-[10px] font-semibold text-lime">
+                                Team
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs text-muted">{formatDate(reply.createdAt)}</p>
+                        </div>
+                        <p className="mt-1 text-sm text-muted">{reply.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <CommentReplyToggle postId={post.id} slug={post.slug} parentId={comment.id} />
               </div>
             ))}
             {comments.length === 0 && (

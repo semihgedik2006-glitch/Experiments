@@ -6,12 +6,22 @@ import type { ActionResult } from "@/lib/actions/newsletter";
 
 const initialState: ActionResult = { ok: false, message: "" };
 
-export function CommentForm({ postId, slug }: { postId: string; slug: string }) {
+export function CommentForm({
+  postId,
+  slug,
+  parentId,
+  compact,
+}: {
+  postId: string;
+  slug: string;
+  parentId?: string;
+  compact?: boolean;
+}) {
   const [state, formAction, pending] = useActionState(submitComment, initialState);
 
   if (state.ok) {
     return (
-      <div className="rounded-2xl border border-lime bg-surface p-6 text-center">
+      <div className={`rounded-2xl border border-lime bg-surface text-center ${compact ? "p-4" : "p-6"}`}>
         <p className="font-semibold text-lime">Danke für deinen Kommentar!</p>
         <p className="mt-2 text-sm text-muted">{state.message}</p>
       </div>
@@ -22,6 +32,7 @@ export function CommentForm({ postId, slug }: { postId: string; slug: string }) 
     <form action={formAction} className="space-y-3">
       <input type="hidden" name="postId" value={postId} />
       <input type="hidden" name="slug" value={slug} />
+      {parentId && <input type="hidden" name="parentId" value={parentId} />}
 
       {/* Honeypot - hidden from real users, catches simple bots */}
       <input
@@ -45,8 +56,8 @@ export function CommentForm({ postId, slug }: { postId: string; slug: string }) 
         name="content"
         required
         maxLength={2000}
-        rows={4}
-        placeholder="Dein Kommentar"
+        rows={compact ? 3 : 4}
+        placeholder={parentId ? "Deine Antwort" : "Dein Kommentar"}
         className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
       />
 
@@ -57,7 +68,7 @@ export function CommentForm({ postId, slug }: { postId: string; slug: string }) 
         disabled={pending}
         className="rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-[#0d0d0f] transition-opacity disabled:opacity-50"
       >
-        {pending ? "Wird gesendet..." : "Kommentar absenden"}
+        {pending ? "Wird gesendet..." : parentId ? "Antwort absenden" : "Kommentar absenden"}
       </button>
     </form>
   );

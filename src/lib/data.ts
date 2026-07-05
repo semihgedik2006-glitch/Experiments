@@ -39,7 +39,13 @@ export async function getFaqItems() {
 
 export async function getApprovedComments(postId: string) {
   return prisma.comment.findMany({
-    where: { postId, approved: true },
+    where: { postId, approved: true, parentId: null },
     orderBy: { createdAt: "desc" },
+    include: {
+      replies: {
+        where: { approved: true },
+        orderBy: { createdAt: "asc" },
+      },
+    },
   });
 }

@@ -79,13 +79,17 @@ model BlogPost {
 }
 
 model Comment {
-  id         String   @id @default(cuid())
-  post       BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  id         String    @id @default(cuid())
+  post       BlogPost  @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId     String
+  parent     Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId   String?
+  replies    Comment[] @relation("CommentReplies")
   authorName String
   content    String
-  approved   Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  isTeam     Boolean   @default(false)
+  approved   Boolean   @default(false)
+  createdAt  DateTime  @default(now())
 }
 
 model ContactMessage {

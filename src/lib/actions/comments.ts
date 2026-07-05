@@ -10,6 +10,7 @@ export async function submitComment(
 ): Promise<ActionResult> {
   const postId = String(formData.get("postId") ?? "");
   const slug = String(formData.get("slug") ?? "");
+  const parentId = String(formData.get("parentId") ?? "").trim() || null;
   const authorName = String(formData.get("authorName") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
   const honeypot = String(formData.get("website") ?? "").trim();
@@ -26,7 +27,7 @@ export async function submitComment(
     return { ok: false, message: "Name oder Kommentar ist zu lang." };
   }
 
-  await prisma.comment.create({ data: { postId, authorName, content } });
+  await prisma.comment.create({ data: { postId, parentId, authorName, content } });
 
   if (slug) revalidatePath(`/blog/${slug}`);
   revalidatePath("/admin/kommentare");
