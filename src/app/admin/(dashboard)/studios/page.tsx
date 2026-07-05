@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { createStudio, updateStudio, deleteStudio } from "@/lib/actions/admin-studios";
+import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 
 const inputClass =
   "w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime";
@@ -104,33 +105,35 @@ export default async function AdminStudiosPage() {
         </button>
       </form>
 
-      <div className="mt-8 space-y-4">
+      <AdminStagger className="mt-8 space-y-4">
         {studios.map((studio) => (
-          <div key={studio.id} className="rounded-2xl border border-border bg-surface p-6">
-            <form action={updateStudio}>
-              <input type="hidden" name="id" value={studio.id} />
-              <StudioFields defaults={studio} />
-              <button className="mt-4 rounded-full border border-border px-4 py-2 text-xs font-semibold hover:border-lime">
-                Speichern
-              </button>
-            </form>
-            <form
-              action={async () => {
-                "use server";
-                await deleteStudio(studio.id);
-              }}
-              className="mt-2"
-            >
-              <button className="rounded-full border border-border px-4 py-2 text-xs font-semibold text-red-500 hover:border-red-500">
-                Löschen
-              </button>
-            </form>
-          </div>
+          <AdminStaggerItem key={studio.id}>
+            <div className="rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-lime/30">
+              <form action={updateStudio}>
+                <input type="hidden" name="id" value={studio.id} />
+                <StudioFields defaults={studio} />
+                <button className="mt-4 rounded-full border border-border px-4 py-2 text-xs font-semibold hover:border-lime">
+                  Speichern
+                </button>
+              </form>
+              <form
+                action={async () => {
+                  "use server";
+                  await deleteStudio(studio.id);
+                }}
+                className="mt-2"
+              >
+                <button className="rounded-full border border-border px-4 py-2 text-xs font-semibold text-red-500 hover:border-red-500">
+                  Löschen
+                </button>
+              </form>
+            </div>
+          </AdminStaggerItem>
         ))}
         {studios.length === 0 && (
           <p className="text-muted">Noch kein Studio angelegt - lege oben das erste an.</p>
         )}
-      </div>
+      </AdminStagger>
     </div>
   );
 }

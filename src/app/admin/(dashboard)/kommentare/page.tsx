@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { approveComment, deleteComment, replyToComment } from "@/lib/actions/admin-comments";
 import { formatDate } from "@/lib/format";
+import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 
 export default async function AdminCommentsPage() {
   const comments = await prisma.comment.findMany({
@@ -16,12 +17,12 @@ export default async function AdminCommentsPage() {
     <div>
       <h1 className="text-2xl font-bold tracking-tight">Kommentare</h1>
 
-      <div className="mt-8 space-y-4">
+      <AdminStagger className="mt-8 space-y-4">
         {comments.map((comment) => (
+          <AdminStaggerItem key={comment.id}>
           <div
-            key={comment.id}
-            className={`rounded-2xl border p-6 ${
-              comment.approved ? "border-border bg-surface" : "border-lime bg-surface"
+            className={`rounded-2xl border p-6 transition-colors ${
+              comment.approved ? "border-border bg-surface hover:border-lime/40" : "border-lime bg-surface"
             }`}
           >
             <div className="flex flex-wrap items-start justify-between gap-4">
@@ -135,9 +136,10 @@ export default async function AdminCommentsPage() {
               </button>
             </form>
           </div>
+          </AdminStaggerItem>
         ))}
         {comments.length === 0 && <p className="text-muted">Noch keine Kommentare vorhanden.</p>}
-      </div>
+      </AdminStagger>
     </div>
   );
 }

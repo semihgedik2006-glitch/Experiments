@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
+import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 
 export default async function AdminDashboardPage() {
   const startOfToday = new Date();
@@ -40,23 +41,24 @@ export default async function AdminDashboardPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold tracking-tight">Übersicht</h1>
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+      <AdminStagger className="mt-8 grid gap-4 sm:grid-cols-2">
         {cards.map((card) => (
-          <Link
-            key={card.label}
-            href={card.href}
-            className="rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-lime"
-          >
-            <p className="text-3xl font-black">{card.value}</p>
-            <p className="mt-2 text-sm text-muted">{card.label}</p>
-          </Link>
+          <AdminStaggerItem key={card.label}>
+            <Link
+              href={card.href}
+              className="block rounded-2xl border border-border bg-surface p-6 transition-all hover:-translate-y-0.5 hover:border-lime hover:shadow-lg hover:shadow-lime/5"
+            >
+              <p className="text-3xl font-black">{card.value}</p>
+              <p className="mt-2 text-sm text-muted">{card.label}</p>
+            </Link>
+          </AdminStaggerItem>
         ))}
-      </div>
+      </AdminStagger>
 
-      <div className="mt-10 rounded-2xl border border-border bg-surface p-6">
+      <AdminStagger className="mt-10 rounded-2xl border border-border bg-surface p-6">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold">Nächste Termine</h2>
-          <Link href="/admin/bookings" className="text-xs text-muted hover:text-lime">
+          <Link href="/admin/bookings" className="text-xs text-muted transition-colors hover:text-lime">
             Alle Buchungen ansehen
           </Link>
         </div>
@@ -66,29 +68,28 @@ export default async function AdminDashboardPage() {
         ) : (
           <ul className="mt-4 space-y-3">
             {upcomingBookings.map((booking) => booking.slot && (
-              <li
-                key={booking.id}
-                className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3 text-sm last:border-0 last:pb-0"
-              >
-                <span>
-                  <span className="font-medium">{formatDate(booking.slot.date)}</span>{" "}
-                  {booking.slot.startTime} Uhr &middot; {booking.name}
-                  {studios.length > 1 && (
-                    <span className="text-muted"> &middot; {booking.slot.studio.name}</span>
-                  )}
-                </span>
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                    booking.status === "CONFIRMED" ? "bg-lime/15 text-lime" : "bg-yellow-500/15 text-yellow-500"
-                  }`}
-                >
-                  {booking.status === "CONFIRMED" ? "Bestätigt" : "Offen"}
-                </span>
-              </li>
+              <AdminStaggerItem key={booking.id}>
+                <li className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3 text-sm last:border-0 last:pb-0">
+                  <span>
+                    <span className="font-medium">{formatDate(booking.slot.date)}</span>{" "}
+                    {booking.slot.startTime} Uhr &middot; {booking.name}
+                    {studios.length > 1 && (
+                      <span className="text-muted"> &middot; {booking.slot.studio.name}</span>
+                    )}
+                  </span>
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                      booking.status === "CONFIRMED" ? "bg-lime/15 text-lime" : "bg-yellow-500/15 text-yellow-500"
+                    }`}
+                  >
+                    {booking.status === "CONFIRMED" ? "Bestätigt" : "Offen"}
+                  </span>
+                </li>
+              </AdminStaggerItem>
             ))}
           </ul>
         )}
-      </div>
+      </AdminStagger>
     </div>
   );
 }

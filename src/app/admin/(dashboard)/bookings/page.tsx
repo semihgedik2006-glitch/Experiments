@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { updateBookingStatus } from "@/lib/actions/admin-bookings";
 import { formatDate } from "@/lib/format";
+import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Offen",
@@ -61,11 +62,12 @@ export default async function AdminBookingsPage({
         </div>
       )}
 
-      <div className="mt-8 space-y-4">
+      <AdminStagger className="mt-8 space-y-4">
         {bookings.length === 0 && <p className="text-muted">Noch keine Buchungen vorhanden.</p>}
 
         {bookings.map((booking) => (
-          <div key={booking.id} className="rounded-2xl border border-border bg-surface p-6">
+          <AdminStaggerItem key={booking.id}>
+          <div className="rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-lime/40">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="font-semibold">{booking.name}</p>
@@ -136,8 +138,9 @@ export default async function AdminBookingsPage({
               </div>
             )}
           </div>
+          </AdminStaggerItem>
         ))}
-      </div>
+      </AdminStagger>
     </div>
   );
 }

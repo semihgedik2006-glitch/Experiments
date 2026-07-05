@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { markMessageRead } from "@/lib/actions/admin-messages";
 import { formatDate } from "@/lib/format";
+import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 
 export default async function AdminMessagesPage() {
   const messages = await prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" } });
@@ -9,11 +10,11 @@ export default async function AdminMessagesPage() {
     <div>
       <h1 className="text-2xl font-bold tracking-tight">Kontaktnachrichten</h1>
 
-      <div className="mt-8 space-y-4">
+      <AdminStagger className="mt-8 space-y-4">
         {messages.map((msg) => (
+          <AdminStaggerItem key={msg.id}>
           <div
-            key={msg.id}
-            className={`rounded-2xl border p-6 ${msg.read ? "border-border bg-surface" : "border-lime bg-surface"}`}
+            className={`rounded-2xl border p-6 transition-colors ${msg.read ? "border-border bg-surface hover:border-lime/40" : "border-lime bg-surface"}`}
           >
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
@@ -47,9 +48,10 @@ export default async function AdminMessagesPage() {
               )}
             </div>
           </div>
+          </AdminStaggerItem>
         ))}
         {messages.length === 0 && <p className="text-muted">Noch keine Nachrichten vorhanden.</p>}
-      </div>
+      </AdminStagger>
     </div>
   );
 }

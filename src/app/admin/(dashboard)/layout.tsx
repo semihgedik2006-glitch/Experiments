@@ -1,20 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { logoutAdmin } from "@/lib/actions/admin-auth";
 import { getAdminSession } from "@/lib/auth";
-
-const links = [
-  { href: "/admin", label: "Übersicht" },
-  { href: "/admin/studios", label: "Studios" },
-  { href: "/admin/bookings", label: "Buchungen" },
-  { href: "/admin/verfuegbarkeit", label: "Verfügbarkeit" },
-  { href: "/admin/blog", label: "Blog" },
-  { href: "/admin/kommentare", label: "Kommentare" },
-  { href: "/admin/faq", label: "FAQ" },
-  { href: "/admin/nachrichten", label: "Nachrichten" },
-  { href: "/admin/newsletter", label: "Newsletter" },
-];
+import { AdminNav } from "@/components/admin/admin-nav";
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const adminId = await getAdminSession();
@@ -26,22 +14,13 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
         <p className="mb-8 text-sm font-semibold tracking-tight">
           Körper<span className="text-lime">formen</span> Admin
         </p>
-        <nav className="flex flex-col gap-1">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-lg px-3 py-2 text-sm text-muted hover:bg-surface hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+
+        <AdminNav />
 
         <form action={logoutAdmin} className="mt-8">
           <button
             type="submit"
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted hover:bg-surface hover:text-foreground"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted transition-colors hover:bg-surface hover:text-foreground"
           >
             <LogOut size={16} /> Abmelden
           </button>
