@@ -27,6 +27,7 @@ model StudioLocation {
   email        String
   mapEmbedUrl  String
   openingHours String
+  sortOrder    Int      @default(0)
   updatedAt    DateTime @updatedAt
 }
 

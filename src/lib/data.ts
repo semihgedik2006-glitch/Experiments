@@ -1,7 +1,11 @@
 import { prisma } from "@/lib/prisma";
 
 export async function getStudio() {
-  return prisma.studioLocation.findFirst();
+  return prisma.studioLocation.findFirst({ orderBy: { sortOrder: "asc" } });
+}
+
+export async function getStudios() {
+  return prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } });
 }
 
 export async function getUpcomingSlots() {

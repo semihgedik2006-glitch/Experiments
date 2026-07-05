@@ -3,7 +3,7 @@ import { Phone, Mail, MapPin } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { ContactForm } from "@/components/contact-form";
 import { LottieBox } from "@/components/lottie-box";
-import { getStudio } from "@/lib/data";
+import { getStudios } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Kontakt",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function KontaktPage() {
-  const studio = await getStudio();
+  const studios = await getStudios();
 
   return (
     <section className="py-20">
@@ -25,28 +25,39 @@ export default async function KontaktPage() {
             Wir freuen uns auf deine Nachricht.
           </p>
 
-          {studio && (
-            <ul className="mt-10 space-y-4 text-sm">
-              <li className="flex items-start gap-3">
-                <MapPin size={18} className="mt-0.5 shrink-0 text-lime" />
-                <span>
-                  {studio.street}, {studio.postalCode} {studio.city}
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Phone size={18} className="mt-0.5 shrink-0 text-lime" />
-                <a href={`tel:${studio.phone}`} className="hover:underline">
-                  {studio.phone}
-                </a>
-              </li>
-              <li className="flex items-start gap-3">
-                <Mail size={18} className="mt-0.5 shrink-0 text-lime" />
-                <a href={`mailto:${studio.email}`} className="hover:underline">
-                  {studio.email}
-                </a>
-              </li>
-            </ul>
-          )}
+          <div className="mt-10 space-y-8">
+            {studios.map((studio) => (
+              <div key={studio.id}>
+                {studios.length > 1 && (
+                  <p className="mb-3 text-sm font-semibold">{studio.name}</p>
+                )}
+                <ul className="space-y-4 text-sm">
+                  <li className="flex items-start gap-3">
+                    <MapPin size={18} className="mt-0.5 shrink-0 text-lime" />
+                    <span>
+                      {studio.street}, {studio.postalCode} {studio.city}
+                    </span>
+                  </li>
+                  {studio.phone && (
+                    <li className="flex items-start gap-3">
+                      <Phone size={18} className="mt-0.5 shrink-0 text-lime" />
+                      <a href={`tel:${studio.phone}`} className="hover:underline">
+                        {studio.phone}
+                      </a>
+                    </li>
+                  )}
+                  {studio.email && (
+                    <li className="flex items-start gap-3">
+                      <Mail size={18} className="mt-0.5 shrink-0 text-lime" />
+                      <a href={`mailto:${studio.email}`} className="hover:underline">
+                        {studio.email}
+                      </a>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            ))}
+          </div>
 
           <LottieBox src="/lottie/contact.json" className="mt-8 w-full max-w-sm" />
         </div>

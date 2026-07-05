@@ -4,6 +4,7 @@ import { logoutAdmin } from "@/lib/actions/admin-auth";
 
 const links = [
   { href: "/admin", label: "Übersicht" },
+  { href: "/admin/studios", label: "Studios" },
   { href: "/admin/bookings", label: "Buchungen" },
   { href: "/admin/verfuegbarkeit", label: "Verfügbarkeit" },
   { href: "/admin/blog", label: "Blog" },
