@@ -14,7 +14,7 @@ import {
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
-import { Faq } from "@/components/faq";
+import { FaqSection } from "@/components/faq-section";
 
 export const metadata: Metadata = {
   title: "EMS-Training erklärt",
@@ -295,7 +295,7 @@ export default function EmsTrainingPage() {
         </Container>
       </section>
 
-      <Faq />
+      <FaqSection />
     </>
   );
 }

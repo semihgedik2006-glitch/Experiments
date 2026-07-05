@@ -3,7 +3,7 @@ import { Check } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
-import { Faq } from "@/components/faq";
+import { FaqSection } from "@/components/faq-section";
 
 export const metadata: Metadata = {
   title: "Preise",
@@ -65,7 +65,7 @@ export default function PreisePage() {
         </Container>
       </section>
 
-      <Faq />
+      <FaqSection />
     </>
   );
 }

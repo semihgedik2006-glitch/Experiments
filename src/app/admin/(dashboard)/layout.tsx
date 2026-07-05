@@ -8,6 +8,7 @@ const links = [
   { href: "/admin/verfuegbarkeit", label: "Verfügbarkeit" },
   { href: "/admin/blog", label: "Blog" },
   { href: "/admin/kommentare", label: "Kommentare" },
+  { href: "/admin/faq", label: "FAQ" },
   { href: "/admin/nachrichten", label: "Nachrichten" },
   { href: "/admin/newsletter", label: "Newsletter" },
 ];

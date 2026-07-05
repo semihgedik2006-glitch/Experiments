@@ -5,10 +5,13 @@ import { AnimatePresence, motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
-import { faqItems } from "@/lib/faq-data";
 
-export function Faq() {
+export type FaqEntry = { question: string; answer: string };
+
+export function Faq({ items }: { items: FaqEntry[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  if (items.length === 0) return null;
 
   return (
     <section id="faq" className="scroll-mt-24 py-24">
@@ -18,7 +21,7 @@ export function Faq() {
         </Reveal>
 
         <Reveal delay={0.1} className="mt-10 divide-y divide-border border-y border-border">
-          {faqItems.map((item, index) => {
+          {items.map((item, index) => {
             const open = openIndex === index;
             return (
               <div key={item.question}>

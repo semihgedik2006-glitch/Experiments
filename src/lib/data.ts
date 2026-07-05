@@ -29,6 +29,10 @@ export async function getPostBySlug(slug: string) {
   return prisma.blogPost.findFirst({ where: { slug, published: true } });
 }
 
+export async function getFaqItems() {
+  return prisma.faqItem.findMany({ orderBy: { sortOrder: "asc" } });
+}
+
 export async function getApprovedComments(postId: string) {
   return prisma.comment.findMany({
     where: { postId, approved: true },

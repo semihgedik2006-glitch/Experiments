@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { staticSearchEntries } from "@/lib/search-data";
-import { faqItems } from "@/lib/faq-data";
+import { getFaqItems } from "@/lib/data";
 
 type SearchResult = { type: string; title: string; description: string; href: string };
 
@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
       href: entry.href,
     }));
 
+  const faqItems = await getFaqItems();
   const faqResults: SearchResult[] = faqItems
     .filter(
       (item) =>
