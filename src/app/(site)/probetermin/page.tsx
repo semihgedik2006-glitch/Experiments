@@ -19,6 +19,8 @@ export default async function ProbeterminPage() {
   > = {};
 
   for (const slot of slots) {
+    if (Number.isNaN(slot.date.getTime())) continue; // skip slots with a corrupt date
+
     const dayMap = (slotsByStudio[slot.studioId] ??= []);
     const dateKey = slot.date.toISOString().slice(0, 10);
     let day = dayMap.find((d) => d.dateKey === dateKey);
