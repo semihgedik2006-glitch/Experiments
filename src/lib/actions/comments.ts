@@ -29,6 +29,8 @@ export async function submitComment(
   await prisma.comment.create({ data: { postId, authorName, content } });
 
   if (slug) revalidatePath(`/blog/${slug}`);
+  revalidatePath("/admin/kommentare");
+  revalidatePath("/admin");
 
   return { ok: true, message: "Danke für deinen Kommentar! Er wird nach Prüfung freigeschaltet." };
 }

@@ -6,11 +6,29 @@ import type { ActionResult } from "@/lib/actions/newsletter";
 
 const initialState: ActionResult = { ok: false, message: "" };
 
-export function SlotForm() {
+export function SlotForm({ studios }: { studios: { id: string; name: string }[] }) {
   const [state, formAction, pending] = useActionState(createSlot, initialState);
 
   return (
     <form action={formAction} className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-surface p-6">
+      {studios.length > 1 && (
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted">Studio</label>
+          <select
+            name="studioId"
+            required
+            className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
+          >
+            {studios.map((studio) => (
+              <option key={studio.id} value={studio.id}>
+                {studio.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+      {studios.length === 1 && <input type="hidden" name="studioId" value={studios[0].id} />}
+
       <div className="flex flex-col gap-1">
         <label className="text-xs text-muted">Datum</label>
         <input

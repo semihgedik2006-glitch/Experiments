@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { updateBookingStatus } from "@/lib/actions/admin-bookings";
 import { formatDate } from "@/lib/format";
@@ -14,15 +15,51 @@ const statusStyles: Record<string, string> = {
   CANCELLED: "bg-red-500/15 text-red-500",
 };
 
-export default async function AdminBookingsPage() {
-  const bookings = await prisma.booking.findMany({
-    include: { slot: true },
-    orderBy: { createdAt: "desc" },
-  });
+export default async function AdminBookingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ studio?: string }>;
+}) {
+  const { studio: studioFilter } = await searchParams;
+
+  const [studios, bookings] = await Promise.all([
+    prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
+    prisma.booking.findMany({
+      where: studioFilter ? { slot: { studioId: studioFilter } } : undefined,
+      include: { slot: { include: { studio: true } } },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
   return (
     <div>
       <h1 className="text-2xl font-bold tracking-tight">Buchungsanfragen</h1>
+
+      {studios.length > 1 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link
+            href="/admin/bookings"
+            className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
+              !studioFilter ? "border-lime bg-lime/10" : "border-border hover:border-lime/60"
+            }`}
+          >
+            Alle Studios
+          </Link>
+          {studios.map((studio) => (
+            <Link
+              key={studio.id}
+              href={`/admin/bookings?studio=${studio.id}`}
+              className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
+                studioFilter === studio.id
+                  ? "border-lime bg-lime/10"
+                  : "border-border hover:border-lime/60"
+              }`}
+            >
+              {studio.name}
+            </Link>
+          ))}
+        </div>
+      )}
 
       <div className="mt-8 space-y-4">
         {bookings.length === 0 && <p className="text-muted">Noch keine Buchungen vorhanden.</p>}
@@ -37,6 +74,9 @@ export default async function AdminBookingsPage() {
                 </p>
                 <p className="mt-2 text-sm">
                   Termin: {formatDate(booking.slot.date)} um {booking.slot.startTime} Uhr
+                  {studios.length > 1 && (
+                    <span className="text-muted"> &middot; {booking.slot.studio.name}</span>
+                  )}
                 </p>
                 {booking.message && (
                   <p className="mt-2 text-sm text-muted">„{booking.message}“</p>

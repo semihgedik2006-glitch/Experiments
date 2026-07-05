@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
@@ -20,6 +21,9 @@ export async function sendContactMessage(
   await prisma.contactMessage.create({
     data: { name, email, phone: phone || null, subject, message },
   });
+
+  revalidatePath("/admin/nachrichten");
+  revalidatePath("/admin");
 
   return { ok: true, message: "Danke für deine Nachricht! Wir melden uns so schnell wie möglich." };
 }

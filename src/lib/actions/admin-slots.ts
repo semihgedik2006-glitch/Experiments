@@ -12,17 +12,18 @@ export async function createSlot(
   const adminId = await getAdminSession();
   if (!adminId) return { ok: false, message: "Nicht autorisiert." };
 
+  const studioId = String(formData.get("studioId") ?? "");
   const date = String(formData.get("date") ?? "");
   const startTime = String(formData.get("startTime") ?? "");
   const endTime = String(formData.get("endTime") ?? "");
   const capacity = Number(formData.get("capacity") ?? 1);
 
-  if (!date || !startTime || !endTime || !capacity) {
+  if (!studioId || !date || !startTime || !endTime || !capacity) {
     return { ok: false, message: "Bitte alle Felder ausfüllen." };
   }
 
   await prisma.availabilitySlot.create({
-    data: { date: new Date(date), startTime, endTime, capacity },
+    data: { studioId, date: new Date(date), startTime, endTime, capacity },
   });
 
   revalidatePath("/admin/verfuegbarkeit");

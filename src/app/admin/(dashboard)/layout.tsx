@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { logoutAdmin } from "@/lib/actions/admin-auth";
+import { getAdminSession } from "@/lib/auth";
 
 const links = [
   { href: "/admin", label: "Übersicht" },
@@ -14,7 +16,10 @@ const links = [
   { href: "/admin/newsletter", label: "Newsletter" },
 ];
 
-export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
+  const adminId = await getAdminSession();
+  if (!adminId) redirect("/admin/login");
+
   return (
     <div className="mx-auto flex min-h-[80vh] max-w-6xl gap-10 px-6 py-10">
       <aside className="w-56 shrink-0">

@@ -8,12 +8,12 @@ export async function getStudios() {
   return prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } });
 }
 
-export async function getUpcomingSlots() {
+export async function getUpcomingSlots(studioId?: string) {
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
 
   const slots = await prisma.availabilitySlot.findMany({
-    where: { date: { gte: startOfToday } },
+    where: { date: { gte: startOfToday }, ...(studioId ? { studioId } : {}) },
     include: { bookings: { where: { status: { not: "CANCELLED" } } } },
     orderBy: [{ date: "asc" }, { startTime: "asc" }],
   });

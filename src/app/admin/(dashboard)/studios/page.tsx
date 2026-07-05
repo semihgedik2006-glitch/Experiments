@@ -16,6 +16,8 @@ function StudioFields({
     email: string;
     mapEmbedUrl: string;
     openingHours: string;
+    latitude: number | null;
+    longitude: number | null;
     sortOrder: number;
   };
 }) {
@@ -43,6 +45,30 @@ function StudioFields({
         defaultValue={defaults?.openingHours}
         className={`${inputClass} sm:col-span-2`}
       />
+      <div className="sm:col-span-2">
+        <p className="mb-1.5 text-xs text-muted">
+          Koordinaten (für &bdquo;nächstes Studio&ldquo; bei der Probetermin-Buchung) - in
+          Google Maps mit Rechtsklick auf den Standort die Zahlen kopieren, z.B. 50.8800, 6.8817
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          <input
+            type="number"
+            step="any"
+            name="latitude"
+            placeholder="Breitengrad (z.B. 50.8800)"
+            defaultValue={defaults?.latitude ?? undefined}
+            className={inputClass}
+          />
+          <input
+            type="number"
+            step="any"
+            name="longitude"
+            placeholder="Längengrad (z.B. 6.8817)"
+            defaultValue={defaults?.longitude ?? undefined}
+            className={inputClass}
+          />
+        </div>
+      </div>
       <label className="text-xs text-muted">
         Position{" "}
         <input

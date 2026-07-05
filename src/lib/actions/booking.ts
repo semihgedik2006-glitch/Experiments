@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
@@ -33,6 +34,9 @@ export async function createBooking(
   await prisma.booking.create({
     data: { slotId, name, email, phone, message: message || null },
   });
+
+  revalidatePath("/admin/bookings");
+  revalidatePath("/admin");
 
   return {
     ok: true,

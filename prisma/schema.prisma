@@ -18,7 +18,7 @@ model AdminUser {
 }
 
 model StudioLocation {
-  id           String   @id @default(cuid())
+  id           String             @id @default(cuid())
   name         String
   street       String
   postalCode   String
@@ -27,8 +27,11 @@ model StudioLocation {
   email        String
   mapEmbedUrl  String
   openingHours String
-  sortOrder    Int      @default(0)
-  updatedAt    DateTime @updatedAt
+  latitude     Float?
+  longitude    Float?
+  sortOrder    Int                @default(0)
+  updatedAt    DateTime           @updatedAt
+  slots        AvailabilitySlot[]
 }
 
 enum BookingStatus {
@@ -38,13 +41,15 @@ enum BookingStatus {
 }
 
 model AvailabilitySlot {
-  id        String    @id @default(cuid())
+  id        String         @id @default(cuid())
+  studio    StudioLocation @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  studioId  String
   date      DateTime
   startTime String
   endTime   String
-  capacity  Int       @default(1)
+  capacity  Int            @default(1)
   bookings  Booking[]
-  createdAt DateTime  @default(now())
+  createdAt DateTime       @default(now())
 }
 
 model Booking {

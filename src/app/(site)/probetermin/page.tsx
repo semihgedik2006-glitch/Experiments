@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { BookingForm } from "@/components/booking/booking-form";
+import { BookingFlow } from "@/components/booking/booking-flow";
 import { LottieBox } from "@/components/lottie-box";
-import { getUpcomingSlots } from "@/lib/data";
+import { getStudios, getUpcomingSlots } from "@/lib/data";
 import { formatDateShort } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -11,30 +11,23 @@ export const metadata: Metadata = {
 };
 
 export default async function ProbeterminPage() {
-  const slots = await getUpcomingSlots();
+  const [studios, slots] = await Promise.all([getStudios(), getUpcomingSlots()]);
 
-  const dayMap = new Map<
+  const slotsByStudio: Record<
     string,
-    { dateKey: string; dateLabel: string; slots: { id: string; startTime: string; endTime: string }[] }
-  >();
+    { dateKey: string; dateLabel: string; slots: { id: string; startTime: string; endTime: string }[] }[]
+  > = {};
 
   for (const slot of slots) {
+    const dayMap = (slotsByStudio[slot.studioId] ??= []);
     const dateKey = slot.date.toISOString().slice(0, 10);
-    if (!dayMap.has(dateKey)) {
-      dayMap.set(dateKey, {
-        dateKey,
-        dateLabel: formatDateShort(slot.date),
-        slots: [],
-      });
+    let day = dayMap.find((d) => d.dateKey === dateKey);
+    if (!day) {
+      day = { dateKey, dateLabel: formatDateShort(slot.date), slots: [] };
+      dayMap.push(day);
     }
-    dayMap.get(dateKey)!.slots.push({
-      id: slot.id,
-      startTime: slot.startTime,
-      endTime: slot.endTime,
-    });
+    day.slots.push({ id: slot.id, startTime: slot.startTime, endTime: slot.endTime });
   }
-
-  const days = Array.from(dayMap.values());
 
   return (
     <section className="py-20">
@@ -50,7 +43,7 @@ export default async function ProbeterminPage() {
         <LottieBox src="/lottie/booking.json" className="mx-auto w-full max-w-xs" />
 
         <div className="mt-6">
-          <BookingForm days={days} />
+          <BookingFlow studios={studios} slotsByStudio={slotsByStudio} />
         </div>
       </Container>
     </section>

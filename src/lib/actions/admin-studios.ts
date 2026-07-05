@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getAdminSession } from "@/lib/auth";
 
 // Studio data appears on these public pages.
-const studioPaths = ["/", "/studio", "/kontakt", "/impressum", "/admin/studios"];
+const studioPaths = ["/", "/studio", "/kontakt", "/impressum", "/probetermin", "/admin/studios"];
 
 function revalidateStudios() {
   for (const path of studioPaths) revalidatePath(path);
@@ -17,6 +17,9 @@ async function requireAdmin() {
 }
 
 function readStudioForm(formData: FormData) {
+  const latitude = String(formData.get("latitude") ?? "").trim();
+  const longitude = String(formData.get("longitude") ?? "").trim();
+
   return {
     name: String(formData.get("name") ?? "").trim(),
     street: String(formData.get("street") ?? "").trim(),
@@ -26,6 +29,8 @@ function readStudioForm(formData: FormData) {
     email: String(formData.get("email") ?? "").trim(),
     mapEmbedUrl: String(formData.get("mapEmbedUrl") ?? "").trim(),
     openingHours: String(formData.get("openingHours") ?? "").trim(),
+    latitude: latitude ? Number(latitude) : null,
+    longitude: longitude ? Number(longitude) : null,
     sortOrder: Number(formData.get("sortOrder") ?? 0) || 0,
   };
 }

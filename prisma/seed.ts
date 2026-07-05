@@ -17,9 +17,9 @@ async function main() {
     console.log(`Admin-Account erstellt: ${adminEmail}`);
   }
 
-  const existingStudio = await prisma.studioLocation.findFirst();
-  if (!existingStudio) {
-    await prisma.studioLocation.create({
+  let studio = await prisma.studioLocation.findFirst({ orderBy: { sortOrder: "asc" } });
+  if (!studio) {
+    studio = await prisma.studioLocation.create({
       data: {
         name: "Körperformen Hürth",
         street: "Krankenhausstr. 111",
@@ -31,6 +31,8 @@ async function main() {
           "https://www.google.com/maps?q=Krankenhausstr.+111,+50354+H%C3%BCrth&output=embed",
         openingHours:
           "Montag - Freitag: 08:00 - 21:00 Uhr\nSamstag: 10:00 - 16:00 Uhr\nSonntag: geschlossen",
+        latitude: 50.88,
+        longitude: 6.8817,
       },
     });
     console.log("Studio-Standort angelegt.");
@@ -52,7 +54,7 @@ async function main() {
         const endHour = m === 30 ? h + 1 : h;
         const endMinute = m === 30 ? 0 : 30;
         const endTime = `${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`;
-        slots.push({ date, startTime, endTime, capacity: 1 });
+        slots.push({ studioId: studio.id, date, startTime, endTime, capacity: 1 });
       }
     }
     await prisma.availabilitySlot.createMany({ data: slots });
