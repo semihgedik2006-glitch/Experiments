@@ -6,9 +6,105 @@
 
 ---
 
+# Schnellzugriff: Navigation & Formeln
+
+## So nutzt du diesen Lernzettel in der Klausur
+
+- **Farbige Griffmarken am rechten Seitenrand** zeigen die Kapitelnummer (1–9). Blättern nach Position statt nach Seitenzahl.
+- **Stichwortverzeichnis** ganz hinten: alphabetisch mit Seitenzahl – der schnellste Weg zu einem Begriff.
+- **„Wo finde ich was?"** (unten): typische Frageformulierungen → passendes Kapitel.
+- **Box-Farben:** grün = Definition, Merksatz oder Formel · blau = Beispiel · orange = eigene Ergänzung (**[EXTRA]**, nicht aus den Unterlagen).
+- Inhaltlich ist dieser Lernzettel identisch mit der ersten Fassung – ergänzt wurden ausschließlich Navigation und Beispiele aus den Unterlagen.
+
+## Wo finde ich was? (Frageformulierung → Kapitel)
+
+| Wenn in der Klausur steht … | Kapitel |
+|---|---|
+| Dienstleistung vs. Sachgut, Immaterialität, Uno-actu, externer Faktor, Ausprägungsformen | **1** |
+| Kompetenzen, Handlungskompetenz, Anforderungen an DL-Mitarbeiter | **1** |
+| Drei-Sektoren-Modell, Tertiarisierung, Branchenzahlen | **1** |
+| Sender/Empfänger, Sende- und Informationskanäle, kommunikative Kompetenz | **2** |
+| Axiome von Watzlawick, Eisbergmodell, psychologischer Nebel | **2** |
+| Schulz von Thun, Vier-Ohren-Modell, Qualitätsstufen der Kommunikation | **2** |
+| Nonverbale Kommunikation, Mimik/Gestik, Distanzzonen, Staffage, 55-38-7 | **2** |
+| Passive/aktive Telefonate, Begrüßungsformel, Terminvereinbarung und -sicherung | **3** |
+| DSGVO, UWG, Kaltakquise, Opt-in, Bußgelder | **3** |
+| Bedürfnis/Bedarf/Nachfrage, Maslow, Kaufmotive, „Was kaufen Kunden?" | **4** |
+| Phasen des Beratungsgesprächs, Hot Button, OPAL, Einwand vs. Vorwand | **4** |
+| Fragearten, aktives Zuhören, positive Sprache, belohnende Reize, Reaktanz | **4** |
+| Nutzenargumentation, Abschlusssignale, Probeabschluss, After-Sales | **4** |
+| Up-Selling, Cross-Selling, Zusatzverkäufe | **4** |
+| Service-Definition, Servicemanagement, Touchpoints, Customer Experience | **5** |
+| Zeit und Freizeit, Funktionen der Freizeit, Werte, Konsequenzsummenspiel | **5** |
+| Motivation, Selbstkonkordanz, SMART, Transtheoretisches Modell (Stages of Change) | **5** |
+| Servicestrategie, Serviceversprechen, Kano-Modell, Servicestandard/-drehbuch, Servicekultur | **5** |
+| Kundenzufriedenheit, CD-Paradigma, Erfolgskette, Kundenbindung, NPS | **5** |
+| Beschwerden, Recovery-Paradox, Beschwerdemanagementprozess, Beschwerde vor Ort | **6** |
+| Kennzahlen, Formeln, Rechenaufgaben, absolute/relative Kennzahlen | **7** |
+| Offizielle Wiederholungsfragen Tag 1 und Tag 2 mit Antworten | **8** |
+| Alles auf einen Blick kurz vor der Klausur | **9** |
+
+## Formelsammlung (alle Formeln auf einen Blick)
+
+**FORMELN**
+**Telefonquote** = (telefonisch vereinbarte Beratungstermine ÷ telefonische Interessentenkontakte) × 100
+**Passive Telefonquote** = (passiv vereinbarte Termine ÷ Interessenten**anrufe**) × 100
+**Aktive Telefonquote** = (aktiv vereinbarte Termine ÷ aktiv **angerufene** Interessenten) × 100
+**Termineinhaltungsquote** = (erschienene Termine ÷ vereinbarte Termine) × 100
+**Abschlussquote** = (Verkaufsabschlüsse ÷ durchgeführte Beratungen) × 100
+**Fluktuationsquote** = (Abgänge ÷ durchschnittlicher Mitgliederbestand) × 100
+**Beschwerdequote** = (Anzahl Beschwerden ÷ durchschnittlicher Kundenbestand) × 100
+**Net Promoter Score** = % Promotoren (9–10) − % Kritiker (0–6)
+**Bedarf** = Bedürfnis + Kaufkraft
+**Ø Mitgliederbestand:** (Jahresanfang + Jahresende) ÷ 2 · oder Summe der 12 Monatsendbestände ÷ 12 · oder (Monatsanfang Januar + 12 Monatsendbestände) ÷ 13
+
+## Alle Reihenfolgen auf einen Blick
+
+| Ablauf | Reihenfolge |
+|---|---|
+| **Erfolgskette** | Marketing → Kontakt → Termin → Beratung → Abschluss → Service → Kundenbindung |
+| **Passives Telefonat** | Vorbereitung → Begrüßung → Gesprächsübernahme → Terminvereinbarung & -sicherung → Abschluss → Nachbereitung |
+| **Aktives Telefonat** | Vorbereitung → Begrüßung → Umgang mit Kundenreaktionen → Terminvereinbarung & -sicherung → Gesprächsabschluss |
+| **Beratungsgespräch** | Vorbereitung → Begrüßung → Bedarfsanalyse → Angebotspräsentation → Abschluss → Nachbereitung |
+| **Bedarfsanalyse** | Bedürfnisse herausfinden → Bedarf ableiten (OPAL) → Einwandvorbehandlung → Feedback |
+| **Nutzenorientierte Argumentation** | Eigenschaften → Vorteile → individueller Nutzen |
+| **Abschlussphase** | Abschlusssignale erkennen → Probeabschluss → Einwandbehandlung → Abschluss → After-Sales |
+| **Entstehung der Nachfrage** | Mangel → Bedürfnis → Bedarf → Nachfrage |
+| **Erfolgskette Qualitätsmanagement** | Erstkontakt → Kundenzufriedenheit → Kundenloyalität → Kundenbindung → ökonomischer Erfolg |
+| **Beschwerdemanagement (direkt)** | Stimulierung → Annahme → Bearbeitung → Reaktion |
+| **Beschwerde vor Ort** | wahrnehmen → ernst nehmen → Lösung anbieten |
+| **Stages of Change** | Absichtslosigkeit → Absichtsbildung → Vorbereitung → Handlung → Aufrechterhaltung |
+| **Managementkreislauf** | Ist-Analyse → Ziele setzen → Planen → Entscheiden → Realisieren → Kontrollieren |
+| **Prozesselemente Servicemanagement** | Servicestrategie → Serviceversprechen → Servicefaktoren → Serviceorganisation & -kultur → Basiselemente |
+
+## Zahlen, die man kennen sollte
+
+| Zahl | Bedeutung |
+|---|---|
+| **55-38-7** | Sympathie: 55 % nonverbal, 38 % paraverbal, 7 % verbal |
+| **75–80 %** | Anteil der Kommunikation über die Stimme |
+| **15 %** | Anteil rein gehörter Informationen, den Menschen speichern |
+| **7 ± 2** | Merkeinheiten im Kurzzeitgedächtnis |
+| **80 / 20** | Redeanteil Bedarfsanalyse: Kunde 80 %, Berater 20 % |
+| **3.500 EUR** | Wert eines Interessentenanrufs |
+| **2–3×** | Klingeln lassen vor dem Abheben |
+| **20–30 Sekunden** | entscheiden über den Verlauf eines Telefonats |
+| **6 %** | Anteil unzufriedener Kunden, die sich beschweren |
+| **1 : 50** | eine Beschwerde ↔ bis zu 50 unzufriedene Kunden |
+| **4 / 8 / 16** | Personen, denen von positivem / negativem / schwer negativem Erlebnis erzählt wird |
+| **5×** | Neukundengewinnung ist ca. 5-mal teurer als Kundenbindung |
+| **9–10 / 7–8 / 0–6** | NPS: Promotoren / passiv Zufriedene / Kritiker |
+| **30 Tage / 6 Monate** | TTM: Vorbereitung / Absichtsbildung und Aufrechterhaltung |
+| **45 / 120 / 350 cm** | Distanzzonen: intim / persönlich / gesellschaftlich (darüber öffentlich) |
+| **75,3 %** | Erwerbstätige im tertiären Sektor (2023) |
+| **300.000 EUR** | mögliches Bußgeld nach § 20 UWG |
+
+
 # 1. Dienstleistungen & Dienstleistungsbranche
+^^ Dienstleistung | Ausprägungsformen von Dienstleistungen
 
 ## 1.1 Definition der Dienstleistung (3 Dimensionen)
+^^ Potenzialorientierung | Prozessorientierung | Ergebnisorientierung
 
 Es gibt keine einheitliche Definition. Dienstleistungen (DL) lassen sich über drei Ansätze definieren (Corsten & Gössinger):
 
@@ -20,6 +116,9 @@ Es gibt keine einheitliche Definition. Dienstleistungen (DL) lassen sich über d
 
 **MERKE (Meffert et al.):** Dienstleistungen sind selbständige, marktfähige Leistungen, die mit Bereitstellung/Einsatz von Leistungsfähigkeiten verbunden sind (Potenzial), bei denen interne und externe Faktoren kombiniert werden (Prozess), um an Menschen oder deren Objekten nutzenstiftende Wirkungen zu erzielen (Ergebnis).
 
+**BEISPIEL – die drei Dimensionen am Beispiel Autowerkstatt (Studienbrief):** *Potenzialdimension* (sichtbare Leistungsfähigkeit): „Wir sind Vertragswerkstatt", „Wir genießen das Vertrauen des Herstellers". *Prozessdimension* (angenehmes Serviceerlebnis): Warteraum mit Kaffee, Zeitungen, freundliche Bedienung, kompetente Beratung. *Ergebnisdimension* (positives Resultat): volle Mängelbehebung, einwandfreies Funktionieren des Fahrzeugs, Termineinhaltung, fairer Preis. **Jede Dienstleistung stiftet in mindestens einer dieser drei Dimensionen Nutzen.**
+
+
 ## 1.2 Ausprägungsformen (Vier-Felder-Matrix)
 
 | DL-Erbringer → / Empfänger ↓ | Sache (automatisch) | Mensch (persönlich) |
@@ -30,6 +129,7 @@ Es gibt keine einheitliche Definition. Dienstleistungen (DL) lassen sich über d
 Bei **personenbezogenen DL** (Mensch an Mensch) ist Anwesenheit und aktive Mitarbeit des Kunden erforderlich – **die Persönlichkeit des Beraters hat besondere Bedeutung!**
 
 ## 1.3 Eigenschaften von Dienstleistungen (klausurrelevant!)
+^^ Immaterialität | Externer Faktor | Uno-actu-Prinzip | Nicht-Lagerfähigkeit | Prosument | Sachgüter vs. Dienstleistungen
 
 Zwei **konstitutive Hauptmerkmale**, aus denen weitere Eigenschaften folgen:
 
@@ -43,6 +143,9 @@ Zwei **konstitutive Hauptmerkmale**, aus denen weitere Eigenschaften folgen:
 - **Individualität** (geringe Standardisierung; Qualität hängt von der erbringenden Person ab)
 - **Standortgebundenheit** (z. B. Fitnessanlage, Hotel)
 - **Personalintensität**
+
+
+**BEISPIEL – Integration des externen Faktors (Anwalt, Studienbrief):** Der Anwalt hält Ressourcen vor (Räume, Personal, Gesetze) und arbeitet sich vorab in die Rechtslage ein. Kommt der Kunde zur Beratung, klärt der Anwalt ihn über Rechtslage und Handlungsalternativen auf – der Kunde hört aktiv zu, stellt Fragen, macht Notizen; am Ende wird gemeinsam eine Strategie besprochen. **Ohne Anwesenheit und aktive Mitarbeit des Kunden wäre die Beratung so nicht möglich** (vgl. Arzt–Patient: die Diagnose beruht auf einer Kette von Wechselseitigkeiten).
 
 **Gegenüberstellung Sachgüter vs. Dienstleistungen:**
 
@@ -59,6 +162,7 @@ Zwei **konstitutive Hauptmerkmale**, aus denen weitere Eigenschaften folgen:
 | meist nicht personalintensiv | meist personalintensiv |
 
 ## 1.4 Drei-Sektoren-Modell & Tertiarisierung
+^^ Drei-Sektoren-Modell | Tertiarisierung | Tertiärer Sektor
 
 - **Primärer Sektor:** Urproduktion (Land-/Forstwirtschaft, Fischerei)
 - **Sekundärer Sektor:** Weiterverarbeitung (Industrie, Handwerk, Energie/Wasser, Baugewerbe)
@@ -71,6 +175,7 @@ Zwei **konstitutive Hauptmerkmale**, aus denen weitere Eigenschaften folgen:
 - Fitnessbranche 2022: **10,3 Mio. Mitglieder**, ca. 9.150 Anlagen, 12,4 % der Bevölkerung; DOSB 2023: ca. **28 Mio. Mitgliedschaften** in 86.000 Sportvereinen; Durchschnittsalter der Studiomitglieder steigt (39,9 Jahre 2016 → 40,6 Jahre 2022)
 
 ## 1.5 Anforderungen an Mitarbeiter & Kompetenzen
+^^ Kompetenz | Fachkompetenz | Methodenkompetenz | Sozialkompetenz | Handlungskompetenz | Empathie
 
 **Besondere Anforderungen** (aus den DL-Eigenschaften abgeleitet, Haller & Wissing):
 1. **Flexibilität** (individuell auf Kunden einstellen; Frustrationstoleranz bei Beschwerden)
@@ -86,8 +191,10 @@ Zwei **konstitutive Hauptmerkmale**, aus denen weitere Eigenschaften folgen:
 ---
 
 # 2. Grundlagen der Kommunikation
+^^ Kommunikation | Sender und Empfänger
 
 ## 2.1 Basisbegriffe
+^^ Sendekanäle | Informationskanäle | Kommunikative Kompetenz | Lasswell-Formel
 
 **MERKE:** Kommunikation ist der **Austausch von Informationen zwischen mindestens zwei Personen** (Sender ↔ Empfänger). Hauptziel: **missverständnisfreier Austausch.** Der Sender **codiert** die Information, sie läuft über einen **Übertragungskanal**, der Empfänger **decodiert** sie.
 
@@ -101,6 +208,7 @@ Zwei **konstitutive Hauptmerkmale**, aus denen weitere Eigenschaften folgen:
 - Mögliche Gründe für Missverständnisse (PPT): emotionale Zustände, nonverbale Kommunikation, mangelnde Rückfrage, kulturelle Unterschiede, unterschiedliche Kommunikationsstile, unklare Ausdrucksweise, Ablenkungen/Störungen, Fehlinterpretation von Intentionen, Annahmen & Vorurteile, mangelnde Aufmerksamkeit.
 
 ## 2.2 Qualitätsstufen der Kommunikation (4 Stufen)
+^^ Qualitätsstufen der Kommunikation
 
 1. **Interpretation** – „Du bist skeptisch!" → mangelhafteste Form (subjektive Deutung, kein Dialog)
 2. **Geschlossene Frage nach der Interpretation** – „Ich habe den Eindruck, dass du skeptisch bist. Ist das so?"
@@ -108,6 +216,7 @@ Zwei **konstitutive Hauptmerkmale**, aus denen weitere Eigenschaften folgen:
 4. **Formulierte Wahrnehmung + offene Frage** – „Ich habe gesehen, dass du öfter auf den Boden schaust. Was ist los?" → **Feld der Interpretation wird verlassen; beste Stufe**
 
 ## 2.3 Die 5 Axiome von Watzlawick
+^^ Watzlawick | Axiome | Eisbergmodell | Psychologischer Nebel | Sachebene | Beziehungsebene | Interpunktion | Metakommunikation
 
 1. **Man kann nicht nicht kommunizieren** (alles Verhalten hat Mitteilungscharakter – auch Schweigen).
 2. **Jede Kommunikation hat einen Inhalts- und einen Beziehungsaspekt** (WAS vs. WIE; Beziehungsaspekt oft wichtiger). → Grundlage: **Eisbergmodell** (kleiner sichtbarer Teil = Sachebene; großer Teil „unter Wasser" = Beziehungs-/Gefühlsebene mit Bedürfnissen, Anerkennung, Respekt usw.; basiert auf der 80/20-Regel nach Pareto und Freud).
@@ -120,6 +229,7 @@ Zwei **konstitutive Hauptmerkmale**, aus denen weitere Eigenschaften folgen:
 Störungen können durch **Metakommunikation** (Gespräch über das Gespräch) aufgedeckt und behoben werden.
 
 ## 2.4 Kommunikationsquadrat von Schulz von Thun
+^^ Schulz von Thun | Vier-Ohren-Modell | Kommunikationsquadrat | Selbstoffenbarung | Appell
 
 Jede Nachricht enthält **4 Botschaften gleichzeitig** – der Empfänger hört mit „4 Ohren":
 
@@ -132,17 +242,23 @@ Jede Nachricht enthält **4 Botschaften gleichzeitig** – der Empfänger hört 
 
 Klassisches Beispiel „Die Ampel ist grün": Sachinhalt „Ampel ist grün" – Selbstkundgabe „Ich bin aufmerksam"/„Sie ist ungeduldig" – Beziehung „Ich möchte dich unterstützen"/„Sie kritisiert mich" – Appell „Du kannst losfahren"/„Fahr endlich los!"
 
+**BEISPIEL – Aussage einer Dozentin (Studienbrief):** „Die Bücher aus dem Literaturverzeichnis sind alle in der Online-Bibliothek zu finden." *Sachinformation:* Der Fundort der Bücher ist die Online-Bibliothek. *Selbstoffenbarung:* Der Dozentin ist wichtig, dass die Literatur auf einfachstem Weg erreichbar ist. *Beziehungsaussage:* Sie schätzt die Studierenden als interessiert ein und bestimmt, was für sie relevant ist. *Appell:* „Lesen Sie die Bücher!"
+
+
 ## 2.5 Verbale Kommunikation
+^^ Syntax | Semantik | Pragmatik | Denotation | Konnotation | Diskurs | Chomsky
 
 - **Syntax:** Satzbau. Phoneme (kleinste bedeutungsunterscheidende Einheiten, 25–50 je Sprache) → Morpheme (kleinste bedeutungstragende Einheiten) → Sätze. Neben Grammatikalität zählt **Akzeptabilität** (leicht verständliche Sätze). Chomsky: Unterscheidung Sprachkompetenz vs. Sprachverwendung.
 - **Semantik:** Bedeutung sprachlicher Zeichen. Wichtige Phänomene: **Kategorisieren**, **Assoziieren** (**Denotation** = Sachbedeutung vs. **Konnotation** = Gefühlston, z. B. „arbeiten" vs. „schuften"), **Schemata** (verfestigte Wissensstrukturen, z. B. Vorurteile).
 - **Pragmatik:** das reale Sprachverhalten im situativen Kontext. Habermas/Luhmann: **Diskurs** = ideale, zwangsfreie, „herrschaftsfreie" Sprechsituation zwischen gleichberechtigten Partnern (kommunikative Gleichberechtigung, keine Ängste/Vorurteile/Imponiergehabe).
 
 ## 2.6 Paraverbale Kommunikation
+^^ Paraverbale Kommunikation | Stimme | Tonalität
 
 Alle **vokalen, sprachbegleitenden** Aspekte: Stimmqualität, -höhe, -führung/Modulation, Lautstärke, Klangfarbe, Artikulation, Sprechgeschwindigkeit; auch Lachen, Seufzen etc. **75–80 % aller Kommunikation läuft über die Stimme** („Der Ton macht die Musik"). Stimmarten (Wirth): tiefe Stimme (Gelassenheit, Selbstsicherheit), hohe Stimme (Anspannung), schrille Stimme (gereizt, Angst), volle dunkle Stimme (warmherzig, sympathisch), scharfe/schneidende Stimme (Dominanz, Distanz).
 
 ## 2.7 Nonverbale Kommunikation (Bestandteile!)
+^^ Nonverbale Kommunikation | Mimik | Blickkontakt | Gestik | Körperhaltung | Proxemik | Distanzzonen | Staffage | 55-38-7-Regel | Embleme | Illustratoren | Adaptoren | Pantomimik
 
 1. **Mimik:** ausdrucksstärkste Quelle für Emotionen; universell über Kulturen verständlich; 26 Gesichtsmuskeln; kaum willentlich steuerbar → hohe Glaubwürdigkeit. Stimmen verbal und nonverbal nicht überein → Misstrauen.
 2. **Blickkontakt:** gestaltet Gespräch aktiver, gibt Rückmeldung, zeigt (Des-)Interesse. Blickarten (Auswahl, Wirth): gerader Blick (Aufrichtigkeit), ausweichender Blick (Unsicherheit), Blick von oben herab (Arroganz), fixierender Blick (prüfend), unruhiger Blick (Unausgeglichenheit).
@@ -163,6 +279,7 @@ Alle **vokalen, sprachbegleitenden** Aspekte: Stimmqualität, -höhe, -führung/
 ---
 
 # 3. Telefonate
+^^ Telefonate | Akustische Visitenkarte
 
 ## 3.1 Bedeutung des Telefons
 
@@ -174,6 +291,7 @@ Alle **vokalen, sprachbegleitenden** Aspekte: Stimmqualität, -höhe, -führung/
 - Gründe für zu lange Gespräche: kein definiertes Ziel, keine Gesprächsführung, kein roter Faden, Wiederholungen, missverständliche Aussagen, keine Ergebniszusammenfassung.
 
 ## 3.2 Passive vs. aktive Telefonate
+^^ Passive Telefonate | Aktive Telefonate | Inbound | Outbound | Terminvereinbarungsmethode
 
 | | **Passiv (inbound)** | **Aktiv (outbound)** |
 |---|---|---|
@@ -184,6 +302,7 @@ Alle **vokalen, sprachbegleitenden** Aspekte: Stimmqualität, -höhe, -führung/
 Dem anrufenden Kunden **fehlen Informationen** – ideale Chance zur Terminvereinbarung. Terminvereinbarungsmethode: **schnell, einfach, effizient. Keine Beratung am Telefon!** „Navigationssystem": egal wie das Gespräch verläuft – **immer das Ziel (Termin) vor Augen.**
 
 ## 3.3 Phasen des passiven Telefonats (Standardtelefonat)
+^^ Standardtelefonat | Begrüßungsformel | Gesprächsübernahme | Terminsicherung
 
 **Vorbereitung:** 2–3-mal klingeln lassen (1. Klingeln: Tätigkeit beenden, 2.: Stift/Papier & mentale Vorbereitung, 3.: mit **Lächeln** abnehmen); Leitfaden bereithalten, Kalender offen, schreibbereit, Konzentration.
 
@@ -202,6 +321,7 @@ Verkaufspsychologische **Begründung der Reihenfolge**: Tageszeit-Gruß = „Sig
 Einwände gegen Termine kommen vor → über Telefoncontrolling wiederkehrende Einwände sammeln, Reaktionen im Team schulen, danach immer wieder mit der **Alternativfrage** zum Termin zurückführen.
 
 ## 3.4 Aktive Telefonate
+^^ Kaltakquise | DSGVO | UWG | Opt-in | Kopplungsverbot | Konkludentes Einverständnis
 
 **Rechtslage (klausurrelevant!):** Regulierende Gesetze: **BGB, UWG, TKG, BDSG, DSGVO.**
 - **Privatpersonen (B2C):** Aktive Werbeanrufe sind **verboten**, außer es liegt eine **ausdrückliche Einwilligung** vor (§ 7 Abs. 2 UWG; gilt auch für Bestandskunden bei Verkaufsabsicht). Rufnummernunterdrückung bei Werbeanrufen ist verboten. Einwilligung am einfachsten per **Opt-in** (aktive Zustimmung, z. B. Newsletter-Anmeldung); beim E-Mail-Marketing ist Opt-in rechtlich vorgeschrieben. Ohne Einwilligung ist Kaltakquise nur per **Einwurfsendung** zulässig (Opt-out möglich).
@@ -225,14 +345,17 @@ Am Telefon fehlt die visuelle Ebene → nur **Worte und Stimme** wirken. Wichtig
 ---
 
 # 4. Beratung & Verkauf von Sport-, Fitness- und Gesundheitsdienstleistungen
+^^ Beratung | Verkauf
 
 ## 4.1 Die Erfolgskette (PPT)
+^^ Erfolgskette
 
 **Marketing → Kontakt (Telefon/E-Mail/Walk-in) → Termin → Beratung → Abschluss → Service → Kundenbindung**
 
 „Eine Kette ist immer nur so stark wie ihr schwächstes Glied!" Gute Beratung & erstklassiger Service = Voraussetzungen für den Unternehmenserfolg. In **jeder** Stufe ist Kommunikation relevant.
 
 ## 4.2 Entstehung der Nachfrage
+^^ Mangelgefühl | Bedürfnis | Bedarf | Nachfrage | Maslow | Bedürfnispyramide | Progressionsprinzip
 
 **(1) Mangel/Mangelgefühl → (2) Bedürfnis → (3) Bedarf → (4) Nachfrage**
 
@@ -246,6 +369,7 @@ Am Telefon fehlt die visuelle Ebene → nur **Worte und Stimme** wirken. Wichtig
 **MERKE:** Kunden suchen keine Produkte oder Dienstleistungen – **Kunden kaufen Vorteile, Nutzen und Problemlösungen** für ihre individuelle Situation. Kunden **brauchen**: Vertrauen, positive Bilder, Begeisterung, Entscheidungshilfen.
 
 ## 4.3 Besonderheiten im Verkauf von Gesundheitsdienstleistungen (3 Stück!)
+^^ Besonderheiten Gesundheitsdienstleistungen | Kausalität | Loss of face | Demografischer Wandel
 
 1. **Dienstleistungen sind nicht greifbar** (Qualität schwer einschätzbar, kaum ausprobierbar)
 2. **Notwendigkeit und Dringlichkeit sind kaum nachvollziehbar** (v. a. Primärprävention)
@@ -256,10 +380,14 @@ Am Telefon fehlt die visuelle Ebene → nur **Worte und Stimme** wirken. Wichtig
 Weitere externe Erschwernisse: gesetzliche Regelungen (z. B. Apothekenpflicht § 43 AMG, Aut-idem-Regelung, Vorgaben für Nahrungsergänzungsmittel), veränderte Medienlandschaft, **Sensibilität/„loss of face"** (Scham kann Nachfrage hemmen – Risiko des Gesichtsverlusts minimieren, z. B. Online-Kurse), **demografischer Wandel** (Babyboomer; Ältere als wachsende Zielgruppe; Vorsicht vor „patronisierender Kommunikation" durch Altersstereotype).
 
 ## 4.4 Beratungskompetenzen
+^^ Positive Verkaufssprache | Belohnende Reize | Bestrafende Reize | Fragearten | Offene Frage | Geschlossene Frage | Alternativfrage | Suggestivfrage | Feedbackfrage | Rhetorische Frage | Aktives Zuhören | Pacing | Rapport | Reaktanz | Bumerangeffekt | Stereotype | Halo-Effekt
 
 - Beratung (Ursache) soll den Verkauf (Wirkung) erzielen: **je besser die Beratung, desto wahrscheinlicher der Abschluss.** Primäres Beratungsziel: **Vertrauen aufbauen.**
 - **Positive Verkaufssprache** (negativ besetzte Wörter ersetzen): ja, aber → gerade deshalb · erst → schon · Vertrag → **Mitgliedschaft** · bezahlen → investieren/entrichten · Preis → **Beitrag** · Kosten → **Investition** · unterschreiben → **bestätigen** · „dafür bin ich nicht zuständig" → „verantwortlich ist …" · „geschlossen von 12–13 Uhr" → „jeden Tag von 6–12 und 13–23 Uhr für Sie da"
 - **Belohnende Reize einsetzen** (Freundlichkeit, Zustimmung, Lob/Anerkennung, Zuhören, Nicken, Zuwendung, Dank) – **bestrafende Reize vermeiden** (Arroganz, Gleichgültigkeit/Desinteresse, Kritik, Widerspruch, Unterbrechen, Übergehen, Abwenden/Augenrollen, Herabsetzung)
+
+**BEISPIEL – negative Sprache im Beratungsdialog (Übungsaufgabe PPT 1):** „Der Senioren- oder Hausfrauentarif kommt ja für Sie grundsätzlich **nicht in Frage**, da man hier abends **nicht** trainieren kann. Der erste **Vertrag**, den ich Ihnen anbieten kann … Bei der Gold-Mitgliedschaft dagegen **binden Sie sich** zwei Jahre …" → Zu suchen sind die Schwächen: Ausschluss und Bewertung des Kunden, negativ besetzte Begriffe (Vertrag, binden, kostet, zahlen), Gegenübersitzen statt über Eck. **Besser:** Mitgliedschaft statt Vertrag, Beitrag statt Preis, Investition statt Kosten, Laufzeit statt Bindung.
+
 
 ### Fragetechnik & Fragearten („Wer fragt, der führt!")
 
@@ -286,6 +414,7 @@ Wiedergeben des Gesagten in eigenen Worten; Gefühle spiegeln; auch nonverbal Au
 - **Stereotype/Vorurteile:** „Schubladen"-Scan in ca. 10 Millisekunden; Vorurteil = ungerechtfertigte, meist negative **Einstellung** (Diskriminierung = negatives **Verhalten**); Gefahr der sich selbst erfüllenden Prophezeiung; **Halo-Effekt:** von einem Merkmal wird auf andere geschlossen (erster Eindruck).
 
 ## 4.5 Das Beratungsgespräch: 4 Phasen (+ Vor-/Nachbereitung)
+^^ Beratungsgespräch | Sozialer Dialekt | Denker | Direktor | Unterhalter | Beziehungsmensch | Bedarfsanalyse | Hot Button | Eisbergtheorie | OPAL-Methode | Kaufmotive | Einwand | Vorwand | Einwandvorbehandlung | Angebotspräsentation | Nutzenorientierte Argumentation | Preispräsentation | Grundsatzentscheidung | Abschlusssignale | Probeabschluss | Einwandbehandlung | After-Sales | Kognitive Dissonanz | Händedruck
 
 **Phasen: (1) Begrüßung → (2) Bedarfsanalyse → (3) Angebotspräsentation → (4) Abschluss** – umrahmt von Vorbereitung und Nachbereitung.
 
@@ -349,6 +478,7 @@ Wiedergeben des Gesagten in eigenen Worten; Gefühle spiegeln; auch nonverbal Au
 - **Individuell:** Gespräch analysieren, Verbesserungspotenziale notieren
 
 ## 4.6 Verkaufsstrategien: Zusatzverkäufe, Up- & Cross-Selling
+^^ Zusatzverkäufe | Up-Selling | Cross-Selling
 
 - **Zusatzverkäufe:** bestehende Kundenbeziehung nutzen, um weitere Leistungen außerhalb der Kernleistung zu verkaufen; Formulierung: „Eine sinnvolle Ergänzung zu Ihrer Neuerwerbung wäre …" (nicht: „Dann hätten wir ja alles…"). Voraussetzung: umfassende Produkt- und Sortimentskenntnis.
 - **Cross-Selling** (Quer-/Kreuzverkauf): **Anbieten weiterer Produkte aus einer anderen Produktgruppe** (passende Ergänzung oder unabhängig). Größte Chance: **direkt nach dem Beratungsgespräch** bei zufriedenen Kunden. Beispiel: Neukunde (Krafttraining + Sauna) kauft zusätzlich eine 10er-Shake-Karte.
@@ -357,6 +487,7 @@ Wiedergeben des Gesagten in eigenen Worten; Gefühle spiegeln; auch nonverbal Au
 ---
 
 # 5. Servicemanagement
+^^ Service | Servicemanagement
 
 ## 5.1 Grundbegriffe & Bedeutung
 
@@ -370,6 +501,7 @@ Wiedergeben des Gesagten in eigenen Worten; Gefühle spiegeln; auch nonverbal Au
 - **75 %** suchen den direkten persönlichen Kontakt zum Servicemitarbeiter; 67 % mögen keine Unternehmen ohne Telefonnummer auf der Website (Verint); **72 %** kontaktieren den Kundenservice am liebsten telefonisch (Deloitte). **MERKE: Der wichtigste Kontaktpunkt ist der Mensch!** Es geht nicht um „Mensch oder Maschine", sondern um **Komplexität** der Anfrage.
 
 ## 5.2 Customer Touchpoints & Customer Experience
+^^ Customer Touchpoints | Customer Experience | Omnichannel | Customer Service Points
 
 - **Touchpoints** = alle Berührungspunkte des Kunden mit dem Unternehmen (offline & online). Entwicklung: Einkanal → Multikanal → **Omnichannel**.
 - **Kategorisierung (Wirtz):** **Customer Information Points (CIP)** – Informationsbereitstellung · **Customer Points of Sale (CPO)** – Verkauf · **Customer Service Points (CSP)** – Pre-/After-Sales-Service · dazu **Customer-to-Customer Reference Points (CCRP)** – Kunde-zu-Kunde-Beziehungen (kaum direkt beeinflussbar; z. B. über NPS erfassbar).
@@ -377,6 +509,7 @@ Wiedergeben des Gesagten in eigenen Worten; Gefühle spiegeln; auch nonverbal Au
 - **Customer Experience** = **Gesamtheit aller Eindrücke, die ein Kunde über seine Lebenszeit von einem Unternehmen erhält** (individuelle Wahrnehmungen + Interaktionen + Qualität der Leistung). Ziel: relevante Touchpoints bewusst gestalten und **harmonisieren** (konsistentes Bild), nicht möglichst viele Touchpoints.
 
 ## 5.3 Zeit, Freizeit & Werte (Kunden betreuen I)
+^^ Werte | Hin-zu-Werte | Weg-von-Werte | Konsequenzsummenspiel | Rollen | Determinationszeit | Obligationszeit | Dispositionszeit | Funktionen der Freizeit
 
 **Werte** = das, was einem Menschen wichtig ist; höchste Maßstäbe und treibende Kraft des Verhaltens (verankert in der Persönlichkeit; Eisbergmodell).
 - **„Hin-zu"-Werte** (Orientierung auf das Gute/Erstrebenswerte, z. B. Liebe, Sicherheit, Wunschgewicht; positive Emotionen, lösungsorientiert) vs. **„Weg-von"-Werte** (Vermeidung von Schmerz, z. B. Krankheit, Angst, Stress). Schätzung: 80–90 % der Menschen sind „weg-von"-motiviert; **Furchtappelle** wirken nur, wenn die Bedrohung ernst genommen wird, verlieren aber mit der Zeit ihre Wirkung. **Berater sollten mit „Hin-zu"-Werten arbeiten.**
@@ -404,6 +537,7 @@ Wiedergeben des Gesagten in eigenen Worten; Gefühle spiegeln; auch nonverbal Au
 **[EXTRA – nicht aus den Unterlagen]** Eselsbrücke: „**R**ichtig **K**luge **E**ltern **K**önnen **K**indern **I**mmer **P**robleme **E**rklären" (Rekreation, Kompensation, Edukation, Kontemplation, Kommunikation, Integration, Partizipation, Enkulturation).
 
 ## 5.4 Motivation & Transtheoretisches Modell (Kunden betreuen II)
+^^ Motiv | Motivation | Intrinsische Motivation | Extrinsische Motivation | Selbstkonkordanz | SMART-Formel | Transtheoretisches Modell | Stages of Change | Absichtslosigkeit | Absichtsbildung | Aufrechterhaltung
 
 - **Motiv** = relativ stabile Bewertungsdisposition; wird durch Anreize/Situationen aktiviert → daraus entsteht **Motivation** („in movitum ire" – in das einsteigen, was den Menschen bewegt).
 - **Intrinsische Motivation** (aus der Sache selbst, z. B. Spaß) – elementar für langfristiges Sporttreiben. **Extrinsische Motivation** (äußere Anreize, z. B. Prämien, sozialer Druck) – weniger nachhaltig.
@@ -427,6 +561,10 @@ Wiedergeben des Gesagten in eigenen Worten; Gefühle spiegeln; auch nonverbal Au
 Konsequenz: Interventionen (Marketing, Verkauf, Betreuung) müssen **stufenspezifisch** zugeschnitten sein – die einfache Einteilung „aktiv vs. inaktiv" ist zu unspezifisch. **Rolle des Betreuers = Begleiter:** Vertrauen aufbauen, Entwicklungspotenziale aufspüren, Bedingungen und Herausforderungen schaffen, die dem Kunden die Zielerreichung ermöglichen.
 
 ## 5.5 Service managen: die Prozesselemente
+^^ Servicestrategie | Serviceversprechen | Servicefaktoren | Kano-Modell | Basisfaktoren | Leistungsfaktoren | Begeisterungsfaktoren | Overkillfaktoren | Serviceorganisation | Aufbauorganisation | Ablauforganisation | Servicestandards | Servicedrehbuch | Servicekultur | Gastgeberverhalten | Basiselemente des Service
+
+
+**BEISPIEL – Auszug aus einem Servicedrehbuch (Restaurant, Studienbrief):** *Step 1 – Der Tisch:* eingedeckt, bevor der Gast sich setzt. *Step 2 – Der Kunde:* wird grundsätzlich zum Tisch begleitet, Karten werden am Platz übergeben (die Karte ist das **Zeichen**, dass er bereits bedient wird). *Step 3 – Erster Servicekontakt:* **WAS** Begrüßung – **WIE** freundlich mit Augen- und Mundlächeln – **WANN** spätestens 2 Minuten nach dem Platznehmen; danach Brot anbieten (Hinweis auf hausgemachtes Brot, sofort nach der Begrüßung), Tagesmenü nennen, 2–3 Aperitifs anbieten, Mineralwasser anbieten. → Genau das unterscheidet **Servicedrehbuch** (WAS + WIE + WARUM + WANN) vom bloßen **Servicestandard** (nur WAS).
 
 **Prozesselemente des Servicemanagements:** Servicestrategie → Serviceversprechen → Servicefaktoren → Serviceorganisation & Servicekultur → Basiselemente des Service (+ Personal, Kundenzufriedenheit).
 
@@ -449,6 +587,9 @@ Beschreibt die Auswirkungen von Eigenschaften einer DL auf die Kundenzufriedenhe
 | **Nice-to-have-Faktoren** | nett, aber Kunde würde nicht dafür zahlen | Kaffee beim Friseur |
 | **Overkillfaktoren** | überzogen bis belästigend | Kellner fragt zu oft nach |
 
+
+**BEISPIEL – Servicefaktoren am Beispiel Flugreise (Studienbrief):** *Basisfaktoren:* Das Flugzeug hebt pünktlich ab und kommt pünktlich an, freundlicher Empfang und Verabschiedung – fehlt eines davon, entsteht schnell Unzufriedenheit. *Leistungsfaktoren:* Kaffee/Kaltgetränk und Sandwich – je besser, desto zufriedener. *Begeisterungsfaktoren:* Das Personal bietet dem 1,95 m großen Gast unaufgefordert einen Platz mit Beinfreiheit an, dazu ein Kissen und den freien Nachbarplatz. **Achtung:** Dieselbe Leistung wird bei Emirates anders bewertet als bei Ryanair – die Positionierung bestimmt die Erwartung.
+
 Achtung Dynamik: Was heute begeistert, ist morgen selbstverständlich (**Kostenfalle** – Fokus auf profitable Kundenbeziehungen).
 
 ### Serviceorganisation (organisatorische Seite) & Servicekultur (persönliche Seite)
@@ -464,10 +605,24 @@ Achtung Dynamik: Was heute begeistert, ist morgen selbstverständlich (**Kostenf
 
 Werkzeuge für den Erstkontakt (Hartauer): **klare Augen** (Blickkontakt halten, bis die Augenfarbe erkennbar ist), **360-Grad-Blick** (alle Wartenden wahrnehmen: Nicken, kurze Info, Frage), **Haltung** (aufrecht, offene Handflächen, Mund- **und** Augenlächeln, frontal zum Kunden, entgegengehen; „Erst die Geste, dann das Wort"), Zeit/keine Hektik („Hektik ist ein Atmosphärenkiller"), Smalltalk aktiv eröffnen, Glamour & Style (passend zur Philosophie), Stilgruppen statt Zielgruppen. **Floskeln vermeiden:** statt „Kann ich Ihnen helfen?", „War alles in Ordnung?", „Der Nächste bitte", „Werden Sie schon bedient?" → z. B. „Schön, Sie zu sehen!", „Was hat Ihnen besonders gefallen?".
 
+**BEISPIEL – „Energetische Sprache im Service": Don'ts und bessere Alternativen (Studienbrief, Hartauer):**
+
+| Don't | Wirkung auf den Kunden | Besser |
+|---|---|---|
+| „Kann ich Ihnen helfen?" | „Du kennst meinen Stil doch gar nicht" → „Nein danke, ich schaue mich nur um" | Natürlich begrüßen und abwarten; oder auf eine konkrete Leistung ansprechen |
+| „Suchen Sie etwas Bestimmtes?" | übt Druck aus | direkt ansprechen: „Die Umkleiden sind hier." |
+| „Der Nächste, bitte." | „Ich fühle mich wie beim Amt" | nette persönliche Begrüßung |
+| „Werden Sie schon bedient?" | „Warum wissen Sie das nicht?" – wirkt unorganisiert | begrüßen, Augenkontakt, abwarten |
+| „Ist das alles?" | wird fast immer mit „Ja" beantwortet | Bezug zum Gekauften herstellen, Ergänzung anbieten |
+| „Hat es geschmeckt?" / „War alles in Ordnung?" | stellt die eigene Leistung in Frage, Zeichen von Unsicherheit | „Was hat Ihnen besonders gefallen?" |
+| „Sie waren schon länger nicht mehr da." | Kunde fühlt sich ertappt | „Schön, Sie wiederzusehen!" |
+
+
 ### Personal
 Mitarbeiter haben die **Schlüsselfunktion** für guten Service → Rollenbewusstsein, Schulung, **Motivation** (beeinflusst durch Bezahlung, Sozialleistungen, Führungsstil, Managementtechnik, Arbeitszeiten, Teamstimmung).
 
 ## 5.6 Kundenzufriedenheit & Kundenbindung
+^^ Kundenzufriedenheit | Kundenbindung | Kundenloyalität | CD-Paradigma | Konfirmation | Diskonfirmation | Net Promoter Score | Promotoren | Detraktoren
 
 **Erfolgskette des Qualitätsmanagements für DL (Bruhn):**
 **Erstkontakt → Kundenzufriedenheit (Kauf, Inanspruchnahme, Soll-Ist-Vergleich) → Kundenloyalität (Akzeptanz, Vertrauen, positive Einstellung) → Kundenbindung (Wiederkauf, Cross-Buying, Weiterempfehlung) → ökonomischer Erfolg** – moderiert durch unternehmensexterne Faktoren (z. B. Heterogenität der Erwartungen, Marktdynamik, „Variety Seeking", Image, Alternativenzahl, Wechselbarrieren) und unternehmensinterne Faktoren (z. B. Leistungsindividualität, Mitarbeitermotivation, persönliche Beziehungen, vertragliche Bindungen).
@@ -500,8 +655,10 @@ Interpretation nur im **Benchmark** (Branchenvergleich) oder **Zeitverlauf** sin
 ---
 
 # 6. Beschwerdemanagement
+^^ Beschwerdemanagement | Beschwerde
 
 ## 6.1 Bedeutung von Beschwerden
+^^ Recovery-Paradox | Beschwerdequote (Bedeutung)
 
 - Nur ca. **6 %** der unzufriedenen Kunden beschweren sich tatsächlich; einer Beschwerde stehen **bis zu 50 unzufriedene Kunden** gegenüber → Beschwerden sind nur die **„Spitze des Eisbergs"**. Eine **niedrige Beschwerdequote ist KEIN Beleg für hohe Zufriedenheit!**
 - 60–80 % der abgewanderten Kunden gaben kurz zuvor an, „zufrieden" zu sein.
@@ -527,6 +684,7 @@ Interpretation nur im **Benchmark** (Branchenvergleich) oder **Zeitverlauf** sin
 Gründe, warum Kunden sich nicht beschweren: keine Ansprechmöglichkeit, hoher Aufwand, niemand fragt nach ihrer Meinung, kein Glaube an Wirksamkeit, Konfliktvermeidung. Kurz: **„Kosten" der Beschwerde zu hoch, erwarteter „Nutzen" zu gering.**
 
 ## 6.3 Der Beschwerdemanagementprozess (Stauss & Seidel)
+^^ Beschwerdestimulierung | Beschwerdeannahme | Beschwerdebearbeitung | Beschwerdereaktion | Beschwerdeauswertung | Process Owner | Complaint Owner | Task Owner | Beschwerdekanäle
 
 **Direktes Beschwerdemanagement** (kundenbeziehungsrelevant, Kunde beteiligt):
 1. **Beschwerdestimulierung:** unzufriedene Kunden **animieren**, sich zu äußern („Die schlimmste Beschwerde ist die nicht ausgesprochene."). Barrieren abbauen, leicht zugängliche **Beschwerdekanäle** einrichten – persönlich (bei personenbezogenen DL besonders wichtig) und medial: schriftlich (Briefe/E-Mails, Comment-Cards, „Kummerkasten"), telefonisch (gebührenfreie Nummern), online (Formulare, Social Media). Kanäle aktiv kommunizieren + Erreichbarkeit sicherstellen. Motto: **„Wenn Sie unzufrieden sind, erzählen Sie es mir – wenn Sie zufrieden sind, erzählen Sie es anderen."**
@@ -540,6 +698,7 @@ Gründe, warum Kunden sich nicht beschweren: keine Ansprechmöglichkeit, hoher A
 **Rahmenbedingungen:** Beschwerdekultur (Beschwerden als Chance; Vorbildfunktion der Führung), verantwortliche Organisationseinheiten, IT-Tools/Datenbanken, personelle Ressourcen/Schulung.
 
 ## 6.4 Persönliche Beschwerden vor Ort – 3 Stufen (klausurrelevant!)
+^^ Beschwerde vor Ort | Empowerment | Ad-hoc-Maßnahmen
 
 In der Sport-/Fitness-/Gesundheitsbranche kommen Beschwerden meist **persönlich** – das **situative Verhalten** des Mitarbeiters ist dann wichtiger als Fachkompetenz.
 
@@ -552,6 +711,7 @@ In der Sport-/Fitness-/Gesundheitsbranche kommen Beschwerden meist **persönlich
 **Kommunikation in allen Stufen:** ehrliche **Entschuldigung** wirkt oft stärker als Geld („Bitte entschuldigen Sie unseren Fehler") · sichtbares/aktives Zuhören · dosierte **Fragetechnik** (offen = Ventil + Infos; geschlossen = Entscheidung/Redefluss bremsen; Alternativfragen = Lösungswahl; Feedback-/Suggestivfragen = gemeinsame Basis) · **Nonverbale Kommunikation**: Haltung (Hinwendung, Respekt), freundlich-neutrale Mimik, gerader offener Blick, ruhige tiefe Stimme, moderates Tempo, Pausen, angemessene Lautstärke.
 
 ## 6.5 Negatives Feedback im Internet
+^^ Online-Bewertungen | Reputationsmanagement
 
 Web 2.0: Unzufriedene äußern sich öffentlich vor unbegrenztem Publikum; ca. zwei Drittel lesen vor dem Kauf Online-Reviews; Online-Bewertungen genießen hohe Glaubwürdigkeit (66 % vertrauen ihnen; 83 % vertrauen Empfehlungen von Freunden/Familie). Umgang = Teil des **Reputationsmanagements**:
 - **Auswertung der Kunde-zu-Kunde-Kommunikation** (systematische Erfassung qualitätsrelevanter Bewertungen)
@@ -562,6 +722,7 @@ Web 2.0: Unzufriedene äußern sich öffentlich vor unbegrenztem Publikum; ca. z
 ---
 
 # 7. Kennzahlen im Beratungs- und Servicemanagement
+^^ Kennzahlen | Grundzahlen | Verhältniszahlen | Gliederungszahlen | Beziehungszahlen | Indexzahlen
 
 ## 7.1 Grundlagen
 
@@ -578,6 +739,7 @@ Web 2.0: Unzufriedene äußern sich öffentlich vor unbegrenztem Publikum; ca. z
 **Wichtig bei der Bildung:** immer **gleiche Zeiträume** (Monat, Quartal, Jahr) zugrunde legen; kaufmännisch auf zwei Nachkommastellen runden (PPT-Aufgabe).
 
 ## 7.2 Die 5 zentralen Kennzahlen (FORMELN AUSWENDIG!)
+^^ Telefonquote | Termineinhaltungsquote | Abschlussquote | Fluktuationsquote | Beschwerdequote | Durchschnittlicher Mitgliederbestand
 
 | Kennzahl | Formel | Aussage |
 |---|---|---|
@@ -606,6 +768,7 @@ Web 2.0: Unzufriedene äußern sich öffentlich vor unbegrenztem Publikum; ca. z
 ---
 
 # 8. Offizielle Wiederholungs-/Prüfungsfragen der Präsenzphase (mit Kurzantworten)
+^^ Prüfungsfragen | Wiederholungsfragen
 
 ## Tag 1 (aus PPT 2) – Kurzantworten in Klammern
 
@@ -641,6 +804,7 @@ Web 2.0: Unzufriedene äußern sich öffentlich vor unbegrenztem Publikum; ca. z
 ---
 
 # 9. Last-Minute-Check (1 Seite vor der Klausur)
+^^ Last-Minute-Check
 
 - **DL-Merkmale:** Immaterialität + Integration des externen Faktors (→ nicht lagerfähig, kein Eigentum, kaum demonstrierbar, Uno-actu, individuell, standortgebunden, personalintensiv)
 - **Handlungskompetenz** = Fach + Methode + Sozial
