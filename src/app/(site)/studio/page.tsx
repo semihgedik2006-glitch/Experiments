@@ -3,6 +3,7 @@ import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
+import { MapEmbed } from "@/components/map-embed";
 import { getStudios } from "@/lib/data";
 import { notFound } from "next/navigation";
 
@@ -39,12 +40,10 @@ export default async function StudioPage() {
         >
           <Container className="grid gap-10 md:grid-cols-2">
             <Reveal className="overflow-hidden rounded-2xl border border-border">
-              <iframe
+              <MapEmbed
                 src={studio.mapEmbedUrl}
                 title={`${studio.name} auf Google Maps`}
                 className="h-96 w-full"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
               />
             </Reveal>
 

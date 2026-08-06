@@ -2,6 +2,7 @@ import { MapPin, Phone, Clock } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
+import { MapEmbed } from "@/components/map-embed";
 import { getStudios } from "@/lib/data";
 
 export async function StudioTeaser() {
@@ -48,12 +49,10 @@ export async function StudioTeaser() {
           </Reveal>
 
           <Reveal delay={0.15} className="overflow-hidden rounded-2xl border border-border">
-            <iframe
+            <MapEmbed
               src={studio.mapEmbedUrl}
               title="Studio Standort auf Google Maps"
               className="h-80 w-full"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
             />
           </Reveal>
         </Container>

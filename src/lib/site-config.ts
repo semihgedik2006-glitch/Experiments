@@ -3,7 +3,7 @@ export const siteConfig = {
   tagline: "Der Vorreiter für gesundheitsorientiertes EMS Training",
   description:
     "Körperformen ist dein EMS-Studio für effektives Training in nur 20 Minuten pro Woche. Abnehmen, Muskeln aufbauen und Rückenschmerzen lindern - ohne Zeitaufwand im klassischen Fitnessstudio.",
-  url: "https://www.koerperformen.com",
+  url: "https://www.ems-training.koeln",
   keywords: [
     "EMS",
     "EMS Training",

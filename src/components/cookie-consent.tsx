@@ -1,27 +1,23 @@
 "use client";
 
-import { useState, useSyncExternalStore, type ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
-
-const STORAGE_KEY = "cookie-consent";
-type Consent = "accepted" | "declined";
+import {
+  subscribeConsent,
+  readConsent,
+  serverConsent,
+  writeConsent,
+  type Consent,
+} from "@/lib/consent";
 
 const emptySubscribe = () => () => {};
 
-function readStoredConsent(): Consent | null {
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-  return stored === "accepted" || stored === "declined" ? stored : null;
-}
-
 export function CookieConsent({ children }: { children?: ReactNode }) {
-  const [choice, setChoice] = useState<Consent | null>(null);
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
-  const storedConsent = useSyncExternalStore(emptySubscribe, readStoredConsent, () => null);
-  const consent = choice ?? storedConsent;
+  const consent = useSyncExternalStore(subscribeConsent, readConsent, serverConsent);
 
   function choose(value: Consent) {
-    window.localStorage.setItem(STORAGE_KEY, value);
-    setChoice(value);
+    writeConsent(value);
   }
 
   return (
