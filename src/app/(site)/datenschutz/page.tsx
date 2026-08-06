@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { getStudio } from "@/lib/data";
-import { legalConfig, MISSING } from "@/lib/legal-config";
+import { legalConfig } from "@/lib/legal-config";
 
 export const metadata: Metadata = {
   title: "Datenschutzerklärung",
@@ -17,12 +16,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export default async function DatenschutzPage() {
-  const studio = await getStudio();
-  const email = studio?.email || MISSING;
-  const street = studio?.street ?? "Krankenhausstr. 111";
-  const postalCode = studio?.postalCode ?? "50354";
-  const city = studio?.city ?? "Hürth";
+export default function DatenschutzPage() {
+  const { companyName, owner, address, contact } = legalConfig;
+  const email = contact.email;
 
   return (
     <section className="py-20">
@@ -36,19 +32,17 @@ export default async function DatenschutzPage() {
               Verantwortlicher im Sinne der Datenschutz-Grundverordnung (DSGVO) ist:
             </p>
             <p>
-              {legalConfig.companyName}
+              {companyName}
               <br />
-              {street}
+              Inhaber: {owner}
               <br />
-              {postalCode} {city}
+              {address.street}
+              <br />
+              {address.postalCode} {address.city}
               <br />
               E-Mail: {email}
-              {studio?.phone ? (
-                <>
-                  <br />
-                  Telefon: {studio.phone}
-                </>
-              ) : null}
+              <br />
+              Telefon: {contact.phone}
             </p>
             {legalConfig.dataProtectionOfficer && (
               <p>Datenschutzbeauftragter: {legalConfig.dataProtectionOfficer}</p>

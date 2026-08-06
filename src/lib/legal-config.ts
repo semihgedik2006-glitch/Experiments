@@ -1,52 +1,64 @@
 /**
  * Zentrale Stelle für alle rechtlich relevanten Firmenangaben.
  *
- * WICHTIG: Alle Felder, die hier `null` sind, fehlen noch und werden auf der
- * Seite sichtbar als "[BITTE ERGÄNZEN]" angezeigt. Bitte vor dem endgültigen
- * Livegang vollständig ausfüllen - die Angaben im Impressum sind gesetzlich
- * vorgeschrieben (§ 5 DDG) und unvollständige Angaben sind abmahnfähig.
+ * Bewusst getrennt von den Studio-Daten aus der Datenbank: Die
+ * Geschäftsanschrift des Unternehmens (Impressum, Verantwortlicher nach DSGVO)
+ * ist nicht zwingend identisch mit der Adresse eines Trainingsstudios.
  */
 
+export type LegalForm = "einzelunternehmen" | "gbr" | "gmbh" | "ug" | "gmbh-co-kg";
+
 export const legalConfig = {
-  /** Vollständiger Firmenname inkl. Rechtsformzusatz, z.B. "Körperformen Köln GmbH" */
-  companyName: "Körperformen Köln",
+  /** Firmenname wie im Geschäftsverkehr verwendet. */
+  companyName: "KörperFormen",
 
   /**
-   * Vor- und Nachname des Inhabers bzw. der Geschäftsführung.
-   * TODO: Bitte prüfen, ob diese Angabe noch stimmt.
+   * Vollständiger Name des Inhabers. Bei Einzelunternehmen ist die Nennung
+   * des vollen bürgerlichen Namens nach § 5 DDG Pflicht.
    */
-  owner: "Marcel Almeida",
+  owner: "Marcel Almeida do Carmo",
+
+  legalForm: "einzelunternehmen" as LegalForm,
+
+  /** Ladungsfähige Geschäftsanschrift (Impressumspflicht). */
+  address: {
+    street: "Rondorfer Hauptstr. 27A",
+    postalCode: "50997",
+    city: "Köln",
+    country: "Deutschland",
+  },
+
+  /** Kontaktdaten für Impressum und Datenschutzanfragen. */
+  contact: {
+    phone: "+49 1578 5090199",
+    /** Für tel:-Links, ohne Leerzeichen. */
+    phoneHref: "+4915785090199",
+    email: "m.almeida@kformen.com",
+  },
 
   /**
-   * Rechtsform: "einzelunternehmen" | "gbr" | "gmbh" | "ug" | "gmbh-co-kg"
-   * TODO: Beim Chef erfragen. Steht auf dem Gewerbeschein bzw. im Handelsregister.
+   * Umsatzsteuer-Identifikationsnummer nach § 27a UStG.
+   *
+   * Hinweis: Die Steuernummer (216/5002/3565) wird hier bewusst NICHT
+   * hinterlegt. Anzugeben ist nach § 5 Abs. 1 Nr. 6 DDG ausschließlich die
+   * USt-IdNr.; die Steuernummer zu veröffentlichen ist nicht erforderlich
+   * und wird aus Missbrauchsgründen ausdrücklich nicht empfohlen.
    */
-  legalForm: null as null | "einzelunternehmen" | "gbr" | "gmbh" | "ug" | "gmbh-co-kg",
+  vatId: "DE301004860",
 
-  /**
-   * Umsatzsteuer-Identifikationsnummer nach § 27a UStG, Format "DE123456789".
-   * TODO: Steht auf euren Rechnungen. Falls ihr Kleinunternehmer nach § 19 UStG
-   * seid und keine USt-ID habt, hier `null` lassen - dann entfällt der Abschnitt.
-   */
-  vatId: null as string | null,
-
-  /**
-   * Nur bei GmbH / UG / GmbH & Co. KG nötig.
-   * TODO: z.B. registerCourt: "Amtsgericht Köln", registerNumber: "HRB 12345"
-   */
+  /** Nur bei Kapitalgesellschaften relevant - bei Einzelunternehmen keine. */
   registerCourt: null as string | null,
   registerNumber: null as string | null,
 
   /**
-   * Zuständige Aufsichtsbehörde - nur nötig, falls euer Gewerbe
-   * erlaubnispflichtig ist. Bei normalen Fitnessstudios üblicherweise nicht.
+   * Zuständige Aufsichtsbehörde - nur nötig bei erlaubnispflichtigem Gewerbe.
+   * Für ein Fitness-/EMS-Studio üblicherweise nicht einschlägig.
    */
   supervisoryAuthority: null as string | null,
 
   /**
    * Datenschutzbeauftragter. Pflicht i.d.R. erst ab 20 Personen, die ständig
-   * mit automatisierter Datenverarbeitung beschäftigt sind - für ein einzelnes
-   * Studio meist nicht erforderlich. Dann `null` lassen.
+   * mit automatisierter Datenverarbeitung beschäftigt sind.
    */
   dataProtectionOfficer: null as string | null,
 
@@ -54,10 +66,7 @@ export const legalConfig = {
   lastUpdated: "August 2026",
 } as const;
 
-/**
- * Sichtbarer Platzhalter für fehlende Pflichtangaben. Bewusst auffällig,
- * damit fehlende Daten nicht unbemerkt live gehen.
- */
+/** Sichtbarer Platzhalter für fehlende Pflichtangaben. */
 export const MISSING = "[BITTE ERGÄNZEN]";
 
 export function legalValue(value: string | null | undefined): string {
@@ -66,17 +75,18 @@ export function legalValue(value: string | null | undefined): string {
 
 /** Prüft, ob noch Pflichtangaben fehlen (steuert den Warnhinweis auf der Seite). */
 export function hasMissingLegalData(): boolean {
-  const { legalForm, vatId, registerCourt, registerNumber } = legalConfig;
+  const c = legalConfig;
 
-  if (!legalForm) return true;
+  if (!c.companyName || !c.owner || !c.legalForm) return true;
+  if (!c.address.street || !c.address.postalCode || !c.address.city) return true;
+  if (!c.contact.email) return true;
+
   // Kapitalgesellschaften müssen zusätzlich das Register angeben.
-  if ((legalForm === "gmbh" || legalForm === "ug" || legalForm === "gmbh-co-kg") &&
-      (!registerCourt || !registerNumber)) {
-    return true;
-  }
-  // USt-ID ist nur anzugeben, wenn vorhanden - fehlt sie, ist das kein Fehler,
-  // solange die Rechtsform geklärt ist. Kleinunternehmer haben keine.
-  void vatId;
+  const isCorporation =
+    c.legalForm === "gmbh" || c.legalForm === "ug" || c.legalForm === "gmbh-co-kg";
+  if (isCorporation && (!c.registerCourt || !c.registerNumber)) return true;
 
+  // Eine USt-IdNr. ist nur anzugeben, sofern vorhanden - ihr Fehlen ist bei
+  // Kleinunternehmern nach § 19 UStG kein Mangel.
   return false;
 }

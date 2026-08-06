@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { getStudio } from "@/lib/data";
 import { legalConfig, legalValue, hasMissingLegalData, MISSING } from "@/lib/legal-config";
 
 export const metadata: Metadata = {
   title: "Impressum",
-  description: "Impressum und Anbieterkennzeichnung von Körperformen.",
+  description: "Impressum und Anbieterkennzeichnung von KörperFormen.",
 };
 
 const legalFormLabels: Record<string, string> = {
@@ -16,16 +15,10 @@ const legalFormLabels: Record<string, string> = {
   "gmbh-co-kg": "GmbH & Co. KG",
 };
 
-export default async function ImpressumPage() {
-  const studio = await getStudio();
+export default function ImpressumPage() {
+  const { companyName, owner, legalForm, address, contact, vatId } = legalConfig;
   const isCorporation =
-    legalConfig.legalForm === "gmbh" ||
-    legalConfig.legalForm === "ug" ||
-    legalConfig.legalForm === "gmbh-co-kg";
-
-  const street = studio?.street ?? "Krankenhausstr. 111";
-  const postalCode = studio?.postalCode ?? "50354";
-  const city = studio?.city ?? "Hürth";
+    legalForm === "gmbh" || legalForm === "ug" || legalForm === "gmbh-co-kg";
 
   return (
     <section className="py-20">
@@ -37,47 +30,42 @@ export default async function ImpressumPage() {
             <p className="rounded-lg border border-yellow-500/50 bg-yellow-500/5 p-4 text-foreground">
               <strong>Hinweis an den Betreiber:</strong> In diesem Impressum fehlen
               noch Pflichtangaben (mit <em>{MISSING}</em> markiert). Bitte in der
-              Datei <code>src/lib/legal-config.ts</code> vervollständigen. Unvollständige
-              Impressumsangaben können abgemahnt werden.
+              Datei <code>src/lib/legal-config.ts</code> vervollständigen.
             </p>
           )}
 
           <div>
             <h2 className="font-semibold text-foreground">Angaben gemäß § 5 DDG</h2>
             <p className="mt-2">
-              {legalConfig.companyName}
+              {companyName}
               <br />
-              {street}
+              Inhaber: {legalValue(owner)}
               <br />
-              {postalCode} {city}
+              {address.street}
               <br />
-              Deutschland
-            </p>
-          </div>
-
-          <div>
-            <h2 className="font-semibold text-foreground">
-              {isCorporation ? "Vertreten durch" : "Inhaber"}
-            </h2>
-            <p className="mt-2">
-              {isCorporation ? "Geschäftsführung: " : ""}
-              {legalValue(legalConfig.owner)}
+              {address.postalCode} {address.city}
+              <br />
+              {address.country}
             </p>
           </div>
 
           <div>
             <h2 className="font-semibold text-foreground">Rechtsform</h2>
-            <p className="mt-2">
-              {legalConfig.legalForm ? legalFormLabels[legalConfig.legalForm] : MISSING}
-            </p>
+            <p className="mt-2">{legalForm ? legalFormLabels[legalForm] : MISSING}</p>
           </div>
 
           <div>
             <h2 className="font-semibold text-foreground">Kontakt</h2>
             <p className="mt-2">
-              Telefon: {studio?.phone || MISSING}
+              Telefon:{" "}
+              <a href={`tel:${contact.phoneHref}`} className="hover:underline">
+                {contact.phone}
+              </a>
               <br />
-              E-Mail: {studio?.email || MISSING}
+              E-Mail:{" "}
+              <a href={`mailto:${contact.email}`} className="hover:underline">
+                {contact.email}
+              </a>
             </p>
           </div>
 
@@ -92,13 +80,15 @@ export default async function ImpressumPage() {
             </div>
           )}
 
-          {legalConfig.vatId && (
+          {vatId && (
             <div>
-              <h2 className="font-semibold text-foreground">Umsatzsteuer-Identifikationsnummer</h2>
+              <h2 className="font-semibold text-foreground">
+                Umsatzsteuer-Identifikationsnummer
+              </h2>
               <p className="mt-2">
                 Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:
                 <br />
-                {legalConfig.vatId}
+                {vatId}
               </p>
             </div>
           )}
@@ -115,11 +105,11 @@ export default async function ImpressumPage() {
               Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
             </h2>
             <p className="mt-2">
-              {legalValue(legalConfig.owner)}
+              {legalValue(owner)}
               <br />
-              {street}
+              {address.street}
               <br />
-              {postalCode} {city}
+              {address.postalCode} {address.city}
             </p>
           </div>
 

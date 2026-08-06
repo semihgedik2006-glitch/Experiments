@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { getStudio } from "@/lib/data";
-import { legalConfig, MISSING } from "@/lib/legal-config";
+import { legalConfig } from "@/lib/legal-config";
 
 export const metadata: Metadata = {
   title: "AGB",
@@ -17,9 +16,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export default async function AgbPage() {
-  const studio = await getStudio();
-  const email = studio?.email || MISSING;
+export default function AgbPage() {
+  const email = legalConfig.contact.email;
 
   return (
     <section className="py-20">
