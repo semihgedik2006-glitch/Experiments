@@ -11,7 +11,7 @@ export async function BlogTeaser() {
   if (posts.length === 0) return null;
 
   return (
-    <section className="border-t border-border bg-surface py-28 md:py-32">
+    <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
       <Container>
         <SectionHeader
           kicker="Wissen"

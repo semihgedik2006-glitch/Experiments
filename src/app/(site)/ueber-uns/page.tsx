@@ -42,9 +42,9 @@ export default function UeberUnsPage() {
         </p>
       </PageHeader>
 
-      <section className="py-28 md:py-32">
+      <section className="py-20 sm:py-24 md:py-32">
         <Container>
-          <h2 className="text-4xl font-bold tracking-tight md:text-5xl">Was ist EMS-Training?</h2>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Was ist EMS-Training?</h2>
           <p className="mt-4 max-w-2xl text-muted">
             EMS steht für Elektro-Muskel-Stimulation. Während du klassische
             Bewegungsübungen ausführst, aktivieren sanfte elektrische Impulse
@@ -70,9 +70,9 @@ export default function UeberUnsPage() {
         </Container>
       </section>
 
-      <section className="border-t border-border bg-surface py-28 md:py-32">
+      <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
         <Container>
-          <h2 className="text-4xl font-bold tracking-tight md:text-5xl">Dein Team vor Ort</h2>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Dein Team vor Ort</h2>
           <p className="mt-4 max-w-2xl text-muted">
             Bei uns trainierst du nie anonym: Jede Einheit wird persönlich
             begleitet - vom ersten Probetraining bis zum hundertsten Termin.
@@ -115,9 +115,9 @@ export default function UeberUnsPage() {
         </Container>
       </section>
 
-      <section className="border-t border-border py-28 md:py-32">
+      <section className="border-t border-border py-20 sm:py-24 md:py-32">
         <Container className="flex flex-col items-center text-center">
-          <h2 className="text-4xl font-bold tracking-tight md:text-5xl">Lerne uns persönlich kennen</h2>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Lerne uns persönlich kennen</h2>
           <p className="mt-4 max-w-md text-muted">
             Vereinbare einen kostenlosen Probetermin und überzeuge dich selbst.
           </p>

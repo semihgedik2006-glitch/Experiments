@@ -13,13 +13,13 @@ export async function StudioTeaser() {
   if (studios.length === 1) {
     const studio = studios[0];
     return (
-      <section className="border-t border-border bg-surface py-28 md:py-32">
+      <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
         <Container className="grid gap-10 md:grid-cols-2 md:items-center">
           <Reveal>
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
               Standort
             </span>
-            <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+            <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
               Dein Studio in {studio.city}
             </h2>
             <p className="mt-4 text-muted">
@@ -65,13 +65,13 @@ export async function StudioTeaser() {
 
   // Multiple locations: compact card per studio.
   return (
-    <section className="border-t border-border bg-surface py-28 md:py-32">
+    <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
       <Container>
         <Reveal className="mb-14 max-w-2xl">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
             Standorte
           </span>
-          <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+          <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
             {studios.length} Studios in deiner Nähe
           </h2>
           <p className="mt-4 text-muted">

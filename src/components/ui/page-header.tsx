@@ -19,7 +19,7 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <section className="border-b border-border py-24 md:py-28">
+    <section className="border-b border-border py-16 sm:py-20 md:py-28">
       <Container>
         {kicker && (
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
@@ -27,7 +27,7 @@ export function PageHeader({
           </span>
         )}
         <h1
-          className={`${kicker ? "mt-4" : ""} max-w-4xl text-balance text-5xl font-black leading-[1.05] tracking-tight md:text-6xl`}
+          className={`${kicker ? "mt-4" : ""} max-w-4xl text-balance hyphens-auto break-words text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-6xl`}
         >
           {title}
         </h1>

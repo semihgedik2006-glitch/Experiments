@@ -21,7 +21,7 @@ export default function ErfolgsgeschichtenPage() {
         intro="Unsere Mitglieder kommen mit ganz unterschiedlichen Zielen - vom schmerzfreien Rücken bis zur Strandfigur. Das sagen sie über ihr Training bei Körperformen."
       />
 
-      <section className="py-28 md:py-32">
+      <section className="py-20 sm:py-24 md:py-32">
         <Container>
           <Stagger className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {testimonials.map((t) => (
@@ -55,10 +55,10 @@ export default function ErfolgsgeschichtenPage() {
         </Container>
       </section>
 
-      <section className="border-t border-border bg-surface py-28 md:py-32">
+      <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
         <Container className="flex flex-col items-center text-center">
           <Reveal>
-            <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
               Schreib deine eigene Geschichte
             </h2>
             <p className="mx-auto mt-4 max-w-md text-muted">

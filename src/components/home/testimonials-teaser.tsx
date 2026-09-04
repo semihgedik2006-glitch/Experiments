@@ -9,7 +9,7 @@ export function TestimonialsTeaser() {
   const featured = testimonials.slice(0, 3);
 
   return (
-    <section className="border-t border-border py-28 md:py-32">
+    <section className="border-t border-border py-20 sm:py-24 md:py-32">
       <Container>
         <SectionHeader
           kicker="Erfahrungen"

@@ -29,7 +29,7 @@ export default function PreisePage() {
         intro="Jedes Trainingsziel ist anders - deshalb besprechen wir dein persönliches Paket direkt bei deinem kostenlosen Probetermin. So zahlst du nur für das, was wirklich zu dir passt."
       />
 
-      <section className="py-28 md:py-32">
+      <section className="py-20 sm:py-24 md:py-32">
         <Container>
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
             <Reveal>

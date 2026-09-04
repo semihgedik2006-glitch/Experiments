@@ -31,7 +31,7 @@ export function HowItWorks() {
   const blobY = useTransform(scrollYProgress, [0, 1], [80, -80]);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden py-28 md:py-32">
+    <section ref={sectionRef} className="relative overflow-hidden py-20 sm:py-24 md:py-32">
       <motion.div
         aria-hidden
         className="pointer-events-none absolute -right-40 top-1/4 h-[380px] w-[380px] rounded-full opacity-10 blur-[100px]"

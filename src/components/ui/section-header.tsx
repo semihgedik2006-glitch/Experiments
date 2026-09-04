@@ -37,7 +37,7 @@ export function SectionHeader({
           </span>
         )}
         <h2
-          className={`${kicker ? "mt-4" : ""} text-balance text-4xl font-bold tracking-tight md:text-5xl`}
+          className={`${kicker ? "mt-4" : ""} text-balance hyphens-auto break-words text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl`}
         >
           {title}
         </h2>

@@ -20,7 +20,7 @@ export default function AgbPage() {
   const email = legalConfig.contact.email;
 
   return (
-    <section className="py-28 md:py-32">
+    <section className="py-20 sm:py-24 md:py-32">
       <Container className="max-w-2xl">
         <h1 className="text-3xl font-black tracking-tight">
           Allgemeine Geschäftsbedingungen
