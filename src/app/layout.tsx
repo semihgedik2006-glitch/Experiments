@@ -7,16 +7,22 @@ import { GoogleAnalytics } from "@/components/google-analytics";
 import { CookieConsent } from "@/components/cookie-consent";
 import { siteConfig } from "@/lib/site-config";
 
+// Nur die Stärken laden, die im Code tatsächlich vorkommen. Die zuvor
+// geladene 300 kommt nirgends vor. Titillium Web bietet keine 500 an -
+// die wenigen font-medium-Stellen stellt der Browser deshalb mit 400 dar.
 const titillium = Titillium_Web({
   variable: "--font-titillium",
   subsets: ["latin"],
-  weight: ["300", "400", "600", "700", "900"],
+  weight: ["400", "600", "700", "900"],
+  display: "swap",
 });
 
+// Die Display-Schrift wird ausschließlich in font-black (900) eingesetzt.
 const orbitron = Orbitron({
   variable: "--font-orbitron",
   subsets: ["latin"],
-  weight: ["700", "800", "900"],
+  weight: ["900"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
