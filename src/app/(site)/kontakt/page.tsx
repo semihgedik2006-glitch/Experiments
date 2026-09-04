@@ -59,7 +59,7 @@ export default async function KontaktPage() {
             ))}
           </div>
 
-          <LottieBox src="/lottie/contact.json" className="mt-8 w-full max-w-sm" />
+          <LottieBox src="/lottie/contact.json" ratio="800 / 600" className="mt-8 w-full max-w-sm" />
         </div>
 
         <ContactForm />

@@ -1,34 +1,54 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform, type Variants } from "motion/react";
+import { Fragment, useRef } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/logo";
 
-const easeOut = [0.16, 1, 0.3, 1] as const;
+/**
+ * Wichtig für die Ladezeit: Die Eingangsanimation läuft über CSS-Klassen
+ * (siehe globals.css), nicht über Motion. Über Motion gesteuert stünde der
+ * gesamte Hero bis zur Hydration bei opacity 0 - auf einem langsamen
+ * Mobilgerät rund drei Sekunden leerer Bildschirm, in denen Google die
+ * Überschrift als nicht dargestellt wertet.
+ *
+ * Motion bleibt für den Parallax-Effekt zuständig. Der hängt ohnehin am
+ * Scrollen und schadet deshalb nicht, wenn er später einsetzt.
+ */
 
-const lineVariants: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.95 } },
-};
+/** Zeilenweiser Wortaufbau - jedes Wort steigt aus seiner Zeile herauf. */
+function StaggeredLine({
+  text,
+  className,
+  startDelay,
+}: {
+  text: string;
+  className?: string;
+  /** Verzögerung des ersten Wortes in Sekunden. */
+  startDelay: number;
+}) {
+  const words = text.split(" ");
 
-const wordVariants: Variants = {
-  hidden: { y: "110%" },
-  visible: { y: 0, transition: { duration: 0.7, ease: easeOut } },
-};
-
-function StaggeredLine({ text, className }: { text: string; className?: string }) {
   return (
     <span className={className}>
-      {text.split(" ").map((word, index) => (
-        <span key={index} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
-          <motion.span variants={wordVariants} className="inline-block">
-            {word}
-            {" "}
-          </motion.span>
-        </span>
+      {words.map((word, index) => (
+        // Das Leerzeichen steht bewusst zwischen den Wortcontainern und
+        // nicht in ihnen: Innerhalb des überlaufenden Containers wird ein
+        // abschließendes Leerzeichen verschluckt, und die Wörter kleben
+        // aneinander.
+        <Fragment key={index}>
+          <span className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+            <span
+              className="hero-anim-word"
+              style={{ "--hero-delay": `${startDelay + index * 0.05}s` } as React.CSSProperties}
+            >
+              {word}
+            </span>
+          </span>
+          {index < words.length - 1 && " "}
+        </Fragment>
       ))}
     </span>
   );
@@ -83,69 +103,51 @@ export function Hero() {
         <Container className="flex flex-col items-center py-24 text-center md:py-28">
           {/* Logo opens the page big and alone, then settles into place as
               part of the normal flow - it can never overlap the headline. */}
-          <motion.div
-            initial={{ opacity: 0, scale: 2.1, y: 150 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{
-              opacity: { duration: 0.5, ease: "easeOut" },
-              scale: { duration: 0.7, delay: 0.45, ease: easeOut },
-              y: { duration: 0.7, delay: 0.45, ease: easeOut },
-            }}
-            className="mb-10"
-          >
+          <div className="hero-anim-logo mb-10">
             <Logo className="h-14 w-auto sm:h-16" />
-          </motion.div>
+          </div>
 
-          <motion.span
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8, ease: easeOut }}
-            className="mb-8 rounded-full border border-border bg-surface-raised/60 px-4 py-1.5 text-xs uppercase tracking-widest text-muted backdrop-blur"
+          <span
+            className="hero-anim mb-8 rounded-full border border-border bg-surface-raised/60 px-4 py-1.5 text-xs uppercase tracking-widest text-muted backdrop-blur"
+            style={{ "--hero-delay": "0.3s" } as React.CSSProperties}
           >
             EMS-Studio in Hürth &middot; Köln &middot; Brühl
-          </motion.span>
+          </span>
 
-          <motion.h1
-            initial="hidden"
-            animate="visible"
-            variants={lineVariants}
-            className="font-display max-w-5xl text-[2.6rem] font-black leading-[1.08] tracking-tight sm:text-6xl md:text-7xl"
-          >
-            <StaggeredLine text="20 Minuten Training." />
+          <h1 className="font-display max-w-5xl text-[2.6rem] font-black leading-[1.08] tracking-tight sm:text-6xl md:text-7xl">
+            <StaggeredLine text="20 Minuten Training." startDelay={0.4} />
             <br />
-            <StaggeredLine text="Ein sichtbarer Unterschied." className="text-glow text-lime" />
-          </motion.h1>
+            <StaggeredLine
+              text="Ein sichtbarer Unterschied."
+              className="text-glow text-lime"
+              startDelay={0.55}
+            />
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.35, ease: easeOut }}
-            className="mt-8 max-w-xl text-lg leading-relaxed text-muted md:text-xl"
+          <p
+            className="hero-anim mt-8 max-w-xl text-lg leading-relaxed text-muted md:text-xl"
+            style={{ "--hero-delay": "0.7s" } as React.CSSProperties}
           >
             Effektives EMS-Training für Berufstätige mit wenig Zeit. Einmal pro
             Woche, gelenkschonend, individuell betreut - bei Körperformen.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.5, ease: easeOut }}
-            className="mt-10 flex flex-col gap-4 sm:flex-row"
+          <div
+            className="hero-anim mt-10 flex flex-col gap-4 sm:flex-row"
+            style={{ "--hero-delay": "0.82s" } as React.CSSProperties}
           >
             <Button href="/probetermin">Kostenlosen Probetermin buchen</Button>
             <Button href="/ems-training" variant="secondary">
               Wie EMS funktioniert
             </Button>
-          </motion.div>
+          </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.75, ease: easeOut }}
-            className="mt-6 text-xs text-muted"
+          <p
+            className="hero-anim mt-6 text-xs text-muted"
+            style={{ "--hero-delay": "0.94s" } as React.CSSProperties}
           >
             Unverbindlich &middot; Ohne Vertragsbindung &middot; Persönliche 1:1-Betreuung
-          </motion.p>
+          </p>
         </Container>
       </motion.div>
 
@@ -155,11 +157,9 @@ export function Hero() {
         style={{ opacity: cueOpacity }}
         className="absolute bottom-7 left-1/2 -translate-x-1/2"
       >
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 3.2, duration: 0.6 }}
-          className="flex flex-col items-center gap-1 text-muted"
+        <div
+          className="hero-anim flex flex-col items-center gap-1 text-muted"
+          style={{ "--hero-delay": "1.6s" } as React.CSSProperties}
         >
           <span className="text-[10px] uppercase tracking-[0.25em]">Scroll</span>
           <motion.span
@@ -168,7 +168,7 @@ export function Hero() {
           >
             <ChevronDown size={18} />
           </motion.span>
-        </motion.div>
+        </div>
       </motion.div>
     </section>
   );

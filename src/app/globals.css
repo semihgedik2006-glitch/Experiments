@@ -104,6 +104,66 @@ select:focus {
   text-shadow: 0 0 32px color-mix(in srgb, var(--color-lime) 45%, transparent);
 }
 
+/* Eingangsanimation des Hero - bewusst in CSS statt in JavaScript.
+   Über JavaScript gesteuert stünde der gesamte Hero bis zur Hydration bei
+   opacity 0; auf einem langsamen Mobilgerät sind das rund drei Sekunden
+   leerer Bildschirm, und Google wertet die Überschrift so lange als nicht
+   dargestellt. CSS läuft dagegen los, sobald das Stylesheet da ist. */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-logo {
+  from {
+    opacity: 0;
+    transform: translateY(90px) scale(1.6);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hero-word {
+  from {
+    transform: translateY(110%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.hero-anim {
+  animation: hero-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--hero-delay, 0s);
+}
+
+.hero-anim-logo {
+  animation: hero-logo 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-anim-word {
+  display: inline-block;
+  animation: hero-word 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--hero-delay, 0s);
+}
+
+/* Wer reduzierte Bewegung eingestellt hat, sieht den Hero sofort fertig. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-anim,
+  .hero-anim-logo,
+  .hero-anim-word {
+    animation: none;
+  }
+}
+
 /* Fine blueprint grid behind the hero, fading out toward the edges. */
 .hero-grid {
   background-image:

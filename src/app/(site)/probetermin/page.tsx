@@ -43,13 +43,20 @@ export default async function ProbeterminPage() {
           kennen. Wir bestätigen deinen Wunschtermin anschließend persönlich.
         </p>
 
-        <LottieBox src="/lottie/booking.json" className="mx-auto w-full max-w-xs" />
-
-        <div className="mt-6">
+        <div className="mt-10">
           <BookingFlow studios={studios} slotsByStudio={slotsByStudio} />
         </div>
 
-        <div className="mt-12 border-t border-border pt-8">
+        {/* Die Illustration steht bewusst unter dem Formular: Oben war sie
+            das größte Element der Seite und bestimmte damit die gemessene
+            Ladezeit - eine Verzierung, die das Formular ausbremst. */}
+        <LottieBox
+          src="/lottie/booking.json"
+          ratio="1080 / 1080"
+          className="mx-auto mt-12 w-full max-w-[220px]"
+        />
+
+        <div className="mt-4 border-t border-border pt-8">
           <p className="text-sm font-semibold">Was du wissen solltest</p>
           <TrustBar className="mt-5" />
         </div>
