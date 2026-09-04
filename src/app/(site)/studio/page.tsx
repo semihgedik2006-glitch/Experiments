@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { MapEmbed } from "@/components/map-embed";
@@ -19,24 +20,25 @@ export default async function StudioPage() {
 
   return (
     <>
-      <section className="border-b border-border py-20">
-        <Container>
-          <h1 className="text-4xl font-black tracking-tight md:text-5xl">
+      <PageHeader
+        kicker={studios.length > 1 ? "Standorte" : "Standort"}
+        title={
+          <>
             {studios.length > 1 ? "Unsere " : ""}Studio{studios.length > 1 ? "s" : ""}{" "}
             <span className="text-lime">finden</span>
-          </h1>
-          <p className="mt-4 max-w-xl text-muted">
-            {studios.length > 1
-              ? "Wähle den Standort in deiner Nähe - alle Studios mit Adresse, Öffnungszeiten und Anfahrt."
-              : `Zentral in ${studios[0].city} gelegen - erreichbar aus Köln, Brühl und der gesamten Region.`}
-          </p>
-        </Container>
-      </section>
+          </>
+        }
+        intro={
+          studios.length > 1
+            ? "Wähle den Standort in deiner Nähe - alle Studios mit Adresse, Öffnungszeiten und Anfahrt."
+            : `Zentral in ${studios[0].city} gelegen - erreichbar aus Köln, Brühl und der gesamten Region.`
+        }
+      />
 
       {studios.map((studio, index) => (
         <section
           key={studio.id}
-          className={`py-16 ${index > 0 ? "border-t border-border" : ""} ${index % 2 === 1 ? "bg-surface" : ""}`}
+          className={`py-24 ${index > 0 ? "border-t border-border" : ""} ${index % 2 === 1 ? "bg-surface" : ""}`}
         >
           <Container className="grid gap-10 md:grid-cols-2">
             <Reveal className="overflow-hidden rounded-2xl border border-border">

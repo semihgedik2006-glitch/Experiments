@@ -15,7 +15,7 @@ export default async function BlogPage() {
   const posts = await getPublishedPosts();
 
   return (
-    <section className="py-20">
+    <section className="py-28 md:py-32">
       <Container>
         <h1 className="text-4xl font-black tracking-tight md:text-5xl">
           Der <span className="text-lime">Blog</span>

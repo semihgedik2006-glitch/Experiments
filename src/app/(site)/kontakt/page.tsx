@@ -14,7 +14,7 @@ export default async function KontaktPage() {
   const studios = await getStudios();
 
   return (
-    <section className="py-20">
+    <section className="py-28 md:py-32">
       <Container className="grid gap-14 md:grid-cols-2">
         <div>
           <h1 className="text-4xl font-black tracking-tight md:text-5xl">

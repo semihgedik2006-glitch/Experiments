@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Star } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { testimonials } from "@/lib/testimonials-data";
@@ -14,20 +15,13 @@ export const metadata: Metadata = {
 export default function ErfolgsgeschichtenPage() {
   return (
     <>
-      <section className="border-b border-border py-20">
-        <Container>
-          <h1 className="text-4xl font-black tracking-tight md:text-5xl">
-            Erfolgs<span className="text-lime">geschichten</span>
-          </h1>
-          <p className="mt-4 max-w-xl text-muted">
-            Unsere Mitglieder kommen mit ganz unterschiedlichen Zielen - vom
-            schmerzfreien Rücken bis zur Strandfigur. Das sagen sie über ihr
-            Training bei Körperformen.
-          </p>
-        </Container>
-      </section>
+      <PageHeader
+        kicker="Erfahrungen"
+        title={<>Erfolgs<span className="text-lime">geschichten</span></>}
+        intro="Unsere Mitglieder kommen mit ganz unterschiedlichen Zielen - vom schmerzfreien Rücken bis zur Strandfigur. Das sagen sie über ihr Training bei Körperformen."
+      />
 
-      <section className="py-20">
+      <section className="py-28 md:py-32">
         <Container>
           <Stagger className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {testimonials.map((t) => (
@@ -61,10 +55,10 @@ export default function ErfolgsgeschichtenPage() {
         </Container>
       </section>
 
-      <section className="border-t border-border bg-surface py-20">
+      <section className="border-t border-border bg-surface py-28 md:py-32">
         <Container className="flex flex-col items-center text-center">
           <Reveal>
-            <h2 className="text-3xl font-bold tracking-tight">
+            <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
               Schreib deine eigene Geschichte
             </h2>
             <p className="mx-auto mt-4 max-w-md text-muted">

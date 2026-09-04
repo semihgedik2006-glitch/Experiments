@@ -12,6 +12,7 @@ import {
   Activity,
 } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { FaqSection } from "@/components/faq-section";
@@ -105,24 +106,16 @@ const contraindications = [
 export default function EmsTrainingPage() {
   return (
     <>
-      <section className="border-b border-border py-20">
-        <Container>
-          <h1 className="text-4xl font-black tracking-tight md:text-5xl">
-            EMS-Training <span className="text-lime">erklärt</span>
-          </h1>
-          <p className="mt-4 max-w-2xl text-muted">
-            Elektro-Muskel-Stimulation klingt nach Science-Fiction, ist aber
-            seit Jahrzehnten in Physiotherapie und Leistungssport bewährt.
-            Hier erfährst du, wie es funktioniert, wie eine Einheit abläuft
-            und ob es zu dir passt.
-          </p>
-        </Container>
-      </section>
+      <PageHeader
+        kicker="EMS verstehen"
+        title={<>EMS-Training <span className="text-lime">erklärt</span></>}
+        intro="Elektro-Muskel-Stimulation klingt nach Science-Fiction, ist aber seit Jahrzehnten in Physiotherapie und Leistungssport bewährt. Hier erfährst du, wie es funktioniert, wie eine Einheit abläuft und ob es zu dir passt."
+      />
 
-      <section className="py-20">
+      <section className="py-28 md:py-32">
         <Container>
           <Reveal className="max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight">So funktioniert es</h2>
+            <h2 className="text-4xl font-bold tracking-tight md:text-5xl">So funktioniert es</h2>
             <p className="mt-4 text-muted">
               Dein Gehirn steuert Muskeln über elektrische Impulse - EMS nutzt
               genau dieses Prinzip. Über Elektroden in der Trainingsweste
@@ -143,10 +136,10 @@ export default function EmsTrainingPage() {
 
       <ActivationSequence />
 
-      <section className="border-t border-border bg-surface py-20">
+      <section className="border-t border-border bg-surface py-28 md:py-32">
         <Container>
           <Reveal className="mb-12 max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight">
+            <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
               EMS vs. klassisches Krafttraining
             </h2>
             <p className="mt-4 text-muted">
@@ -188,10 +181,10 @@ export default function EmsTrainingPage() {
         </Container>
       </section>
 
-      <section className="py-20">
+      <section className="py-28 md:py-32">
         <Container>
           <Reveal className="mb-12 max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight">Für wen ist EMS geeignet?</h2>
+            <h2 className="text-4xl font-bold tracking-tight md:text-5xl">Für wen ist EMS geeignet?</h2>
             <p className="mt-4 text-muted">
               Kurz: für fast alle, die effizient stärker, straffer oder
               schmerzfreier werden wollen.
@@ -214,10 +207,10 @@ export default function EmsTrainingPage() {
         </Container>
       </section>
 
-      <section className="border-t border-border bg-surface py-20">
+      <section className="border-t border-border bg-surface py-28 md:py-32">
         <Container>
           <Reveal className="mb-12 max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight">
+            <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
               So läuft deine Einheit ab
             </h2>
             <p className="mt-4 text-muted">
@@ -245,7 +238,7 @@ export default function EmsTrainingPage() {
         </Container>
       </section>
 
-      <section className="py-20">
+      <section className="py-28 md:py-32">
         <Container>
           <Reveal className="max-w-2xl rounded-2xl border border-border bg-surface p-8">
             <div className="flex items-start gap-4">
@@ -278,7 +271,7 @@ export default function EmsTrainingPage() {
         </Container>
       </section>
 
-      <section className="border-t border-border bg-surface py-20">
+      <section className="border-t border-border bg-surface py-28 md:py-32">
         <Container className="flex flex-col items-center text-center">
           <Reveal>
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-lime/15 text-lime">

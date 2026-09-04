@@ -11,7 +11,7 @@ const easeOut = [0.16, 1, 0.3, 1] as const;
 
 const lineVariants: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.09, delayChildren: 1.8 } },
+  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.95 } },
 };
 
 const wordVariants: Variants = {
@@ -87,9 +87,9 @@ export function Hero() {
             initial={{ opacity: 0, scale: 2.1, y: 150 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{
-              opacity: { duration: 0.7, ease: "easeOut" },
-              scale: { duration: 0.9, delay: 1.0, ease: easeOut },
-              y: { duration: 0.9, delay: 1.0, ease: easeOut },
+              opacity: { duration: 0.5, ease: "easeOut" },
+              scale: { duration: 0.7, delay: 0.45, ease: easeOut },
+              y: { duration: 0.7, delay: 0.45, ease: easeOut },
             }}
             className="mb-10"
           >
@@ -99,7 +99,7 @@ export function Hero() {
           <motion.span
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.6, ease: easeOut }}
+            transition={{ duration: 0.5, delay: 0.8, ease: easeOut }}
             className="mb-8 rounded-full border border-border bg-surface-raised/60 px-4 py-1.5 text-xs uppercase tracking-widest text-muted backdrop-blur"
           >
             EMS-Studio in Hürth &middot; Köln &middot; Brühl
@@ -119,7 +119,7 @@ export function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 2.5, ease: easeOut }}
+            transition={{ duration: 0.6, delay: 1.35, ease: easeOut }}
             className="mt-8 max-w-xl text-lg leading-relaxed text-muted md:text-xl"
           >
             Effektives EMS-Training für Berufstätige mit wenig Zeit. Einmal pro
@@ -129,7 +129,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 2.65, ease: easeOut }}
+            transition={{ duration: 0.6, delay: 1.5, ease: easeOut }}
             className="mt-10 flex flex-col gap-4 sm:flex-row"
           >
             <Button href="/probetermin">Kostenlosen Probetermin buchen</Button>
@@ -137,6 +137,15 @@ export function Hero() {
               Wie EMS funktioniert
             </Button>
           </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1.75, ease: easeOut }}
+            className="mt-6 text-xs text-muted"
+          >
+            Unverbindlich &middot; Ohne Vertragsbindung &middot; Persönliche 1:1-Betreuung
+          </motion.p>
         </Container>
       </motion.div>
 

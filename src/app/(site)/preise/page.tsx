@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { FaqSection } from "@/components/faq-section";
@@ -22,20 +23,13 @@ const highlights = [
 export default function PreisePage() {
   return (
     <>
-      <section className="border-b border-border py-20">
-        <Container>
-          <h1 className="text-4xl font-black tracking-tight md:text-5xl">
-            Faire <span className="text-lime">Preise</span>
-          </h1>
-          <p className="mt-4 max-w-xl text-muted">
-            Jedes Trainingsziel ist anders - deshalb besprechen wir dein
-            persönliches Paket direkt bei deinem kostenlosen Probetermin. So
-            zahlst du nur für das, was wirklich zu dir passt.
-          </p>
-        </Container>
-      </section>
+      <PageHeader
+        kicker="Konditionen"
+        title={<>Faire <span className="text-lime">Preise</span></>}
+        intro="Jedes Trainingsziel ist anders - deshalb besprechen wir dein persönliches Paket direkt bei deinem kostenlosen Probetermin. So zahlst du nur für das, was wirklich zu dir passt."
+      />
 
-      <section className="py-20">
+      <section className="py-28 md:py-32">
         <Container>
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
             <Reveal>

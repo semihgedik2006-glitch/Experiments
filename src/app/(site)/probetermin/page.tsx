@@ -32,7 +32,7 @@ export default async function ProbeterminPage() {
   }
 
   return (
-    <section className="py-20">
+    <section className="py-28 md:py-32">
       <Container className="max-w-2xl">
         <h1 className="text-4xl font-black tracking-tight md:text-5xl">
           Kostenloser <span className="text-lime">Probetermin</span>

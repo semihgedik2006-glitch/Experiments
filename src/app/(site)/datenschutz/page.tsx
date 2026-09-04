@@ -21,7 +21,7 @@ export default function DatenschutzPage() {
   const email = contact.email;
 
   return (
-    <section className="py-20">
+    <section className="py-28 md:py-32">
       <Container className="max-w-2xl">
         <h1 className="text-3xl font-black tracking-tight">Datenschutzerklärung</h1>
         <p className="mt-3 text-sm text-muted">Stand: {legalConfig.lastUpdated}</p>
