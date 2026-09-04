@@ -35,6 +35,16 @@ export function ContactForm() {
 
   return (
     <form action={formAction} className="space-y-4">
+      {/* Bot-Falle: für echte Besucher unsichtbar, Bots füllen sie oft aus. */}
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute left-[-9999px] h-0 w-0 opacity-0"
+      />
+
       <div className="grid gap-4 sm:grid-cols-2">
         <input
           type="text"

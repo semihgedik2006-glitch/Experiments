@@ -2,12 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
 export async function submitComment(
   _prevState: ActionResult | undefined,
   formData: FormData,
 ): Promise<ActionResult> {
+  const ip = await getClientIp();
+  const limit = checkRateLimit(`comment:${ip}`, 10, 60 * 60 * 1000);
+  if (!limit.allowed) {
+    return { ok: false, message: waitMessage(limit.retryAfterSeconds) };
+  }
+
   const postId = String(formData.get("postId") ?? "");
   const slug = String(formData.get("slug") ?? "");
   const parentId = String(formData.get("parentId") ?? "").trim() || null;
