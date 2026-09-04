@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/container";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { getPublishedPosts } from "@/lib/data";
 import { formatDate } from "@/lib/format";
+import { PostThumb } from "@/components/blog/post-thumb";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -41,16 +42,19 @@ export default async function BlogPage() {
               <StaggerItem key={post.id} className="h-full">
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="flex h-full flex-col rounded-2xl border border-border bg-surface p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-lime/5"
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-all duration-300 hover:-translate-y-1.5 hover:border-lime/40 hover:shadow-xl hover:shadow-lime/5"
                 >
-                  <span className="text-xs text-muted">
-                    {post.publishedAt ? formatDate(post.publishedAt) : ""}
-                  </span>
-                  <h2 className="mt-3 text-lg font-semibold">{post.title}</h2>
-                  <p className="mt-2 flex-1 text-sm text-muted">{post.excerpt}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm text-lime">
-                    Weiterlesen <ArrowRight size={14} />
-                  </span>
+                  <PostThumb slug={post.slug} title={post.title} coverImage={post.coverImage} />
+                  <div className="flex flex-1 flex-col p-6">
+                    <span className="text-xs text-muted">
+                      {post.publishedAt ? formatDate(post.publishedAt) : ""}
+                    </span>
+                    <h2 className="mt-3 text-lg font-semibold">{post.title}</h2>
+                    <p className="mt-2 flex-1 text-sm text-muted">{post.excerpt}</p>
+                    <span className="mt-4 inline-flex items-center gap-1 text-sm text-lime">
+                      Weiterlesen <ArrowRight size={14} />
+                    </span>
+                  </div>
                 </Link>
               </StaggerItem>
             ))}

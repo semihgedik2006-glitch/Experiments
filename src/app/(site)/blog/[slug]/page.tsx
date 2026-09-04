@@ -7,6 +7,7 @@ import { CommentForm } from "@/components/comment-form";
 import { CommentReplyToggle } from "@/components/comment-reply-toggle";
 import { getPostBySlug, getApprovedComments } from "@/lib/data";
 import { formatDate } from "@/lib/format";
+import { PostThumb } from "@/components/blog/post-thumb";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -36,6 +37,17 @@ export default async function BlogPostPage({ params }: Props) {
           {post.publishedAt ? formatDate(post.publishedAt) : ""}
         </span>
         <h1 className="mt-3 text-3xl font-black tracking-tight md:text-4xl">{post.title}</h1>
+
+        {post.coverImage && (
+          <div className="mt-8 overflow-hidden rounded-2xl border border-border">
+            <PostThumb
+              slug={post.slug}
+              title={post.title}
+              coverImage={post.coverImage}
+              className="h-64 md:h-80"
+            />
+          </div>
+        )}
 
         <div className="prose prose-invert mt-10 max-w-none space-y-5 text-[15px] leading-7 text-foreground/90">
           {post.content.split("\n").filter(Boolean).map((paragraph, i) => (
