@@ -28,12 +28,12 @@ export function Header() {
       }`}
     >
       <ScrollProgress />
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="transition-transform hover:scale-105">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-6">
+        <Link href="/" className="shrink-0 transition-transform hover:scale-105">
           <Logo className="h-8 w-auto" />
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-5 lg:flex xl:gap-8">
           {mainNav.map((item) => {
             const active = pathname === item.href;
             return (
@@ -59,18 +59,18 @@ export function Header() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden shrink-0 items-center gap-3 lg:flex xl:gap-4">
           <SearchOverlay />
           <ThemeToggle />
           <Link
             href="/probetermin"
-            className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-[#0d0d0f] transition-transform hover:scale-105 active:scale-95"
+            className="whitespace-nowrap rounded-full bg-lime px-5 py-2 text-sm font-semibold text-[#0d0d0f] transition-transform hover:scale-105 active:scale-95"
           >
             Probetermin buchen
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 lg:hidden">
           <SearchOverlay />
           <button
             type="button"
@@ -101,7 +101,7 @@ export function Header() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden border-t border-border md:hidden"
+            className="overflow-hidden border-t border-border lg:hidden"
           >
             <nav className="flex flex-col gap-4 px-6 py-4">
               {mainNav.map((item) => (
