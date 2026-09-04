@@ -18,7 +18,7 @@ export default async function KontaktPage() {
       <Container className="grid gap-14 md:grid-cols-2">
         <div>
           <h1 className="text-4xl font-black tracking-tight md:text-5xl">
-            Kontakt <span className="text-lime">aufnehmen</span>
+            Kontakt <span className="text-accent-strong">aufnehmen</span>
           </h1>
           <p className="mt-4 max-w-md text-muted">
             Fragen zu EMS-Training, unseren Preisen oder deinem Probetermin?
@@ -33,14 +33,14 @@ export default async function KontaktPage() {
                 )}
                 <ul className="space-y-4 text-sm">
                   <li className="flex items-start gap-3">
-                    <MapPin size={18} className="mt-0.5 shrink-0 text-lime" />
+                    <MapPin size={18} className="mt-0.5 shrink-0 text-accent" />
                     <span>
                       {studio.street}, {studio.postalCode} {studio.city}
                     </span>
                   </li>
                   {studio.phone && (
                     <li className="flex items-start gap-3">
-                      <Phone size={18} className="mt-0.5 shrink-0 text-lime" />
+                      <Phone size={18} className="mt-0.5 shrink-0 text-accent" />
                       <a href={`tel:${studio.phone}`} className="hover:underline">
                         {studio.phone}
                       </a>
@@ -48,7 +48,7 @@ export default async function KontaktPage() {
                   )}
                   {studio.email && (
                     <li className="flex items-start gap-3">
-                      <Mail size={18} className="mt-0.5 shrink-0 text-lime" />
+                      <Mail size={18} className="mt-0.5 shrink-0 text-accent" />
                       <a href={`mailto:${studio.email}`} className="hover:underline">
                         {studio.email}
                       </a>

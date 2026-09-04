@@ -10,7 +10,7 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-[80vh] flex-col items-center justify-center px-6">
       <p className="mb-8 text-lg font-semibold tracking-tight">
-        Körper<span className="text-lime">formen</span> Admin
+        Körper<span className="text-accent">formen</span> Admin
       </p>
       <LoginForm />
     </div>

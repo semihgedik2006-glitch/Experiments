@@ -64,13 +64,13 @@ export function BlogForm({
       </label>
 
       {state?.message && (
-        <p className={`text-sm ${state.ok ? "text-lime" : "text-red-500"}`}>{state.message}</p>
+        <p className={`text-sm ${state.ok ? "text-accent" : "text-red-500"}`}>{state.message}</p>
       )}
 
       <button
         type="submit"
         disabled={pending}
-        className="rounded-full bg-lime px-6 py-3 text-sm font-semibold text-[#0d0d0f] disabled:opacity-50"
+        className="rounded-full bg-lime px-6 py-3 text-sm font-semibold text-on-lime disabled:opacity-50"
       >
         {pending ? "Speichern..." : submitLabel}
       </button>

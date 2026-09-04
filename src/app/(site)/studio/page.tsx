@@ -25,7 +25,7 @@ export default async function StudioPage() {
         title={
           <>
             {studios.length > 1 ? "Unsere " : ""}Studio{studios.length > 1 ? "s" : ""}{" "}
-            <span className="text-lime">finden</span>
+            <span className="text-accent">finden</span>
           </>
         }
         intro={
@@ -49,12 +49,12 @@ export default async function StudioPage() {
               />
             </Reveal>
 
-            <Reveal delay={0.15} className="rounded-2xl border border-border bg-surface-raised p-8">
+            <Reveal delay={0.15} className="card p-8">
               <h2 className="text-xl font-semibold">{studio.name}</h2>
 
               <ul className="mt-6 space-y-5 text-sm">
                 <li className="flex items-start gap-3">
-                  <MapPin size={18} className="mt-0.5 shrink-0 text-lime" />
+                  <MapPin size={18} className="mt-0.5 shrink-0 text-accent" />
                   <span>
                     {studio.street}
                     <br />
@@ -63,7 +63,7 @@ export default async function StudioPage() {
                 </li>
                 {studio.phone && (
                   <li className="flex items-start gap-3">
-                    <Phone size={18} className="mt-0.5 shrink-0 text-lime" />
+                    <Phone size={18} className="mt-0.5 shrink-0 text-accent" />
                     <a href={`tel:${studio.phone}`} className="hover:underline">
                       {studio.phone}
                     </a>
@@ -71,14 +71,14 @@ export default async function StudioPage() {
                 )}
                 {studio.email && (
                   <li className="flex items-start gap-3">
-                    <Mail size={18} className="mt-0.5 shrink-0 text-lime" />
+                    <Mail size={18} className="mt-0.5 shrink-0 text-accent" />
                     <a href={`mailto:${studio.email}`} className="hover:underline">
                       {studio.email}
                     </a>
                   </li>
                 )}
                 <li className="flex items-start gap-3">
-                  <Clock size={18} className="mt-0.5 shrink-0 text-lime" />
+                  <Clock size={18} className="mt-0.5 shrink-0 text-accent" />
                   <span className="whitespace-pre-line">{studio.openingHours}</span>
                 </li>
               </ul>

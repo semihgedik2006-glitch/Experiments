@@ -87,7 +87,7 @@ export function AdminNav() {
                         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                       />
                     )}
-                    <item.icon size={16} className={`relative shrink-0 ${isActive ? "text-lime" : ""}`} />
+                    <item.icon size={16} className={`relative shrink-0 ${isActive ? "text-accent" : ""}`} />
                     <span className="relative">{item.label}</span>
                   </Link>
                 </motion.div>

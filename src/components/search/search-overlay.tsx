@@ -64,7 +64,7 @@ export function SearchOverlay() {
         whileTap={{ scale: 0.9 }}
         onClick={() => setOpen(true)}
         aria-label="Suche öffnen"
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-lime hover:text-lime"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-lime hover:text-accent"
       >
         <Search size={16} />
       </motion.button>
@@ -88,7 +88,7 @@ export function SearchOverlay() {
               exit={{ opacity: 0, y: -20, scale: 0.96 }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
               onClick={(event) => event.stopPropagation()}
-              className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-surface-raised shadow-2xl"
+              className="w-full max-w-xl overflow-hidden card shadow-2xl"
             >
               <div className="flex items-center gap-3 border-b border-border px-5 py-4">
                 <Search size={18} className="shrink-0 text-muted" />
@@ -128,7 +128,7 @@ export function SearchOverlay() {
                       onClick={() => goTo(result.href)}
                       className="flex w-full flex-col items-start gap-0.5 rounded-xl px-3 py-3 text-left transition-colors hover:bg-surface"
                     >
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-lime">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">
                         {result.type}
                       </span>
                       <span className="text-sm font-medium">{result.title}</span>

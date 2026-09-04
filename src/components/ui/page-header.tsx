@@ -22,7 +22,7 @@ export function PageHeader({
     <section className="border-b border-border py-16 sm:py-20 md:py-28">
       <Container>
         {kicker && (
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
             {kicker}
           </span>
         )}

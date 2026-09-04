@@ -36,7 +36,7 @@ export default async function ProbeterminPage() {
     <section className="py-20 sm:py-24 md:py-32">
       <Container className="max-w-2xl">
         <h1 className="text-4xl font-black tracking-tight md:text-5xl">
-          Kostenloser <span className="text-lime">Probetermin</span>
+          Kostenloser <span className="text-accent-strong">Probetermin</span>
         </h1>
         <p className="mt-4 text-muted">
           Wähle einen passenden Termin und lerne EMS-Training unverbindlich

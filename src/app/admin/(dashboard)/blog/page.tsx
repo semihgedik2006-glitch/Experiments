@@ -11,7 +11,7 @@ export default async function AdminBlogPage() {
         <h1 className="text-2xl font-bold tracking-tight">Blog</h1>
         <Link
           href="/admin/blog/neu"
-          className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-[#0d0d0f]"
+          className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime"
         >
           Neuer Artikel
         </Link>
@@ -30,7 +30,7 @@ export default async function AdminBlogPage() {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <Link href={`/admin/blog/${post.id}`} className="text-sm text-lime hover:underline">
+              <Link href={`/admin/blog/${post.id}`} className="text-sm text-accent hover:underline">
                 Bearbeiten
               </Link>
               <form

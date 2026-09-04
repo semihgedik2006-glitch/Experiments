@@ -12,7 +12,7 @@ const statusLabels: Record<string, string> = {
 
 const statusStyles: Record<string, string> = {
   PENDING: "bg-yellow-500/15 text-yellow-500",
-  CONFIRMED: "bg-lime/15 text-lime",
+  CONFIRMED: "bg-lime/15 text-accent",
   CANCELLED: "bg-red-500/15 text-red-500",
 };
 
@@ -106,7 +106,7 @@ export default async function AdminBookingsPage({
                     await updateBookingStatus(booking.id, "CONFIRMED");
                   }}
                 >
-                  <button className="rounded-full bg-lime px-4 py-2 text-xs font-semibold text-[#0d0d0f]">
+                  <button className="rounded-full bg-lime px-4 py-2 text-xs font-semibold text-on-lime">
                     Bestätigen
                   </button>
                 </form>

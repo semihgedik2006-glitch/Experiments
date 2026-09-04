@@ -30,7 +30,7 @@ export function ActivationSequence() {
     <section className="border-t border-border py-24">
       <Container>
         <Reveal className="max-w-2xl">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
             Im Training
           </span>
           <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">
@@ -46,7 +46,7 @@ export function ActivationSequence() {
           {steps.map((item) => (
             <StaggerItem key={item.step}>
               <div className="border-t border-border pt-6">
-                <span className="text-sm font-bold tracking-widest text-lime">
+                <span className="text-sm font-bold tracking-widest text-accent">
                   {item.step}
                 </span>
                 <h3 className="mt-3 text-xl font-bold tracking-tight">{item.heading}</h3>

@@ -88,13 +88,13 @@ export function TemplateForm({ studios }: { studios: { id: string; name: string 
       <button
         type="submit"
         disabled={pending}
-        className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-[#0d0d0f] disabled:opacity-50"
+        className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime disabled:opacity-50"
       >
         {pending ? "..." : "Wiederkehrend anlegen"}
       </button>
 
       {state?.message && (
-        <p className={`w-full text-sm ${state.ok ? "text-lime" : "text-red-500"}`}>{state.message}</p>
+        <p className={`w-full text-sm ${state.ok ? "text-accent" : "text-red-500"}`}>{state.message}</p>
       )}
     </form>
   );

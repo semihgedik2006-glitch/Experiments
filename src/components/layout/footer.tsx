@@ -17,7 +17,7 @@ export async function Footer() {
   const studio = studios[0];
 
   return (
-    <footer className="border-t border-border bg-surface">
+    <footer className="on-ink">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-4">
         <div>
           <Logo className="h-8 w-auto" />
@@ -30,7 +30,7 @@ export async function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={label}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-border transition-colors hover:border-lime hover:text-lime"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border transition-colors hover:border-lime hover:text-accent"
               >
                 <Icon width={16} height={16} />
               </a>
@@ -58,7 +58,7 @@ export async function Footer() {
           <ul className="mt-4 space-y-3 text-sm text-muted">
             {studio && (
               <li className="flex items-start gap-2.5">
-                <MapPin size={15} className="mt-0.5 shrink-0 text-lime" />
+                <MapPin size={15} className="mt-0.5 shrink-0 text-accent" />
                 <span>
                   {studio.street}
                   <br />
@@ -67,7 +67,7 @@ export async function Footer() {
               </li>
             )}
             <li className="flex items-start gap-2.5">
-              <Phone size={15} className="mt-0.5 shrink-0 text-lime" />
+              <Phone size={15} className="mt-0.5 shrink-0 text-accent" />
               <a
                 href={`tel:${(studio?.phone ?? siteConfig.contact.phone).replace(/\s/g, "")}`}
                 className="hover:text-foreground"
@@ -76,7 +76,7 @@ export async function Footer() {
               </a>
             </li>
             <li className="flex items-start gap-2.5">
-              <Mail size={15} className="mt-0.5 shrink-0 text-lime" />
+              <Mail size={15} className="mt-0.5 shrink-0 text-accent" />
               <a
                 href={`mailto:${studio?.email || siteConfig.contact.email}`}
                 className="hover:text-foreground"
@@ -86,14 +86,14 @@ export async function Footer() {
             </li>
             {studio?.openingHours && (
               <li className="flex items-start gap-2.5">
-                <Clock size={15} className="mt-0.5 shrink-0 text-lime" />
+                <Clock size={15} className="mt-0.5 shrink-0 text-accent" />
                 <span className="whitespace-pre-line">{studio.openingHours}</span>
               </li>
             )}
           </ul>
 
           {studios.length > 1 && (
-            <Link href="/studio" className="mt-4 inline-block text-sm text-lime hover:underline">
+            <Link href="/studio" className="mt-4 inline-block text-sm text-accent hover:underline">
               + {studios.length - 1} weitere{studios.length - 1 === 1 ? "r" : ""} Standort
               {studios.length - 1 === 1 ? "" : "e"}
             </Link>

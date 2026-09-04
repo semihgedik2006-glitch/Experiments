@@ -108,7 +108,7 @@ export default function EmsTrainingPage() {
     <>
       <PageHeader
         kicker="EMS verstehen"
-        title={<>EMS-Training <span className="text-lime">erklärt</span></>}
+        title={<>EMS-Training <span className="text-accent">erklärt</span></>}
         intro="Elektro-Muskel-Stimulation klingt nach Science-Fiction, ist aber seit Jahrzehnten in Physiotherapie und Leistungssport bewährt. Hier erfährst du, wie es funktioniert, wie eine Einheit abläuft und ob es zu dir passt."
       />
 
@@ -153,7 +153,7 @@ export default function EmsTrainingPage() {
               <thead>
                 <tr className="border-b border-border text-left">
                   <th className="py-4 pr-4 font-semibold text-muted"> </th>
-                  <th className="py-4 pr-4 font-semibold text-lime">EMS bei Körperformen</th>
+                  <th className="py-4 pr-4 font-semibold text-accent">EMS bei Körperformen</th>
                   <th className="py-4 font-semibold">Klassisches Studio</th>
                 </tr>
               </thead>
@@ -163,7 +163,7 @@ export default function EmsTrainingPage() {
                     <td className="py-4 pr-4 font-medium">{row.label}</td>
                     <td className="py-4 pr-4">
                       <span className="flex items-start gap-2">
-                        <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-lime" />
+                        <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-accent" />
                         {row.ems}
                       </span>
                     </td>
@@ -194,8 +194,8 @@ export default function EmsTrainingPage() {
           <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {audiences.map(({ icon: Icon, title, text }) => (
               <StaggerItem key={title}>
-                <div className="h-full rounded-2xl border border-border bg-surface-raised p-6">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/15 text-lime">
+                <div className="h-full card p-6">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/15 text-accent">
                     <Icon size={20} />
                   </div>
                   <h3 className="mt-5 text-lg font-semibold">{title}</h3>
@@ -222,12 +222,12 @@ export default function EmsTrainingPage() {
           <div className="relative ml-3 border-l-2 border-border pl-8 md:ml-6">
             {processSteps.map((item, index) => (
               <Reveal key={item.step} delay={index * 0.08} className="relative pb-10 last:pb-0">
-                <span className="absolute -left-[41px] flex h-6 w-6 items-center justify-center rounded-full border-2 border-lime bg-background text-[10px] font-bold text-lime md:-left-[41px]">
+                <span className="absolute -left-[41px] flex h-6 w-6 items-center justify-center rounded-full border-2 border-lime bg-background text-[10px] font-bold text-accent md:-left-[41px]">
                   {index + 1}
                 </span>
                 <div className="flex flex-wrap items-baseline gap-3">
                   <h3 className="text-lg font-semibold">{item.step}</h3>
-                  <span className="rounded-full bg-lime/15 px-2.5 py-0.5 text-xs font-semibold text-lime">
+                  <span className="rounded-full bg-lime/15 px-2.5 py-0.5 text-xs font-semibold text-accent">
                     {item.duration}
                   </span>
                 </div>
@@ -274,7 +274,7 @@ export default function EmsTrainingPage() {
       <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
         <Container className="flex flex-col items-center text-center">
           <Reveal>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-lime/15 text-lime">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-lime/15 text-accent">
               <ShieldCheck size={22} />
             </div>
             <h2 className="mt-5 text-3xl font-bold tracking-tight">

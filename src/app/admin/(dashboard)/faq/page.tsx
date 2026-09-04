@@ -36,7 +36,7 @@ export default async function AdminFaqPage() {
             className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
           />
         </div>
-        <button className="mt-4 rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-[#0d0d0f] transition-opacity hover:opacity-90">
+        <button className="mt-4 rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-on-lime transition-opacity hover:opacity-90">
           Frage anlegen
         </button>
       </form>

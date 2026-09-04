@@ -38,7 +38,7 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
                 Wir verwenden nur technisch notwendige Cookies. Mit deiner
                 Zustimmung nutzen wir zusätzlich Google Analytics, um die
                 Website zu verbessern. Mehr dazu in unserer{" "}
-                <a href="/datenschutz" className="text-lime hover:underline">
+                <a href="/datenschutz" className="text-accent hover:underline">
                   Datenschutzerklärung
                 </a>
                 .
@@ -47,14 +47,14 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
                 <button
                   type="button"
                   onClick={() => choose("declined")}
-                  className="rounded-full border border-border px-5 py-2 text-sm font-semibold transition-colors hover:border-lime hover:text-lime"
+                  className="rounded-full border border-border px-5 py-2 text-sm font-semibold transition-colors hover:border-lime hover:text-accent"
                 >
                   Nur notwendige
                 </button>
                 <button
                   type="button"
                   onClick={() => choose("accepted")}
-                  className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-[#0d0d0f] transition-transform hover:scale-105"
+                  className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime transition-transform hover:scale-105"
                 >
                   Akzeptieren
                 </button>

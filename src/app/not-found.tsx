@@ -28,7 +28,7 @@ export default function NotFound() {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.7, delay: 0.15, ease: easeOut }}
-        className="font-display text-glow mt-10 text-8xl font-black text-lime md:text-9xl"
+        className="font-display text-glow mt-10 text-8xl font-black text-accent-strong md:text-9xl"
       >
         404
       </motion.p>
@@ -60,13 +60,13 @@ export default function NotFound() {
       >
         <Link
           href="/"
-          className="rounded-full bg-lime px-7 py-3 text-sm font-semibold text-[#0d0d0f] transition-transform hover:scale-105 active:scale-95"
+          className="rounded-full bg-lime px-7 py-3 text-sm font-semibold text-on-lime transition-transform hover:scale-105 active:scale-95"
         >
           Zur Startseite
         </Link>
         <Link
           href="/probetermin"
-          className="rounded-full border border-border px-7 py-3 text-sm font-semibold transition-colors hover:border-lime hover:text-lime"
+          className="rounded-full border border-border px-7 py-3 text-sm font-semibold transition-colors hover:border-lime hover:text-accent"
         >
           Probetermin buchen
         </Link>

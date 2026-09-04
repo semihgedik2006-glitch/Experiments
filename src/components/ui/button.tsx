@@ -9,9 +9,9 @@ const MotionLink = motion.create(Link);
 type Variant = "primary" | "secondary" | "ghost";
 
 const variantClasses: Record<Variant, string> = {
-  primary: "bg-lime text-[#0d0d0f]",
-  secondary: "border border-border text-foreground hover:border-lime hover:text-lime",
-  ghost: "text-foreground hover:text-lime",
+  primary: "bg-lime text-on-lime",
+  secondary: "border border-border text-foreground hover:border-lime hover:text-accent",
+  ghost: "text-foreground hover:text-accent",
 };
 
 export function Button({

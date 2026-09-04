@@ -9,7 +9,7 @@ export function TestimonialsTeaser() {
   const featured = testimonials.slice(0, 3);
 
   return (
-    <section className="border-t border-border py-20 sm:py-24 md:py-32">
+    <section className="on-ink py-20 sm:py-24 md:py-32">
       <Container>
         <SectionHeader
           kicker="Erfahrungen"
@@ -19,7 +19,7 @@ export function TestimonialsTeaser() {
           action={
             <Link
               href="/erfolgsgeschichten"
-              className="hidden items-center gap-1 text-sm font-medium text-lime hover:underline md:flex"
+              className="hidden items-center gap-1 text-sm font-medium text-accent hover:underline md:flex"
             >
               Alle Geschichten <ArrowRight size={14} />
             </Link>
@@ -29,8 +29,8 @@ export function TestimonialsTeaser() {
         <Stagger className="grid gap-6 md:grid-cols-3">
           {featured.map((t) => (
             <StaggerItem key={t.name}>
-              <figure className="flex h-full flex-col rounded-2xl border border-border bg-surface-raised p-7">
-                <div className="flex gap-1 text-lime" aria-label={`${t.rating} von 5 Sternen`}>
+              <figure className="flex h-full flex-col card p-7">
+                <div className="flex gap-1 text-accent" aria-label={`${t.rating} von 5 Sternen`}>
                   {Array.from({ length: t.rating }).map((_, i) => (
                     <Star key={i} size={14} fill="currentColor" />
                   ))}
@@ -39,7 +39,7 @@ export function TestimonialsTeaser() {
                   &bdquo;{t.quote}&ldquo;
                 </blockquote>
                 <figcaption className="mt-5 flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-lime/15 text-sm font-bold text-lime">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-lime/15 text-sm font-bold text-accent">
                     {t.name.charAt(0)}
                   </span>
                   <span className="text-sm">

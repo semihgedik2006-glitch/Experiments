@@ -12,7 +12,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
     <div className="mx-auto flex min-h-[80vh] max-w-6xl gap-10 px-6 py-10">
       <aside className="w-56 shrink-0">
         <p className="mb-8 text-sm font-semibold tracking-tight">
-          Körper<span className="text-lime">formen</span> Admin
+          Körper<span className="text-accent">formen</span> Admin
         </p>
 
         <AdminNav />

@@ -28,7 +28,7 @@ export function ThemeToggle() {
       whileTap={{ scale: 0.92 }}
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "Zu hellem Design wechseln" : "Zu dunklem Design wechseln"}
-      className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border text-foreground transition-colors hover:border-lime hover:text-lime"
+      className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border text-foreground transition-colors hover:border-lime hover:text-accent"
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span

@@ -14,7 +14,7 @@ export default function BlogLoading() {
         <Container>
           <div className="grid gap-6 md:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="rounded-2xl border border-border bg-surface-raised p-6">
+              <div key={i} className="card p-6">
                 <div className="h-3 w-24 animate-pulse rounded bg-surface" />
                 <div className="mt-4 h-5 w-full animate-pulse rounded bg-surface" />
                 <div className="mt-2 h-5 w-2/3 animate-pulse rounded bg-surface" />

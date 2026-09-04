@@ -2,36 +2,98 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ---------------------------------------------------------------------------
+   Farbwelt: warme, sandfarbene Grundfläche mit tiefdunklen Einschüben.
+   Reines Weiß wirkt in Verbindung mit dem Grün schnell klinisch; die
+   gebrochene, leicht warme Fläche nimmt der Seite das Kühle, ohne sie
+   verspielt zu machen. Die dunklen Abschnitte (.on-ink) setzen die Akzente.
+
+   Getrennt werden bewusst zwei Grüntöne:
+   --color-lime   für Flächen (Knöpfe, Rahmen, Icon-Hintergründe)
+   --color-accent für Schrift
+   Der Flächenton ist zu hell, um als Text auf heller Fläche lesbar zu sein -
+   vorher stand er bei rund 2,9:1 und verfehlte damit die
+   Barrierefreiheitsvorgabe von 4,5:1 deutlich.
+--------------------------------------------------------------------------- */
 :root {
-  /* Light theme uses the darker green from the original Körperformen logo -
-     neon lime has almost no contrast on white. */
-  --color-lime: #93c02f;
-  --color-lime-dim: #7da428;
+  --color-lime: #8cb92c;
+  /* Schriftgrün für normale Textgrößen - erfüllt die Vorgabe von 4,5:1
+     auch auf der sandfarbenen Fläche. */
+  --color-accent: #527012;
+  /* Für sehr große Überschriften darf es kräftiger sein: dort genügen
+     3:1, und ein zu dunkles Grün nähme der Startseite die Leuchtkraft. */
+  --color-accent-strong: #658a1e;
+  --color-lime-dim: #6f9622;
+  /* Schrift auf grüner Fläche. */
+  --color-on-lime: #12160b;
   --color-electric-blue: #4fa8ff;
 
-  --background: #ffffff;
-  --surface: #f4f4f5;
-  --surface-raised: #ffffff;
-  --foreground: #121214;
-  --muted: #63636b;
-  --border-color: #e4e4e7;
+  --background: #faf8f3;
+  --surface: #f0ebe0;
+  --surface-raised: #fffdf9;
+  --foreground: #191b15;
+  --muted: #5d5f55;
+  --border-color: #e2dccd;
 
-  /* Ambient glows need far less presence on white backgrounds. */
-  --aurora-opacity: 0.16;
+  /* Farbe der dunklen Abschnitte - ein sehr dunkles, leicht grünstichiges
+     Anthrazit, damit sie zur Marke gehören und nicht wie fremde Kästen
+     wirken. */
+  --ink: #161a14;
+  --ink-surface: #1e231b;
+  --ink-raised: #262c22;
+  --ink-foreground: #f4f2ea;
+  --ink-muted: #a3a89b;
+  --ink-border: #333a2e;
+  --ink-lime: #c3f53c;
+
+  /* Ambient glows need far less presence on light backgrounds. */
+  --aurora-opacity: 0.14;
 }
 
 .dark {
   --color-lime: #c3f53c;
+  --color-accent: #c3f53c;
+  --color-accent-strong: #c3f53c;
   --color-lime-dim: #a3d92f;
+  --color-on-lime: #0d0f0a;
 
-  --background: #0d0d0f;
-  --surface: #17171a;
-  --surface-raised: #1e1e22;
-  --foreground: #f5f5f7;
-  --muted: #9a9aa2;
-  --border-color: #2a2a2f;
+  --background: #0f120e;
+  --surface: #171b15;
+  --surface-raised: #1f241d;
+  --foreground: #f4f2ea;
+  --muted: #9ba193;
+  --border-color: #2c3229;
+
+  --ink: #171c15;
+  --ink-surface: #1f251d;
+  --ink-raised: #272e24;
+  --ink-foreground: #f4f2ea;
+  --ink-muted: #a3a89b;
+  --ink-border: #343b30;
+  --ink-lime: #c3f53c;
 
   --aurora-opacity: 0.28;
+}
+
+/* Ein dunkler Abschnitt schreibt die Farbvariablen nur für sich selbst um.
+   Dadurch passen sich alle Bausteine darin von allein an - eine Karte mit
+   bg-surface-raised, ein Text mit text-muted oder eine Linie mit
+   border-border müssen nichts über ihre Umgebung wissen. */
+.on-ink {
+  --background: var(--ink);
+  --surface: var(--ink-surface);
+  --surface-raised: var(--ink-raised);
+  --foreground: var(--ink-foreground);
+  --muted: var(--ink-muted);
+  --border-color: var(--ink-border);
+  --color-lime: var(--ink-lime);
+  --color-accent: var(--ink-lime);
+  --color-accent-strong: var(--ink-lime);
+  --color-on-lime: #0d0f0a;
+  --aurora-opacity: 0.3;
+
+  background-color: var(--ink);
+  color: var(--ink-foreground);
 }
 
 @theme inline {
@@ -42,10 +104,13 @@
   --color-muted: var(--muted);
   --color-border: var(--border-color);
   --color-lime: var(--color-lime);
+  --color-accent: var(--color-accent);
+  --color-accent-strong: var(--color-accent-strong);
   --color-lime-dim: var(--color-lime-dim);
+  --color-on-lime: var(--color-on-lime);
   --color-electric-blue: var(--color-electric-blue);
-  --font-sans: var(--font-titillium);
-  --font-display: var(--font-orbitron);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
 }
 
 html {
@@ -92,8 +157,97 @@ select:focus {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-lime) 22%, transparent);
 }
 
+/* Alle Überschriften tragen die Display-Schrift. Vorher galt das nur für
+   die Startseiten-Überschrift und die Kennzahlen - der Rest der Seite lief
+   in der Fließtextschrift und wirkte dadurch beliebig. */
+h1,
+h2,
+h3,
 .font-display {
-  font-family: var(--font-display), var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-heading), var(--font-body), Arial, Helvetica, sans-serif;
+  letter-spacing: -0.02em;
+  /* Archivo baut breiter als die Vorgängerschrift. Lange deutsche
+     Zusammensetzungen wie "Geschäftsbedingungen" liefen dadurch auf
+     schmalen Bildschirmen aus dem Bild - beides zusammen bricht sie
+     zuverlässig um, bevorzugt an einer sinnvollen Silbengrenze. */
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Karten bekommen einen weichen, warmen Schatten statt nur einer Linie.
+   Auf der sandfarbenen Grundfläche hebt das die cremeweißen Karten
+   spürbar ab - vorher lagen flache Kästen auf flachem Grund und die Seite
+   wirkte dadurch tafelartig. */
+.card {
+  border-radius: 1rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--surface-raised);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--foreground) 5%, transparent),
+    0 8px 24px -12px color-mix(in srgb, var(--foreground) 14%, transparent);
+}
+
+/* In dunklen Abschnitten trägt ein Schatten nichts bei - dort schafft eine
+   etwas hellere Fläche die Abstufung. */
+.on-ink .card,
+.dark .card {
+  box-shadow: none;
+}
+
+/* Logo-Umschaltung. Neben der dunklen Ansicht muss auch ein dunkler
+   Abschnitt innerhalb der hellen Ansicht greifen - sonst steht im Footer
+   die Fassung für hellen Untergrund auf dunklem Grund. */
+.logo-on-dark {
+  display: none;
+}
+.dark .logo-on-light,
+.on-ink .logo-on-light {
+  display: none;
+}
+.dark .logo-on-dark,
+.on-ink .logo-on-dark {
+  display: block;
+}
+
+/* Kartenkopf für Blogbeiträge ohne Titelbild. Der Farbton kommt als
+   --thumb-hue aus dem Beitrag, alles Weitere entscheidet die Ansicht. */
+.post-thumb {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--thumb-hue) 42% 87%),
+    hsl(calc(var(--thumb-hue) + 18) 34% 76%)
+  );
+}
+.post-thumb-grid {
+  background-image:
+    linear-gradient(currentColor 1px, transparent 1px),
+    linear-gradient(90deg, currentColor 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: hsl(var(--thumb-hue) 40% 35%);
+  opacity: 0.18;
+}
+.post-thumb-letter {
+  color: hsl(var(--thumb-hue) 45% 30%);
+  opacity: 0.25;
+}
+
+.dark .post-thumb,
+.on-ink .post-thumb {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--thumb-hue) 20% 20%),
+    hsl(calc(var(--thumb-hue) + 18) 24% 13%)
+  );
+}
+.dark .post-thumb-grid,
+.on-ink .post-thumb-grid {
+  color: hsl(var(--thumb-hue) 35% 70%);
+  opacity: 0.12;
+}
+.dark .post-thumb-letter,
+.on-ink .post-thumb-letter {
+  color: hsl(var(--thumb-hue) 45% 72%);
+  opacity: 0.22;
 }
 
 /* Neon glow reads as broken on light backgrounds - dark theme only. */
@@ -183,5 +337,5 @@ body {
 
 ::selection {
   background: var(--color-lime);
-  color: #0d0d0f;
+  color: var(--color-on-lime);
 }

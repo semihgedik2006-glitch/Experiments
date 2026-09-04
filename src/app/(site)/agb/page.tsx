@@ -218,7 +218,7 @@ export default function AgbPage() {
               Die Verarbeitung personenbezogener Daten erfolgt ausschließlich nach
               Maßgabe der geltenden Datenschutzbestimmungen. Einzelheiten sind
               unserer{" "}
-              <a href="/datenschutz" className="text-lime hover:underline">
+              <a href="/datenschutz" className="text-accent hover:underline">
                 Datenschutzerklärung
               </a>{" "}
               zu entnehmen.

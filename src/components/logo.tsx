@@ -16,13 +16,16 @@ import Image from "next/image";
 export function Logo({ className = "" }: { className?: string }) {
   return (
     <>
+      {/* Die Umschaltung erledigt CSS (siehe globals.css). Sie muss neben der
+          dunklen Ansicht auch die dunklen Abschnitte innerhalb der hellen
+          Ansicht erfassen - etwa den Footer. */}
       <Image
         src="/logo-light.svg"
         alt="Körperformen"
         width={145}
         height={40}
         priority
-        className={`${className} dark:hidden`}
+        className={`logo-on-light ${className}`}
       />
       <Image
         src="/logo-dark.svg"
@@ -31,7 +34,7 @@ export function Logo({ className = "" }: { className?: string }) {
         width={145}
         height={40}
         priority
-        className={`hidden ${className} dark:block`}
+        className={`logo-on-dark ${className}`}
       />
     </>
   );

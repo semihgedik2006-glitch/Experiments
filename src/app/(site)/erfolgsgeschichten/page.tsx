@@ -17,7 +17,7 @@ export default function ErfolgsgeschichtenPage() {
     <>
       <PageHeader
         kicker="Erfahrungen"
-        title={<>Erfolgs<span className="text-lime">geschichten</span></>}
+        title={<>Erfolgs<span className="text-accent">geschichten</span></>}
         intro="Unsere Mitglieder kommen mit ganz unterschiedlichen Zielen - vom schmerzfreien Rücken bis zur Strandfigur. Das sagen sie über ihr Training bei Körperformen."
       />
 
@@ -27,7 +27,7 @@ export default function ErfolgsgeschichtenPage() {
             {testimonials.map((t) => (
               <StaggerItem key={t.name}>
                 <figure className="flex h-full flex-col rounded-2xl border border-border bg-surface p-7">
-                  <div className="flex gap-1 text-lime" aria-label={`${t.rating} von 5 Sternen`}>
+                  <div className="flex gap-1 text-accent" aria-label={`${t.rating} von 5 Sternen`}>
                     {Array.from({ length: t.rating }).map((_, i) => (
                       <Star key={i} size={15} fill="currentColor" />
                     ))}
@@ -36,7 +36,7 @@ export default function ErfolgsgeschichtenPage() {
                     &bdquo;{t.quote}&ldquo;
                   </blockquote>
                   <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-5">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lime/15 text-sm font-bold text-lime">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lime/15 text-sm font-bold text-accent">
                       {t.name.charAt(0)}
                     </span>
                     <span>

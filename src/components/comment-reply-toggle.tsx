@@ -26,7 +26,7 @@ export function CommentReplyToggle({
     <button
       type="button"
       onClick={() => setOpen(true)}
-      className="mt-3 text-xs font-semibold text-lime hover:underline"
+      className="mt-3 text-xs font-semibold text-accent hover:underline"
     >
       Antworten
     </button>

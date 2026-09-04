@@ -21,7 +21,7 @@ export default async function AdminMessagesPage() {
                 <p className="font-semibold">
                   {msg.subject}{" "}
                   {!msg.read && (
-                    <span className="ml-2 rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-[#0d0d0f]">
+                    <span className="ml-2 rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-on-lime">
                       Neu
                     </span>
                   )}

@@ -36,8 +36,8 @@ export function TrustSection() {
             const Icon = icons[point.icon];
             return (
               <StaggerItem key={point.title}>
-                <div className="h-full rounded-2xl border border-border bg-surface-raised p-7">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-lime">
+                <div className="h-full card p-7">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent">
                     <Icon size={20} />
                   </div>
                   <h3 className="mt-6 text-lg font-semibold tracking-tight">{point.title}</h3>
@@ -52,7 +52,7 @@ export function TrustSection() {
           <Stagger className="mt-12 grid gap-6 text-center sm:grid-cols-2 lg:grid-cols-4">
             {studioFacts.map((fact) => (
               <StaggerItem key={fact.label}>
-                <p className="font-display text-3xl font-black text-lime">{fact.value}</p>
+                <p className="font-display text-3xl font-black text-accent">{fact.value}</p>
                 <p className="mt-2 text-sm text-muted">{fact.label}</p>
               </StaggerItem>
             ))}
@@ -67,11 +67,11 @@ export function TrustSection() {
 
         <p className="mt-12 text-center text-sm text-muted">
           Fragen zum Kleingedruckten?{" "}
-          <Link href="/agb" className="text-lime hover:underline">
+          <Link href="/agb" className="text-accent hover:underline">
             Unsere AGB
           </Link>{" "}
           und die{" "}
-          <Link href="/datenschutz" className="text-lime hover:underline">
+          <Link href="/datenschutz" className="text-accent hover:underline">
             Datenschutzerklärung
           </Link>{" "}
           kannst du jederzeit nachlesen.
@@ -98,7 +98,7 @@ export function GoogleRatingBadge({ className = "" }: { className?: string }) {
       rel="noopener noreferrer"
       className={`inline-flex items-center gap-3 rounded-full border border-border bg-surface-raised px-5 py-2.5 text-sm transition-colors hover:border-lime ${className}`}
     >
-      <span className="flex gap-0.5 text-lime" aria-hidden>
+      <span className="flex gap-0.5 text-accent" aria-hidden>
         {Array.from({ length: full }).map((_, i) => (
           <Star key={i} size={14} fill="currentColor" />
         ))}

@@ -41,7 +41,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={`group relative text-sm transition-colors ${
-                  active ? "text-lime" : "text-muted hover:text-foreground"
+                  active ? "text-accent" : "text-muted hover:text-foreground"
                 }`}
               >
                 {item.label}
@@ -64,7 +64,7 @@ export function Header() {
           <ThemeToggle />
           <Link
             href="/probetermin"
-            className="whitespace-nowrap rounded-full bg-lime px-5 py-2 text-sm font-semibold text-[#0d0d0f] transition-transform hover:scale-105 active:scale-95"
+            className="whitespace-nowrap rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime transition-transform hover:scale-105 active:scale-95"
           >
             Probetermin buchen
           </Link>
@@ -117,7 +117,7 @@ export function Header() {
               <Link
                 href="/probetermin"
                 onClick={() => setOpen(false)}
-                className="mt-2 w-fit rounded-full bg-lime px-5 py-2 text-sm font-semibold text-[#0d0d0f]"
+                className="mt-2 w-fit rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime"
               >
                 Probetermin buchen
               </Link>

@@ -64,13 +64,13 @@ export default async function BlogPostPage({ params }: Props) {
 
         <div className="mt-16 border-t border-border pt-10">
           <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight">
-            <MessageCircle size={20} className="text-lime" />
+            <MessageCircle size={20} className="text-accent" />
             {comments.length > 0 ? `${comments.length} Kommentare` : "Kommentare"}
           </h2>
 
           <div className="mt-6 space-y-5">
             {comments.map((comment) => (
-              <div key={comment.id} className="rounded-2xl border border-border bg-surface-raised p-5">
+              <div key={comment.id} className="card p-5">
                 <div className="flex items-baseline justify-between gap-4">
                   <p className="text-sm font-semibold">{comment.authorName}</p>
                   <p className="text-xs text-muted">{formatDate(comment.createdAt)}</p>
@@ -85,7 +85,7 @@ export default async function BlogPostPage({ params }: Props) {
                           <p className="text-sm font-semibold">
                             {reply.authorName}
                             {reply.isTeam && (
-                              <span className="ml-2 rounded-full bg-lime/15 px-2 py-0.5 text-[10px] font-semibold text-lime">
+                              <span className="ml-2 rounded-full bg-lime/15 px-2 py-0.5 text-[10px] font-semibold text-accent">
                                 Team
                               </span>
                             )}

@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
       <AdminStagger className="mt-10 rounded-2xl border border-border bg-surface p-6">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold">Nächste Termine</h2>
-          <Link href="/admin/bookings" className="text-xs text-muted transition-colors hover:text-lime">
+          <Link href="/admin/bookings" className="text-xs text-muted transition-colors hover:text-accent">
             Alle Buchungen ansehen
           </Link>
         </div>
@@ -79,7 +79,7 @@ export default async function AdminDashboardPage() {
                   </span>
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                      booking.status === "CONFIRMED" ? "bg-lime/15 text-lime" : "bg-yellow-500/15 text-yellow-500"
+                      booking.status === "CONFIRMED" ? "bg-lime/15 text-accent" : "bg-yellow-500/15 text-yellow-500"
                     }`}
                   >
                     {booking.status === "CONFIRMED" ? "Bestätigt" : "Offen"}

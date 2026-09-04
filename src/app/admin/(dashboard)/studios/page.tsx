@@ -100,7 +100,7 @@ export default async function AdminStudiosPage() {
         <div className="mt-4">
           <StudioFields />
         </div>
-        <button className="mt-4 rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-[#0d0d0f] transition-opacity hover:opacity-90">
+        <button className="mt-4 rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-on-lime transition-opacity hover:opacity-90">
           Studio anlegen
         </button>
       </form>

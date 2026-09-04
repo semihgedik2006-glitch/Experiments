@@ -95,7 +95,7 @@ export default async function AdminSlotsPage() {
                 </td>
                 <td className="py-3 pr-4">
                   {slot.templateId && (
-                    <span className="rounded-full bg-lime/15 px-2 py-0.5 text-[10px] font-semibold text-lime">
+                    <span className="rounded-full bg-lime/15 px-2 py-0.5 text-[10px] font-semibold text-accent">
                       wiederkehrend
                     </span>
                   )}

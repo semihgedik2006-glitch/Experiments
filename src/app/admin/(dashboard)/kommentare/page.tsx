@@ -30,7 +30,7 @@ export default async function AdminCommentsPage() {
                 <p className="font-semibold">
                   {comment.authorName}{" "}
                   {!comment.approved && (
-                    <span className="ml-2 rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-[#0d0d0f]">
+                    <span className="ml-2 rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-on-lime">
                       Wartet auf Freigabe
                     </span>
                   )}
@@ -76,12 +76,12 @@ export default async function AdminCommentsPage() {
                       <p className="text-sm font-semibold">
                         {reply.authorName}
                         {reply.isTeam && (
-                          <span className="ml-2 rounded-full bg-lime/15 px-2 py-0.5 text-[10px] font-semibold text-lime">
+                          <span className="ml-2 rounded-full bg-lime/15 px-2 py-0.5 text-[10px] font-semibold text-accent">
                             Team-Antwort
                           </span>
                         )}
                         {!reply.approved && (
-                          <span className="ml-2 rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-[#0d0d0f]">
+                          <span className="ml-2 rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-on-lime">
                             Wartet auf Freigabe
                           </span>
                         )}
@@ -131,7 +131,7 @@ export default async function AdminCommentsPage() {
                 placeholder="Als Körperformen Team antworten..."
                 className="flex-1 rounded-lg border border-border bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
               />
-              <button className="shrink-0 rounded-full bg-lime px-4 py-2 text-xs font-semibold text-[#0d0d0f]">
+              <button className="shrink-0 rounded-full bg-lime px-4 py-2 text-xs font-semibold text-on-lime">
                 Antworten
               </button>
             </form>

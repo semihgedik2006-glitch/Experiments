@@ -19,7 +19,7 @@ export default async function BlogPage() {
     <section className="py-20 sm:py-24 md:py-32">
       <Container>
         <h1 className="text-4xl font-black tracking-tight md:text-5xl">
-          Der <span className="text-lime">Blog</span>
+          Der <span className="text-accent">Blog</span>
         </h1>
         <p className="mt-4 max-w-xl text-muted">
           Alles rund um EMS-Training, Ernährung und ein gesünderes Leben.
@@ -27,7 +27,7 @@ export default async function BlogPage() {
 
         {posts.length === 0 ? (
           <div className="mt-16 flex flex-col items-center rounded-2xl border border-dashed border-border bg-surface px-6 py-16 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-lime/15 text-lime">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-lime/15 text-accent">
               <Newspaper size={22} />
             </div>
             <p className="mt-5 font-semibold">Die ersten Artikel sind in Arbeit</p>
@@ -51,7 +51,7 @@ export default async function BlogPage() {
                     </span>
                     <h2 className="mt-3 text-lg font-semibold">{post.title}</h2>
                     <p className="mt-2 flex-1 text-sm text-muted">{post.excerpt}</p>
-                    <span className="mt-4 inline-flex items-center gap-1 text-sm text-lime">
+                    <span className="mt-4 inline-flex items-center gap-1 text-sm text-accent">
                       Weiterlesen <ArrowRight size={14} />
                     </span>
                   </div>

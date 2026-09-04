@@ -31,7 +31,7 @@ const items = [
 
 export function UspGrid() {
   return (
-    <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
+    <section className="py-20 sm:py-24 md:py-32">
       <Container>
         <SectionHeader
           kicker="Warum EMS"
@@ -46,9 +46,9 @@ export function UspGrid() {
               <motion.div
                 whileHover={{ y: -6 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="h-full rounded-2xl border border-border bg-surface-raised p-7 transition-colors hover:border-lime/40"
+                className="h-full card p-7 transition-colors hover:border-lime/40"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-lime">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent">
                   <Icon size={20} />
                 </div>
                 <h3 className="mt-6 text-lg font-semibold tracking-tight">{title}</h3>

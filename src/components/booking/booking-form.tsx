@@ -33,11 +33,11 @@ export function BookingForm({ days }: { days: DayGroup[] }) {
           initial={{ scale: 0, rotate: -30 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 18, delay: 0.15 }}
-          className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-lime/15 text-lime"
+          className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-lime/15 text-accent"
         >
           <CheckCircle2 size={30} />
         </motion.div>
-        <h3 className="mt-5 text-xl font-semibold text-lime">Anfrage gesendet!</h3>
+        <h3 className="mt-5 text-xl font-semibold text-accent">Anfrage gesendet!</h3>
         <p className="mt-3 text-muted">{state.message}</p>
       </motion.div>
     );
@@ -73,7 +73,7 @@ export function BookingForm({ days }: { days: DayGroup[] }) {
                   }}
                   className={`rounded-full border px-4 py-2 text-sm transition-colors ${
                     selectedDay === day.dateKey
-                      ? "border-lime bg-lime text-[#0d0d0f]"
+                      ? "border-lime bg-lime text-on-lime"
                       : "border-border hover:border-lime"
                   }`}
                 >
@@ -95,7 +95,7 @@ export function BookingForm({ days }: { days: DayGroup[] }) {
                     onClick={() => setSelectedSlotId(selectedSlotId === slot.id ? null : slot.id)}
                     className={`rounded-full border px-4 py-2 text-sm transition-colors ${
                       selectedSlotId === slot.id
-                        ? "border-lime bg-lime text-[#0d0d0f]"
+                        ? "border-lime bg-lime text-on-lime"
                         : "border-border hover:border-lime"
                     }`}
                   >
@@ -165,7 +165,7 @@ export function BookingForm({ days }: { days: DayGroup[] }) {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-lime px-7 py-3 text-sm font-semibold text-[#0d0d0f] transition-opacity disabled:opacity-50"
+        className="w-full rounded-full bg-lime px-7 py-3 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-50"
       >
         {pending ? "Wird gesendet..." : "Probetermin anfragen"}
       </button>

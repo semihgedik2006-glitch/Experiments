@@ -22,7 +22,7 @@ export function TrustBar({ className = "" }: { className?: string }) {
         const Icon = icons[point.icon];
         return (
           <li key={point.title} className="flex items-start gap-2.5">
-            <Icon size={16} className="mt-0.5 shrink-0 text-lime" />
+            <Icon size={16} className="mt-0.5 shrink-0 text-accent" />
             <span>
               <span className="font-medium text-foreground">{point.title}</span>
               <span className="hidden sm:inline"> - </span>

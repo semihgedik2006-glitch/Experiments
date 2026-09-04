@@ -119,7 +119,7 @@ export function Hero() {
             <br />
             <StaggeredLine
               text="Ein sichtbarer Unterschied."
-              className="text-glow text-lime"
+              className="text-glow text-accent-strong"
               startDelay={0.55}
             />
           </h1>

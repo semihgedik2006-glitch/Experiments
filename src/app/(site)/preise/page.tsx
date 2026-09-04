@@ -57,7 +57,7 @@ export default function PreisePage() {
     <>
       <PageHeader
         kicker="Konditionen"
-        title={<>Faire <span className="text-lime">Preise</span></>}
+        title={<>Faire <span className="text-accent">Preise</span></>}
         intro="Jedes Trainingsziel ist anders - deshalb besprechen wir dein persönliches Paket direkt bei deinem kostenlosen Probetermin. So zahlst du nur für das, was wirklich zu dir passt."
       />
 
@@ -69,7 +69,7 @@ export default function PreisePage() {
               <ul className="mt-6 space-y-4">
                 {highlights.map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm">
-                    <Check size={18} className="mt-0.5 shrink-0 text-lime" />
+                    <Check size={18} className="mt-0.5 shrink-0 text-accent" />
                     {item}
                   </li>
                 ))}
@@ -103,8 +103,8 @@ export default function PreisePage() {
           <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {priceFactors.map(({ icon: Icon, title, text }) => (
               <StaggerItem key={title}>
-                <div className="h-full rounded-2xl border border-border bg-surface-raised p-7">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-lime">
+                <div className="h-full card p-7">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent">
                     <Icon size={20} />
                   </div>
                   <h3 className="mt-6 text-lg font-semibold tracking-tight">{title}</h3>
@@ -114,7 +114,7 @@ export default function PreisePage() {
             ))}
           </Stagger>
 
-          <Reveal delay={0.1} className="mt-12 rounded-2xl border border-border bg-surface-raised p-8">
+          <Reveal delay={0.1} className="mt-12 card p-8">
             <p className="text-sm leading-relaxed text-muted">
               <strong className="text-foreground">Was wir dir zusichern:</strong> Beim
               Probetermin bekommst du ein konkretes Angebot mit allen Zahlen schriftlich -
@@ -138,11 +138,11 @@ export default function PreisePage() {
               wäre dort entweder unlesbar klein oder seitlich abgeschnitten. */}
           <Reveal className="space-y-4 sm:hidden">
             {timeComparison.map((row) => (
-              <div key={row.label} className="rounded-2xl border border-border bg-surface-raised p-5">
+              <div key={row.label} className="card p-5">
                 <p className="text-sm font-semibold">{row.label}</p>
                 <dl className="mt-3 space-y-2 text-sm">
                   <div className="flex justify-between gap-4">
-                    <dt className="text-lime">Körperformen</dt>
+                    <dt className="text-accent">Körperformen</dt>
                     <dd className="text-right font-medium">{row.ems}</dd>
                   </div>
                   <div className="flex justify-between gap-4">
@@ -159,7 +159,7 @@ export default function PreisePage() {
               <thead>
                 <tr className="border-b border-border text-left">
                   <th className="py-4 pr-4 font-semibold text-muted"> </th>
-                  <th className="py-4 pr-4 font-semibold text-lime">EMS bei Körperformen</th>
+                  <th className="py-4 pr-4 font-semibold text-accent">EMS bei Körperformen</th>
                   <th className="py-4 font-semibold">Klassisches Studio</th>
                 </tr>
               </thead>

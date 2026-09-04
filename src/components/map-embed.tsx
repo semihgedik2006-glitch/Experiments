@@ -39,12 +39,12 @@ export function MapEmbed({
     <div
       className={`flex flex-col items-center justify-center gap-3 bg-surface px-6 py-10 text-center ${className}`}
     >
-      <MapPin size={24} className="text-lime" />
+      <MapPin size={24} className="text-accent" />
       <p className="text-sm font-semibold">Karte von Google Maps</p>
       <p className="max-w-xs text-xs text-muted">
         Beim Laden der Karte wird eine Verbindung zu Google hergestellt und deine
         IP-Adresse übertragen. Mehr dazu in unserer{" "}
-        <a href="/datenschutz" className="text-lime hover:underline">
+        <a href="/datenschutz" className="text-accent hover:underline">
           Datenschutzerklärung
         </a>
         .
@@ -52,7 +52,7 @@ export function MapEmbed({
       <button
         type="button"
         onClick={() => setLoadedOnce(true)}
-        className="mt-1 rounded-full bg-lime px-5 py-2 text-xs font-semibold text-[#0d0d0f] transition-opacity hover:opacity-90"
+        className="mt-1 rounded-full bg-lime px-5 py-2 text-xs font-semibold text-on-lime transition-opacity hover:opacity-90"
       >
         Karte laden
       </button>

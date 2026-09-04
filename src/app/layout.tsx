@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Titillium_Web, Orbitron } from "next/font/google";
+import { Archivo, Figtree } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MotionProvider } from "@/components/motion-provider";
@@ -7,21 +7,24 @@ import { GoogleAnalytics } from "@/components/google-analytics";
 import { CookieConsent } from "@/components/cookie-consent";
 import { siteConfig } from "@/lib/site-config";
 
-// Nur die Stärken laden, die im Code tatsächlich vorkommen. Die zuvor
-// geladene 300 kommt nirgends vor. Titillium Web bietet keine 500 an -
-// die wenigen font-medium-Stellen stellt der Browser deshalb mit 400 dar.
-const titillium = Titillium_Web({
-  variable: "--font-titillium",
+// Fließtext: Figtree - ruhig, gut lesbar, mit leicht warmem Charakter, der
+// zur sandfarbenen Grundfläche passt. Geladen werden nur die Stärken, die
+// im Code tatsächlich vorkommen.
+const figtree = Figtree({
+  variable: "--font-body",
   subsets: ["latin"],
-  weight: ["400", "600", "700", "900"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-// Die Display-Schrift wird ausschließlich in font-black (900) eingesetzt.
-const orbitron = Orbitron({
-  variable: "--font-orbitron",
+// Überschriften: Archivo in den schweren Schnitten. Kräftig und breit
+// genug, um sportlich zu wirken, ohne ins Technisch-Verspielte zu kippen -
+// die Vorgängerschrift Orbitron las sich eher nach Science-Fiction als nach
+// Fitnessstudio.
+const archivo = Archivo({
+  variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["900"],
+  weight: ["700", "800", "900"],
   display: "swap",
 });
 
@@ -50,8 +53,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0d0d0f" },
+    { media: "(prefers-color-scheme: light)", color: "#faf8f3" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f120e" },
   ],
 };
 
@@ -63,7 +66,7 @@ export default function RootLayout({
   return (
     <html
       lang="de"
-      className={`${titillium.variable} ${orbitron.variable} h-full antialiased`}
+      className={`${figtree.variable} ${archivo.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">

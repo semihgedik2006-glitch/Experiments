@@ -14,9 +14,11 @@ function hueFromSlug(slug: string): number {
   for (let i = 0; i < slug.length; i++) {
     hash = (hash * 31 + slug.charCodeAt(i)) % 100000;
   }
-  // Auf einen Bereich um die Markenfarbe herum begrenzen (Grün bis Blaugrün),
-  // damit die Karten nicht wie ein Farbkasten wirken.
-  return 70 + (hash % 110);
+  // Auf einen warmen Bereich um die Markenfarbe begrenzen (Oliv über
+  // Gelbgrün bis Sand), damit die Karten zur sandfarbenen Grundfläche
+  // gehören. Der frühere Bereich reichte bis Blaugrün und wirkte in der
+  // warmen Umgebung wie ein Fremdkörper.
+  return 48 + (hash % 42);
 }
 
 export function PostThumb({
@@ -48,28 +50,18 @@ export function PostThumb({
 
   const hue = hueFromSlug(slug);
 
+  // Nur der Farbton kommt aus dem Slug; Helligkeit und Sättigung legt CSS
+  // fest. Nur so kann die Karte in der dunklen Ansicht abdunkeln - vorher
+  // leuchteten die hellen Verläufe dort als grelle Blöcke heraus.
   return (
     <div
       aria-hidden
-      className={`relative overflow-hidden ${className}`}
-      style={{
-        background: `linear-gradient(135deg, hsl(${hue} 55% 88%), hsl(${hue + 25} 45% 78%))`,
-      }}
+      className={`post-thumb relative overflow-hidden ${className}`}
+      style={{ "--thumb-hue": hue } as React.CSSProperties}
     >
       {/* Feines Raster, das dem Verlauf etwas Struktur gibt. */}
-      <div
-        className="absolute inset-0 opacity-[0.18]"
-        style={{
-          backgroundImage:
-            "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-          backgroundSize: "22px 22px",
-          color: `hsl(${hue} 40% 35%)`,
-        }}
-      />
-      <span
-        className="absolute bottom-3 right-4 text-5xl font-black leading-none opacity-25"
-        style={{ color: `hsl(${hue} 45% 30%)` }}
-      >
+      <div className="post-thumb-grid absolute inset-0" />
+      <span className="post-thumb-letter absolute bottom-3 right-4 text-5xl font-black leading-none">
         {title.trim().charAt(0).toUpperCase()}
       </span>
     </div>

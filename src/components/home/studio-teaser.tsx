@@ -13,10 +13,10 @@ export async function StudioTeaser() {
   if (studios.length === 1) {
     const studio = studios[0];
     return (
-      <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
+      <section className="py-20 sm:py-24 md:py-32">
         <Container className="grid gap-10 md:grid-cols-2 md:items-center">
           <Reveal>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
               Standort
             </span>
             <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
@@ -29,19 +29,19 @@ export async function StudioTeaser() {
 
             <ul className="mt-8 space-y-4 text-sm">
               <li className="flex items-start gap-3">
-                <MapPin size={18} className="mt-0.5 shrink-0 text-lime" />
+                <MapPin size={18} className="mt-0.5 shrink-0 text-accent" />
                 <span>
                   {studio.street}, {studio.postalCode} {studio.city}
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <Phone size={18} className="mt-0.5 shrink-0 text-lime" />
+                <Phone size={18} className="mt-0.5 shrink-0 text-accent" />
                 <a href={`tel:${studio.phone}`} className="hover:underline">
                   {studio.phone}
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <Clock size={18} className="mt-0.5 shrink-0 text-lime" />
+                <Clock size={18} className="mt-0.5 shrink-0 text-accent" />
                 <span className="whitespace-pre-line">{studio.openingHours}</span>
               </li>
             </ul>
@@ -65,10 +65,10 @@ export async function StudioTeaser() {
 
   // Multiple locations: compact card per studio.
   return (
-    <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
+    <section className="py-20 sm:py-24 md:py-32">
       <Container>
         <Reveal className="mb-14 max-w-2xl">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
             Standorte
           </span>
           <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
@@ -83,16 +83,16 @@ export async function StudioTeaser() {
         <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {studios.map((studio) => (
             <StaggerItem key={studio.id} className="h-full">
-              <div className="flex h-full flex-col rounded-2xl border border-border bg-surface-raised p-6">
+              <div className="flex h-full flex-col card p-6">
                 <h3 className="text-lg font-semibold">{studio.name}</h3>
                 <ul className="mt-4 flex-1 space-y-3 text-sm text-muted">
                   <li className="flex items-start gap-2.5">
-                    <MapPin size={16} className="mt-0.5 shrink-0 text-lime" />
+                    <MapPin size={16} className="mt-0.5 shrink-0 text-accent" />
                     {studio.street}, {studio.postalCode} {studio.city}
                   </li>
                   {studio.phone && (
                     <li className="flex items-start gap-2.5">
-                      <Phone size={16} className="mt-0.5 shrink-0 text-lime" />
+                      <Phone size={16} className="mt-0.5 shrink-0 text-accent" />
                       {studio.phone}
                     </li>
                   )}

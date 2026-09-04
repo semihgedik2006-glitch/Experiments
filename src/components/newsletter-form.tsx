@@ -22,13 +22,13 @@ export function NewsletterForm() {
         <button
           type="submit"
           disabled={pending}
-          className="whitespace-nowrap bg-lime px-4 py-2 text-sm font-semibold text-[#0d0d0f] transition-opacity disabled:opacity-60"
+          className="whitespace-nowrap bg-lime px-4 py-2 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-60"
         >
           {pending ? "..." : "Anmelden"}
         </button>
       </div>
       {state?.message && (
-        <p className={`text-xs ${state.ok ? "text-lime" : "text-red-500"}`}>{state.message}</p>
+        <p className={`text-xs ${state.ok ? "text-accent" : "text-red-500"}`}>{state.message}</p>
       )}
     </form>
   );

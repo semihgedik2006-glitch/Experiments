@@ -34,10 +34,10 @@ export default function UeberUnsPage() {
     <>
       <PageHeader
         kicker="Wer wir sind"
-        title={<>Über <span className="text-lime">Körperformen</span></>}
+        title={<>Über <span className="text-accent">Körperformen</span></>}
         intro="Wir glauben, dass effektives Training nicht viel Zeit kosten muss. Mit EMS-Training bringen wir dich in nur 20 Minuten pro Woche deinem Ziel näher - egal ob Abnehmen, Muskelaufbau oder ein gesünderer Rücken."
       >
-        <p className="mt-6 max-w-2xl font-semibold text-lime">
+        <p className="mt-6 max-w-2xl font-semibold text-accent">
           Körperformen - der Vorreiter für gesundheitsorientiertes EMS Training.
         </p>
       </PageHeader>
@@ -58,7 +58,7 @@ export default function UeberUnsPage() {
             {values.map(({ icon: Icon, title, text }) => (
               <StaggerItem key={title} className="h-full">
                 <div className="h-full rounded-2xl border border-border bg-surface p-6">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/15 text-lime">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/15 text-accent">
                     <Icon size={20} />
                   </div>
                   <h3 className="mt-5 text-lg font-semibold">{title}</h3>
@@ -101,12 +101,12 @@ export default function UeberUnsPage() {
               },
             ].map((member) => (
               <StaggerItem key={member.role} className="h-full">
-                <div className="h-full rounded-2xl border border-border bg-surface-raised p-6">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-lime/15 text-lg font-bold text-lime">
+                <div className="h-full card p-6">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-lime/15 text-lg font-bold text-accent">
                     {member.initials}
                   </span>
                   <h3 className="mt-4 text-lg font-semibold">{member.name}</h3>
-                  <p className="text-sm text-lime">{member.role}</p>
+                  <p className="text-sm text-accent">{member.role}</p>
                   <p className="mt-2 text-sm text-muted">{member.text}</p>
                 </div>
               </StaggerItem>

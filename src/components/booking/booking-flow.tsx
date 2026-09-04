@@ -100,10 +100,10 @@ export function BookingFlow({
                   }`}
                 >
                   <span className="flex items-center gap-2 font-semibold">
-                    <MapPin size={15} className="shrink-0 text-lime" />
+                    <MapPin size={15} className="shrink-0 text-accent" />
                     {studio.name}
                     {isRecommended && (
-                      <span className="rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-[#0d0d0f]">
+                      <span className="rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-on-lime">
                         Am nächsten
                       </span>
                     )}

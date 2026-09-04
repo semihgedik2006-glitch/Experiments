@@ -22,7 +22,7 @@ export function CommentForm({
   if (state.ok) {
     return (
       <div className={`rounded-2xl border border-lime bg-surface text-center ${compact ? "p-4" : "p-6"}`}>
-        <p className="font-semibold text-lime">Danke für deinen Kommentar!</p>
+        <p className="font-semibold text-accent">Danke für deinen Kommentar!</p>
         <p className="mt-2 text-sm text-muted">{state.message}</p>
       </div>
     );
@@ -66,7 +66,7 @@ export function CommentForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-[#0d0d0f] transition-opacity disabled:opacity-50"
+        className="rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-50"
       >
         {pending ? "Wird gesendet..." : parentId ? "Antwort absenden" : "Kommentar absenden"}
       </button>

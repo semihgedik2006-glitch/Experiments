@@ -54,7 +54,7 @@ export default function ImpressumPage() {
                 href={website.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-lime hover:underline"
+                className="text-accent hover:underline"
               >
                 {website.label}
               </a>

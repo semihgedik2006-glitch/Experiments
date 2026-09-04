@@ -32,7 +32,7 @@ export function SectionHeader({
     >
       <div className={centered ? "" : "max-w-2xl"}>
         {kicker && (
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
             {kicker}
           </span>
         )}

@@ -24,7 +24,7 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
   }, [inView, count, value]);
 
   return (
-    <motion.span ref={ref} className="font-display text-5xl font-black text-lime md:text-6xl">
+    <motion.span ref={ref} className="font-display text-5xl font-black text-accent md:text-6xl">
       {rounded}
     </motion.span>
   );
@@ -32,10 +32,10 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 
 export function StatsStrip() {
   return (
-    <section className="border-y border-border bg-surface py-20 sm:py-24">
+    <section className="on-ink py-20 sm:py-24">
       <Container>
         <Reveal className="mx-auto max-w-xl text-center">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
             Warum EMS
           </span>
           <p className="mt-4 text-lg leading-relaxed text-muted">

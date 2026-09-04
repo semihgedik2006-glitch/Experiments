@@ -58,12 +58,12 @@ export default async function CampaignPage({ params }: Props) {
     <>
       <section className="border-b border-border py-16 md:py-24">
         <Container className="max-w-4xl">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
             {campaign.kicker}
           </span>
           <h1 className="mt-4 text-balance hyphens-auto text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
             {campaign.headline}{" "}
-            <span className="text-lime">{campaign.highlight}</span>
+            <span className="text-accent-strong">{campaign.highlight}</span>
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
             {campaign.subline}
@@ -72,7 +72,7 @@ export default async function CampaignPage({ params }: Props) {
           <ul className="mt-10 space-y-4">
             {campaign.bullets.map((bullet) => (
               <li key={bullet} className="flex items-start gap-3 text-sm sm:text-base">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-lime/15 text-lime">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-lime/15 text-accent">
                   <Check size={13} strokeWidth={3} />
                 </span>
                 {bullet}
@@ -100,12 +100,12 @@ export default async function CampaignPage({ params }: Props) {
             <TrustBar />
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
               <p className="flex items-center gap-2.5">
-                <Clock size={16} className="shrink-0 text-lime" />
+                <Clock size={16} className="shrink-0 text-accent" />
                 20 Minuten pro Einheit
               </p>
               {studio && (
                 <p className="flex items-center gap-2.5">
-                  <MapPin size={16} className="shrink-0 text-lime" />
+                  <MapPin size={16} className="shrink-0 text-accent" />
                   {studio.postalCode} {studio.city}
                 </p>
               )}
