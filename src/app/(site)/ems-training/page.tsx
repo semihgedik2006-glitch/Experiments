@@ -15,6 +15,7 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { FaqSection } from "@/components/faq-section";
+import { ActivationSequence } from "@/components/ems/activation-sequence";
 
 export const metadata: Metadata = {
   title: "EMS-Training erklärt",
@@ -139,6 +140,8 @@ export default function EmsTrainingPage() {
           </Reveal>
         </Container>
       </section>
+
+      <ActivationSequence />
 
       <section className="border-t border-border bg-surface py-20">
         <Container>

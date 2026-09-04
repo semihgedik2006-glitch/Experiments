@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
+import { SectionHeader } from "@/components/ui/section-header";
 import { getPublishedPosts } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 
@@ -10,22 +11,22 @@ export async function BlogTeaser() {
   if (posts.length === 0) return null;
 
   return (
-    <section className="border-t border-border bg-surface py-24">
+    <section className="border-t border-border bg-surface py-28 md:py-32">
       <Container>
-        <Reveal className="mb-16 flex items-end justify-between">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Aus dem Blog</h2>
-            <p className="mt-4 max-w-xl text-muted">
-              Trainingstipps, EMS-Wissen und Neuigkeiten aus dem Studio.
-            </p>
-          </div>
-          <Link
-            href="/blog"
-            className="hidden shrink-0 items-center gap-1 text-sm text-lime hover:underline md:flex"
-          >
-            Alle Artikel <ArrowRight size={14} />
-          </Link>
-        </Reveal>
+        <SectionHeader
+          kicker="Wissen"
+          title="Aus dem Blog"
+          intro="Trainingstipps, EMS-Wissen und Neuigkeiten aus dem Studio."
+          className="mb-16"
+          action={
+            <Link
+              href="/blog"
+              className="hidden items-center gap-1 text-sm font-medium text-lime hover:underline md:flex"
+            >
+              Alle Artikel <ArrowRight size={14} />
+            </Link>
+          }
+        />
 
         <div className="grid gap-6 md:grid-cols-3">
           {posts.map((post, index) => (

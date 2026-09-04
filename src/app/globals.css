@@ -18,13 +18,6 @@
 
   /* Ambient glows need far less presence on white backgrounds. */
   --aurora-opacity: 0.16;
-
-  /* The EMS vest is physically black - it keeps one fixed dark palette
-     in both themes instead of inverting with the surface colors. */
-  --vest-shell: #26262b;
-  --vest-panel: #1e1e22;
-  --vest-line: #45454d;
-  --vest-strap: #33333a;
 }
 
 .dark {
@@ -108,7 +101,7 @@ select:focus {
   text-shadow: none;
 }
 .dark .text-glow {
-  text-shadow: 0 0 24px var(--color-lime);
+  text-shadow: 0 0 32px color-mix(in srgb, var(--color-lime) 45%, transparent);
 }
 
 /* Fine blueprint grid behind the hero, fading out toward the edges. */

@@ -3,7 +3,8 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { Container } from "@/components/ui/container";
-import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
+import { Stagger, StaggerItem } from "@/components/ui/reveal";
+import { SectionHeader } from "@/components/ui/section-header";
 
 const steps = [
   {
@@ -30,22 +31,19 @@ export function HowItWorks() {
   const blobY = useTransform(scrollYProgress, [0, 1], [80, -80]);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden py-24">
+    <section ref={sectionRef} className="relative overflow-hidden py-28 md:py-32">
       <motion.div
         aria-hidden
         className="pointer-events-none absolute -right-40 top-1/4 h-[380px] w-[380px] rounded-full opacity-10 blur-[100px]"
         style={{ background: "radial-gradient(circle, var(--color-lime), transparent 70%)", y: blobY }}
       />
       <Container>
-        <Reveal className="mb-16 max-w-2xl">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            So einfach startest du mit EMS
-          </h2>
-          <p className="mt-4 text-muted">
-            Elektro-Muskel-Stimulation aktiviert bis zu 90% deiner Muskelfasern
-            gleichzeitig - deutlich mehr als klassisches Training.
-          </p>
-        </Reveal>
+        <SectionHeader
+          kicker="In drei Schritten"
+          title="So einfach startest du mit EMS"
+          intro="Elektro-Muskel-Stimulation aktiviert bis zu 90% deiner Muskelfasern gleichzeitig - deutlich mehr als klassisches Training."
+          className="mb-16"
+        />
 
         <Stagger className="grid gap-10 md:grid-cols-3">
           {steps.map(({ step, title, text }) => (

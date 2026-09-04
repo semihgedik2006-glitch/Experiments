@@ -1,5 +1,4 @@
 import { Hero } from "@/components/home/hero";
-import { VestScrollShowcase } from "@/components/home/vest-scroll-showcase";
 import { StatsStrip } from "@/components/home/stats-strip";
 import { UspGrid } from "@/components/home/usp-grid";
 import { HowItWorks } from "@/components/home/how-it-works";
@@ -13,7 +12,6 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <VestScrollShowcase />
       <StatsStrip />
       <UspGrid />
       <HowItWorks />

@@ -120,7 +120,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 2.5, ease: easeOut }}
-            className="mt-8 max-w-xl text-lg text-muted"
+            className="mt-8 max-w-xl text-lg leading-relaxed text-muted md:text-xl"
           >
             Effektives EMS-Training für Berufstätige mit wenig Zeit. Einmal pro
             Woche, gelenkschonend, individuell betreut - bei Körperformen.

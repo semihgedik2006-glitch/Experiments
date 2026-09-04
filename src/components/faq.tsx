@@ -14,10 +14,13 @@ export function Faq({ items }: { items: FaqEntry[] }) {
   if (items.length === 0) return null;
 
   return (
-    <section id="faq" className="scroll-mt-24 py-24">
+    <section id="faq" className="scroll-mt-24 py-28 md:py-32">
       <Container className="max-w-3xl">
         <Reveal>
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Häufige Fragen</h2>
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
+            Gut zu wissen
+          </span>
+          <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">Häufige Fragen</h2>
         </Reveal>
 
         <Reveal delay={0.1} className="mt-10 divide-y divide-border border-y border-border">

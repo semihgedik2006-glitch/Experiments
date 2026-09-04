@@ -4,10 +4,10 @@ import { Reveal } from "@/components/ui/reveal";
 
 export function CtaBanner() {
   return (
-    <section className="border-t border-border py-24">
+    <section className="border-t border-border py-28 md:py-32">
       <Container>
-        <Reveal className="flex flex-col items-center rounded-3xl bg-foreground px-6 py-16 text-center text-background">
-          <h2 className="max-w-xl text-3xl font-bold tracking-tight md:text-4xl">
+        <Reveal className="flex flex-col items-center rounded-3xl bg-foreground px-6 py-20 text-center text-background">
+          <h2 className="max-w-2xl text-balance text-4xl font-bold tracking-tight md:text-5xl">
             Bereit für deine erste Einheit?
           </h2>
           <p className="mt-4 max-w-md text-background/70">

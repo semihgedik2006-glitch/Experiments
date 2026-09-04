@@ -1,32 +1,30 @@
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
+import { Stagger, StaggerItem } from "@/components/ui/reveal";
+import { SectionHeader } from "@/components/ui/section-header";
 import { testimonials } from "@/lib/testimonials-data";
 
 export function TestimonialsTeaser() {
   const featured = testimonials.slice(0, 3);
 
   return (
-    <section className="border-t border-border bg-surface py-24">
+    <section className="border-t border-border py-28 md:py-32">
       <Container>
-        <Reveal className="mb-16 flex items-end justify-between">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              Das sagen unsere Mitglieder
-            </h2>
-            <p className="mt-4 max-w-xl text-muted">
-              Unterschiedliche Ziele, ein gemeinsamer Nenner: 20 Minuten pro
-              Woche, die wirken.
-            </p>
-          </div>
-          <Link
-            href="/erfolgsgeschichten"
-            className="hidden shrink-0 items-center gap-1 text-sm text-lime hover:underline md:flex"
-          >
-            Alle Geschichten <ArrowRight size={14} />
-          </Link>
-        </Reveal>
+        <SectionHeader
+          kicker="Erfahrungen"
+          title="Das sagen unsere Mitglieder"
+          intro="Unterschiedliche Ziele, ein gemeinsamer Nenner: 20 Minuten pro Woche, die wirken."
+          className="mb-16"
+          action={
+            <Link
+              href="/erfolgsgeschichten"
+              className="hidden items-center gap-1 text-sm font-medium text-lime hover:underline md:flex"
+            >
+              Alle Geschichten <ArrowRight size={14} />
+            </Link>
+          }
+        />
 
         <Stagger className="grid gap-6 md:grid-cols-3">
           {featured.map((t) => (

@@ -32,7 +32,7 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 
 export function StatsStrip() {
   return (
-    <section className="border-t border-border py-20">
+    <section className="border-t border-border py-24">
       <Container>
         <Reveal className="grid gap-12 text-center sm:grid-cols-3">
           {stats.map((stat) => (
