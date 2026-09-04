@@ -32,11 +32,26 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 
 export function StatsStrip() {
   return (
-    <section className="border-t border-border py-24">
+    <section className="border-y border-border bg-surface py-20 sm:py-24">
       <Container>
-        <Reveal className="grid gap-12 text-center sm:grid-cols-3">
+        <Reveal className="mx-auto max-w-xl text-center">
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-lime">
+            Warum EMS
+          </span>
+          <p className="mt-4 text-lg leading-relaxed text-muted">
+            Drei Zahlen erklären, warum 20 Minuten reichen - und warum EMS
+            gerade für Menschen mit vollem Kalender funktioniert.
+          </p>
+        </Reveal>
+
+        {/* Trennlinien nur ab sm: untereinander wirken sie wie abgehackte
+            Kästchen statt wie eine zusammengehörige Reihe. */}
+        <Reveal
+          delay={0.1}
+          className="mt-14 grid gap-12 text-center sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border"
+        >
           {stats.map((stat) => (
-            <div key={stat.label}>
+            <div key={stat.label} className="sm:px-6">
               <Counter value={stat.value} suffix={stat.suffix} />
               <p className="mx-auto mt-3 max-w-[220px] text-sm text-muted">{stat.label}</p>
             </div>

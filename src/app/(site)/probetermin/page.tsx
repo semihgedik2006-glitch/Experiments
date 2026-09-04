@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { LottieBox } from "@/components/lottie-box";
+import { TrustBar } from "@/components/trust-bar";
 import { getStudios, getUpcomingSlots } from "@/lib/data";
 import { formatDateShort } from "@/lib/format";
 
@@ -46,6 +47,11 @@ export default async function ProbeterminPage() {
 
         <div className="mt-6">
           <BookingFlow studios={studios} slotsByStudio={slotsByStudio} />
+        </div>
+
+        <div className="mt-12 border-t border-border pt-8">
+          <p className="text-sm font-semibold">Was du wissen solltest</p>
+          <TrustBar className="mt-5" />
         </div>
       </Container>
     </section>

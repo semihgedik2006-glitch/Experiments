@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Check, MapPin, Clock, ShieldCheck } from "lucide-react";
+import { Check, MapPin, Clock } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { BookingFlow } from "@/components/booking/booking-flow";
+import { TrustBar } from "@/components/trust-bar";
 import { getStudios, getUpcomingSlots } from "@/lib/data";
 import { getCampaign, getCampaignSlugs } from "@/lib/campaigns";
 import { formatDateShort } from "@/lib/format";
@@ -95,21 +96,20 @@ export default async function CampaignPage({ params }: Props) {
             <BookingFlow studios={studios} slotsByStudio={slotsByStudio} />
           </div>
 
-          <div className="mt-10 grid gap-4 border-t border-border pt-8 text-sm text-muted sm:grid-cols-3">
-            <p className="flex items-start gap-2.5">
-              <ShieldCheck size={16} className="mt-0.5 shrink-0 text-lime" />
-              Ohne Vertragsbindung
-            </p>
-            <p className="flex items-start gap-2.5">
-              <Clock size={16} className="mt-0.5 shrink-0 text-lime" />
-              20 Minuten pro Einheit
-            </p>
-            {studio && (
-              <p className="flex items-start gap-2.5">
-                <MapPin size={16} className="mt-0.5 shrink-0 text-lime" />
-                {studio.postalCode} {studio.city}
+          <div className="mt-12 border-t border-border pt-8">
+            <TrustBar />
+            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
+              <p className="flex items-center gap-2.5">
+                <Clock size={16} className="shrink-0 text-lime" />
+                20 Minuten pro Einheit
               </p>
-            )}
+              {studio && (
+                <p className="flex items-center gap-2.5">
+                  <MapPin size={16} className="shrink-0 text-lime" />
+                  {studio.postalCode} {studio.city}
+                </p>
+              )}
+            </div>
           </div>
         </Container>
       </section>
