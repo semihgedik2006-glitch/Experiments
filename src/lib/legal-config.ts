@@ -1,24 +1,24 @@
 /**
  * Zentrale Stelle für alle rechtlich relevanten Firmenangaben.
  *
+ * Die Angaben stammen aus dem vom Inhaber gelieferten Impressum und werden
+ * von Impressum, Datenschutzerklärung und AGB gemeinsam genutzt.
+ *
  * Bewusst getrennt von den Studio-Daten aus der Datenbank: Die
- * Geschäftsanschrift des Unternehmens (Impressum, Verantwortlicher nach DSGVO)
- * ist nicht zwingend identisch mit der Adresse eines Trainingsstudios.
+ * Geschäftsanschrift des Unternehmens (Köln-Rondorf) ist nicht identisch mit
+ * der Adresse eines Trainingsstudios.
  */
 
-export type LegalForm = "einzelunternehmen" | "gbr" | "gmbh" | "ug" | "gmbh-co-kg";
-
 export const legalConfig = {
-  /** Firmenname wie im Geschäftsverkehr verwendet. */
+  /** Firmenname wie im Geschäftsverkehr verwendet (u.a. in den AGB). */
   companyName: "KörperFormen",
 
   /**
-   * Vollständiger Name des Inhabers. Bei Einzelunternehmen ist die Nennung
-   * des vollen bürgerlichen Namens nach § 5 DDG Pflicht.
+   * Vollständiger Name des Inhabers. Das Unternehmen ist ein
+   * Einzelunternehmen; nach § 5 DDG ist der volle bürgerliche Name
+   * anzugeben, ein Registereintrag entfällt.
    */
   owner: "Marcel Almeida do Carmo",
-
-  legalForm: "einzelunternehmen" as LegalForm,
 
   /** Ladungsfähige Geschäftsanschrift (Impressumspflicht). */
   address: {
@@ -28,9 +28,15 @@ export const legalConfig = {
     country: "Deutschland",
   },
 
+  /** Unternehmenswebsite laut Impressum (Umlaut-Domain, Link braucht Punycode). */
+  website: {
+    label: "www.körperformen.com",
+    href: "https://www.xn--krperformen-rfb.com",
+  },
+
   /** Kontaktdaten für Impressum und Datenschutzanfragen. */
   contact: {
-    phone: "+49 1578 5090199",
+    phone: "0157 85090199",
     /** Für tel:-Links, ohne Leerzeichen. */
     phoneHref: "+4915785090199",
     email: "m.almeida@kformen.com",
@@ -39,54 +45,13 @@ export const legalConfig = {
   /**
    * Umsatzsteuer-Identifikationsnummer nach § 27a UStG.
    *
-   * Hinweis: Die Steuernummer (216/5002/3565) wird hier bewusst NICHT
-   * hinterlegt. Anzugeben ist nach § 5 Abs. 1 Nr. 6 DDG ausschließlich die
-   * USt-IdNr.; die Steuernummer zu veröffentlichen ist nicht erforderlich
-   * und wird aus Missbrauchsgründen ausdrücklich nicht empfohlen.
+   * Hinweis: Die vom Inhaber ebenfalls mitgeteilte Steuernummer wird hier
+   * bewusst NICHT hinterlegt. Anzugeben ist nach § 5 Abs. 1 Nr. 6 DDG
+   * ausschließlich die USt-IdNr.; die Steuernummer zu veröffentlichen ist
+   * nicht erforderlich und wird aus Missbrauchsgründen nicht empfohlen.
    */
   vatId: "DE301004860",
 
-  /** Nur bei Kapitalgesellschaften relevant - bei Einzelunternehmen keine. */
-  registerCourt: null as string | null,
-  registerNumber: null as string | null,
-
-  /**
-   * Zuständige Aufsichtsbehörde - nur nötig bei erlaubnispflichtigem Gewerbe.
-   * Für ein Fitness-/EMS-Studio üblicherweise nicht einschlägig.
-   */
-  supervisoryAuthority: null as string | null,
-
-  /**
-   * Datenschutzbeauftragter. Pflicht i.d.R. erst ab 20 Personen, die ständig
-   * mit automatisierter Datenverarbeitung beschäftigt sind.
-   */
-  dataProtectionOfficer: null as string | null,
-
-  /** Für die Datenschutzerklärung: Stand der letzten Aktualisierung. */
-  lastUpdated: "August 2026",
+  /** Stand der Rechtstexte (Impressum, Datenschutzerklärung, AGB). */
+  lastUpdated: "September 2026",
 } as const;
-
-/** Sichtbarer Platzhalter für fehlende Pflichtangaben. */
-export const MISSING = "[BITTE ERGÄNZEN]";
-
-export function legalValue(value: string | null | undefined): string {
-  return value ?? MISSING;
-}
-
-/** Prüft, ob noch Pflichtangaben fehlen (steuert den Warnhinweis auf der Seite). */
-export function hasMissingLegalData(): boolean {
-  const c = legalConfig;
-
-  if (!c.companyName || !c.owner || !c.legalForm) return true;
-  if (!c.address.street || !c.address.postalCode || !c.address.city) return true;
-  if (!c.contact.email) return true;
-
-  // Kapitalgesellschaften müssen zusätzlich das Register angeben.
-  const isCorporation =
-    c.legalForm === "gmbh" || c.legalForm === "ug" || c.legalForm === "gmbh-co-kg";
-  if (isCorporation && (!c.registerCourt || !c.registerNumber)) return true;
-
-  // Eine USt-IdNr. ist nur anzugeben, sofern vorhanden - ihr Fehlen ist bei
-  // Kleinunternehmern nach § 19 UStG kein Mangel.
-  return false;
-}
