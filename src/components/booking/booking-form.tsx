@@ -116,7 +116,9 @@ export function BookingForm({ days }: { days: DayGroup[] }) {
       <input type="hidden" name="slotId" value={selectedSlotId ?? ""} />
 
       <div>
-        <p className="mb-3 text-sm font-semibold">3. Deine Daten</p>
+        <p className="mb-3 text-sm font-semibold">
+          {days.length > 0 ? "3. Deine Daten" : "Deine Daten"}
+        </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <input
             type="text"

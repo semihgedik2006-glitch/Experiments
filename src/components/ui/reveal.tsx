@@ -5,9 +5,11 @@ import type { ReactNode } from "react";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
+// Bewusst zurückhaltend: kurzer Weg, keine Skalierung. Ein gleichzeitiges
+// Zoomen lässt besonders Fließtext beim Einblenden "wabern".
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 48, scale: 0.96 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.65, ease: easeOut } },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } },
 };
 
 export function Reveal({
@@ -23,9 +25,9 @@ export function Reveal({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-10% 0px" }}
+      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
       variants={itemVariants}
-      transition={{ duration: 0.7, delay, ease: easeOut }}
+      transition={{ duration: 0.5, delay, ease: easeOut }}
       className={className}
     >
       {children}
@@ -36,7 +38,7 @@ export function Reveal({
 const containerVariants: Variants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.15 },
+    transition: { staggerChildren: 0.08 },
   },
 };
 
@@ -51,7 +53,7 @@ export function Stagger({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-10% 0px" }}
+      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
       variants={containerVariants}
       className={className}
     >
