@@ -6,6 +6,9 @@ import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { Zap, ShieldCheck, Target } from "lucide-react";
 
 export const metadata: Metadata = {
+  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
+  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
+  alternates: { canonical: "/ueber-uns" },
   title: "Über uns",
   description:
     "Lerne Körperformen kennen - dein EMS-Studio für effektives, gelenkschonendes Training in Hürth, Köln und Brühl.",

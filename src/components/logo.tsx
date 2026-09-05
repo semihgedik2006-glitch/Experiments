@@ -27,10 +27,14 @@ export function Logo({ className = "" }: { className?: string }) {
         priority
         className={`logo-on-light ${className}`}
       />
+      {/* Beide Bilder tragen denselben Alternativtext. Die jeweils
+          ausgeblendete Fassung steht auf display:none und taucht damit für
+          Screenreader gar nicht auf - es entsteht keine Dopplung. Ein
+          leerer Alternativtext hier hätte im dunklen Modus dazu geführt,
+          dass der Link auf die Startseite überhaupt keinen Namen hat. */}
       <Image
         src="/logo-dark.svg"
-        alt=""
-        aria-hidden
+        alt="Körperformen"
         width={145}
         height={40}
         priority

@@ -67,11 +67,11 @@ export function TrustSection() {
 
         <p className="mt-12 text-center text-sm text-muted">
           Fragen zum Kleingedruckten?{" "}
-          <Link href="/agb" className="text-accent hover:underline">
+          <Link href="/agb" className="text-accent underline underline-offset-2">
             Unsere AGB
           </Link>{" "}
           und die{" "}
-          <Link href="/datenschutz" className="text-accent hover:underline">
+          <Link href="/datenschutz" className="text-accent underline underline-offset-2">
             Datenschutzerklärung
           </Link>{" "}
           kannst du jederzeit nachlesen.

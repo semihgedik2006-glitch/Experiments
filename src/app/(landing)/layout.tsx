@@ -36,7 +36,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
           <p>
             © {new Date().getFullYear()} {legalConfig.companyName}
           </p>
-          <nav className="flex gap-5">
+          <nav aria-label="Rechtliches" className="flex gap-5">
             <Link href="/impressum" className="hover:text-foreground">
               Impressum
             </Link>

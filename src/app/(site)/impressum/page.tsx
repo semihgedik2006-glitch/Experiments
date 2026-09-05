@@ -3,6 +3,9 @@ import { Container } from "@/components/ui/container";
 import { legalConfig } from "@/lib/legal-config";
 
 export const metadata: Metadata = {
+  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
+  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
+  alternates: { canonical: "/impressum" },
   title: "Impressum",
   description: "Impressum und Anbieterkennzeichnung von KörperFormen.",
 };
@@ -54,7 +57,7 @@ export default function ImpressumPage() {
                 href={website.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-accent hover:underline"
+                className="text-accent underline underline-offset-2"
               >
                 {website.label}
               </a>

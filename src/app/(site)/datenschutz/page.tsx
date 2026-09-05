@@ -3,6 +3,9 @@ import { Container } from "@/components/ui/container";
 import { legalConfig } from "@/lib/legal-config";
 
 export const metadata: Metadata = {
+  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
+  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
+  alternates: { canonical: "/datenschutz" },
   title: "Datenschutzerklärung",
   description:
     "Informationen zur Verarbeitung personenbezogener Daten bei KörperFormen Köln Rondorf.",
@@ -508,7 +511,7 @@ export default function DatenschutzPage() {
                 href="https://policies.google.com/privacy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-accent hover:underline"
+                className="text-accent underline underline-offset-2"
               >
                 policies.google.com/privacy
               </a>

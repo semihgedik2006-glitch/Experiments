@@ -7,6 +7,9 @@ import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { testimonials } from "@/lib/testimonials-data";
 
 export const metadata: Metadata = {
+  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
+  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
+  alternates: { canonical: "/erfolgsgeschichten" },
   title: "Erfolgsgeschichten",
   description:
     "Echte Menschen, echte Ergebnisse: So hat EMS-Training bei Körperformen das Leben unserer Mitglieder verändert.",
@@ -27,7 +30,7 @@ export default function ErfolgsgeschichtenPage() {
             {testimonials.map((t) => (
               <StaggerItem key={t.name}>
                 <figure className="flex h-full flex-col rounded-2xl border border-border bg-surface p-7">
-                  <div className="flex gap-1 text-accent" aria-label={`${t.rating} von 5 Sternen`}>
+                  <div className="flex gap-1 text-accent" role="img" aria-label={`${t.rating} von 5 Sternen`}>
                     {Array.from({ length: t.rating }).map((_, i) => (
                       <Star key={i} size={15} fill="currentColor" />
                     ))}

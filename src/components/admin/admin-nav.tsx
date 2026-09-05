@@ -54,7 +54,7 @@ export function AdminNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-5">
+    <nav aria-label="Verwaltung" className="flex flex-col gap-5">
       {groups.map((group, groupIndex) => (
         <div key={group.title ?? `group-${groupIndex}`}>
           {group.title && (

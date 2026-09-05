@@ -8,6 +8,7 @@ import { CommentReplyToggle } from "@/components/comment-reply-toggle";
 import { getPostBySlug, getApprovedComments } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 import { PostThumb } from "@/components/blog/post-thumb";
+import { ArticleJsonLd } from "@/components/structured-data";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -19,7 +20,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description: post.excerpt,
-    openGraph: { title: post.title, description: post.excerpt },
+    // Ohne kanonische Adresse behandelt Google eine Seite, die über mehrere
+    // Wege erreichbar ist, unter Umständen als mehrere Seiten.
+    alternates: { canonical: `/blog/${slug}` },
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description: post.excerpt,
+      url: `/blog/${slug}`,
+      publishedTime: post.publishedAt?.toISOString(),
+      modifiedTime: post.updatedAt.toISOString(),
+    },
   };
 }
 
@@ -32,6 +43,13 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <article className="py-20">
+      <ArticleJsonLd
+        title={post.title}
+        description={post.excerpt}
+        slug={post.slug}
+        publishedAt={post.publishedAt}
+        updatedAt={post.updatedAt}
+      />
       <Container className="max-w-2xl">
         <span className="text-sm text-muted">
           {post.publishedAt ? formatDate(post.publishedAt) : ""}

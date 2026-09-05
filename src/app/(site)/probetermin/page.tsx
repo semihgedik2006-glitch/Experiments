@@ -7,6 +7,9 @@ import { getStudios, getUpcomingSlots } from "@/lib/data";
 import { formatDateShort } from "@/lib/format";
 
 export const metadata: Metadata = {
+  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
+  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
+  alternates: { canonical: "/probetermin" },
   title: "Probetermin buchen",
   description: "Sichere dir deinen kostenlosen und unverbindlichen EMS-Probetermin bei Körperformen.",
 };

@@ -19,6 +19,9 @@ import { FaqSection } from "@/components/faq-section";
 import { ActivationSequence } from "@/components/ems/activation-sequence";
 
 export const metadata: Metadata = {
+  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
+  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
+  alternates: { canonical: "/ems-training" },
   title: "EMS-Training erklärt",
   description:
     "Wie funktioniert EMS-Training? Wissenschaft, Ablauf, Vergleich zum klassischen Krafttraining und für wen es geeignet ist - der komplette Ratgeber.",
@@ -152,7 +155,7 @@ export default function EmsTrainingPage() {
             <table className="w-full min-w-[560px] border-collapse text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th className="py-4 pr-4 font-semibold text-muted"> </th>
+                  <th className="py-4 pr-4 font-semibold text-muted"><span className="sr-only">Merkmal</span></th>
                   <th className="py-4 pr-4 font-semibold text-accent">EMS bei Körperformen</th>
                   <th className="py-4 font-semibold">Klassisches Studio</th>
                 </tr>

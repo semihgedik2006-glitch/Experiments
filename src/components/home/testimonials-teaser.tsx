@@ -30,7 +30,7 @@ export function TestimonialsTeaser() {
           {featured.map((t) => (
             <StaggerItem key={t.name}>
               <figure className="flex h-full flex-col card p-7">
-                <div className="flex gap-1 text-accent" aria-label={`${t.rating} von 5 Sternen`}>
+                <div className="flex gap-1 text-accent" role="img" aria-label={`${t.rating} von 5 Sternen`}>
                   {Array.from({ length: t.rating }).map((_, i) => (
                     <Star key={i} size={14} fill="currentColor" />
                   ))}

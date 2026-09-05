@@ -33,7 +33,7 @@ export function Header() {
           <Logo className="h-8 w-auto" />
         </Link>
 
-        <nav className="hidden items-center gap-5 lg:flex xl:gap-8">
+        <nav aria-label="Hauptnavigation" className="hidden items-center gap-5 lg:flex xl:gap-8">
           {mainNav.map((item) => {
             const active = pathname === item.href;
             return (
@@ -103,7 +103,7 @@ export function Header() {
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden border-t border-border lg:hidden"
           >
-            <nav className="flex flex-col gap-4 px-6 py-4">
+            <nav aria-label="Navigation für kleine Bildschirme" className="flex flex-col gap-4 px-6 py-4">
               {mainNav.map((item) => (
                 <Link
                   key={item.href}

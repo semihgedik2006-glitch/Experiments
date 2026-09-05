@@ -4,8 +4,12 @@ import { Container } from "@/components/ui/container";
 import { ContactForm } from "@/components/contact-form";
 import { LottieBox } from "@/components/lottie-box";
 import { getStudios } from "@/lib/data";
+import { StudioJsonLd } from "@/components/structured-data";
 
 export const metadata: Metadata = {
+  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
+  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
+  alternates: { canonical: "/kontakt" },
   title: "Kontakt",
   description: "Kontaktiere Körperformen bei Fragen rund um EMS-Training, Preise oder deinen Probetermin.",
 };
@@ -14,6 +18,8 @@ export default async function KontaktPage() {
   const studios = await getStudios();
 
   return (
+    <>
+      <StudioJsonLd />
     <section className="py-20 sm:py-24 md:py-32">
       <Container className="grid gap-14 md:grid-cols-2">
         <div>
@@ -65,5 +71,6 @@ export default async function KontaktPage() {
         <ContactForm />
       </Container>
     </section>
+    </>
   );
 }

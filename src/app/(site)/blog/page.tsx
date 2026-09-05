@@ -8,6 +8,9 @@ import { formatDate } from "@/lib/format";
 import { PostThumb } from "@/components/blog/post-thumb";
 
 export const metadata: Metadata = {
+  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
+  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
+  alternates: { canonical: "/blog" },
   title: "Blog",
   description: "Trainingstipps, EMS-Wissen und Neuigkeiten von Körperformen.",
 };

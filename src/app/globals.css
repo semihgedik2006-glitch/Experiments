@@ -258,6 +258,26 @@ h3,
   text-shadow: 0 0 32px color-mix(in srgb, var(--color-lime) 45%, transparent);
 }
 
+/* Überblendung beim Seitenwechsel (siehe (site)/template.tsx). */
+@keyframes page-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-fade {
+  animation: page-fade 0.35s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-fade {
+    animation: none;
+  }
+}
+
 /* Eingangsanimation des Hero - bewusst in CSS statt in JavaScript.
    Über JavaScript gesteuert stünde der gesamte Hero bis zur Hydration bei
    opacity 0; auf einem langsamen Mobilgerät sind das rund drei Sekunden

@@ -44,7 +44,7 @@ export function MapEmbed({
       <p className="max-w-xs text-xs text-muted">
         Beim Laden der Karte wird eine Verbindung zu Google hergestellt und deine
         IP-Adresse übertragen. Mehr dazu in unserer{" "}
-        <a href="/datenschutz" className="text-accent hover:underline">
+        <a href="/datenschutz" className="text-accent underline underline-offset-2">
           Datenschutzerklärung
         </a>
         .

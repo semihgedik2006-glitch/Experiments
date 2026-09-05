@@ -114,7 +114,7 @@ export async function Footer() {
           <p>
             © {new Date().getFullYear()} {siteConfig.name}. Alle Rechte vorbehalten.
           </p>
-          <nav className="flex gap-5">
+          <nav aria-label="Rechtliches" className="flex gap-5">
             <Link href="/impressum" className="hover:text-foreground">
               Impressum
             </Link>

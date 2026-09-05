@@ -3,6 +3,9 @@ import { Container } from "@/components/ui/container";
 import { legalConfig } from "@/lib/legal-config";
 
 export const metadata: Metadata = {
+  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
+  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
+  alternates: { canonical: "/agb" },
   title: "AGB",
   description: "Allgemeine Geschäftsbedingungen von Körperformen.",
 };
@@ -218,7 +221,7 @@ export default function AgbPage() {
               Die Verarbeitung personenbezogener Daten erfolgt ausschließlich nach
               Maßgabe der geltenden Datenschutzbestimmungen. Einzelheiten sind
               unserer{" "}
-              <a href="/datenschutz" className="text-accent hover:underline">
+              <a href="/datenschutz" className="text-accent underline underline-offset-2">
                 Datenschutzerklärung
               </a>{" "}
               zu entnehmen.

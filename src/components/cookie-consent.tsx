@@ -38,7 +38,7 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
                 Wir verwenden nur technisch notwendige Cookies. Mit deiner
                 Zustimmung nutzen wir zusätzlich Google Analytics, um die
                 Website zu verbessern. Mehr dazu in unserer{" "}
-                <a href="/datenschutz" className="text-accent hover:underline">
+                <a href="/datenschutz" className="text-accent underline underline-offset-2">
                   Datenschutzerklärung
                 </a>
                 .

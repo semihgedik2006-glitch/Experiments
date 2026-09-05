@@ -6,9 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { MapEmbed } from "@/components/map-embed";
 import { getStudios } from "@/lib/data";
+import { StudioJsonLd } from "@/components/structured-data";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
+  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
+  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
+  alternates: { canonical: "/studio" },
   title: "Studios finden",
   description:
     "Finde dein Körperformen EMS-Studio in deiner Nähe - Adressen, Öffnungszeiten und Anfahrt aller Standorte.",
@@ -20,6 +24,7 @@ export default async function StudioPage() {
 
   return (
     <>
+      <StudioJsonLd />
       <PageHeader
         kicker={studios.length > 1 ? "Standorte" : "Standort"}
         title={

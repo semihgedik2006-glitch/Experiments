@@ -8,6 +8,9 @@ import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { FaqSection } from "@/components/faq-section";
 
 export const metadata: Metadata = {
+  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
+  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
+  alternates: { canonical: "/preise" },
   title: "Preise",
   description:
     "Individuelle Preise für EMS-Training bei Körperformen - wir besprechen dein Paket persönlich im kostenlosen Probetermin.",
@@ -158,7 +161,7 @@ export default function PreisePage() {
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th className="py-4 pr-4 font-semibold text-muted"> </th>
+                  <th className="py-4 pr-4 font-semibold text-muted"><span className="sr-only">Merkmal</span></th>
                   <th className="py-4 pr-4 font-semibold text-accent">EMS bei Körperformen</th>
                   <th className="py-4 font-semibold">Klassisches Studio</th>
                 </tr>

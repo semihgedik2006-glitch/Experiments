@@ -36,6 +36,9 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   keywords: siteConfig.keywords,
+  // Grundwert für alle Seiten ohne eigene Angabe - im Wesentlichen die
+  // Startseite.
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "de_DE",

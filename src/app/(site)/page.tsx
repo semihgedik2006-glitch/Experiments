@@ -8,10 +8,14 @@ import { TrustSection } from "@/components/trust-section";
 import { BlogTeaser } from "@/components/home/blog-teaser";
 import { FaqSection } from "@/components/faq-section";
 import { CtaBanner } from "@/components/cta-banner";
+import { StudioJsonLd, WebsiteJsonLd, FaqJsonLd } from "@/components/structured-data";
 
-export default function Home() {
+export default async function Home() {
   return (
     <>
+      <StudioJsonLd />
+      <WebsiteJsonLd />
+      <FaqJsonLd />
       <Hero />
       <StatsStrip />
       <UspGrid />
