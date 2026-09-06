@@ -65,3 +65,78 @@ export async function deleteStudio(id: string) {
   await prisma.studioLocation.delete({ where: { id } });
   revalidateStudios();
 }
+
+/** Ergebnis eines Sammel-Imports, wird der Seite als Rückmeldung angezeigt. */
+export type ImportResult = { added: number; skipped: string[] };
+
+/**
+ * Mehrere Studios auf einmal anlegen.
+ *
+ * Erwartet je Zeile einen Standort, die Felder durch Semikolon getrennt:
+ *   Name; Straße Hausnr; PLZ; Ort; Telefon; E-Mail; Breitengrad; Längengrad
+ *
+ * Gedacht für die Ersteinrichtung mit vielen Standorten - das Formular
+ * vierzehnmal auszufüllen wäre mühsam und fehleranfällig. Die
+ * Öffnungszeiten gelten für alle importierten Standorte gleich und lassen
+ * sich danach je Studio anpassen.
+ *
+ * Zeilen ohne Koordinaten werden bewusst abgelehnt statt stillschweigend
+ * angelegt: Ein Studio ohne Koordinaten schaltet die Standortabfrage bei
+ * der Terminbuchung für alle Studios ab.
+ */
+export async function importStudios(
+  _previous: ImportResult | null,
+  formData: FormData,
+): Promise<ImportResult> {
+  await requireAdmin();
+
+  const raw = String(formData.get("rows") ?? "");
+  const openingHours = String(formData.get("openingHours") ?? "").trim();
+  const result: ImportResult = { added: 0, skipped: [] };
+
+  const last = await prisma.studioLocation.findFirst({ orderBy: { sortOrder: "desc" } });
+  let sortOrder = (last?.sortOrder ?? 0) + 10;
+
+  for (const [index, line] of raw.split("\n").entries()) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    const parts = trimmed.split(";").map((part) => part.trim());
+    const [name, street, postalCode, city, phone, email, latitude, longitude] = parts;
+
+    const problem = !name || !street || !postalCode || !city
+      ? "Name, Straße, PLZ und Ort sind Pflicht"
+      : !latitude || !longitude
+        ? "Koordinaten fehlen"
+        : Number.isNaN(Number(latitude)) || Number.isNaN(Number(longitude))
+          ? "Koordinaten sind keine Zahlen"
+          : null;
+
+    if (problem) {
+      result.skipped.push(`Zeile ${index + 1}: ${problem}`);
+      continue;
+    }
+
+    await prisma.studioLocation.create({
+      data: {
+        name,
+        street,
+        postalCode,
+        city,
+        phone: phone ?? "",
+        email: email ?? "",
+        // Bleibt leer: Die Karte wird dann aus der Anschrift abgeleitet.
+        mapEmbedUrl: "",
+        openingHours,
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+        sortOrder,
+      },
+    });
+    sortOrder += 10;
+    result.added += 1;
+  }
+
+  revalidateStudios();
+  return result;
+}

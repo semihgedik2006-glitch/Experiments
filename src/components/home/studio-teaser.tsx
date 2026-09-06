@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { MapEmbed } from "@/components/map-embed";
+import { studioMapUrl } from "@/lib/studio-map";
 import { getStudios } from "@/lib/data";
 
 export async function StudioTeaser() {
@@ -53,7 +54,7 @@ export async function StudioTeaser() {
 
           <Reveal delay={0.15} className="overflow-hidden rounded-2xl border border-border">
             <MapEmbed
-              src={studio.mapEmbedUrl}
+              src={studioMapUrl(studio)}
               title="Studio Standort auf Google Maps"
               className="h-80 w-full"
             />

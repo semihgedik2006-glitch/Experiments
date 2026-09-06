@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { MapEmbed } from "@/components/map-embed";
+import { studioMapUrl } from "@/lib/studio-map";
 import { getStudios } from "@/lib/data";
 import { StudioJsonLd } from "@/components/structured-data";
 import { notFound } from "next/navigation";
@@ -53,7 +54,7 @@ export default async function StudioPage() {
           <Container className="grid gap-10 md:grid-cols-2">
             <Reveal className="overflow-hidden rounded-2xl border border-border">
               <MapEmbed
-                src={studio.mapEmbedUrl}
+                src={studioMapUrl(studio)}
                 title={`${studio.name} auf Google Maps`}
                 className="h-96 w-full"
               />

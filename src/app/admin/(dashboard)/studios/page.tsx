@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { createStudio, updateStudio, deleteStudio } from "@/lib/actions/admin-studios";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
+import { StudioImport } from "@/components/admin/studio-import";
 
 const inputClass =
   "w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime";
@@ -105,6 +106,10 @@ export default async function AdminStudiosPage() {
         Kontaktseite. Kleinere Zahl bei &bdquo;Position&ldquo; = weiter oben; das oberste
         Studio wird im Impressum als Hauptsitz verwendet.
       </p>
+
+      <div className="mt-8">
+        <StudioImport />
+      </div>
 
       <form action={createStudio} className="mt-8 rounded-2xl border border-lime/40 bg-surface p-6">
         <h2 className="font-semibold">Neues Studio hinzufügen</h2>
