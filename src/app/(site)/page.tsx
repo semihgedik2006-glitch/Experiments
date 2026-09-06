@@ -9,8 +9,13 @@ import { BlogTeaser } from "@/components/home/blog-teaser";
 import { FaqSection } from "@/components/faq-section";
 import { CtaBanner } from "@/components/cta-banner";
 import { StudioJsonLd, WebsiteJsonLd, FaqJsonLd } from "@/components/structured-data";
+import { getToggles } from "@/lib/site-toggles";
 
 export default async function Home() {
+  // Ausgeblendete Bereiche entfallen auch auf der Startseite - sonst
+  // verlinken Teaser auf Seiten, die nicht mehr erreichbar sind.
+  const toggles = await getToggles();
+
   return (
     <>
       <StudioJsonLd />
@@ -20,10 +25,10 @@ export default async function Home() {
       <StatsStrip />
       <UspGrid />
       <HowItWorks />
-      <StudioTeaser />
-      <TestimonialsTeaser />
+      {toggles.studio && <StudioTeaser />}
+      {toggles.erfolgsgeschichten && <TestimonialsTeaser />}
       <TrustSection />
-      <BlogTeaser />
+      {toggles.blog && <BlogTeaser />}
       <FaqSection />
       <CtaBanner />
     </>

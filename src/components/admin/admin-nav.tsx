@@ -13,6 +13,7 @@ import {
   HelpCircle,
   Mail,
   Send,
+  Eye,
   type LucideIcon,
 } from "lucide-react";
 
@@ -43,7 +44,13 @@ const groups: NavGroup[] = [
       { href: "/admin/newsletter", label: "Newsletter", icon: Send },
     ],
   },
-  { title: "Verwaltung", items: [{ href: "/admin/studios", label: "Studios", icon: Building2 }] },
+  {
+    title: "Verwaltung",
+    items: [
+      { href: "/admin/studios", label: "Studios", icon: Building2 },
+      { href: "/admin/sichtbarkeit", label: "Sichtbarkeit", icon: Eye },
+    ],
+  },
 ];
 
 const navDelays = new Map(

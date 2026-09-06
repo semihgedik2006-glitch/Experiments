@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { staticSearchEntries } from "@/lib/search-data";
 import { getFaqItems } from "@/lib/data";
+import { getToggles } from "@/lib/site-toggles";
 
 type SearchResult = { type: string; title: string; description: string; href: string };
 
@@ -12,7 +13,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ results: [] });
   }
 
+  // Was ausgeblendet ist, darf auch die Suche nicht ausgeben - sonst führt
+  // ein Treffer auf eine Seite, die mit 404 antwortet.
+  const toggles = await getToggles();
+  const hidden = new Set(
+    Object.entries(toggles)
+      .filter(([, visible]) => !visible)
+      .map(([key]) => `/${key}`),
+  );
+
   const pageResults: SearchResult[] = staticSearchEntries
+    .filter((entry) => !hidden.has(entry.href))
     .filter(
       (entry) =>
         entry.title.toLowerCase().includes(query) ||
@@ -44,7 +55,7 @@ export async function GET(request: NextRequest) {
     select: { title: true, excerpt: true, content: true, slug: true },
   });
 
-  const blogResults: SearchResult[] = posts
+  const blogResults: SearchResult[] = (toggles.blog ? posts : [])
     .filter(
       (post) =>
         post.title.toLowerCase().includes(query) ||

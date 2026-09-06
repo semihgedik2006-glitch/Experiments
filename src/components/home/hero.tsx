@@ -96,8 +96,8 @@ export function Hero() {
         transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Blueprint grid, masked so it dissolves toward the edges. */}
-      <div aria-hidden className="hero-grid pointer-events-none absolute inset-0 opacity-40" />
+      {/* Weicher Lichtschein statt des früheren Karomusters. */}
+      <div aria-hidden className="soft-glow pointer-events-none absolute inset-0" />
 
       <motion.div style={{ y: contentY, opacity: contentOpacity }} className="w-full">
         <Container className="flex flex-col items-center py-24 text-center md:py-28">

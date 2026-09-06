@@ -49,7 +49,7 @@ export function HowItWorks() {
           {steps.map(({ step, title, text }) => (
             <StaggerItem key={step}>
               <motion.span
-                whileHover={{ scale: 1.08 }}
+                whileHover={{ scale: 1.04 }}
                 transition={{ duration: 0.25 }}
                 className="inline-block text-5xl font-black text-accent-strong"
               >

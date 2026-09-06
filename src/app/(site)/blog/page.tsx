@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { isVisible } from "@/lib/site-toggles";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Newspaper } from "lucide-react";
 import { Container } from "@/components/ui/container";
@@ -16,6 +18,10 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
+  // Im Adminbereich ausgeblendet: Die Seite bleibt bestehen, ist aber
+  // nicht mehr erreichbar.
+  if (!(await isVisible("blog"))) return notFound();
+
   const posts = await getPublishedPosts();
 
   return (

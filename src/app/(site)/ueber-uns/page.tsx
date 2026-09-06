@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { isVisible } from "@/lib/site-toggles";
+import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -32,7 +34,11 @@ const values = [
   },
 ];
 
-export default function UeberUnsPage() {
+export default async function UeberUnsPage() {
+  // Im Adminbereich ausgeblendet: Die Seite bleibt bestehen, ist aber
+  // nicht mehr erreichbar.
+  if (!(await isVisible("ueber-uns"))) return notFound();
+
   return (
     <>
       <PageHeader

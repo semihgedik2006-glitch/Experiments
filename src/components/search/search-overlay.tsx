@@ -60,7 +60,7 @@ export function SearchOverlay() {
     <>
       <motion.button
         type="button"
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setOpen(true)}
         aria-label="Suche öffnen"

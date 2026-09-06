@@ -9,6 +9,7 @@ import { getPostBySlug, getApprovedComments } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 import { PostThumb } from "@/components/blog/post-thumb";
 import { ArticleJsonLd } from "@/components/structured-data";
+import { getToggles } from "@/lib/site-toggles";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -36,10 +37,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
+  const toggles = await getToggles();
+  // Ist der Blog ausgeblendet, gilt das auch für die einzelnen Beiträge.
+  if (!toggles.blog) return notFound();
+
   const post = await getPostBySlug(slug);
   if (!post) return notFound();
 
-  const comments = await getApprovedComments(post.id);
+  const comments = toggles.kommentare ? await getApprovedComments(post.id) : [];
 
   return (
     <article className="py-20">
@@ -80,6 +85,10 @@ export default async function BlogPostPage({ params }: Props) {
           </Button>
         </div>
 
+        {/* Sind die Kommentare im Adminbereich ausgeblendet, entfällt der
+            gesamte Bereich - vorhandene Kommentare bleiben dabei erhalten
+            und erscheinen wieder, sobald der Schalter zurückgestellt wird. */}
+        {toggles.kommentare && (
         <div className="mt-16 border-t border-border pt-10">
           <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight">
             <MessageCircle size={20} className="text-accent" />
@@ -130,6 +139,7 @@ export default async function BlogPostPage({ params }: Props) {
             <CommentForm postId={post.id} slug={post.slug} />
           </div>
         </div>
+        )}
       </Container>
     </article>
   );

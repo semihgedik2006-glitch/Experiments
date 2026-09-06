@@ -59,8 +59,6 @@ export function PostThumb({
       className={`post-thumb relative overflow-hidden ${className}`}
       style={{ "--thumb-hue": hue } as React.CSSProperties}
     >
-      {/* Feines Raster, das dem Verlauf etwas Struktur gibt. */}
-      <div className="post-thumb-grid absolute inset-0" />
       <span className="post-thumb-letter absolute bottom-3 right-4 text-5xl font-black leading-none">
         {title.trim().charAt(0).toUpperCase()}
       </span>

@@ -44,7 +44,7 @@ export function UspGrid() {
           {items.map(({ icon: Icon, title, text }) => (
             <StaggerItem key={title}>
               <motion.div
-                whileHover={{ y: -6 }}
+                whileHover={{ y: -4 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="h-full card p-7 transition-colors hover:border-lime/40"
               >

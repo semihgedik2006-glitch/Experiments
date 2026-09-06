@@ -5,13 +5,12 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { Menu, X } from "lucide-react";
-import { mainNav } from "@/lib/site-config";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SearchOverlay } from "@/components/search/search-overlay";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { Logo } from "@/components/logo";
 
-export function Header() {
+export function Header({ nav }: { nav: { label: string; href: string }[] }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
@@ -34,7 +33,7 @@ export function Header() {
         </Link>
 
         <nav aria-label="Hauptnavigation" className="hidden items-center gap-5 lg:flex xl:gap-8">
-          {mainNav.map((item) => {
+          {nav.map((item) => {
             const active = pathname === item.href;
             return (
               <Link
@@ -104,7 +103,7 @@ export function Header() {
             className="overflow-hidden border-t border-border lg:hidden"
           >
             <nav aria-label="Navigation für kleine Bildschirme" className="flex flex-col gap-4 px-6 py-4">
-              {mainNav.map((item) => (
+              {nav.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

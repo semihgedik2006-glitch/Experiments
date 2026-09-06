@@ -28,12 +28,12 @@
   --color-on-lime: #12160b;
   --color-electric-blue: #4fa8ff;
 
-  --background: #faf8f3;
-  --surface: #f0ebe0;
-  --surface-raised: #fffdf9;
-  --foreground: #191b15;
-  --muted: #5d5f55;
-  --border-color: #e2dccd;
+  --background: #fcfbf8;
+  --surface: #f4f2ec;
+  --surface-raised: #ffffff;
+  --foreground: #171914;
+  --muted: #61645a;
+  --border-color: #e7e4da;
 
   /* Farbe der dunklen Abschnitte - ein sehr dunkles, leicht grünstichiges
      Anthrazit, damit sie zur Marke gehören und nicht wie fremde Kästen
@@ -183,8 +183,8 @@ h3,
   border: 1px solid var(--border-color);
   background-color: var(--surface-raised);
   box-shadow:
-    0 1px 2px color-mix(in srgb, var(--foreground) 5%, transparent),
-    0 8px 24px -12px color-mix(in srgb, var(--foreground) 14%, transparent);
+    0 1px 2px color-mix(in srgb, var(--foreground) 4%, transparent),
+    0 10px 30px -18px color-mix(in srgb, var(--foreground) 18%, transparent);
 }
 
 /* In dunklen Abschnitten trägt ein Schatten nichts bei - dort schafft eine
@@ -218,14 +218,6 @@ h3,
     hsl(calc(var(--thumb-hue) + 18) 34% 76%)
   );
 }
-.post-thumb-grid {
-  background-image:
-    linear-gradient(currentColor 1px, transparent 1px),
-    linear-gradient(90deg, currentColor 1px, transparent 1px);
-  background-size: 22px 22px;
-  color: hsl(var(--thumb-hue) 40% 35%);
-  opacity: 0.18;
-}
 .post-thumb-letter {
   color: hsl(var(--thumb-hue) 45% 30%);
   opacity: 0.25;
@@ -238,11 +230,6 @@ h3,
     hsl(var(--thumb-hue) 20% 20%),
     hsl(calc(var(--thumb-hue) + 18) 24% 13%)
   );
-}
-.dark .post-thumb-grid,
-.on-ink .post-thumb-grid {
-  color: hsl(var(--thumb-hue) 35% 70%);
-  opacity: 0.12;
 }
 .dark .post-thumb-letter,
 .on-ink .post-thumb-letter {
@@ -338,14 +325,17 @@ h3,
   }
 }
 
-/* Fine blueprint grid behind the hero, fading out toward the edges. */
-.hero-grid {
-  background-image:
-    linear-gradient(var(--border-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
+/* Sehr weicher Lichtschein hinter Hero und Seitenkopf.
+   Ersetzt das frühere Karomuster: Das erinnerte an Rechenpapier und wirkte
+   technisch statt hochwertig - besonders im Hellmodus, wo die Linien
+   deutlich sichtbar waren. */
+.soft-glow {
+  background:
+    radial-gradient(
+      ellipse 60% 50% at 50% 0%,
+      color-mix(in srgb, var(--color-lime) 12%, transparent),
+      transparent 70%
+    );
 }
 
 body {

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { isVisible } from "@/lib/site-toggles";
+import { notFound } from "next/navigation";
 import { Check, CalendarDays, Target, Clock, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
@@ -55,7 +57,11 @@ const timeComparison = [
   { label: "Zeit bis zu ersten Effekten", ems: "4-6 Wochen", gym: "je nach Regelmäßigkeit" },
 ];
 
-export default function PreisePage() {
+export default async function PreisePage() {
+  // Im Adminbereich ausgeblendet: Die Seite bleibt bestehen, ist aber
+  // nicht mehr erreichbar.
+  if (!(await isVisible("preise"))) return notFound();
+
   return (
     <>
       <PageHeader

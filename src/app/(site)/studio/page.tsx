@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { isVisible } from "@/lib/site-toggles";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
@@ -19,6 +20,10 @@ export const metadata: Metadata = {
 };
 
 export default async function StudioPage() {
+  // Im Adminbereich ausgeblendet: Die Seite bleibt bestehen, ist aber
+  // nicht mehr erreichbar.
+  if (!(await isVisible("studio"))) return notFound();
+
   const studios = await getStudios();
   if (studios.length === 0) return notFound();
 

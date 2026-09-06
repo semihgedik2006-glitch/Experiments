@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/container";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/ui/section-header";
 import { googleReviews, studioFacts, trustPoints } from "@/lib/trust-config";
+import { isVisible } from "@/lib/site-toggles";
 
 const icons = {
   user: UserRound,
@@ -20,7 +21,11 @@ const icons = {
  * hinterlegt, fehlt der jeweilige Teil einfach, statt mit Platzhaltern
  * gefüllt zu werden.
  */
-export function TrustSection() {
+export async function TrustSection() {
+  // Zwei Bedingungen: echte Zahlen müssen hinterlegt sein UND der Bereich
+  // darf nicht im Adminbereich ausgeblendet sein.
+  const showReviews = googleReviews !== null && (await isVisible("google-bewertungen"));
+
   return (
     <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
       <Container>
@@ -59,7 +64,7 @@ export function TrustSection() {
           </Stagger>
         )}
 
-        {googleReviews && (
+        {showReviews && (
           <div className="mt-12 flex justify-center">
             <GoogleRatingBadge />
           </div>

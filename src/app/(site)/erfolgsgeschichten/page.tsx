@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { isVisible } from "@/lib/site-toggles";
+import { notFound } from "next/navigation";
 import { Star } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
@@ -15,7 +17,11 @@ export const metadata: Metadata = {
     "Echte Menschen, echte Ergebnisse: So hat EMS-Training bei Körperformen das Leben unserer Mitglieder verändert.",
 };
 
-export default function ErfolgsgeschichtenPage() {
+export default async function ErfolgsgeschichtenPage() {
+  // Im Adminbereich ausgeblendet: Die Seite bleibt bestehen, ist aber
+  // nicht mehr erreichbar.
+  if (!(await isVisible("erfolgsgeschichten"))) return notFound();
+
   return (
     <>
       <PageHeader

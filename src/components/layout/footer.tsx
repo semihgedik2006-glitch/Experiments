@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
-import { siteConfig, mainNav } from "@/lib/site-config";
+import { siteConfig } from "@/lib/site-config";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { InstagramIcon, FacebookIcon, TikTokIcon } from "@/components/icons/social-icons";
 import { Logo } from "@/components/logo";
@@ -12,7 +12,13 @@ const socials = [
   { href: siteConfig.social.tiktok, label: "TikTok", Icon: TikTokIcon },
 ];
 
-export async function Footer() {
+export async function Footer({
+  nav,
+  showNewsletter,
+}: {
+  nav: { label: string; href: string }[];
+  showNewsletter: boolean;
+}) {
   const studios = await getStudios();
   const studio = studios[0];
 
@@ -41,7 +47,7 @@ export async function Footer() {
         <div>
           <p className="text-sm font-semibold">Navigation</p>
           <ul className="mt-4 space-y-2">
-            {mainNav.map((item) => (
+            {nav.map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className="text-sm text-muted hover:text-foreground">
                   {item.label}
@@ -100,13 +106,15 @@ export async function Footer() {
           )}
         </div>
 
-        <div>
-          <p className="text-sm font-semibold">Newsletter</p>
-          <p className="mt-4 text-sm text-muted">
-            Trainingstipps &amp; Angebote direkt ins Postfach.
-          </p>
-          <NewsletterForm />
-        </div>
+        {showNewsletter && (
+          <div>
+            <p className="text-sm font-semibold">Newsletter</p>
+            <p className="mt-4 text-sm text-muted">
+              Trainingstipps &amp; Angebote direkt ins Postfach.
+            </p>
+            <NewsletterForm />
+          </div>
+        )}
       </div>
 
       <div className="border-t border-border px-6 py-6">

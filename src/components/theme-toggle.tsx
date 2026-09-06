@@ -24,7 +24,7 @@ export function ThemeToggle() {
   return (
     <motion.button
       type="button"
-      whileHover={{ scale: 1.08 }}
+      whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.92 }}
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "Zu hellem Design wechseln" : "Zu dunklem Design wechseln"}

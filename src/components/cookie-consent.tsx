@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import {
   subscribeConsent,
@@ -15,6 +16,14 @@ const emptySubscribe = () => () => {};
 export function CookieConsent({ children }: { children?: ReactNode }) {
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const consent = useSyncExternalStore(subscribeConsent, readConsent, serverConsent);
+  const pathname = usePathname();
+
+  // Im Adminbereich hat der Hinweis nichts verloren: Dort arbeitet nur das
+  // Studio selbst, es ist von Suchmaschinen ausgenommen, und der Balken
+  // verdeckte am unteren Rand die Schaltflächen. Da die Analyse ohnehin
+  // innerhalb dieser Komponente steckt, wird dort auch nichts geladen.
+  const inAdmin = pathname?.startsWith("/admin") ?? false;
+  if (inAdmin) return null;
 
   function choose(value: Consent) {
     writeConsent(value);

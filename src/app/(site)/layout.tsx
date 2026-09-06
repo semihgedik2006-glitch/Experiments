@@ -1,8 +1,20 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { CursorGlow } from "@/components/cursor-glow";
+import { mainNav } from "@/lib/site-config";
+import { getToggles } from "@/lib/site-toggles";
 
-export default function SiteLayout({ children }: { children: React.ReactNode }) {
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  const toggles = await getToggles();
+
+  // Ausgeblendete Bereiche verschwinden aus dem Menü - oben wie unten.
+  // Einträge ohne eigenen Schalter (Startseite, EMS-Training, Kontakt)
+  // bleiben immer sichtbar.
+  const nav = mainNav.filter((item) => {
+    const key = item.href.replace(/^\//, "");
+    return !(key in toggles) || toggles[key as keyof typeof toggles];
+  });
+
   return (
     <>
       <a
@@ -12,11 +24,11 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         Zum Inhalt springen
       </a>
       <CursorGlow />
-      <Header />
+      <Header nav={nav} />
       <main id="main-content" className="flex-1">
         {children}
       </main>
-      <Footer />
+      <Footer nav={nav} showNewsletter={toggles.newsletter} />
     </>
   );
 }

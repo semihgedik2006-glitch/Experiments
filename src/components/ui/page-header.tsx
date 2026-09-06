@@ -23,7 +23,7 @@ export function PageHeader({
     // der Startseite beliebig. Mit dem Raster im Hintergrund und mehr Luft
     // beginnt jede Unterseite jetzt erkennbar als eigene Seite.
     <section className="relative overflow-hidden border-b border-border bg-surface py-20 sm:py-24 md:py-32">
-      <div aria-hidden className="hero-grid pointer-events-none absolute inset-0 opacity-50" />
+      <div aria-hidden className="soft-glow pointer-events-none absolute inset-0" />
       <Container className="relative">
         {kicker && (
           <span className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">

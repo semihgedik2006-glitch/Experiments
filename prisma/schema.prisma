@@ -135,3 +135,18 @@ model FaqItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// Ein-/ausschaltbare Bereiche der Website.
+//
+// Damit lässt sich ein Teil der Seite vorübergehend ausblenden, solange die
+// Inhalte noch nicht stehen - etwa "Über uns" oder die Google-Bewertungen -
+// ohne dass jemand Code anfassen muss.
+//
+// Bewusst als Tabelle mit einem Eintrag je Bereich statt als eine Zeile mit
+// vielen Spalten: Ein neuer Bereich braucht dann keine Datenbankänderung.
+model SiteToggle {
+  // Schlüssel des Bereichs, z.B. "ueber-uns" oder "google-bewertungen".
+  key       String   @id
+  visible   Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
