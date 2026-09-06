@@ -97,6 +97,14 @@ export async function importStudios(
   const last = await prisma.studioLocation.findFirst({ orderBy: { sortOrder: "desc" } });
   let sortOrder = (last?.sortOrder ?? 0) + 10;
 
+  // Bereits angelegte Namen merken, damit ein zweiter Durchlauf oder eine
+  // doppelte Zeile kein zweites Studio gleichen Namens erzeugt.
+  const vorhanden = new Set(
+    (await prisma.studioLocation.findMany({ select: { name: true } })).map((studio) =>
+      studio.name.trim().toLowerCase(),
+    ),
+  );
+
   for (const [index, line] of raw.split("\n").entries()) {
     const trimmed = line.trim();
     if (!trimmed) continue;
@@ -116,6 +124,12 @@ export async function importStudios(
       result.skipped.push(`Zeile ${index + 1}: ${problem}`);
       continue;
     }
+
+    if (vorhanden.has(name.trim().toLowerCase())) {
+      result.skipped.push(`Zeile ${index + 1}: "${name}" ist bereits angelegt`);
+      continue;
+    }
+    vorhanden.add(name.trim().toLowerCase());
 
     await prisma.studioLocation.create({
       data: {
