@@ -31,8 +31,16 @@ export function SectionHeader({
       className={`${centered ? "mx-auto max-w-2xl text-center" : "flex flex-wrap items-end justify-between gap-6"} ${className}`}
     >
       <div className={centered ? "" : "max-w-2xl"}>
+        {/* Der kurze Strich vor dem Kicker ist das wiederkehrende Merkmal,
+            das alle Abschnitte der Seite verbindet - bei zentrierten
+            Überschriften steht er mittig darüber statt daneben. */}
         {kicker && (
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+          <span
+            className={`flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent ${
+              centered ? "justify-center" : ""
+            }`}
+          >
+            <span aria-hidden className="h-px w-8 bg-accent/50" />
             {kicker}
           </span>
         )}

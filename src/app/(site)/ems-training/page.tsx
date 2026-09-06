@@ -139,7 +139,7 @@ export default function EmsTrainingPage() {
 
       <ActivationSequence />
 
-      <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
+      <section className="on-ink py-20 sm:py-24 md:py-32">
         <Container>
           <Reveal className="mb-12 max-w-2xl">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">

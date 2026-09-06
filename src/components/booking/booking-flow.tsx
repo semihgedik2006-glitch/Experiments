@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { MapPin, LocateFixed } from "lucide-react";
 import { motion } from "motion/react";
 import { BookingForm } from "@/components/booking/booking-form";
 import { allStudiosLocatable, sortStudiosByDistance } from "@/lib/geo";
+
+/** Der Zustand ändert sich nie - useSyncExternalStore dient hier nur dazu,
+ *  Server und Browser sauber zu unterscheiden. */
+const subscribeNothing = () => () => {};
 
 type DayGroup = {
   dateKey: string;
@@ -42,9 +46,21 @@ export function BookingFlow({
   // falsche Aussage über die anderen.
   const canLocate = studios.length > 1 && allStudiosLocatable(studios);
 
-  const [locating, setLocating] = useState(
-    () => canLocate && typeof navigator !== "undefined" && !!navigator.geolocation,
-  );
+  // Der Hinweis "Standort wird ermittelt" darf erst nach der Hydration
+  // erscheinen. Würde er schon beim ersten Aufbau aus navigator abgeleitet,
+  // käme auf dem Server ein anderes Ergebnis heraus als im Browser, und
+  // React verwürfe die gesamte vom Server gelieferte Seite. Sichtbar wurde
+  // das erst, seit es mehr als ein Studio gibt - vorher war dieser Zweig nie
+  // aktiv.
+  const isClient = useSyncExternalStore(subscribeNothing, () => true, () => false);
+  const [locationSettled, setLocationSettled] = useState(false);
+
+  const locating =
+    isClient &&
+    canLocate &&
+    !locationSettled &&
+    typeof navigator !== "undefined" &&
+    !!navigator.geolocation;
 
   useEffect(() => {
     if (!canLocate) return;
@@ -63,9 +79,9 @@ export function BookingFlow({
           setRecommendedStudioId(nearest.id);
           setSelectedStudioId((current) => (userPicked ? current : nearest.id));
         }
-        setLocating(false);
+        setLocationSettled(true);
       },
-      () => setLocating(false),
+      () => setLocationSettled(true),
       { timeout: 8000 },
     );
     // Runs once on mount to fetch the user's position; re-running on every

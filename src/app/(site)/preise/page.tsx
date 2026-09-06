@@ -128,7 +128,7 @@ export default function PreisePage() {
         </Container>
       </section>
 
-      <section className="py-20 sm:py-24 md:py-32">
+      <section className="on-ink py-20 sm:py-24 md:py-32">
         <Container>
           <SectionHeader
             kicker="Zum Vergleich"

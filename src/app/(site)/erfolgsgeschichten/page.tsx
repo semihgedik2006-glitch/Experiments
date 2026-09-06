@@ -58,7 +58,7 @@ export default function ErfolgsgeschichtenPage() {
         </Container>
       </section>
 
-      <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
+      <section className="on-ink py-20 sm:py-24 md:py-32">
         <Container className="flex flex-col items-center text-center">
           <Reveal>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">

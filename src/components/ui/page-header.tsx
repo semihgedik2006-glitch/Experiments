@@ -19,10 +19,15 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <section className="border-b border-border py-16 sm:py-20 md:py-28">
-      <Container>
+    // Der Kopf war bisher ein schmales Band mit Trennlinie und wirkte neben
+    // der Startseite beliebig. Mit dem Raster im Hintergrund und mehr Luft
+    // beginnt jede Unterseite jetzt erkennbar als eigene Seite.
+    <section className="relative overflow-hidden border-b border-border bg-surface py-20 sm:py-24 md:py-32">
+      <div aria-hidden className="hero-grid pointer-events-none absolute inset-0 opacity-50" />
+      <Container className="relative">
         {kicker && (
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+          <span className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+            <span aria-hidden className="h-px w-8 bg-accent/50" />
             {kicker}
           </span>
         )}
