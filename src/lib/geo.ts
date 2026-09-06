@@ -17,9 +17,54 @@ export function haversineDistanceKm(
   return earthRadiusKm * c;
 }
 
-export function findNearestStudioId<
-  T extends { id: string; latitude: number | null; longitude: number | null },
->(studios: T[], userLat: number, userLon: number): string | null {
+type Located = { id: string; latitude: number | null; longitude: number | null };
+
+/**
+ * Sind für alle Studios Koordinaten hinterlegt?
+ *
+ * Nur dann lässt sich überhaupt sagen, welches das nächste ist. Fehlen sie
+ * bei einem einzigen, wäre jede Aussage dazu falsch: Das Studio ohne
+ * Koordinaten kann nicht gewinnen, egal wie nah es tatsächlich liegt.
+ * Genau das ist vorher passiert - ein neu angelegtes Studio ohne
+ * Koordinaten wurde stillschweigend übergangen, und ein weiter entferntes
+ * bekam die Auszeichnung "Am nächsten".
+ */
+export function allStudiosLocatable(studios: Located[]): boolean {
+  return (
+    studios.length > 0 &&
+    studios.every((studio) => studio.latitude !== null && studio.longitude !== null)
+  );
+}
+
+/**
+ * Studios nach Entfernung sortiert, das nächste zuerst.
+ *
+ * Studios ohne Koordinaten behalten ihre ursprüngliche Reihenfolge und
+ * landen hinten - sie werden nie als "am nächsten" ausgegeben.
+ */
+export function sortStudiosByDistance<T extends Located>(
+  studios: T[],
+  userLat: number,
+  userLon: number,
+): T[] {
+  return studios
+    .map((studio, index) => ({
+      studio,
+      index,
+      distance:
+        studio.latitude === null || studio.longitude === null
+          ? Infinity
+          : haversineDistanceKm(userLat, userLon, studio.latitude, studio.longitude),
+    }))
+    .sort((a, b) => a.distance - b.distance || a.index - b.index)
+    .map((entry) => entry.studio);
+}
+
+export function findNearestStudioId<T extends Located>(
+  studios: T[],
+  userLat: number,
+  userLon: number,
+): string | null {
   let nearestId: string | null = null;
   let nearestDistance = Infinity;
 

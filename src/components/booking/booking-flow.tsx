@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { MapPin, LocateFixed } from "lucide-react";
 import { motion } from "motion/react";
 import { BookingForm } from "@/components/booking/booking-form";
-import { findNearestStudioId } from "@/lib/geo";
+import { allStudiosLocatable, sortStudiosByDistance } from "@/lib/geo";
 
 type DayGroup = {
   dateKey: string;
@@ -31,25 +31,37 @@ export function BookingFlow({
 }) {
   const [selectedStudioId, setSelectedStudioId] = useState(studios[0]?.id ?? "");
   const [recommendedStudioId, setRecommendedStudioId] = useState<string | null>(null);
+  // Nach der Standortermittlung nach Entfernung sortiert - das nächste
+  // Studio soll auch tatsächlich obenstehen und nicht nur ausgewählt sein.
+  const [orderedStudios, setOrderedStudios] = useState(studios);
   const [userPicked, setUserPicked] = useState(false);
+
+  // Die Standortabfrage lohnt nur, wenn es etwas zu vergleichen gibt und
+  // jedes Studio überhaupt verortet ist. Fehlen bei einem die Koordinaten,
+  // könnte es nie gewinnen - die Auszeichnung "Am nächsten" wäre dann eine
+  // falsche Aussage über die anderen.
+  const canLocate = studios.length > 1 && allStudiosLocatable(studios);
+
   const [locating, setLocating] = useState(
-    () => studios.length > 1 && typeof navigator !== "undefined" && !!navigator.geolocation,
+    () => canLocate && typeof navigator !== "undefined" && !!navigator.geolocation,
   );
 
   useEffect(() => {
-    if (studios.length <= 1) return;
+    if (!canLocate) return;
     if (typeof navigator === "undefined" || !navigator.geolocation) return;
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const nearestId = findNearestStudioId(
+        const byDistance = sortStudiosByDistance(
           studios,
           position.coords.latitude,
           position.coords.longitude,
         );
-        if (nearestId) {
-          setRecommendedStudioId(nearestId);
-          setSelectedStudioId((current) => (userPicked ? current : nearestId));
+        const nearest = byDistance[0];
+        if (nearest) {
+          setOrderedStudios(byDistance);
+          setRecommendedStudioId(nearest.id);
+          setSelectedStudioId((current) => (userPicked ? current : nearest.id));
         }
         setLocating(false);
       },
@@ -83,7 +95,7 @@ export function BookingFlow({
             )}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
-            {studios.map((studio) => {
+            {orderedStudios.map((studio) => {
               const isSelected = selectedStudioId === studio.id;
               const isRecommended = recommendedStudioId === studio.id;
               return (

@@ -51,6 +51,17 @@ function StudioFields({
           Koordinaten (für &bdquo;nächstes Studio&ldquo; bei der Probetermin-Buchung) - in
           Google Maps mit Rechtsklick auf den Standort die Zahlen kopieren, z.B. 50.8800, 6.8817
         </p>
+        {/* Ohne Koordinaten kann ein Studio bei der Standortabfrage nicht
+            berücksichtigt werden. Das blieb vorher unbemerkt: Das Studio
+            wurde stillschweigend übersprungen, und ein weiter entferntes
+            bekam die Auszeichnung "Am nächsten". */}
+        {defaults && (defaults.latitude === null || defaults.longitude === null) && (
+          <p className="mb-2.5 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs">
+            Für dieses Studio fehlen die Koordinaten. Solange sie fehlen, schaltet sich
+            die Standortabfrage bei der Probetermin-Buchung für alle Studios ab - denn
+            welches am nächsten liegt, lässt sich dann nicht bestimmen.
+          </p>
+        )}
         <div className="grid grid-cols-2 gap-3">
           <input
             type="number"
