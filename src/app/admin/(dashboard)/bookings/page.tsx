@@ -1,12 +1,16 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { updateBookingStatus } from "@/lib/actions/admin-bookings";
 import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
-import { CalendarCheck, CalendarX } from "lucide-react";
+import { CalendarCheck, SearchX } from "lucide-react";
 import { AdminPage, EmptyState, StatusBadge } from "@/components/admin/ui";
+import { SearchBox } from "@/components/admin/search-box";
+import { FilterChips, Pagination } from "@/components/admin/list-nav";
+import { PRO_SEITE, param, seitenZahl, suchFilter, type SuchParams } from "@/lib/admin-list";
+import type { Prisma } from "@/generated/prisma/client";
+import type { BookingStatus } from "@/generated/prisma/enums";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Offen",
@@ -22,58 +26,95 @@ const statusTon = {
   CANCELLED: "off",
 } as const;
 
+const gueltigeStatus = ["PENDING", "CONFIRMED", "CANCELLED"] as const;
+
 export default async function AdminBookingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ studio?: string }>;
+  searchParams: Promise<SuchParams>;
 }) {
-  const { studio: studioFilter } = await searchParams;
+  const params = await searchParams;
+  const studioFilter = param(params, "studio");
+  const begriff = param(params, "q");
+  const statusRoh = param(params, "status");
+  // Nur bekannte Werte durchlassen - sonst ergibt ?status=XYZ eine leere
+  // Liste, ohne dass erkennbar wäre warum.
+  const status = (gueltigeStatus as readonly string[]).includes(statusRoh)
+    ? (statusRoh as BookingStatus)
+    : "";
+  const seite = seitenZahl(params);
 
-  const [studios, bookings] = await Promise.all([
+  const where: Prisma.BookingWhereInput = {
+    ...(studioFilter ? { slot: { is: { studioId: studioFilter } } } : {}),
+    ...(status ? { status } : {}),
+    ...(suchFilter(begriff, ["name", "email", "phone", "message"]) ?? {}),
+  };
+
+  // Die Zahlen für die Filterreihe zählen innerhalb der übrigen Auswahl -
+  // steht die Suche auf "Meier", zeigt "Offen 2" die offenen Anfragen von
+  // Meier, nicht alle offenen überhaupt.
+  const ohneStatus: Prisma.BookingWhereInput = { ...where };
+  delete ohneStatus.status;
+
+  const [studios, gesamt, bookings, zaehler] = await Promise.all([
     prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
+    prisma.booking.count({ where }),
     prisma.booking.findMany({
-      where: studioFilter ? { slot: { is: { studioId: studioFilter } } } : undefined,
+      where,
       include: { slot: { include: { studio: true } } },
-      orderBy: { createdAt: "desc" },
+      // Zweites Sortierkriterium: Ohne eindeutiges Merkmal darf die
+      // Datenbank Einträge mit gleichem Zeitstempel zwischen zwei Abfragen
+      // unterschiedlich anordnen. Beim Blättern kann dann ein Eintrag auf
+      // beiden Seiten stehen und ein anderer gar nicht.
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take: PRO_SEITE,
+      skip: (seite - 1) * PRO_SEITE,
     }),
+    prisma.booking.groupBy({ by: ["status"], where: ohneStatus, _count: true }),
   ]);
 
-  const offen = bookings.filter((b) => b.status === "PENDING").length;
+  const anzahl = (s: BookingStatus) =>
+    zaehler.find((eintrag) => eintrag.status === s)?._count ?? 0;
+  const alle = zaehler.reduce((summe, eintrag) => summe + eintrag._count, 0);
+
+  const gefiltert = Boolean(begriff || status || studioFilter);
 
   return (
     <AdminPage
       title="Buchungsanfragen"
       description={
-        offen > 0
-          ? `${offen} ${offen === 1 ? "Anfrage wartet" : "Anfragen warten"} auf eine Antwort.`
+        anzahl("PENDING") > 0
+          ? `${anzahl("PENDING")} ${anzahl("PENDING") === 1 ? "Anfrage wartet" : "Anfragen warten"} auf eine Antwort.`
           : "Keine offene Anfrage."
       }
     >
-      {studios.length > 1 && (
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href="/admin/bookings"
-            className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
-              !studioFilter ? "border-lime bg-lime/10" : "border-border hover:border-lime/60"
-            }`}
-          >
-            Alle Studios
-          </Link>
-          {studios.map((studio) => (
-            <Link
-              key={studio.id}
-              href={`/admin/bookings?studio=${studio.id}`}
-              className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
-                studioFilter === studio.id
-                  ? "border-lime bg-lime/10"
-                  : "border-border hover:border-lime/60"
-              }`}
-            >
-              {studio.name}
-            </Link>
-          ))}
-        </div>
-      )}
+      <div className="space-y-3">
+        <SearchBox platzhalter="Name, E-Mail, Telefon oder Nachricht" klasse="max-w-md" />
+
+        <FilterChips
+          basis="/admin/bookings"
+          params={params}
+          name="status"
+          optionen={[
+            { wert: "", label: "Alle", anzahl: alle },
+            { wert: "PENDING", label: "Offen", anzahl: anzahl("PENDING") },
+            { wert: "CONFIRMED", label: "Bestätigt", anzahl: anzahl("CONFIRMED") },
+            { wert: "CANCELLED", label: "Storniert", anzahl: anzahl("CANCELLED") },
+          ]}
+        />
+
+        {studios.length > 1 && (
+          <FilterChips
+            basis="/admin/bookings"
+            params={params}
+            name="studio"
+            optionen={[
+              { wert: "", label: "Alle Studios" },
+              ...studios.map((studio) => ({ wert: studio.id, label: studio.name })),
+            ]}
+          />
+        )}
+      </div>
 
       <AdminStagger className="mt-6 space-y-3">
         {bookings.map((booking) => (
@@ -137,7 +178,7 @@ export default async function AdminBookingsPage({
                       niemand davon ausgeht, der Gast sei informiert. */}
                   <ConfirmButton
                     label="Ablehnen"
-                    icon={CalendarX}
+                    icon="termin"
                     question={`Anfrage von ${booking.name} ablehnen? Es geht dabei keine E-Mail raus - bitte selbst absagen.`}
                     confirmLabel="Ja, ablehnen"
                     pendingLabel="Wird abgelehnt..."
@@ -156,7 +197,7 @@ export default async function AdminBookingsPage({
                 >
                   <ConfirmButton
                     label="Stornieren"
-                    icon={CalendarX}
+                    icon="termin"
                     question={`Bestätigten Termin von ${booking.name} stornieren? Der Platz wird wieder frei, eine Absage-E-Mail geht nicht automatisch raus.`}
                     confirmLabel="Ja, stornieren"
                     pendingLabel="Wird storniert..."
@@ -169,16 +210,31 @@ export default async function AdminBookingsPage({
         ))}
       </AdminStagger>
 
+      {bookings.length > 0 && (
+        <Pagination
+          basis="/admin/bookings"
+          params={params}
+          seite={seite}
+          proSeite={PRO_SEITE}
+          gesamt={gesamt}
+          einheit="Anfragen"
+        />
+      )}
+
       {bookings.length === 0 && (
         <div className="mt-6">
-          <EmptyState
-            icon={CalendarCheck}
-            title={studioFilter ? "Keine Anfragen für dieses Studio" : "Noch keine Buchungsanfragen"}
-          >
-            {studioFilter
-              ? "Für den gewählten Standort liegt nichts vor - über „Alle Studios“ siehst du wieder alle."
-              : "Was über die Probetermin-Seite gebucht wird, landet hier. Bestätigen verschickt eine E-Mail an den Gast."}
-          </EmptyState>
+          {gefiltert ? (
+            <EmptyState icon={SearchX} title="Keine Anfrage passt zu dieser Auswahl">
+              {begriff
+                ? `Zu „${begriff}“ wurde nichts gefunden. Gesucht wird in Name, E-Mail, Telefonnummer und Nachricht.`
+                : "Für die gewählten Filter liegt nichts vor - setz sie über „Alle“ zurück."}
+            </EmptyState>
+          ) : (
+            <EmptyState icon={CalendarCheck} title="Noch keine Buchungsanfragen">
+              Was über die Probetermin-Seite gebucht wird, landet hier. Bestätigen
+              verschickt eine E-Mail an den Gast.
+            </EmptyState>
+          )}
         </div>
       )}
     </AdminPage>

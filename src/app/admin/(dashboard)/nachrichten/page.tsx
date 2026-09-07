@@ -4,12 +4,50 @@ import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { SubmitButton } from "@/components/admin/admin-form";
 import { AdminPage, EmptyState, StatusBadge } from "@/components/admin/ui";
-import { Mail } from "lucide-react";
+import { Mail, SearchX } from "lucide-react";
+import { SearchBox } from "@/components/admin/search-box";
+import { FilterChips, Pagination } from "@/components/admin/list-nav";
+import { PRO_SEITE, param, seitenZahl, suchFilter, type SuchParams } from "@/lib/admin-list";
+import type { Prisma } from "@/generated/prisma/client";
 
-export default async function AdminMessagesPage() {
-  const messages = await prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" } });
+export default async function AdminMessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<SuchParams>;
+}) {
+  const params = await searchParams;
+  const begriff = param(params, "q");
+  const gelesen = param(params, "gelesen"); // "" | "neu" | "erledigt"
+  const seite = seitenZahl(params);
 
-  const ungelesen = messages.filter((msg) => !msg.read).length;
+  const where: Prisma.ContactMessageWhereInput = {
+    ...(gelesen === "neu" ? { read: false } : {}),
+    ...(gelesen === "erledigt" ? { read: true } : {}),
+    ...(suchFilter(begriff, ["name", "email", "subject", "message"]) ?? {}),
+  };
+
+  // Zählt innerhalb der Suche, damit die Zahlen zu dem passen, was man sieht.
+  const ohneStatus: Prisma.ContactMessageWhereInput = {
+    ...(suchFilter(begriff, ["name", "email", "subject", "message"]) ?? {}),
+  };
+
+  const [gesamt, messages, ungelesen, alle] = await Promise.all([
+    prisma.contactMessage.count({ where }),
+    prisma.contactMessage.findMany({
+      where,
+      // Zweites Sortierkriterium: Ohne eindeutiges Merkmal darf die
+      // Datenbank Einträge mit gleichem Zeitstempel zwischen zwei Abfragen
+      // unterschiedlich anordnen. Beim Blättern kann dann ein Eintrag auf
+      // beiden Seiten stehen und ein anderer gar nicht.
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take: PRO_SEITE,
+      skip: (seite - 1) * PRO_SEITE,
+    }),
+    prisma.contactMessage.count({ where: { ...ohneStatus, read: false } }),
+    prisma.contactMessage.count({ where: ohneStatus }),
+  ]);
+
+  const gefiltert = Boolean(begriff || gelesen);
 
   return (
     <AdminPage
@@ -20,7 +58,22 @@ export default async function AdminMessagesPage() {
           : "Alles gelesen."
       }
     >
-      <AdminStagger className="space-y-3">
+      <div className="space-y-3">
+        <SearchBox platzhalter="Name, E-Mail, Betreff oder Text" klasse="max-w-md" />
+
+        <FilterChips
+          basis="/admin/nachrichten"
+          params={params}
+          name="gelesen"
+          optionen={[
+            { wert: "", label: "Alle", anzahl: alle },
+            { wert: "neu", label: "Ungelesen", anzahl: ungelesen },
+            { wert: "erledigt", label: "Gelesen", anzahl: alle - ungelesen },
+          ]}
+        />
+      </div>
+
+      <AdminStagger className="mt-6 space-y-3">
         {messages.map((msg) => (
           <AdminStaggerItem key={msg.id}>
           <div
@@ -58,11 +111,30 @@ export default async function AdminMessagesPage() {
         ))}
       </AdminStagger>
 
+      {messages.length > 0 && (
+        <Pagination
+          basis="/admin/nachrichten"
+          params={params}
+          seite={seite}
+          proSeite={PRO_SEITE}
+          gesamt={gesamt}
+          einheit="Nachrichten"
+        />
+      )}
+
       {messages.length === 0 && (
-        <EmptyState icon={Mail} title="Noch keine Nachrichten">
-          Was über das Kontaktformular der Website geschickt wird, erscheint hier - mit
-          Name, E-Mail und Telefonnummer zum direkten Zurückrufen.
-        </EmptyState>
+        gefiltert ? (
+          <EmptyState icon={SearchX} title="Keine Nachricht passt zu dieser Auswahl">
+            {begriff
+              ? `Zu „${begriff}“ wurde nichts gefunden. Gesucht wird in Name, E-Mail, Betreff und Text.`
+              : "Für den gewählten Filter liegt nichts vor - über „Alle“ siehst du wieder alles."}
+          </EmptyState>
+        ) : (
+          <EmptyState icon={Mail} title="Noch keine Nachrichten">
+            Was über das Kontaktformular der Website geschickt wird, erscheint hier - mit
+            Name, E-Mail und Telefonnummer zum direkten Zurückrufen.
+          </EmptyState>
+        )
       )}
     </AdminPage>
   );

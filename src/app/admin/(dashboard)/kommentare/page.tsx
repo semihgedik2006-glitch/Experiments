@@ -5,19 +5,59 @@ import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { AdminPage, EmptyState, StatusBadge, adminInput } from "@/components/admin/ui";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, SearchX } from "lucide-react";
+import { SearchBox } from "@/components/admin/search-box";
+import { FilterChips, Pagination } from "@/components/admin/list-nav";
+import { PRO_SEITE, param, seitenZahl, suchFilter, type SuchParams } from "@/lib/admin-list";
+import type { Prisma } from "@/generated/prisma/client";
 
-export default async function AdminCommentsPage() {
-  const comments = await prisma.comment.findMany({
-    where: { parentId: null },
-    orderBy: { createdAt: "desc" },
-    include: {
-      post: { select: { title: true, slug: true } },
-      replies: { orderBy: { createdAt: "asc" } },
-    },
-  });
+export default async function AdminCommentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<SuchParams>;
+}) {
+  const params = await searchParams;
+  const begriff = param(params, "q");
+  const freigabe = param(params, "freigabe"); // "" | "offen" | "frei"
+  const seite = seitenZahl(params);
 
-  const offen = comments.filter((c) => !c.approved).length;
+  // Nur Hauptkommentare werden aufgeteilt; die Antworten hängen an ihnen und
+  // werden mitgeladen. Gesucht wird auch im Text der Antworten - sonst
+  // findet man einen Verlauf nicht wieder, an den man selbst geschrieben hat.
+  const suche = suchFilter(begriff, ["authorName", "content"]);
+  const where: Prisma.CommentWhereInput = {
+    parentId: null,
+    ...(freigabe === "offen" ? { approved: false } : {}),
+    ...(freigabe === "frei" ? { approved: true } : {}),
+    ...(suche
+      ? { OR: [...suche.OR, { replies: { some: suche } }, { post: { title: { contains: begriff, mode: "insensitive" } } }] }
+      : {}),
+  };
+
+  const ohneStatus: Prisma.CommentWhereInput = { ...where };
+  delete ohneStatus.approved;
+
+  const [gesamt, comments, offen, alle] = await Promise.all([
+    prisma.comment.count({ where }),
+    prisma.comment.findMany({
+      where,
+      // Zweites Sortierkriterium: Ohne eindeutiges Merkmal darf die
+      // Datenbank Einträge mit gleichem Zeitstempel zwischen zwei Abfragen
+      // unterschiedlich anordnen. Beim Blättern kann dann ein Eintrag auf
+      // beiden Seiten stehen und ein anderer gar nicht.
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take: PRO_SEITE,
+      skip: (seite - 1) * PRO_SEITE,
+      include: {
+        post: { select: { title: true, slug: true } },
+        replies: { orderBy: { createdAt: "asc" } },
+      },
+    }),
+    prisma.comment.count({ where: { ...ohneStatus, approved: false } }),
+    prisma.comment.count({ where: ohneStatus }),
+  ]);
+
+  const gefiltert = Boolean(begriff || freigabe);
 
   return (
     <AdminPage
@@ -28,7 +68,22 @@ export default async function AdminCommentsPage() {
           : "Alle Kommentare sind freigegeben. Neue erscheinen erst nach deiner Freigabe."
       }
     >
-      <AdminStagger className="space-y-3">
+      <div className="space-y-3">
+        <SearchBox platzhalter="Name, Kommentartext oder Artikel" klasse="max-w-md" />
+
+        <FilterChips
+          basis="/admin/kommentare"
+          params={params}
+          name="freigabe"
+          optionen={[
+            { wert: "", label: "Alle", anzahl: alle },
+            { wert: "offen", label: "Wartet auf Freigabe", anzahl: offen },
+            { wert: "frei", label: "Freigegeben", anzahl: alle - offen },
+          ]}
+        />
+      </div>
+
+      <AdminStagger className="mt-6 space-y-3">
         {comments.map((comment) => (
           <AdminStaggerItem key={comment.id}>
           <div
@@ -143,11 +198,30 @@ export default async function AdminCommentsPage() {
         ))}
       </AdminStagger>
 
+      {comments.length > 0 && (
+        <Pagination
+          basis="/admin/kommentare"
+          params={params}
+          seite={seite}
+          proSeite={PRO_SEITE}
+          gesamt={gesamt}
+          einheit="Kommentare"
+        />
+      )}
+
       {comments.length === 0 && (
-        <EmptyState icon={MessageSquare} title="Noch keine Kommentare">
-          Sobald jemand unter einem Blogartikel schreibt, landet der Kommentar hier und
-          wartet auf deine Freigabe. Veröffentlicht wird nichts von allein.
-        </EmptyState>
+        gefiltert ? (
+          <EmptyState icon={SearchX} title="Kein Kommentar passt zu dieser Auswahl">
+            {begriff
+              ? `Zu „${begriff}“ wurde nichts gefunden. Gesucht wird in Name, Kommentartext, Antworten und Artikeltitel.`
+              : "Für den gewählten Filter liegt nichts vor - über „Alle“ siehst du wieder alles."}
+          </EmptyState>
+        ) : (
+          <EmptyState icon={MessageSquare} title="Noch keine Kommentare">
+            Sobald jemand unter einem Blogartikel schreibt, landet der Kommentar hier und
+            wartet auf deine Freigabe. Veröffentlicht wird nichts von allein.
+          </EmptyState>
+        )
       )}
     </AdminPage>
   );

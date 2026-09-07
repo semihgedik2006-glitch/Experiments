@@ -6,20 +6,47 @@ import { formatDate } from "@/lib/format";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { AdminPage, AdminSection, EmptyState, Panel, StatusBadge } from "@/components/admin/ui";
 import { CalendarClock } from "lucide-react";
+import { FilterChips, Pagination } from "@/components/admin/list-nav";
+import { PRO_SEITE, param, seitenZahl, type SuchParams } from "@/lib/admin-list";
+import type { Prisma } from "@/generated/prisma/client";
 
 const weekdayNames = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 
-export default async function AdminSlotsPage() {
-  const [studios, templates, slots] = await Promise.all([
+export default async function AdminSlotsPage({
+  searchParams,
+}: {
+  searchParams: Promise<SuchParams>;
+}) {
+  const params = await searchParams;
+  const studioFilter = param(params, "studio");
+  const seite = seitenZahl(params);
+
+  const abHeute = new Date(new Date().setHours(0, 0, 0, 0));
+  const slotWhere: Prisma.AvailabilitySlotWhereInput = {
+    date: { gte: abHeute },
+    ...(studioFilter ? { studioId: studioFilter } : {}),
+  };
+
+  const [studios, templates, gesamt, slots] = await Promise.all([
     prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.slotTemplate.findMany({
+      where: studioFilter ? { studioId: studioFilter } : undefined,
       include: { studio: true },
       orderBy: [{ weekday: "asc" }, { startTime: "asc" }],
     }),
+    prisma.availabilitySlot.count({ where: slotWhere }),
     prisma.availabilitySlot.findMany({
-      where: { date: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } },
+      where: slotWhere,
       include: { bookings: { where: { status: { not: "CANCELLED" } } }, studio: true },
-      orderBy: [{ date: "asc" }, { startTime: "asc" }],
+      // Zweites Sortierkriterium: Ohne eindeutiges Merkmal darf die
+      // Datenbank Einträge mit gleichem Zeitstempel zwischen zwei Abfragen
+      // unterschiedlich anordnen. Beim Blättern kann dann ein Eintrag auf
+      // beiden Seiten stehen und ein anderer gar nicht.
+      orderBy: [{ date: "asc" }, { startTime: "asc" }, { id: "asc" }],
+      // Wiederkehrende Termine legen für jede Woche neue Einträge an; nach
+      // ein paar Monaten stehen hier je Studio dreistellig viele.
+      take: PRO_SEITE,
+      skip: (seite - 1) * PRO_SEITE,
     }),
   ]);
 
@@ -33,6 +60,19 @@ export default async function AdminSlotsPage() {
         </>
       }
     >
+      {studios.length > 1 && (
+        <FilterChips
+          basis="/admin/verfuegbarkeit"
+          params={params}
+          name="studio"
+          optionen={[
+            { wert: "", label: "Alle Studios" },
+            ...studios.map((studio) => ({ wert: studio.id, label: studio.name })),
+          ]}
+          klasse="mb-6"
+        />
+      )}
+
       <AdminSection title="Wiederkehrende Termine">
         <TemplateForm studios={studios} />
 
@@ -67,7 +107,11 @@ export default async function AdminSlotsPage() {
             </div>
           ))}
           {templates.length === 0 && (
-            <p className="text-sm text-muted">Noch kein wiederkehrender Termin angelegt.</p>
+            <p className="text-sm text-muted">
+              {studioFilter
+                ? "Für dieses Studio ist kein wiederkehrender Termin angelegt."
+                : "Noch kein wiederkehrender Termin angelegt."}
+            </p>
           )}
         </div>
       </AdminSection>
@@ -165,11 +209,22 @@ export default async function AdminSlotsPage() {
         </Panel>
         )}
 
+        {slots.length > 0 && (
+          <Pagination
+            basis="/admin/verfuegbarkeit"
+            params={params}
+            seite={seite}
+            proSeite={PRO_SEITE}
+            gesamt={gesamt}
+            einheit="Termine"
+          />
+        )}
+
         {slots.length === 0 && (
           <EmptyState icon={CalendarClock} title="Noch keine Termine für die kommenden Tage">
-            Ohne freie Termine kann auf der Probetermin-Seite niemand eine Uhrzeit
-            auswählen - die Anfrage kommt dann ohne festen Termin herein. Leg oben eine
-            wiederkehrende Zeit an, dann füllen sich die nächsten Wochen von selbst.
+            {studioFilter
+              ? "Für dieses Studio steht in den nächsten Tagen nichts an - über „Alle Studios“ siehst du wieder alle."
+              : "Ohne freie Termine kann auf der Probetermin-Seite niemand eine Uhrzeit auswählen - die Anfrage kommt dann ohne festen Termin herein. Leg oben eine wiederkehrende Zeit an, dann füllen sich die nächsten Wochen von selbst."}
           </EmptyState>
         )}
       </AdminSection>

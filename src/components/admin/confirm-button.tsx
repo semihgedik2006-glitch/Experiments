@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { Loader2, Trash2, type LucideIcon } from "lucide-react";
+import { CalendarX, Loader2, Trash2 } from "lucide-react";
 
 /**
  * Löschknopf mit Rückfrage.
@@ -23,15 +23,20 @@ export function ConfirmButton({
   question = "Wirklich löschen?",
   confirmLabel = "Ja, löschen",
   variant = "outline",
-  icon: Icon = Trash2,
+  icon = "trash",
   pendingLabel = "Wird gelöscht...",
 }: {
   label?: string;
   question?: string;
   confirmLabel?: string;
   variant?: "outline" | "link";
-  /** null lässt das Symbol weg - passt für Abläufe, die nichts löschen. */
-  icon?: LucideIcon | null;
+  /**
+   * Bewusst ein Name statt der Komponente selbst: Diese Komponente läuft im
+   * Browser, und eine Funktion lässt sich nicht vom Server dorthin
+   * übergeben - React bricht die Darstellung sonst mit "Functions cannot be
+   * passed directly to Client Components" ab. "keins" lässt das Symbol weg.
+   */
+  icon?: "trash" | "termin" | "keins";
   pendingLabel?: string;
 }) {
   const { pending } = useFormStatus();
@@ -52,6 +57,8 @@ export function ConfirmButton({
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => setArmed(false), 8000);
   }
+
+  const Icon = icon === "trash" ? Trash2 : icon === "termin" ? CalendarX : null;
 
   const base =
     variant === "link"
