@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Loader2 } from "lucide-react";
 import { createSlotTemplate } from "@/lib/actions/admin-slots";
+import { adminInput } from "@/components/admin/ui";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
 const initialState: ActionResult = { ok: false, message: "" };
@@ -17,75 +18,64 @@ const weekdays = [
   { value: 0, label: "Sonntag" },
 ];
 
+/** Siehe slot-form.tsx: Das <label> umschließt sein Feld, damit die
+    Sprachausgabe den Namen des Feldes nennt. */
+function Feld({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="flex flex-col gap-1">
+      <span className="text-xs text-muted">{label}</span>
+      {children}
+    </label>
+  );
+}
+
 export function TemplateForm({ studios }: { studios: { id: string; name: string }[] }) {
   const [state, formAction, pending] = useActionState(createSlotTemplate, initialState);
 
   return (
     <form
       action={formAction}
-      className="flex flex-wrap items-end gap-3 rounded-2xl border border-lime/40 bg-surface p-6"
+      className="admin-panel flex flex-wrap items-end gap-3 border-lime/40 p-4 sm:p-5"
     >
       {studios.length > 1 && (
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted">Studio</label>
-          <select
-            name="studioId"
-            required
-            className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
-          >
+        <Feld label="Studio">
+          <select name="studioId" required className={adminInput}>
             {studios.map((studio) => (
               <option key={studio.id} value={studio.id}>
                 {studio.name}
               </option>
             ))}
           </select>
-        </div>
+        </Feld>
       )}
       {studios.length === 1 && <input type="hidden" name="studioId" value={studios[0].id} />}
 
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted">Wochentag</label>
-        <select
-          name="weekday"
-          required
-          className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
-        >
+      <Feld label="Wochentag">
+        <select name="weekday" required className={adminInput}>
           {weekdays.map((day) => (
             <option key={day.value} value={day.value}>
               {day.label}
             </option>
           ))}
         </select>
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted">Von</label>
-        <input
-          type="time"
-          name="startTime"
-          required
-          className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
-        />
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted">Bis</label>
-        <input
-          type="time"
-          name="endTime"
-          required
-          className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
-        />
-      </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-muted">Kapazität</label>
+      </Feld>
+      <Feld label="Von">
+        <input type="time" name="startTime" required className={adminInput} />
+      </Feld>
+      <Feld label="Bis">
+        <input type="time" name="endTime" required className={adminInput} />
+      </Feld>
+      <Feld label="Kapazität">
         <input
           type="number"
           name="capacity"
           min={1}
           defaultValue={1}
           required
-          className="w-20 rounded-lg border border-border bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
+          className={`${adminInput} w-20`}
         />
-      </div>
+      </Feld>
+
       <button
         type="submit"
         disabled={pending}
@@ -97,7 +87,9 @@ export function TemplateForm({ studios }: { studios: { id: string; name: string 
       </button>
 
       {state?.message && (
-        <p className={`w-full text-sm ${state.ok ? "text-accent" : "text-red-500"}`}>{state.message}</p>
+        <p className={`w-full text-sm ${state.ok ? "text-accent" : "text-danger"}`}>
+          {state.message}
+        </p>
       )}
     </form>
   );

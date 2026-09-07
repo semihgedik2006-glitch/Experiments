@@ -41,13 +41,19 @@ export function OpeningHoursImport({ studios }: { studios: string[] }) {
         keinem Studio passt, werden gemeldet statt übergangen.
       </p>
 
-      <textarea
-        name="blocks"
-        rows={14}
-        required
-        defaultValue={vorlage}
-        className="mt-4 w-full rounded-lg border border-border bg-transparent px-4 py-3 font-mono text-xs leading-relaxed outline-none focus:border-lime"
-      />
+      {/* Das Feld trug bisher keinen Namen - die Sprachausgabe las nur
+          "Textfeld" vor. Die Beschriftung ist optisch verborgen, weil der
+          erklärende Text darüber bereits alles sagt. */}
+      <label>
+        <span className="sr-only">Öffnungszeiten je Studio</span>
+        <textarea
+          name="blocks"
+          rows={14}
+          required
+          defaultValue={vorlage}
+          className="mt-4 w-full rounded-lg border border-border bg-surface-raised px-4 py-3 font-mono text-xs leading-relaxed outline-none focus:border-lime"
+        />
+      </label>
 
       <button
         disabled={pending}

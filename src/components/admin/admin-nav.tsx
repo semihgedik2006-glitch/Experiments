@@ -57,7 +57,7 @@ const navDelays = new Map(
   groups.flatMap((group) => group.items).map((item, index) => [item.href, index * 0.04]),
 );
 
-export function AdminNav() {
+export function AdminNav({ idPrefix = "sidebar" }: { idPrefix?: string } = {}) {
   const pathname = usePathname();
 
   return (
@@ -65,7 +65,7 @@ export function AdminNav() {
       {groups.map((group, groupIndex) => (
         <div key={group.title ?? `group-${groupIndex}`}>
           {group.title && (
-            <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted/70">
+            <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted">
               {group.title}
             </p>
           )}
@@ -89,7 +89,7 @@ export function AdminNav() {
                   >
                     {isActive && (
                       <motion.span
-                        layoutId="admin-nav-active"
+                        layoutId={`${idPrefix}-nav-active`}
                         className="absolute inset-0 rounded-lg bg-lime/15"
                         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                       />

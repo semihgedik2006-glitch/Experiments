@@ -1,16 +1,19 @@
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
+import { AdminPage, EmptyState, Panel } from "@/components/admin/ui";
+import { Send } from "lucide-react";
 
 export default async function AdminNewsletterPage() {
   const subscribers = await prisma.newsletterSubscriber.findMany({ orderBy: { createdAt: "desc" } });
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold tracking-tight">Newsletter-Abonnenten</h1>
-      <p className="mt-2 text-sm text-muted">{subscribers.length} Abonnenten insgesamt.</p>
-
-      <div className="mt-8 overflow-x-auto">
-        <table className="w-full text-left text-sm">
+    <AdminPage
+      title="Newsletter-Abonnenten"
+      description={`${subscribers.length} ${subscribers.length === 1 ? "Abonnent" : "Abonnenten"} insgesamt.`}
+    >
+      {subscribers.length > 0 && (
+        <Panel className="overflow-x-auto">
+        <table className="w-full min-w-[24rem] text-left text-sm">
           <thead>
             <tr className="border-b border-border text-muted">
               <th className="py-2 pr-4">E-Mail</th>
@@ -26,8 +29,15 @@ export default async function AdminNewsletterPage() {
             ))}
           </tbody>
         </table>
-        {subscribers.length === 0 && <p className="mt-4 text-muted">Noch keine Abonnenten.</p>}
-      </div>
-    </div>
+        </Panel>
+      )}
+
+      {subscribers.length === 0 && (
+        <EmptyState icon={Send} title="Noch keine Anmeldungen">
+          Das Anmeldefeld steht im Fußbereich der Website und unter den Blogartikeln.
+          Wer sich einträgt, erscheint hier mit E-Mail-Adresse und Datum.
+        </EmptyState>
+      )}
+    </AdminPage>
   );
 }

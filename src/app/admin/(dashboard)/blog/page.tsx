@@ -2,32 +2,36 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deletePost } from "@/lib/actions/admin-blog";
 import { ConfirmButton } from "@/components/admin/confirm-button";
+import { AdminPage, EmptyState, StatusBadge } from "@/components/admin/ui";
+import { Newspaper } from "lucide-react";
 
 export default async function AdminBlogPage() {
   const posts = await prisma.blogPost.findMany({ orderBy: { createdAt: "desc" } });
 
   return (
-    <div>
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Blog</h1>
+    <AdminPage
+      title="Blog"
+      action={
         <Link
           href="/admin/blog/neu"
-          className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime"
+          className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime transition-opacity hover:opacity-90"
         >
           Neuer Artikel
         </Link>
-      </div>
-
-      <div className="mt-8 space-y-3">
+      }
+    >
+      <div className="space-y-2">
         {posts.map((post) => (
           <div
             key={post.id}
-            className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-5"
+            className="admin-panel flex flex-wrap items-center justify-between gap-3 p-4"
           >
-            <div>
-              <p className="font-semibold">{post.title}</p>
-              <p className="text-sm text-muted">
-                {post.published ? "Veröffentlicht" : "Entwurf"}
+            <div className="min-w-0">
+              <p className="truncate font-semibold">{post.title}</p>
+              <p className="mt-1">
+                <StatusBadge ton={post.published ? "ok" : "idle"}>
+                  {post.published ? "Veröffentlicht" : "Entwurf"}
+                </StatusBadge>
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-4">
@@ -49,8 +53,20 @@ export default async function AdminBlogPage() {
             </div>
           </div>
         ))}
-        {posts.length === 0 && <p className="text-muted">Noch keine Artikel vorhanden.</p>}
       </div>
-    </div>
+
+      {posts.length === 0 && (
+        <EmptyState
+          icon={Newspaper}
+          title="Noch kein Artikel geschrieben"
+          actionHref="/admin/blog/neu"
+          actionLabel="Ersten Artikel schreiben"
+        >
+          Der Blog ist der Grund, aus dem Google die Seite regelmäßig neu ansieht.
+          Themen, nach denen tatsächlich gesucht wird: Rückenschmerzen, Abnehmen,
+          Training bei wenig Zeit.
+        </EmptyState>
+      )}
+    </AdminPage>
   );
 }

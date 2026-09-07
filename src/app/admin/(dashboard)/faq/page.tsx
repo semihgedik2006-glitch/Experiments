@@ -2,25 +2,29 @@ import { prisma } from "@/lib/prisma";
 import { createFaqItem, updateFaqItem, deleteFaqItem } from "@/lib/actions/admin-faq";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
+import { AdminPage, EmptyState, adminInput } from "@/components/admin/ui";
+import { HelpCircle } from "lucide-react";
 
 export default async function AdminFaqPage() {
   const items = await prisma.faqItem.findMany({ orderBy: { sortOrder: "asc" } });
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold tracking-tight">Häufige Fragen</h1>
-      <p className="mt-2 text-sm text-muted">
-        Diese Einträge erscheinen auf der Startseite, der Preise-Seite und der
-        EMS-Training-Seite. Kleinere Zahl bei &bdquo;Position&ldquo; = weiter oben.
-      </p>
-
+    <AdminPage
+      title="Häufige Fragen"
+      description={
+        <>
+          Diese Einträge erscheinen auf der Startseite, der Preise-Seite und der
+          EMS-Training-Seite. Kleinere Zahl bei &bdquo;Position&ldquo; = weiter oben.
+        </>
+      }
+    >
       {/* Neue Frage anlegen */}
       <AdminForm
         action={createFaqItem}
         resetOnSuccess
-        className="mt-8 rounded-2xl border border-lime/40 bg-surface p-6"
+        className="admin-panel border-lime/40 p-4 sm:p-5"
       >
-        <h2 className="font-semibold">Neue Frage hinzufügen</h2>
+        <h2 className="text-base font-semibold">Neue Frage hinzufügen</h2>
         <div className="mt-4 space-y-3">
           <input
             type="text"
@@ -28,7 +32,7 @@ export default async function AdminFaqPage() {
             required
             maxLength={200}
             placeholder="Frage"
-            className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
+            className={adminInput}
           />
           <textarea
             name="answer"
@@ -36,7 +40,7 @@ export default async function AdminFaqPage() {
             rows={3}
             maxLength={2000}
             placeholder="Antwort"
-            className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
+            className={adminInput}
           />
         </div>
         <div className="mt-4">
@@ -47,9 +51,9 @@ export default async function AdminFaqPage() {
       </AdminForm>
 
       {/* Bestehende Fragen bearbeiten */}
-      <div className="mt-8 space-y-4">
+      <div className="mt-6 space-y-3">
         {items.map((item) => (
-          <div key={item.id} className="rounded-2xl border border-border bg-surface p-6">
+          <div key={item.id} className="admin-panel p-4 sm:p-5">
             <AdminForm action={updateFaqItem} className="space-y-3">
               <input type="hidden" name="id" value={item.id} />
               <div className="flex flex-wrap items-center gap-3">
@@ -59,7 +63,7 @@ export default async function AdminFaqPage() {
                     type="number"
                     name="sortOrder"
                     defaultValue={item.sortOrder}
-                    className="ml-1 w-20 rounded-lg border border-border bg-transparent px-2 py-1 text-sm outline-none focus:border-lime"
+                    className={`${adminInput} ml-1 w-20`}
                   />
                 </label>
               </div>
@@ -69,7 +73,7 @@ export default async function AdminFaqPage() {
                 required
                 maxLength={200}
                 defaultValue={item.question}
-                className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm font-medium outline-none focus:border-lime"
+                className={`${adminInput} font-medium`}
               />
               <textarea
                 name="answer"
@@ -77,7 +81,7 @@ export default async function AdminFaqPage() {
                 rows={3}
                 maxLength={2000}
                 defaultValue={item.answer}
-                className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
+                className={adminInput}
               />
               <div className="flex gap-2">
                 <SubmitButton pendingLabel="Wird gespeichert...">Speichern</SubmitButton>
@@ -94,10 +98,17 @@ export default async function AdminFaqPage() {
             </form>
           </div>
         ))}
-        {items.length === 0 && (
-          <p className="text-muted">Noch keine Fragen vorhanden - lege oben die erste an.</p>
-        )}
       </div>
-    </div>
+
+      {items.length === 0 && (
+        <div className="mt-6">
+          <EmptyState icon={HelpCircle} title="Noch keine Fragen hinterlegt">
+            Der Frage-und-Antwort-Block erscheint erst, wenn hier mindestens ein Eintrag
+            steht. Er beantwortet die Fragen, die sonst am Telefon gestellt werden -
+            Preis, Dauer, Kleidung, Vertragsbindung.
+          </EmptyState>
+        </div>
+      )}
+    </AdminPage>
   );
 }

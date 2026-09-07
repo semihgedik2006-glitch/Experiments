@@ -10,9 +10,13 @@ const itemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: easeOut } },
 };
 
+// Der Versatz zwischen den Einträgen wurde halbiert: Bei vierzehn Studios
+// summierten sich 0,06 s je Eintrag auf über eine Sekunde, bis der letzte
+// stand - in einem Arbeitswerkzeug wartet man darauf. Jetzt ist die Liste
+// nach gut einer halben Sekunde vollständig.
 const containerVariants: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.06 } },
+  visible: { transition: { staggerChildren: 0.035 } },
 };
 
 // Mount-based stagger for above-the-fold admin content (unlike the public

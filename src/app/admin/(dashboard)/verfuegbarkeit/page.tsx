@@ -4,6 +4,8 @@ import { SlotForm } from "@/components/admin/slot-form";
 import { TemplateForm } from "@/components/admin/template-form";
 import { formatDate } from "@/lib/format";
 import { ConfirmButton } from "@/components/admin/confirm-button";
+import { AdminPage, AdminSection, EmptyState, Panel, StatusBadge } from "@/components/admin/ui";
+import { CalendarClock } from "lucide-react";
 
 const weekdayNames = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 
@@ -22,24 +24,23 @@ export default async function AdminSlotsPage() {
   ]);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold tracking-tight">Verfügbarkeit</h1>
-      <p className="mt-2 text-sm text-muted">
-        Wiederkehrende Termine werden automatisch für die nächsten Wochen angelegt - bis du
-        sie hier löschst. Einzeltermine eignen sich für Ausnahmen.
-      </p>
-
-      <div className="mt-8">
-        <h2 className="font-semibold">Wiederkehrende Termine</h2>
-        <div className="mt-3">
-          <TemplateForm studios={studios} />
-        </div>
+    <AdminPage
+      title="Verfügbarkeit"
+      description={
+        <>
+          Wiederkehrende Termine werden automatisch für die nächsten Wochen angelegt -
+          bis du sie hier löschst. Einzeltermine eignen sich für Ausnahmen.
+        </>
+      }
+    >
+      <AdminSection title="Wiederkehrende Termine">
+        <TemplateForm studios={studios} />
 
         <div className="mt-4 space-y-2">
           {templates.map((template) => (
             <div
               key={template.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm"
+              className="admin-panel flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm"
             >
               <span>
                 <span className="font-medium">Jeden {weekdayNames[template.weekday]}</span>{" "}
@@ -69,17 +70,52 @@ export default async function AdminSlotsPage() {
             <p className="text-sm text-muted">Noch kein wiederkehrender Termin angelegt.</p>
           )}
         </div>
-      </div>
+      </AdminSection>
 
-      <div className="mt-10">
-        <h2 className="font-semibold">Einzeltermin (Ausnahme)</h2>
-        <div className="mt-3">
-          <SlotForm studios={studios} />
+      <AdminSection title="Einzeltermin (Ausnahme)" className="mt-8">
+        <SlotForm studios={studios} />
+      </AdminSection>
+
+      <AdminSection title="Alle kommenden Termine" className="mt-8">
+        {/* Auf dem Handy als Kartenliste, ab Tablet als Tabelle. Eine
+            sechsspaltige Tabelle auf 360 Pixeln lässt sich nur noch seitlich
+            wegschieben - und der Löschknopf steht dabei außerhalb des Bildes. */}
+        {slots.length > 0 && (
+        <div className="space-y-2 sm:hidden">
+          {slots.map((slot) => (
+            <div key={slot.id} className="admin-panel p-3 text-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-medium">{formatDate(slot.date)}</span>
+                {slot.templateId && <StatusBadge ton="idle">wiederkehrend</StatusBadge>}
+              </div>
+              <p className="mt-1 text-muted">
+                {slot.startTime} - {slot.endTime} Uhr &middot; belegt {slot.bookings.length} von{" "}
+                {slot.capacity}
+                {studios.length > 1 && <> &middot; {slot.studio.name}</>}
+              </p>
+              <form
+                action={async () => {
+                  "use server";
+                  await deleteSlot(slot.id);
+                }}
+                className="mt-2"
+              >
+                <ConfirmButton
+                  variant="link"
+                  question={
+                    slot.bookings.length > 0
+                      ? `Termin mit ${slot.bookings.length} Buchung${slot.bookings.length === 1 ? "" : "en"} löschen?`
+                      : "Diesen Termin löschen?"
+                  }
+                />
+              </form>
+            </div>
+          ))}
         </div>
-      </div>
+        )}
 
-      <div className="mt-10 overflow-x-auto">
-        <h2 className="mb-3 font-semibold">Alle kommenden Termine</h2>
+        {slots.length > 0 && (
+        <Panel className="hidden overflow-x-auto sm:block">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border text-muted">
@@ -103,11 +139,7 @@ export default async function AdminSlotsPage() {
                   {slot.bookings.length} / {slot.capacity}
                 </td>
                 <td className="py-3 pr-4">
-                  {slot.templateId && (
-                    <span className="rounded-full bg-lime/15 px-2 py-0.5 text-[10px] font-semibold text-accent">
-                      wiederkehrend
-                    </span>
-                  )}
+                  {slot.templateId && <StatusBadge ton="idle">wiederkehrend</StatusBadge>}
                 </td>
                 <td className="py-3 pr-4 text-right">
                   <form
@@ -130,8 +162,17 @@ export default async function AdminSlotsPage() {
             ))}
           </tbody>
         </table>
-        {slots.length === 0 && <p className="mt-4 text-muted">Noch keine Termine angelegt.</p>}
-      </div>
-    </div>
+        </Panel>
+        )}
+
+        {slots.length === 0 && (
+          <EmptyState icon={CalendarClock} title="Noch keine Termine für die kommenden Tage">
+            Ohne freie Termine kann auf der Probetermin-Seite niemand eine Uhrzeit
+            auswählen - die Anfrage kommt dann ohne festen Termin herein. Leg oben eine
+            wiederkehrende Zeit an, dann füllen sich die nächsten Wochen von selbst.
+          </EmptyState>
+        )}
+      </AdminSection>
+    </AdminPage>
   );
 }

@@ -5,7 +5,8 @@ import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
-import { CalendarX } from "lucide-react";
+import { CalendarCheck, CalendarX } from "lucide-react";
+import { AdminPage, EmptyState, StatusBadge } from "@/components/admin/ui";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Offen",
@@ -13,11 +14,13 @@ const statusLabels: Record<string, string> = {
   CANCELLED: "Storniert",
 };
 
-const statusStyles: Record<string, string> = {
-  PENDING: "bg-yellow-500/15 text-yellow-500",
-  CONFIRMED: "bg-lime/15 text-accent",
-  CANCELLED: "bg-red-500/15 text-red-500",
-};
+// Zuordnung Status -> Statusfarbe. Die Töne selbst stehen in globals.css,
+// damit "offen" im Adminbereich überall gleich aussieht.
+const statusTon = {
+  PENDING: "open",
+  CONFIRMED: "ok",
+  CANCELLED: "off",
+} as const;
 
 export default async function AdminBookingsPage({
   searchParams,
@@ -35,12 +38,19 @@ export default async function AdminBookingsPage({
     }),
   ]);
 
-  return (
-    <div>
-      <h1 className="text-2xl font-bold tracking-tight">Buchungsanfragen</h1>
+  const offen = bookings.filter((b) => b.status === "PENDING").length;
 
+  return (
+    <AdminPage
+      title="Buchungsanfragen"
+      description={
+        offen > 0
+          ? `${offen} ${offen === 1 ? "Anfrage wartet" : "Anfragen warten"} auf eine Antwort.`
+          : "Keine offene Anfrage."
+      }
+    >
       {studios.length > 1 && (
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link
             href="/admin/bookings"
             className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
@@ -65,12 +75,10 @@ export default async function AdminBookingsPage({
         </div>
       )}
 
-      <AdminStagger className="mt-8 space-y-4">
-        {bookings.length === 0 && <p className="text-muted">Noch keine Buchungen vorhanden.</p>}
-
+      <AdminStagger className="mt-6 space-y-3">
         {bookings.map((booking) => (
           <AdminStaggerItem key={booking.id}>
-          <div className="rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-lime/40">
+          <div className="admin-panel p-4 transition-colors hover:border-lime/40 sm:p-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="font-semibold">{booking.name}</p>
@@ -94,11 +102,9 @@ export default async function AdminBookingsPage({
                 )}
               </div>
 
-              <span
-                className={`h-fit rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[booking.status]}`}
-              >
+              <StatusBadge ton={statusTon[booking.status]}>
                 {statusLabels[booking.status]}
-              </span>
+              </StatusBadge>
             </div>
 
             {booking.status === "PENDING" && (
@@ -162,6 +168,19 @@ export default async function AdminBookingsPage({
           </AdminStaggerItem>
         ))}
       </AdminStagger>
-    </div>
+
+      {bookings.length === 0 && (
+        <div className="mt-6">
+          <EmptyState
+            icon={CalendarCheck}
+            title={studioFilter ? "Keine Anfragen für dieses Studio" : "Noch keine Buchungsanfragen"}
+          >
+            {studioFilter
+              ? "Für den gewählten Standort liegt nichts vor - über „Alle Studios“ siehst du wieder alle."
+              : "Was über die Probetermin-Seite gebucht wird, landet hier. Bestätigen verschickt eine E-Mail an den Gast."}
+          </EmptyState>
+        </div>
+      )}
+    </AdminPage>
   );
 }

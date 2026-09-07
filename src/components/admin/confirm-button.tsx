@@ -55,8 +55,8 @@ export function ConfirmButton({
 
   const base =
     variant === "link"
-      ? "text-xs text-red-500 hover:underline"
-      : "rounded-full border border-border px-4 py-2 text-xs font-semibold text-red-500 transition-colors hover:border-red-500";
+      ? "text-xs text-danger hover:underline"
+      : "border-danger rounded-full border border-border px-4 py-2 text-xs font-semibold text-danger transition-colors";
 
   if (!armed) {
     return (
@@ -76,7 +76,7 @@ export function ConfirmButton({
         type="submit"
         disabled={pending}
         aria-busy={pending}
-        className="inline-flex items-center gap-1.5 rounded-full bg-red-500 px-4 py-2 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-progress disabled:opacity-60"
+        className="bg-danger inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-opacity hover:opacity-90 disabled:cursor-progress disabled:opacity-60"
       >
         {pending && <Loader2 size={13} className="animate-spin" aria-hidden />}
         {pending ? pendingLabel : confirmLabel}

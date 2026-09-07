@@ -48,6 +48,15 @@
 
   /* Ambient glows need far less presence on light backgrounds. */
   --aurora-opacity: 0.14;
+
+  /* Statusfarben für den Adminbereich. Vorher standen dort die
+     Standardtöne yellow-500, green-500 und red-500 - der gelbe erreichte
+     auf heller Fläche nur rund 2:1 und war kaum zu lesen. Diese Töne sind
+     auf die sandfarbene Fläche abgestimmt und erfüllen 4,5:1. */
+  --status-open: #8a5300;
+  --status-ok: #4a6810;
+  --status-off: #b32318;
+  --status-idle: #54574e;
 }
 
 .dark {
@@ -73,6 +82,11 @@
   --ink-lime: #c3f53c;
 
   --aurora-opacity: 0.28;
+
+  --status-open: #f3b53f;
+  --status-ok: #c3f53c;
+  --status-off: #ff9d90;
+  --status-idle: #9ba193;
 }
 
 /* Ein dunkler Abschnitt schreibt die Farbvariablen nur für sich selbst um.
@@ -155,6 +169,17 @@ input:focus,
 textarea:focus,
 select:focus {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-lime) 22%, transparent);
+}
+
+/* Platzhaltertexte trugen die Browser-Standardfarbe und erreichten damit
+   nur rund 4,4:1 statt der geforderten 4,5:1. Im Adminbereich stehen die
+   Platzhalter für ganze Formulare ("Straße + Hausnummer", "Telefon") - dort
+   sind sie die einzige Beschriftung und müssen lesbar sein.
+   opacity: 1 ist nötig, weil Firefox Platzhalter zusätzlich abblendet. */
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
 }
 
 /* Alle Überschriften tragen die Display-Schrift. Vorher galt das nur für
@@ -353,6 +378,82 @@ h3,
       color-mix(in srgb, var(--color-lime) 12%, transparent),
       transparent 70%
     );
+}
+
+/* ---------------------------------------------------------------------------
+   Adminbereich.
+
+   Die Website ist auf Wirkung gebaut: viel Luft, große Überschriften,
+   runde Karten. Für ein Werkzeug, in dem täglich Buchungen abgearbeitet
+   werden, ist das die falsche Dichte - auf einem Laptopbildschirm passten
+   vier Buchungen ins Bild, der Rest war Scrollen. Der Adminbereich bekommt
+   deshalb eine eigene, engere Grundeinstellung: kleinere Grundschrift,
+   flachere Radien, weniger Innenabstand.
+--------------------------------------------------------------------------- */
+.admin {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* Überschriften im Admin dürfen ruhiger sein als auf der Website - dort
+   trägt die Displayschrift den Auftritt, hier stört sie beim Lesen von
+   Listen. */
+.admin h1,
+.admin h2,
+.admin h3 {
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+/* Statusmarken. Der Hintergrund wird aus der Schriftfarbe gemischt -
+   dadurch kann eine neue Statusfarbe nie mit ihrer Fläche auseinanderlaufen,
+   und es braucht nur einen Wert je Zustand. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.45;
+  white-space: nowrap;
+  background-color: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.badge-open {
+  color: var(--status-open);
+}
+.badge-ok {
+  color: var(--status-ok);
+}
+.badge-off {
+  color: var(--status-off);
+}
+.badge-idle {
+  color: var(--status-idle);
+}
+
+/* Schrift- und Rahmenfarbe für Löschen und Stornieren. Tailwinds red-500
+   erreichte auf der Admin-Fläche nur 3,4:1 - unter der Vorgabe von 4,5:1
+   und in hellen Räumen tatsächlich schwer zu lesen. */
+.text-danger {
+  color: var(--status-off);
+}
+.border-danger:hover {
+  border-color: var(--status-off);
+}
+.bg-danger {
+  background-color: var(--status-off);
+  color: #fff;
+}
+
+/* Arbeitsfläche: etwas heller als die Umgebung, damit Listen und
+   Formulare als zusammenhängender Block lesbar bleiben. */
+.admin-panel {
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--surface);
 }
 
 body {

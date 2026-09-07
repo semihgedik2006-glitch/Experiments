@@ -65,7 +65,7 @@ export function BlogForm({
       </label>
 
       {state?.message && (
-        <p className={`text-sm ${state.ok ? "text-accent" : "text-red-500"}`}>{state.message}</p>
+        <p className={`text-sm ${state.ok ? "text-accent" : "text-danger"}`}>{state.message}</p>
       )}
 
       <button

@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
+import { Loader2 } from "lucide-react";
 import { loginAdmin } from "@/lib/actions/admin-auth";
+import { adminInput } from "@/components/admin/ui";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
 const initialState: ActionResult = { ok: false, message: "" };
@@ -16,24 +18,26 @@ export function LoginForm() {
         name="email"
         required
         placeholder="E-Mail-Adresse"
-        className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
+        className={adminInput}
       />
       <input
         type="password"
         name="password"
         required
         placeholder="Passwort"
-        className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
+        className={adminInput}
       />
 
-      {state?.message && !state.ok && <p className="text-sm text-red-500">{state.message}</p>}
+      {state?.message && !state.ok && <p className="text-sm text-danger">{state.message}</p>}
 
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-lime px-7 py-3 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-50"
+        aria-busy={pending}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-lime px-7 py-3 text-sm font-semibold text-on-lime transition-opacity disabled:cursor-progress disabled:opacity-60"
       >
-        {pending ? "Anmelden..." : "Anmelden"}
+        {pending && <Loader2 size={15} className="animate-spin" aria-hidden />}
+        {pending ? "Wird geprüft..." : "Anmelden"}
       </button>
     </form>
   );

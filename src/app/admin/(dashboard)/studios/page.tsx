@@ -1,14 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { createStudio, updateStudio, deleteStudio } from "@/lib/actions/admin-studios";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Building2 } from "lucide-react";
 import { StudioImport } from "@/components/admin/studio-import";
 import { OpeningHoursImport } from "@/components/admin/opening-hours-import";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
+import { AdminPage, EmptyState, adminInput } from "@/components/admin/ui";
 
-const inputClass =
-  "w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime";
+const inputClass = adminInput;
 
 function StudioFields({
   defaults,
@@ -92,7 +92,7 @@ function StudioFields({
           type="number"
           name="sortOrder"
           defaultValue={defaults?.sortOrder ?? 0}
-          className="ml-1 w-24 rounded-lg border border-border bg-transparent px-2 py-1 text-sm outline-none focus:border-lime"
+          className={`${adminInput} ml-1 w-24`}
         />
       </label>
     </div>
@@ -106,20 +106,22 @@ export default async function AdminStudiosPage() {
   );
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold tracking-tight">Studios</h1>
-      <p className="mt-2 text-sm text-muted">
-        Diese Standorte erscheinen auf der Studio-Seite, der Startseite und der
-        Kontaktseite. Kleinere Zahl bei &bdquo;Position&ldquo; = weiter oben; das oberste
-        Studio wird im Impressum als Hauptsitz verwendet.
-      </p>
-
+    <AdminPage
+      title="Studios"
+      description={
+        <>
+          Diese Standorte erscheinen auf der Studio-Seite, der Startseite und der
+          Kontaktseite. Kleinere Zahl bei &bdquo;Position&ldquo; = weiter oben; das
+          oberste Studio wird im Impressum als Hauptsitz verwendet.
+        </>
+      }
+    >
       {/* Ganz oben, weil eine einzige Lücke die Standortabfrage für alle
           Studios abschaltet. Bisher stand der Hinweis nur beim betroffenen
           Studio - man musste also jedes einzeln aufklappen, um zu sehen,
           warum bei der Buchung immer dasselbe Studio zuerst erscheint. */}
       {ohneKoordinaten.length > 0 && (
-        <div className="mt-6 rounded-2xl border border-amber-500/50 bg-amber-500/10 p-5">
+        <div className="rounded-xl border border-amber-500/50 bg-amber-500/10 p-4 sm:p-5">
           <p className="flex items-center gap-2 font-semibold">
             <AlertTriangle size={17} />
             {ohneKoordinaten.length === 1
@@ -139,20 +141,20 @@ export default async function AdminStudiosPage() {
         </div>
       )}
 
-      <div className="mt-8">
+      <div className="mt-6">
         <StudioImport />
       </div>
 
-      <div className="mt-8">
+      <div className="mt-6">
         <OpeningHoursImport studios={studios.map((studio) => studio.name)} />
       </div>
 
       <AdminForm
         action={createStudio}
         resetOnSuccess
-        className="mt-8 rounded-2xl border border-lime/40 bg-surface p-6"
+        className="admin-panel mt-6 border-lime/40 p-4 sm:p-5"
       >
-        <h2 className="font-semibold">Neues Studio hinzufügen</h2>
+        <h2 className="text-base font-semibold">Neues Studio hinzufügen</h2>
         <div className="mt-4">
           <StudioFields />
         </div>
@@ -163,10 +165,10 @@ export default async function AdminStudiosPage() {
         </div>
       </AdminForm>
 
-      <AdminStagger className="mt-8 space-y-4">
+      <AdminStagger className="mt-6 space-y-3">
         {studios.map((studio) => (
           <AdminStaggerItem key={studio.id}>
-            <div className="rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-lime/30">
+            <div className="admin-panel p-4 transition-colors hover:border-lime/40 sm:p-5">
               <AdminForm action={updateStudio}>
                 <input type="hidden" name="id" value={studio.id} />
                 <StudioFields defaults={studio} />
@@ -189,10 +191,17 @@ export default async function AdminStudiosPage() {
             </div>
           </AdminStaggerItem>
         ))}
-        {studios.length === 0 && (
-          <p className="text-muted">Noch kein Studio angelegt - lege oben das erste an.</p>
-        )}
       </AdminStagger>
-    </div>
+
+      {studios.length === 0 && (
+        <div className="mt-6">
+          <EmptyState icon={Building2} title="Noch kein Studio angelegt">
+            Ohne Standort zeigt die Website keine Adresse, keine Öffnungszeiten und
+            keine Termine an. Leg oben das erste Studio an - oder trag mehrere auf
+            einmal über das Einfügefeld ein.
+          </EmptyState>
+        </div>
+      )}
+    </AdminPage>
   );
 }

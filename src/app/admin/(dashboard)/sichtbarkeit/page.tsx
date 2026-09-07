@@ -3,27 +3,31 @@ import { getToggles, toggleDefinitions } from "@/lib/site-toggles";
 import { saveToggles } from "@/lib/actions/admin-toggles";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
+import { AdminPage } from "@/components/admin/ui";
 
 export default async function AdminSichtbarkeitPage() {
   const toggles = await getToggles();
   const hiddenCount = toggleDefinitions.filter((entry) => !toggles[entry.key]).length;
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold tracking-tight">Sichtbarkeit</h1>
-      <p className="mt-2 max-w-2xl text-sm text-muted">
-        Hier bestimmst du, welche Bereiche der Website angezeigt werden. Was du
-        ausblendest, verschwindet aus dem Menü, von der Startseite, aus der Suche
-        und aus der Sitemap für Google. Die zugehörige Seite ist dann auch über
-        einen Direktlink nicht mehr erreichbar.
-      </p>
-      <p className="mt-3 max-w-2xl text-sm text-muted">
+    <AdminPage
+      title="Sichtbarkeit"
+      description={
+        <>
+          Hier bestimmst du, welche Bereiche der Website angezeigt werden. Was du
+          ausblendest, verschwindet aus dem Menü, von der Startseite, aus der Suche
+          und aus der Sitemap für Google. Die zugehörige Seite ist dann auch über
+          einen Direktlink nicht mehr erreichbar.
+        </>
+      }
+    >
+      <p className="max-w-2xl text-sm text-muted">
         Nichts wird dabei gelöscht: Blogbeiträge, Kommentare und Texte bleiben
         erhalten und erscheinen wieder, sobald du den Schalter zurückstellst.
       </p>
 
       {hiddenCount > 0 && (
-        <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-sm">
+        <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-sm">
           <EyeOff size={15} />
           {hiddenCount === 1
             ? "Ein Bereich ist derzeit ausgeblendet."
@@ -31,15 +35,15 @@ export default async function AdminSichtbarkeitPage() {
         </p>
       )}
 
-      <AdminForm action={saveToggles} className="mt-8">
+      <AdminForm action={saveToggles} className="mt-6">
         <AdminStagger className="space-y-3">
           {toggleDefinitions.map((entry) => {
             const visible = toggles[entry.key];
             return (
               <AdminStaggerItem key={entry.key}>
                 <label
-                  className={`flex cursor-pointer items-start gap-4 rounded-2xl border p-5 transition-colors ${
-                    visible ? "border-border bg-surface" : "border-amber-500/40 bg-amber-500/5"
+                  className={`admin-panel flex cursor-pointer items-start gap-3 p-4 transition-colors ${
+                    visible ? "" : "border-amber-500/40 bg-amber-500/5"
                   }`}
                 >
                   <input
@@ -79,6 +83,6 @@ export default async function AdminSichtbarkeitPage() {
           </SubmitButton>
         </div>
       </AdminForm>
-    </div>
+    </AdminPage>
   );
 }
