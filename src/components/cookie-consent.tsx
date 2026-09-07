@@ -40,7 +40,7 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-surface-raised/95 backdrop-blur-md"
+            className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-surface-raised"
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-muted">

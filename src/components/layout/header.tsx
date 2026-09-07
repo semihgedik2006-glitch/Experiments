@@ -22,7 +22,7 @@ export function Header({ nav }: { nav: { label: string; href: string }[] }) {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md transition-shadow duration-300 ${
+      className={`sticky top-0 z-50 border-b border-border bg-background/95 transition-shadow duration-300 ${
         scrolled ? "shadow-lg shadow-black/10 dark:shadow-black/40" : ""
       }`}
     >

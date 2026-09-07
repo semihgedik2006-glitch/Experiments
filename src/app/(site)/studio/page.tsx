@@ -1,14 +1,9 @@
 import type { Metadata } from "next";
 import { isVisible } from "@/lib/site-toggles";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
-import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
-import { Button } from "@/components/ui/button";
-import { Reveal } from "@/components/ui/reveal";
-import { MapEmbed } from "@/components/map-embed";
-import { studioMapUrl } from "@/lib/studio-map";
 import { getStudios } from "@/lib/data";
 import { StudioJsonLd } from "@/components/structured-data";
+import { StudioList } from "@/components/studio/studio-list";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -46,61 +41,7 @@ export default async function StudioPage() {
         }
       />
 
-      {studios.map((studio, index) => (
-        <section
-          key={studio.id}
-          className={`py-24 ${index > 0 ? "border-t border-border" : ""} ${index % 2 === 1 ? "bg-surface" : ""}`}
-        >
-          <Container className="grid gap-10 md:grid-cols-2">
-            <Reveal className="overflow-hidden rounded-2xl border border-border">
-              <MapEmbed
-                src={studioMapUrl(studio)}
-                title={`${studio.name} auf Google Maps`}
-                className="h-96 w-full"
-              />
-            </Reveal>
-
-            <Reveal delay={0.15} className="card p-8">
-              <h2 className="text-xl font-semibold">{studio.name}</h2>
-
-              <ul className="mt-6 space-y-5 text-sm">
-                <li className="flex items-start gap-3">
-                  <MapPin size={18} className="mt-0.5 shrink-0 text-accent" />
-                  <span>
-                    {studio.street}
-                    <br />
-                    {studio.postalCode} {studio.city}
-                  </span>
-                </li>
-                {studio.phone && (
-                  <li className="flex items-start gap-3">
-                    <Phone size={18} className="mt-0.5 shrink-0 text-accent" />
-                    <a href={`tel:${studio.phone}`} className="hover:underline">
-                      {studio.phone}
-                    </a>
-                  </li>
-                )}
-                {studio.email && (
-                  <li className="flex items-start gap-3">
-                    <Mail size={18} className="mt-0.5 shrink-0 text-accent" />
-                    <a href={`mailto:${studio.email}`} className="hover:underline">
-                      {studio.email}
-                    </a>
-                  </li>
-                )}
-                <li className="flex items-start gap-3">
-                  <Clock size={18} className="mt-0.5 shrink-0 text-accent" />
-                  <span className="whitespace-pre-line">{studio.openingHours}</span>
-                </li>
-              </ul>
-
-              <Button href="/probetermin" className="mt-8 w-full">
-                Probetermin in {studio.city} buchen
-              </Button>
-            </Reveal>
-          </Container>
-        </section>
-      ))}
+      <StudioList studios={studios} />
     </>
   );
 }

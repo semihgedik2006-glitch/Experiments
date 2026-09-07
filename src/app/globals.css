@@ -329,6 +329,23 @@ h3,
    Ersetzt das frühere Karomuster: Das erinnerte an Rechenpapier und wirkte
    technisch statt hochwertig - besonders im Hellmodus, wo die Linien
    deutlich sichtbar waren. */
+/* Farbiger Schimmer im Hero. Liegt im Hintergrund des Abschnitts selbst,
+   nicht als eigene Ebene darüber - dadurch wird er einmal gezeichnet statt
+   bei jedem Bild neu überlagert. */
+.hero-wash {
+  background-image:
+    radial-gradient(
+      ellipse 70% 55% at 18% 8%,
+      color-mix(in srgb, var(--color-lime) calc(var(--aurora-opacity) * 100%), transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 65% 50% at 88% 92%,
+      color-mix(in srgb, var(--color-electric-blue) calc(var(--aurora-opacity) * 55%), transparent),
+      transparent 60%
+    );
+}
+
 .soft-glow {
   background:
     radial-gradient(

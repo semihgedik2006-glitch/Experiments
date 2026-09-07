@@ -77,7 +77,7 @@ export function SearchOverlay() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={close}
-            className="fixed inset-0 z-[200] flex items-start justify-center bg-black/60 px-4 pt-24 backdrop-blur-sm"
+            className="fixed inset-0 z-[200] flex items-start justify-center bg-black/70 px-4 pt-24"
           >
             <motion.div
               role="dialog"

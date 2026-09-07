@@ -10,7 +10,7 @@ export default function NotFound() {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-6 text-center">
       <div
-        className="pointer-events-none absolute -top-32 left-1/2 h-[500px] w-[700px] -translate-x-1/2 rounded-full opacity-15 blur-[110px]"
+        className="pointer-events-none absolute -top-48 left-1/2 h-[680px] w-[900px] -translate-x-1/2 opacity-15"
         style={{ background: "radial-gradient(circle, var(--color-lime), transparent 70%)" }}
       />
 

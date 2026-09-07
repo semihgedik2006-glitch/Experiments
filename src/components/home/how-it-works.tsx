@@ -34,7 +34,7 @@ export function HowItWorks() {
     <section ref={sectionRef} className="relative overflow-hidden border-y border-border bg-surface py-20 sm:py-24 md:py-32">
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute -right-40 top-1/4 h-[380px] w-[380px] rounded-full opacity-10 blur-[100px]"
+        className="pointer-events-none absolute -right-48 top-1/4 h-[520px] w-[520px] opacity-10"
         style={{ background: "radial-gradient(circle, var(--color-lime), transparent 70%)", y: blobY }}
       />
       <Container>

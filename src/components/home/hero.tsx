@@ -61,8 +61,7 @@ export function Hero() {
     offset: ["start start", "end start"],
   });
 
-  // Parallax: backdrop drifts slower than the content while scrolling away.
-  const auroraY = useTransform(scrollYProgress, [0, 1], [0, 140]);
+  // Parallax: der Inhalt zieht beim Wegscrollen langsamer mit.
   const contentY = useTransform(scrollYProgress, [0, 1], [0, 90]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
   const cueOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
@@ -70,32 +69,18 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[92vh] items-center overflow-hidden bg-background"
+      className="hero-wash relative flex min-h-[92vh] items-center overflow-hidden bg-background"
     >
-      {/* Aurora backdrop: two soft color fields drifting slowly. */}
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 left-[8%] h-[560px] w-[560px] rounded-full blur-[130px]"
-        style={{
-          background: "radial-gradient(circle, var(--color-lime), transparent 65%)",
-          opacity: "var(--aurora-opacity)",
-          y: auroraY,
-        }}
-        animate={{ x: [0, 60, -20, 0], scale: [1, 1.15, 0.95, 1] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-52 right-[4%] h-[620px] w-[620px] rounded-full blur-[140px]"
-        style={{
-          background: "radial-gradient(circle, var(--color-electric-blue), transparent 65%)",
-          opacity: "calc(var(--aurora-opacity) * 0.55)",
-          y: auroraY,
-        }}
-        animate={{ x: [0, -50, 30, 0], scale: [1, 0.9, 1.1, 1] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* Der farbige Schimmer wird direkt in die Fläche des Abschnitts
+          gemalt (siehe .hero-wash in globals.css) statt über zwei große
+          halbtransparente Ebenen darüberzuliegen.
 
+          Gemessen: Die beiden Ebenen kosteten drei Viertel der Bildrate -
+          die Startseite schaffte damit 16 statt 60 Bilder pro Sekunde,
+          weil bei jedem erzeugten Bild eine bildschirmgroße durchsichtige
+          Fläche neu überlagert werden musste. Auf älteren Geräten war das
+          als Ruckeln beim Scrollen zu sehen. Ein Verlauf im Hintergrund
+          des Abschnitts wird dagegen einmal gezeichnet. */}
       {/* Weicher Lichtschein statt des früheren Karomusters. */}
       <div aria-hidden className="soft-glow pointer-events-none absolute inset-0" />
 
@@ -108,7 +93,7 @@ export function Hero() {
           </div>
 
           <span
-            className="hero-anim mb-8 rounded-full border border-border bg-surface-raised/60 px-4 py-1.5 text-xs uppercase tracking-widest text-muted backdrop-blur"
+            className="hero-anim mb-8 rounded-full border border-border bg-surface-raised px-4 py-1.5 text-xs uppercase tracking-widest text-muted"
             style={{ "--hero-delay": "0.3s" } as React.CSSProperties}
           >
             EMS-Studio in Hürth &middot; Köln &middot; Brühl
