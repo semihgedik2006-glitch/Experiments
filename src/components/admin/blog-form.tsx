@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Loader2 } from "lucide-react";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
 const initialState: ActionResult = { ok: false, message: "" };
@@ -70,9 +71,11 @@ export function BlogForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-full bg-lime px-6 py-3 text-sm font-semibold text-on-lime disabled:opacity-50"
+        aria-busy={pending}
+        className="inline-flex items-center gap-2 rounded-full bg-lime px-6 py-3 text-sm font-semibold text-on-lime disabled:cursor-progress disabled:opacity-60"
       >
-        {pending ? "Speichern..." : submitLabel}
+        {pending && <Loader2 size={15} className="animate-spin" aria-hidden />}
+        {pending ? "Wird gespeichert..." : submitLabel}
       </button>
     </form>
   );

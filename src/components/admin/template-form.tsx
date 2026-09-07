@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Loader2 } from "lucide-react";
 import { createSlotTemplate } from "@/lib/actions/admin-slots";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
@@ -88,9 +89,11 @@ export function TemplateForm({ studios }: { studios: { id: string; name: string 
       <button
         type="submit"
         disabled={pending}
-        className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime disabled:opacity-50"
+        aria-busy={pending}
+        className="inline-flex items-center gap-2 rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime disabled:cursor-progress disabled:opacity-60"
       >
-        {pending ? "..." : "Wiederkehrend anlegen"}
+        {pending && <Loader2 size={14} className="animate-spin" aria-hidden />}
+        {pending ? "Wird angelegt..." : "Wiederkehrend anlegen"}
       </button>
 
       {state?.message && (

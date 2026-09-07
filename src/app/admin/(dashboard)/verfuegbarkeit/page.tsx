@@ -3,6 +3,7 @@ import { deleteSlot, deleteSlotTemplate } from "@/lib/actions/admin-slots";
 import { SlotForm } from "@/components/admin/slot-form";
 import { TemplateForm } from "@/components/admin/template-form";
 import { formatDate } from "@/lib/format";
+import { ConfirmButton } from "@/components/admin/confirm-button";
 
 const weekdayNames = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 
@@ -52,7 +53,15 @@ export default async function AdminSlotsPage() {
                   await deleteSlotTemplate(template.id);
                 }}
               >
-                <button className="text-xs text-red-500 hover:underline">Löschen</button>
+                {/* Löschen zieht die daraus erzeugten künftigen Termine mit,
+                    soweit sie unbelegt sind (deleteUnbookedFutureSlotsForTemplate).
+                    Bereits gebuchte bleiben stehen - das steht so in der
+                    Rückfrage, damit niemand von Absagen ausgeht. */}
+                <ConfirmButton
+                  variant="link"
+                  question="Löschen? Künftige unbelegte Termine dieser Reihe verschwinden mit, bereits gebuchte bleiben bestehen."
+                  confirmLabel="Ja, löschen"
+                />
               </form>
             </div>
           ))}
@@ -107,7 +116,14 @@ export default async function AdminSlotsPage() {
                       await deleteSlot(slot.id);
                     }}
                   >
-                    <button className="text-xs text-red-500 hover:underline">Löschen</button>
+                    <ConfirmButton
+                      variant="link"
+                      question={
+                        slot.bookings.length > 0
+                          ? `Termin mit ${slot.bookings.length} Buchung${slot.bookings.length === 1 ? "" : "en"} löschen?`
+                          : "Diesen Termin löschen?"
+                      }
+                    />
                   </form>
                 </td>
               </tr>

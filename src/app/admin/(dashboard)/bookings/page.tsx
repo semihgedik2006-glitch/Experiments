@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { updateBookingStatus } from "@/lib/actions/admin-bookings";
 import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
+import { SubmitButton } from "@/components/admin/admin-form";
+import { ConfirmButton } from "@/components/admin/confirm-button";
+import { CalendarX } from "lucide-react";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Offen",
@@ -99,16 +102,23 @@ export default async function AdminBookingsPage({
             </div>
 
             {booking.status === "PENDING" && (
-              <div className="mt-4 flex gap-3">
+              <div className="mt-4 flex flex-wrap items-center gap-3">
                 <form
                   action={async () => {
                     "use server";
                     await updateBookingStatus(booking.id, "CONFIRMED");
                   }}
                 >
-                  <button className="rounded-full bg-lime px-4 py-2 text-xs font-semibold text-on-lime">
+                  {/* Bestätigen verschickt eine E-Mail an den Gast - dabei
+                      darf der Knopf nicht mehrfach auslösen. */}
+                  <SubmitButton
+                    variant="primary"
+                    className="!px-4 !py-2 !text-xs"
+                    pendingLabel="Wird bestätigt..."
+                    savedLabel="Bestätigt"
+                  >
                     Bestätigen
-                  </button>
+                  </SubmitButton>
                 </form>
                 <form
                   action={async () => {
@@ -116,9 +126,16 @@ export default async function AdminBookingsPage({
                     await updateBookingStatus(booking.id, "CANCELLED");
                   }}
                 >
-                  <button className="rounded-full border border-border px-4 py-2 text-xs font-semibold">
-                    Ablehnen
-                  </button>
+                  {/* Absagen verschicken derzeit keine E-Mail (siehe
+                      updateBookingStatus) - der Hinweis sagt das offen, damit
+                      niemand davon ausgeht, der Gast sei informiert. */}
+                  <ConfirmButton
+                    label="Ablehnen"
+                    icon={CalendarX}
+                    question={`Anfrage von ${booking.name} ablehnen? Es geht dabei keine E-Mail raus - bitte selbst absagen.`}
+                    confirmLabel="Ja, ablehnen"
+                    pendingLabel="Wird abgelehnt..."
+                  />
                 </form>
               </div>
             )}
@@ -131,9 +148,13 @@ export default async function AdminBookingsPage({
                     await updateBookingStatus(booking.id, "CANCELLED");
                   }}
                 >
-                  <button className="rounded-full border border-border px-4 py-2 text-xs font-semibold text-red-500 hover:border-red-500">
-                    Stornieren
-                  </button>
+                  <ConfirmButton
+                    label="Stornieren"
+                    icon={CalendarX}
+                    question={`Bestätigten Termin von ${booking.name} stornieren? Der Platz wird wieder frei, eine Absage-E-Mail geht nicht automatisch raus.`}
+                    confirmLabel="Ja, stornieren"
+                    pendingLabel="Wird storniert..."
+                  />
                 </form>
               </div>
             )}

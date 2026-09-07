@@ -2,6 +2,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { getToggles, toggleDefinitions } from "@/lib/site-toggles";
 import { saveToggles } from "@/lib/actions/admin-toggles";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
+import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 
 export default async function AdminSichtbarkeitPage() {
   const toggles = await getToggles();
@@ -30,7 +31,7 @@ export default async function AdminSichtbarkeitPage() {
         </p>
       )}
 
-      <form action={saveToggles} className="mt-8">
+      <AdminForm action={saveToggles} className="mt-8">
         <AdminStagger className="space-y-3">
           {toggleDefinitions.map((entry) => {
             const visible = toggles[entry.key];
@@ -72,10 +73,12 @@ export default async function AdminSichtbarkeitPage() {
           })}
         </AdminStagger>
 
-        <button className="mt-6 rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-on-lime transition-opacity hover:opacity-90">
-          Sichtbarkeit speichern
-        </button>
-      </form>
+        <div className="mt-6">
+          <SubmitButton variant="primary" pendingLabel="Wird übernommen...">
+            Sichtbarkeit speichern
+          </SubmitButton>
+        </div>
+      </AdminForm>
     </div>
   );
 }

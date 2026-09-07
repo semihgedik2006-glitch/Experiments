@@ -4,6 +4,8 @@ import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger
 import { AlertTriangle } from "lucide-react";
 import { StudioImport } from "@/components/admin/studio-import";
 import { OpeningHoursImport } from "@/components/admin/opening-hours-import";
+import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
+import { ConfirmButton } from "@/components/admin/confirm-button";
 
 const inputClass =
   "w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime";
@@ -145,27 +147,33 @@ export default async function AdminStudiosPage() {
         <OpeningHoursImport studios={studios.map((studio) => studio.name)} />
       </div>
 
-      <form action={createStudio} className="mt-8 rounded-2xl border border-lime/40 bg-surface p-6">
+      <AdminForm
+        action={createStudio}
+        resetOnSuccess
+        className="mt-8 rounded-2xl border border-lime/40 bg-surface p-6"
+      >
         <h2 className="font-semibold">Neues Studio hinzufügen</h2>
         <div className="mt-4">
           <StudioFields />
         </div>
-        <button className="mt-4 rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-on-lime transition-opacity hover:opacity-90">
-          Studio anlegen
-        </button>
-      </form>
+        <div className="mt-4">
+          <SubmitButton variant="primary" pendingLabel="Wird angelegt..." savedLabel="Angelegt">
+            Studio anlegen
+          </SubmitButton>
+        </div>
+      </AdminForm>
 
       <AdminStagger className="mt-8 space-y-4">
         {studios.map((studio) => (
           <AdminStaggerItem key={studio.id}>
             <div className="rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-lime/30">
-              <form action={updateStudio}>
+              <AdminForm action={updateStudio}>
                 <input type="hidden" name="id" value={studio.id} />
                 <StudioFields defaults={studio} />
-                <button className="mt-4 rounded-full border border-border px-4 py-2 text-xs font-semibold hover:border-lime">
-                  Speichern
-                </button>
-              </form>
+                <div className="mt-4">
+                  <SubmitButton pendingLabel="Wird gespeichert...">Speichern</SubmitButton>
+                </div>
+              </AdminForm>
               <form
                 action={async () => {
                   "use server";
@@ -173,9 +181,10 @@ export default async function AdminStudiosPage() {
                 }}
                 className="mt-2"
               >
-                <button className="rounded-full border border-border px-4 py-2 text-xs font-semibold text-red-500 hover:border-red-500">
-                  Löschen
-                </button>
+                <ConfirmButton
+                  question={`„${studio.name}“ wirklich löschen?`}
+                  confirmLabel="Ja, Studio löschen"
+                />
               </form>
             </div>
           </AdminStaggerItem>

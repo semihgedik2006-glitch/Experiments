@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deletePost } from "@/lib/actions/admin-blog";
+import { ConfirmButton } from "@/components/admin/confirm-button";
 
 export default async function AdminBlogPage() {
   const posts = await prisma.blogPost.findMany({ orderBy: { createdAt: "desc" } });
@@ -21,7 +22,7 @@ export default async function AdminBlogPage() {
         {posts.map((post) => (
           <div
             key={post.id}
-            className="flex items-center justify-between rounded-2xl border border-border bg-surface p-5"
+            className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-5"
           >
             <div>
               <p className="font-semibold">{post.title}</p>
@@ -29,7 +30,7 @@ export default async function AdminBlogPage() {
                 {post.published ? "Veröffentlicht" : "Entwurf"}
               </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <Link href={`/admin/blog/${post.id}`} className="text-sm text-accent hover:underline">
                 Bearbeiten
               </Link>
@@ -39,7 +40,11 @@ export default async function AdminBlogPage() {
                   await deletePost(post.id);
                 }}
               >
-                <button className="text-sm text-red-500 hover:underline">Löschen</button>
+                <ConfirmButton
+                  variant="link"
+                  question={`„${post.title}“ wirklich löschen?`}
+                  confirmLabel="Ja, Artikel löschen"
+                />
               </form>
             </div>
           </div>

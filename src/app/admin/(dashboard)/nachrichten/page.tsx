@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { markMessageRead } from "@/lib/actions/admin-messages";
 import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
+import { SubmitButton } from "@/components/admin/admin-form";
 
 export default async function AdminMessagesPage() {
   const messages = await prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" } });
@@ -41,9 +42,9 @@ export default async function AdminMessagesPage() {
                     await markMessageRead(msg.id);
                   }}
                 >
-                  <button className="rounded-full border border-border px-4 py-2 text-xs font-semibold hover:border-lime">
+                  <SubmitButton pendingLabel="Wird gespeichert...">
                     Als gelesen markieren
-                  </button>
+                  </SubmitButton>
                 </form>
               )}
             </div>

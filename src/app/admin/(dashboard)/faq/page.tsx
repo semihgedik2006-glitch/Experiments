@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { createFaqItem, updateFaqItem, deleteFaqItem } from "@/lib/actions/admin-faq";
+import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
+import { ConfirmButton } from "@/components/admin/confirm-button";
 
 export default async function AdminFaqPage() {
   const items = await prisma.faqItem.findMany({ orderBy: { sortOrder: "asc" } });
@@ -13,8 +15,9 @@ export default async function AdminFaqPage() {
       </p>
 
       {/* Neue Frage anlegen */}
-      <form
+      <AdminForm
         action={createFaqItem}
+        resetOnSuccess
         className="mt-8 rounded-2xl border border-lime/40 bg-surface p-6"
       >
         <h2 className="font-semibold">Neue Frage hinzufügen</h2>
@@ -36,16 +39,18 @@ export default async function AdminFaqPage() {
             className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
           />
         </div>
-        <button className="mt-4 rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-on-lime transition-opacity hover:opacity-90">
-          Frage anlegen
-        </button>
-      </form>
+        <div className="mt-4">
+          <SubmitButton variant="primary" pendingLabel="Wird angelegt..." savedLabel="Angelegt">
+            Frage anlegen
+          </SubmitButton>
+        </div>
+      </AdminForm>
 
       {/* Bestehende Fragen bearbeiten */}
       <div className="mt-8 space-y-4">
         {items.map((item) => (
           <div key={item.id} className="rounded-2xl border border-border bg-surface p-6">
-            <form action={updateFaqItem} className="space-y-3">
+            <AdminForm action={updateFaqItem} className="space-y-3">
               <input type="hidden" name="id" value={item.id} />
               <div className="flex flex-wrap items-center gap-3">
                 <label className="text-xs text-muted">
@@ -75,11 +80,9 @@ export default async function AdminFaqPage() {
                 className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
               />
               <div className="flex gap-2">
-                <button className="rounded-full border border-border px-4 py-2 text-xs font-semibold hover:border-lime">
-                  Speichern
-                </button>
+                <SubmitButton pendingLabel="Wird gespeichert...">Speichern</SubmitButton>
               </div>
-            </form>
+            </AdminForm>
             <form
               action={async () => {
                 "use server";
@@ -87,9 +90,7 @@ export default async function AdminFaqPage() {
               }}
               className="mt-2"
             >
-              <button className="rounded-full border border-border px-4 py-2 text-xs font-semibold text-red-500 hover:border-red-500">
-                Löschen
-              </button>
+              <ConfirmButton question="Diese Frage wirklich löschen?" />
             </form>
           </div>
         ))}
