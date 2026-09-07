@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { createStudio, updateStudio, deleteStudio } from "@/lib/actions/admin-studios";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
+import { AlertTriangle } from "lucide-react";
 import { StudioImport } from "@/components/admin/studio-import";
+import { OpeningHoursImport } from "@/components/admin/opening-hours-import";
 
 const inputClass =
   "w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime";
@@ -97,6 +99,9 @@ function StudioFields({
 
 export default async function AdminStudiosPage() {
   const studios = await prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } });
+  const ohneKoordinaten = studios.filter(
+    (studio) => studio.latitude === null || studio.longitude === null,
+  );
 
   return (
     <div>
@@ -107,8 +112,37 @@ export default async function AdminStudiosPage() {
         Studio wird im Impressum als Hauptsitz verwendet.
       </p>
 
+      {/* Ganz oben, weil eine einzige Lücke die Standortabfrage für alle
+          Studios abschaltet. Bisher stand der Hinweis nur beim betroffenen
+          Studio - man musste also jedes einzeln aufklappen, um zu sehen,
+          warum bei der Buchung immer dasselbe Studio zuerst erscheint. */}
+      {ohneKoordinaten.length > 0 && (
+        <div className="mt-6 rounded-2xl border border-amber-500/50 bg-amber-500/10 p-5">
+          <p className="flex items-center gap-2 font-semibold">
+            <AlertTriangle size={17} />
+            Die Standortabfrage ist derzeit abgeschaltet
+          </p>
+          <p className="mt-2 text-sm">
+            {ohneKoordinaten.length === 1
+              ? "Einem Studio fehlen die Koordinaten:"
+              : `${ohneKoordinaten.length} Studios fehlen die Koordinaten:`}{" "}
+            <strong>{ohneKoordinaten.map((studio) => studio.name).join(", ")}</strong>
+          </p>
+          <p className="mt-2 text-sm text-muted">
+            Solange auch nur eines fehlt, lässt sich nicht bestimmen, welches am
+            nächsten liegt - bei der Terminbuchung erscheinen die Studios dann in der
+            Reihenfolge des Feldes &bdquo;Position&ldquo; statt nach Entfernung. Trage die
+            fehlenden Koordinaten unten nach oder lösche das Studio.
+          </p>
+        </div>
+      )}
+
       <div className="mt-8">
         <StudioImport />
+      </div>
+
+      <div className="mt-8">
+        <OpeningHoursImport studios={studios.map((studio) => studio.name)} />
       </div>
 
       <form action={createStudio} className="mt-8 rounded-2xl border border-lime/40 bg-surface p-6">

@@ -90,8 +90,8 @@ export async function importStudios(
 ): Promise<ImportResult> {
   await requireAdmin();
 
-  const raw = String(formData.get("rows") ?? "");
-  const openingHours = String(formData.get("openingHours") ?? "").trim();
+  const raw = String(formData.get("rows") ?? "").replace(/\r\n?/g, "\n");
+  const openingHours = String(formData.get("openingHours") ?? "").replace(/\r\n?/g, "\n").trim();
   const result: ImportResult = { added: 0, skipped: [] };
 
   const last = await prisma.studioLocation.findFirst({ orderBy: { sortOrder: "desc" } });
@@ -148,6 +148,69 @@ export async function importStudios(
       },
     });
     sortOrder += 10;
+    result.added += 1;
+  }
+
+  revalidateStudios();
+  return result;
+}
+
+/**
+ * Öffnungszeiten für mehrere Studios auf einmal setzen.
+ *
+ * Erwartet Absätze, durch eine Leerzeile getrennt. Die erste Zeile eines
+ * Absatzes ist der Studioname, alle weiteren sind die Öffnungszeiten:
+ *
+ *   Körperformen Hürth
+ *   Montag - Freitag: 08:00 - 21:00 Uhr
+ *   Samstag: 10:00 - 16:00 Uhr
+ *
+ *   Körperformen Brühl
+ *   Montag - Freitag: 07:00 - 22:00 Uhr
+ *
+ * Bewusst dieses Format statt Semikolons: Öffnungszeiten sind mehrzeilig,
+ * und so lässt sich die Liste schreiben und lesen wie sie später auf der
+ * Website steht.
+ *
+ * Der Name muss genau einem vorhandenen Studio entsprechen; Groß- und
+ * Kleinschreibung ist dabei egal. Passt er zu keinem, wird der Absatz
+ * gemeldet statt stillschweigend übergangen - sonst bliebe ein Tippfehler
+ * unbemerkt und die alten Zeiten stünden weiter auf der Seite.
+ */
+export async function importOpeningHours(
+  _previous: ImportResult | null,
+  formData: FormData,
+): Promise<ImportResult> {
+  await requireAdmin();
+
+  const raw = String(formData.get("blocks") ?? "").replace(/\r\n?/g, "\n");
+  const result: ImportResult = { added: 0, skipped: [] };
+
+  const studios = await prisma.studioLocation.findMany({ select: { id: true, name: true } });
+  const byName = new Map(studios.map((studio) => [studio.name.trim().toLowerCase(), studio.id]));
+
+  // Absätze trennen: eine oder mehrere Leerzeilen.
+  const blocks = raw.split(/\n\s*\n/).map((block) => block.trim()).filter(Boolean);
+
+  for (const block of blocks) {
+    const lines = block.split("\n").map((line) => line.trim()).filter(Boolean);
+    const name = lines[0];
+    const hours = lines.slice(1).join("\n");
+
+    if (!name) continue;
+
+    if (lines.length < 2) {
+      result.skipped.push(`"${name}": keine Öffnungszeiten angegeben`);
+      continue;
+    }
+
+    const id = byName.get(name.toLowerCase());
+    if (!id) {
+      result.skipped.push(`"${name}": kein Studio mit diesem Namen gefunden`);
+      continue;
+    }
+
+    await prisma.studioLocation.update({ where: { id }, data: { openingHours: hours } });
     result.added += 1;
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { MapPin, LocateFixed } from "lucide-react";
 import { motion } from "motion/react";
 import { BookingForm } from "@/components/booking/booking-form";
@@ -54,6 +54,14 @@ export function BookingFlow({
   // aktiv.
   const isClient = useSyncExternalStore(subscribeNothing, () => true, () => false);
   const [locationSettled, setLocationSettled] = useState(false);
+  // Unterschieden wird bewusst: Eine abgelehnte Freigabe merkt sich der
+  // Browser, ein erneuter Versuch führt dann zu nichts. Bei einem
+  // fehlgeschlagenen oder zu langsamen Versuch lohnt er dagegen.
+  const [failure, setFailure] = useState<"denied" | "unavailable" | null>(null);
+  // Merkt sich außerhalb des Renderns, ob schon eine Antwort da war - die
+  // Wartezeitüberwachung unten darf sonst nicht wissen, wann sie eingreifen
+  // muss.
+  const settledRef = useRef(false);
 
   const locating =
     isClient &&
@@ -62,7 +70,7 @@ export function BookingFlow({
     typeof navigator !== "undefined" &&
     !!navigator.geolocation;
 
-  useEffect(() => {
+  const requestLocation = useCallback(() => {
     if (!canLocate) return;
     if (typeof navigator === "undefined" || !navigator.geolocation) return;
 
@@ -79,15 +87,42 @@ export function BookingFlow({
           setRecommendedStudioId(nearest.id);
           setSelectedStudioId((current) => (userPicked ? current : nearest.id));
         }
+        settledRef.current = true;
         setLocationSettled(true);
       },
-      () => setLocationSettled(true),
-      { timeout: 8000 },
+      (error) => {
+        settledRef.current = true;
+        setFailure(error.code === error.PERMISSION_DENIED ? "denied" : "unavailable");
+        setLocationSettled(true);
+      },
+      // Hohe Genauigkeit, weil am Rechner sonst grob über die IP-Adresse
+      // geschätzt wird - dabei landet man schnell im falschen Stadtteil.
+      { timeout: 10000, enableHighAccuracy: true, maximumAge: 0 },
     );
-    // Runs once on mount to fetch the user's position; re-running on every
-    // studios/userPicked change would re-trigger the browser's location prompt.
+    // studios und userPicked absichtlich nicht in den Abhängigkeiten: Ein
+    // Wechsel würde die Standortabfrage erneut auslösen und den Nutzer noch
+    // einmal um Erlaubnis fragen.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [canLocate]);
+
+  useEffect(() => {
+    if (!canLocate) return;
+    requestLocation();
+
+    // Eigene Wartezeitüberwachung: Solange die Erlaubnisabfrage offen ist,
+    // ruft der Browser weder den Erfolgs- noch den Fehlerfall auf - und die
+    // Zeitbegrenzung der Schnittstelle läuft dabei ebenfalls nicht. Wer die
+    // Abfrage einfach stehen lässt, sähe sonst endlos "Standort wird
+    // ermittelt...". Nach zwölf Sekunden bieten wir stattdessen an, es
+    // erneut zu versuchen.
+    const timer = setTimeout(() => {
+      if (settledRef.current) return;
+      setFailure("unavailable");
+      setLocationSettled(true);
+    }, 12000);
+
+    return () => clearTimeout(timer);
+  }, [requestLocation, canLocate]);
 
   if (studios.length === 0) {
     return (
@@ -102,12 +137,35 @@ export function BookingFlow({
     <div className="space-y-8">
       {studios.length > 1 && (
         <div>
-          <p className="mb-3 flex items-center gap-2 text-sm font-semibold">
+          <p className="mb-3 flex flex-wrap items-center gap-2 text-sm font-semibold">
             Studio wählen
             {locating && (
               <span className="inline-flex items-center gap-1 text-xs font-normal text-muted">
                 <LocateFixed size={13} className="animate-pulse" /> Standort wird ermittelt...
               </span>
+            )}
+            {/* Verweigert der Browser den Standort oder dauert es zu lange,
+                passierte bisher nichts Sichtbares - die Liste stand einfach
+                in der gespeicherten Reihenfolge da. Jetzt lässt sich der
+                Versuch bewusst wiederholen. */}
+            {canLocate && failure === "denied" && (
+              <span className="text-xs font-normal text-muted">
+                Standort nicht freigegeben - wähle dein Studio einfach selbst.
+              </span>
+            )}
+            {canLocate && failure === "unavailable" && (
+              <button
+                type="button"
+                onClick={() => {
+                  settledRef.current = false;
+                  setFailure(null);
+                  setLocationSettled(false);
+                  requestLocation();
+                }}
+                className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-xs font-normal text-muted transition-colors hover:border-lime hover:text-foreground"
+              >
+                <LocateFixed size={13} /> Nächstes Studio finden
+              </button>
             )}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
