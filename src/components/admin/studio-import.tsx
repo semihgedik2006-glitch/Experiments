@@ -35,9 +35,10 @@ export function StudioImport() {
       <p className="mt-2 text-xs text-muted">
         Die Koordinaten bekommst du in Google Maps mit einem Rechtsklick auf den
         Standort - die beiden Zahlen einfach kopieren. Ohne sie wird die Zeile
-        übersprungen, weil ein Studio ohne Koordinaten die Standortabfrage bei
-        der Terminbuchung für alle Studios abschaltet. Die Karte muss nicht
-        hinterlegt werden; sie entsteht aus der Anschrift.
+        übersprungen: Ein Studio ohne Koordinaten steht bei der Terminbuchung immer
+        am Ende der Liste, und die Auszeichnung &bdquo;Am nächsten&ldquo; entfällt dann
+        für alle Studios. Die Karte muss nicht hinterlegt werden; sie entsteht aus
+        der Anschrift.
       </p>
 
       <textarea

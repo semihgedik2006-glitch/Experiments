@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { MapPin, LocateFixed } from "lucide-react";
 import { motion } from "motion/react";
 import { BookingForm } from "@/components/booking/booking-form";
-import { allStudiosLocatable, sortStudiosByDistance } from "@/lib/geo";
+import { allStudiosLocatable, anyStudioLocatable, sortStudiosByDistance } from "@/lib/geo";
 
 /** Der Zustand ändert sich nie - useSyncExternalStore dient hier nur dazu,
  *  Server und Browser sauber zu unterscheiden. */
@@ -40,11 +40,14 @@ export function BookingFlow({
   const [orderedStudios, setOrderedStudios] = useState(studios);
   const [userPicked, setUserPicked] = useState(false);
 
-  // Die Standortabfrage lohnt nur, wenn es etwas zu vergleichen gibt und
-  // jedes Studio überhaupt verortet ist. Fehlen bei einem die Koordinaten,
-  // könnte es nie gewinnen - die Auszeichnung "Am nächsten" wäre dann eine
-  // falsche Aussage über die anderen.
-  const canLocate = studios.length > 1 && allStudiosLocatable(studios);
+  // Sortiert wird, sobald wenigstens ein Studio Koordinaten hat. Studios
+  // ohne hängen hinten an.
+  const canLocate = studios.length > 1 && anyStudioLocatable(studios);
+
+  // Die Auszeichnung "Am nächsten" setzt dagegen voraus, dass jedes Studio
+  // verortet ist - sonst könnte ausgerechnet das unverortete das nächste
+  // sein und die Aussage wäre falsch.
+  const canName = allStudiosLocatable(studios);
 
   // Der Hinweis "Standort wird ermittelt" darf erst nach der Hydration
   // erscheinen. Würde er schon beim ersten Aufbau aus navigator abgeleitet,
@@ -84,7 +87,7 @@ export function BookingFlow({
         const nearest = byDistance[0];
         if (nearest) {
           setOrderedStudios(byDistance);
-          setRecommendedStudioId(nearest.id);
+          if (canName) setRecommendedStudioId(nearest.id);
           setSelectedStudioId((current) => (userPicked ? current : nearest.id));
         }
         settledRef.current = true;
@@ -103,7 +106,7 @@ export function BookingFlow({
     // Wechsel würde die Standortabfrage erneut auslösen und den Nutzer noch
     // einmal um Erlaubnis fragen.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canLocate]);
+  }, [canLocate, canName]);
 
   useEffect(() => {
     if (!canLocate) return;

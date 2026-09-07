@@ -120,19 +120,19 @@ export default async function AdminStudiosPage() {
         <div className="mt-6 rounded-2xl border border-amber-500/50 bg-amber-500/10 p-5">
           <p className="flex items-center gap-2 font-semibold">
             <AlertTriangle size={17} />
-            Die Standortabfrage ist derzeit abgeschaltet
+            {ohneKoordinaten.length === 1
+              ? "Einem Studio fehlen die Koordinaten"
+              : `${ohneKoordinaten.length} Studios fehlen die Koordinaten`}
           </p>
           <p className="mt-2 text-sm">
-            {ohneKoordinaten.length === 1
-              ? "Einem Studio fehlen die Koordinaten:"
-              : `${ohneKoordinaten.length} Studios fehlen die Koordinaten:`}{" "}
             <strong>{ohneKoordinaten.map((studio) => studio.name).join(", ")}</strong>
           </p>
           <p className="mt-2 text-sm text-muted">
-            Solange auch nur eines fehlt, lässt sich nicht bestimmen, welches am
-            nächsten liegt - bei der Terminbuchung erscheinen die Studios dann in der
-            Reihenfolge des Feldes &bdquo;Position&ldquo; statt nach Entfernung. Trage die
-            fehlenden Koordinaten unten nach oder lösche das Studio.
+            Diese Studios stehen bei der Terminbuchung immer am Ende der Liste, egal
+            wie nah sie tatsächlich liegen. Außerdem entfällt die Auszeichnung
+            &bdquo;Am nächsten&ldquo; für alle Studios - denn solange eines unverortet ist,
+            könnte ausgerechnet dieses das nächste sein. Trage die Koordinaten unten
+            nach oder lösche das Studio.
           </p>
         </div>
       )}

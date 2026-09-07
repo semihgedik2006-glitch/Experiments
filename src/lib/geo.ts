@@ -19,15 +19,23 @@ export function haversineDistanceKm(
 
 type Located = { id: string; latitude: number | null; longitude: number | null };
 
+/** Hat wenigstens ein Studio Koordinaten? Dann lohnt die Standortabfrage. */
+export function anyStudioLocatable(studios: Located[]): boolean {
+  return studios.some((studio) => studio.latitude !== null && studio.longitude !== null);
+}
+
 /**
  * Sind für alle Studios Koordinaten hinterlegt?
  *
- * Nur dann lässt sich überhaupt sagen, welches das nächste ist. Fehlen sie
- * bei einem einzigen, wäre jede Aussage dazu falsch: Das Studio ohne
- * Koordinaten kann nicht gewinnen, egal wie nah es tatsächlich liegt.
- * Genau das ist vorher passiert - ein neu angelegtes Studio ohne
- * Koordinaten wurde stillschweigend übergangen, und ein weiter entferntes
- * bekam die Auszeichnung "Am nächsten".
+ * Davon hängt allein die Auszeichnung "Am nächsten" ab. Fehlt sie bei einem
+ * einzigen Studio, könnte genau dieses das nächste sein - die Auszeichnung
+ * wäre dann eine falsche Aussage über die anderen.
+ *
+ * Sortiert wird trotzdem: Die Studios mit Koordinaten stehen nach
+ * Entfernung, die ohne hängen hinten an. Vorher schaltete eine einzige
+ * Lücke die gesamte Sortierung ab - ein vergessenes Zahlenpaar machte die
+ * Funktion damit für alle vierzehn Standorte unbrauchbar, ohne dass man den
+ * Grund sah.
  */
 export function allStudiosLocatable(studios: Located[]): boolean {
   return (
