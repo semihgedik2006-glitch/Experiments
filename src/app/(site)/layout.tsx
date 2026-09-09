@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/footer";
 import { CursorGlow } from "@/components/cursor-glow";
 import { mainNav } from "@/lib/site-config";
 import { getToggles } from "@/lib/site-toggles";
+import { getStudios } from "@/lib/data";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const toggles = await getToggles();
@@ -15,6 +16,11 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     return !(key in toggles) || toggles[key as keyof typeof toggles];
   });
 
+  // Nur zeigen, wenn die Studio-Seite sichtbar ist und es etwas zu wählen
+  // gibt - bei einem einzigen Standort führt der Knopf ins Leere.
+  const studios = toggles.studio ? await getStudios() : [];
+  const studioLabel = studios.length > 1 ? `${studios.length} Studios` : undefined;
+
   return (
     <>
       <a
@@ -24,7 +30,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         Zum Inhalt springen
       </a>
       <CursorGlow />
-      <Header nav={nav} />
+      <Header nav={nav} studioLabel={studioLabel} />
       <main id="main-content" className="flex-1">
         {children}
       </main>

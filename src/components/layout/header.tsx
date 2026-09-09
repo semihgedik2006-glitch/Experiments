@@ -4,13 +4,21 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
-import { Menu, X } from "lucide-react";
+import { MapPin, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SearchOverlay } from "@/components/search/search-overlay";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { Logo } from "@/components/logo";
 
-export function Header({ nav }: { nav: { label: string; href: string }[] }) {
+export function Header({
+  nav,
+  studioLabel,
+}: {
+  nav: { label: string; href: string }[];
+  /** Beschriftung für den Standort-Knopf, z.B. "14 Studios". Fehlt sie,
+      ist die Studio-Seite ausgeblendet und der Knopf entfällt. */
+  studioLabel?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
@@ -70,6 +78,20 @@ export function Header({ nav }: { nav: { label: string; href: string }[] }) {
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
+          {/* Der Weg zum nächsten Studio führte auf dem Handy über Menü
+              öffnen, scrollen, tippen. Bei vierzehn Standorten ist das der
+              häufigste Grund, die Seite überhaupt aufzurufen - deshalb steht
+              er hier direkt in der Kopfzeile. */}
+          {studioLabel && (
+            <Link
+              href="/studio"
+              aria-label={`Standorte ansehen: ${studioLabel}`}
+              className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold transition-colors hover:border-lime"
+            >
+              <MapPin size={14} className="text-accent" />
+              {studioLabel}
+            </Link>
+          )}
           <SearchOverlay />
           <button
             type="button"
@@ -113,13 +135,25 @@ export function Header({ nav }: { nav: { label: string; href: string }[] }) {
                   {item.label}
                 </Link>
               ))}
-              <Link
-                href="/probetermin"
-                onClick={() => setOpen(false)}
-                className="mt-2 w-fit rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime"
-              >
-                Probetermin buchen
-              </Link>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <Link
+                  href="/probetermin"
+                  onClick={() => setOpen(false)}
+                  className="w-fit rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime"
+                >
+                  Probetermin buchen
+                </Link>
+                {studioLabel && (
+                  <Link
+                    href="/studio"
+                    onClick={() => setOpen(false)}
+                    className="flex w-fit items-center gap-1.5 rounded-full border border-border px-5 py-2 text-sm font-semibold transition-colors hover:border-lime"
+                  >
+                    <MapPin size={15} className="text-accent" />
+                    Studio in deiner Nähe
+                  </Link>
+                )}
+              </div>
               <div className="pt-2">
                 <ThemeToggle />
               </div>

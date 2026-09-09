@@ -4,6 +4,8 @@ import { PageHeader } from "@/components/ui/page-header";
 import { getStudios } from "@/lib/data";
 import { StudioJsonLd } from "@/components/structured-data";
 import { StudioList } from "@/components/studio/studio-list";
+import { StandortUebersicht } from "@/components/studio/standort-uebersicht";
+import { Container } from "@/components/ui/container";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -40,6 +42,22 @@ export default async function StudioPage() {
             : `Zentral in ${studios[0].city} gelegen - erreichbar aus Köln, Brühl und der gesamten Region.`
         }
       />
+
+      {studios.length > 1 && (
+        <Container className="pt-4">
+          <StandortUebersicht
+            studios={studios.map((studio) => ({
+              id: studio.id,
+              name: studio.name,
+              city: studio.city,
+              street: studio.street,
+              postalCode: studio.postalCode,
+              latitude: studio.latitude,
+              longitude: studio.longitude,
+            }))}
+          />
+        </Container>
+      )}
 
       <StudioList studios={studios} />
     </>

@@ -154,7 +154,11 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
       {ordered.map((studio, index) => (
         <section
           key={studio.id}
-          className={`py-24 ${index > 0 ? "border-t border-border" : ""} ${index % 2 === 1 ? "bg-surface" : ""}`}
+          // Sprungziel für den Lageplan oben. scroll-mt hält die Überschrift
+          // frei von der stehenden Kopfzeile - sonst landet der Sprung
+          // dahinter und man sieht die Mitte des Abschnitts.
+          id={`studio-${studio.id}`}
+          className={`scroll-mt-20 py-24 ${index > 0 ? "border-t border-border" : ""} ${index % 2 === 1 ? "bg-surface" : ""}`}
         >
           <Container className="grid gap-10 md:grid-cols-2">
             <Reveal className="overflow-hidden rounded-2xl border border-border">

@@ -54,7 +54,7 @@ function StaggeredLine({
   );
 }
 
-export function Hero() {
+export function Hero({ standorte }: { standorte: string }) {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -96,7 +96,7 @@ export function Hero() {
             className="hero-anim mb-8 rounded-full border border-border bg-surface-raised px-4 py-1.5 text-xs uppercase tracking-widest text-muted"
             style={{ "--hero-delay": "0.3s" } as React.CSSProperties}
           >
-            EMS-Studio in Hürth &middot; Köln &middot; Brühl
+            {standorte}
           </span>
 
           <h1 className="font-display max-w-5xl text-[2.6rem] font-black leading-[1.08] tracking-tight sm:text-6xl md:text-7xl">

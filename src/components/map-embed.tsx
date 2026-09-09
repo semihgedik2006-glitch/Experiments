@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { MapPin } from "lucide-react";
 import { subscribeConsent, readConsent, serverConsent } from "@/lib/consent";
 
@@ -10,6 +10,13 @@ import { subscribeConsent, readConsent, serverConsent } from "@/lib/consent";
  * Ohne Zustimmung wird KEIN iframe gerendert - erst dadurch unterbleibt die
  * Übertragung der IP-Adresse an Google. Sichtbar ist stattdessen ein
  * Platzhalter, über den die Karte einmalig per Klick geladen werden kann.
+ *
+ * Zweite Bedingung: Der Ausschnitt muss in die Nähe des Bildschirms gerückt
+ * sein. Auf der Studio-Seite stehen vierzehn Karten untereinander - mit
+ * erteilter Einwilligung wären das sonst vierzehn gleichzeitige Verbindungen
+ * zu Google beim Öffnen der Seite, von denen man eine sieht. loading="lazy"
+ * allein genügt dafür nicht: Der Browser entscheidet die Schwelle selbst und
+ * lädt oft großzügig vor.
  */
 export function MapEmbed({
   src,
@@ -22,8 +29,30 @@ export function MapEmbed({
 }) {
   const consent = useSyncExternalStore(subscribeConsent, readConsent, serverConsent);
   const [loadedOnce, setLoadedOnce] = useState(false);
+  const [nahAmBildschirm, setNahAmBildschirm] = useState(false);
+  const platzRef = useRef<HTMLDivElement>(null);
 
-  if (consent === "accepted" || loadedOnce) {
+  useEffect(() => {
+    const el = platzRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+
+    const beobachter = new IntersectionObserver(
+      (eintraege) => {
+        if (!eintraege.some((eintrag) => eintrag.isIntersecting)) return;
+        // Einmal geladen bleibt geladen - sonst verschwände die Karte
+        // wieder, sobald man daran vorbeiscrollt.
+        setNahAmBildschirm(true);
+        beobachter.disconnect();
+      },
+      // Eine halbe Bildschirmhöhe Vorlauf: Die Karte steht, wenn sie ins
+      // Bild kommt, statt erst dann zu laden.
+      { rootMargin: "500px 0px" },
+    );
+    beobachter.observe(el);
+    return () => beobachter.disconnect();
+  }, []);
+
+  if ((consent === "accepted" && nahAmBildschirm) || loadedOnce) {
     return (
       <iframe
         src={src}
@@ -35,8 +64,15 @@ export function MapEmbed({
     );
   }
 
+  // Mit Einwilligung, aber noch außer Sichtweite: nur die Fläche freihalten,
+  // damit beim Heranscrollen nichts springt.
+  if (consent === "accepted") {
+    return <div ref={platzRef} className={`bg-surface ${className}`} aria-hidden />;
+  }
+
   return (
     <div
+      ref={platzRef}
       className={`flex flex-col items-center justify-center gap-3 bg-surface px-6 py-10 text-center ${className}`}
     >
       <MapPin size={24} className="text-accent" />

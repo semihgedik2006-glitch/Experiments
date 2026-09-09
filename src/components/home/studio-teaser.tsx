@@ -64,7 +64,13 @@ export async function StudioTeaser() {
     );
   }
 
-  // Multiple locations: compact card per studio.
+  // Mehrere Standorte: eine kompakte Karte je Studio. Bei vierzehn wären
+  // das vierzehn Kacheln mitten auf der Startseite - der Abschnitt würde
+  // länger als alles darüber. Gezeigt werden die ersten sechs, der Rest
+  // steht auf der Studio-Seite.
+  const gezeigt = studios.slice(0, 6);
+  const weitere = studios.length - gezeigt.length;
+
   return (
     <section className="py-20 sm:py-24 md:py-32">
       <Container>
@@ -82,7 +88,7 @@ export async function StudioTeaser() {
         </Reveal>
 
         <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {studios.map((studio) => (
+          {gezeigt.map((studio) => (
             <StaggerItem key={studio.id} className="h-full">
               <div className="flex h-full flex-col card p-6">
                 <h3 className="text-lg font-semibold">{studio.name}</h3>
@@ -105,6 +111,22 @@ export async function StudioTeaser() {
             </StaggerItem>
           ))}
         </Stagger>
+
+        <Reveal className="mt-10 flex flex-wrap items-center gap-4">
+          <Button href="/studio">
+            {weitere > 0
+              ? `Alle ${studios.length} Standorte ansehen`
+              : "Alle Standorte ansehen"}
+          </Button>
+          {weitere > 0 && (
+            <span className="text-sm text-muted">
+              {weitere === 1
+                ? "Ein weiterer Standort"
+                : `${weitere} weitere Standorte`}{" "}
+              &ndash; mit Lageplan und Anfahrt.
+            </span>
+          )}
+        </Reveal>
       </Container>
     </section>
   );

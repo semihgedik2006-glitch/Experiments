@@ -8,6 +8,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { FaqSection } from "@/components/faq-section";
+import { DirekterKontakt } from "@/components/direkter-kontakt";
 
 export const metadata: Metadata = {
   // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
@@ -185,6 +186,8 @@ export default async function PreisePage() {
           </Reveal>
         </Container>
       </section>
+
+      <DirekterKontakt />
 
       <FaqSection />
     </>
