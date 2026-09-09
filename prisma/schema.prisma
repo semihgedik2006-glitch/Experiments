@@ -112,6 +112,12 @@ model Booking {
   /// Interner Vermerk, nur im Adminbereich sichtbar - "ruft morgen zurück",
   /// "will lieber abends". Geht nie in eine E-Mail an den Gast.
   internalNote   String?
+
+  /// Was sich der Gast an Zeit wünscht, in eigenen Worten: "abends ab 18
+  /// Uhr", "nur samstags". Steht gleichberechtigt neben den festen Zeiten -
+  /// wer keinen der angebotenen Termine kann, soll trotzdem anfragen können,
+  /// ohne seinen Wunsch in die Nachricht schreiben zu müssen.
+  terminWunsch   String?
 }
 
 model BlogPost {

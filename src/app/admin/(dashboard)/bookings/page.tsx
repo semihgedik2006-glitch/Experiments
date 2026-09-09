@@ -54,7 +54,7 @@ export default async function AdminBookingsPage({
   const where: Prisma.BookingWhereInput = {
     ...(studioFilter ? { slot: { is: { studioId: studioFilter } } } : {}),
     ...(status ? { status } : {}),
-    ...(suchFilter(begriff, ["name", "email", "phone", "message"]) ?? {}),
+    ...(suchFilter(begriff, ["name", "email", "phone", "message", "terminWunsch"]) ?? {}),
   };
 
   // Die Zahlen für die Filterreihe zählen innerhalb der übrigen Auswahl -
@@ -106,7 +106,7 @@ export default async function AdminBookingsPage({
       }
     >
       <div className="space-y-3">
-        <SearchBox platzhalter="Name, E-Mail, Telefon oder Nachricht" klasse="max-w-md" />
+        <SearchBox platzhalter="Name, E-Mail, Telefon, Wunsch oder Nachricht" klasse="max-w-md" />
 
         <FilterChips
           basis="/admin/bookings"
@@ -157,6 +157,15 @@ export default async function AdminBookingsPage({
                     <span className="text-muted">Kein bestimmter Termin - individuell abzustimmen</span>
                   )}
                 </p>
+                {/* Der Wunsch in eigenen Worten steht direkt unter dem
+                    Termin und nicht bei der Nachricht: Er entscheidet
+                    darüber, wann man zurückruft. */}
+                {booking.terminWunsch && (
+                  <p className="mt-1 text-sm">
+                    <span className="text-muted">Wunsch: </span>
+                    {booking.terminWunsch}
+                  </p>
+                )}
                 {booking.message && (
                   <p className="mt-2 text-sm text-muted">„{booking.message}“</p>
                 )}
@@ -264,7 +273,7 @@ export default async function AdminBookingsPage({
           {gefiltert ? (
             <EmptyState icon={SearchX} title="Keine Anfrage passt zu dieser Auswahl">
               {begriff
-                ? `Zu „${begriff}“ wurde nichts gefunden. Gesucht wird in Name, E-Mail, Telefonnummer und Nachricht.`
+                ? `Zu „${begriff}“ wurde nichts gefunden. Gesucht wird in Name, E-Mail, Telefonnummer, Terminwunsch und Nachricht.`
                 : "Für die gewählten Filter liegt nichts vor - setz sie über „Alle“ zurück."}
             </EmptyState>
           ) : (

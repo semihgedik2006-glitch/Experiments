@@ -27,6 +27,10 @@ export async function createBooking(
   const email = String(formData.get("email") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
   const message = String(formData.get("message") ?? "").trim();
+  // Gekürzt statt abgewiesen: Der Wunsch ist ein Zusatz, an dem keine
+  // Anfrage scheitern soll. 200 Zeichen sind mehr als jede Zeitangabe
+  // braucht.
+  const terminWunsch = String(formData.get("terminWunsch") ?? "").trim().slice(0, 200);
 
   if (!name || !email || !phone) {
     return { ok: false, message: "Bitte fülle alle Pflichtfelder aus." };
@@ -54,6 +58,7 @@ export async function createBooking(
       email,
       phone,
       message: message || null,
+      terminWunsch: terminWunsch || null,
       manageToken: neuerVerwaltungsSchluessel(),
     },
   });

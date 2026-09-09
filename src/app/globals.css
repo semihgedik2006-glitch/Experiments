@@ -57,6 +57,11 @@
   --status-ok: #4a6810;
   --status-off: #b32318;
   --status-idle: #54574e;
+
+  /* Farbe der Balken in der Auswertung. Eine einzige Farbe für alle
+     Balken: Die Länge zeigt schon die Menge - sie zusätzlich einzufärben
+     verbraucht den Kanal, der sonst Zugehörigkeit zeigen könnte. */
+  --chart-mark: #527012;
 }
 
 .dark {
@@ -87,6 +92,12 @@
   --status-ok: #c3f53c;
   --status-off: #ff9d90;
   --status-idle: #9ba193;
+
+  /* Nicht das Marken-Limette: Als große Fläche auf dunklem Grund liegt es
+     mit einer Helligkeit von 0,90 weit über dem Band von 0,43 bis 0,77 und
+     blendet. Dieser Ton stammt aus derselben Farbfamilie und erfüllt
+     zugleich den Mindestabstand von 3:1 zur Fläche. */
+  --chart-mark: #6f9622;
 }
 
 /* Ein dunkler Abschnitt schreibt die Farbvariablen nur für sich selbst um.
@@ -467,6 +478,13 @@ h3,
 .bg-danger {
   background-color: var(--status-off);
   color: #fff;
+}
+
+/* Balken in der Auswertung. Vier Pixel Rundung am Datenende, unten
+   gerade auf der Grundlinie - so bleibt ablesbar, wo der Balken beginnt.
+   Zwei Pixel Abstand in der Flächenfarbe trennen benachbarte Balken. */
+.balken {
+  background-color: var(--chart-mark);
 }
 
 /* Übersichtskarte der Standorte. Die Kacheln sind für helle Ansichten

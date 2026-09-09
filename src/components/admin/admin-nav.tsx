@@ -16,6 +16,8 @@ import {
   Eye,
   DatabaseBackup,
   Users,
+  UserCog,
+  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 
@@ -36,6 +38,7 @@ const groups: NavGroup[] = [
     items: [
       { href: "/admin/bookings", label: "Buchungen", icon: CalendarCheck },
       { href: "/admin/verfuegbarkeit", label: "Verfügbarkeit", icon: CalendarClock },
+      { href: "/admin/auswertung", label: "Auswertung", icon: BarChart3 },
     ],
   },
   {
@@ -60,6 +63,8 @@ const groups: NavGroup[] = [
       { href: "/admin/sichtbarkeit", label: "Sichtbarkeit", icon: Eye, nurLeitung: true },
       { href: "/admin/sicherung", label: "Datensicherung", icon: DatabaseBackup, nurLeitung: true },
       { href: "/admin/team", label: "Zugänge", icon: Users, nurLeitung: true },
+      // Ohne nurLeitung: Das eigene Passwort ändert jeder selbst.
+      { href: "/admin/konto", label: "Mein Zugang", icon: UserCog },
     ],
   },
 ];

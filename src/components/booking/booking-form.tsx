@@ -55,69 +55,92 @@ export function BookingForm({ days }: { days: DayGroup[] }) {
         className="absolute left-[-9999px] h-0 w-0 opacity-0"
       />
 
-      {days.length > 0 ? (
-        <>
-          <div>
-            <p className="mb-1 text-sm font-semibold">1. Bevorzugter Tag</p>
-            <p className="mb-3 text-xs text-muted">
-              Optional - ohne Auswahl vereinbaren wir den genauen Termin persönlich mit dir.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {days.map((day) => (
-                <button
-                  key={day.dateKey}
-                  type="button"
-                  onClick={() => {
-                    setSelectedDay(selectedDay === day.dateKey ? "" : day.dateKey);
-                    setSelectedSlotId(null);
-                  }}
-                  className={`rounded-full border px-4 py-2 text-sm transition-colors ${
-                    selectedDay === day.dateKey
-                      ? "border-lime bg-lime text-on-lime"
-                      : "border-border hover:border-lime"
-                  }`}
-                >
-                  {day.dateLabel}
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className="space-y-6">
+        <p className="text-sm font-semibold">
+          {days.length > 0 ? "1. Wann passt es dir?" : "Wann passt es dir?"}
+        </p>
 
-          {activeDay && (
+        {days.length > 0 ? (
+          <>
             <div>
-              <p className="mb-1 text-sm font-semibold">2. Bevorzugte Uhrzeit</p>
-              <p className="mb-3 text-xs text-muted">Optional - auch hier reicht eine grobe Vorstellung.</p>
+              <p className="mb-3 text-xs text-muted">
+                Such dir einen Tag aus - oder lass die Auswahl leer und schreib
+                unten, wann du kannst.
+              </p>
               <div className="flex flex-wrap gap-2">
-                {activeDay.slots.map((slot) => (
+                {days.map((day) => (
                   <button
-                    key={slot.id}
+                    key={day.dateKey}
                     type="button"
-                    onClick={() => setSelectedSlotId(selectedSlotId === slot.id ? null : slot.id)}
+                    onClick={() => {
+                      setSelectedDay(selectedDay === day.dateKey ? "" : day.dateKey);
+                      setSelectedSlotId(null);
+                    }}
                     className={`rounded-full border px-4 py-2 text-sm transition-colors ${
-                      selectedSlotId === slot.id
+                      selectedDay === day.dateKey
                         ? "border-lime bg-lime text-on-lime"
                         : "border-border hover:border-lime"
                     }`}
                   >
-                    {slot.startTime}
+                    {day.dateLabel}
                   </button>
                 ))}
               </div>
             </div>
-          )}
-        </>
-      ) : (
-        <p className="text-sm text-muted">
-          Aktuell sind keine festen Termine hinterlegt - schick uns einfach deine Daten,
-          wir vereinbaren einen Probetermin persönlich mit dir.
-        </p>
-      )}
+
+            {activeDay && (
+              <div>
+                <p className="mb-3 text-xs text-muted">Uhrzeit am {activeDay.dateLabel}:</p>
+                <div className="flex flex-wrap gap-2">
+                  {activeDay.slots.map((slot) => (
+                    <button
+                      key={slot.id}
+                      type="button"
+                      onClick={() => setSelectedSlotId(selectedSlotId === slot.id ? null : slot.id)}
+                      className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                        selectedSlotId === slot.id
+                          ? "border-lime bg-lime text-on-lime"
+                          : "border-border hover:border-lime"
+                      }`}
+                    >
+                      {slot.startTime}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="text-sm text-muted">
+            Aktuell sind keine festen Termine hinterlegt - schreib uns einfach,
+            wann es dir passt.
+          </p>
+        )}
+
+        {/* Der freie Wunsch steht bewusst im selben Schritt wie die festen
+            Zeiten und nicht als Nachsatz weiter unten: Wer keine der
+            angebotenen Zeiten kann, soll nicht das Gefühl haben, hier falsch
+            zu sein. Vorher landete so ein Hinweis im Nachrichtenfeld - oder
+            der Besucher brach ab. */}
+        <label className="block">
+          <span className="text-sm">
+            {days.length > 0 ? "Passt nichts davon? Schreib deine Wunschzeit:" : "Deine Wunschzeit"}
+          </span>
+          <input
+            type="text"
+            name="terminWunsch"
+            maxLength={200}
+            placeholder="z.B. abends ab 18 Uhr oder samstags vormittags"
+            className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
+          />
+        </label>
+      </div>
 
       <input type="hidden" name="slotId" value={selectedSlotId ?? ""} />
 
       <div>
         <p className="mb-3 text-sm font-semibold">
-          {days.length > 0 ? "3. Deine Daten" : "Deine Daten"}
+          {days.length > 0 ? "2. Deine Daten" : "Deine Daten"}
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <input
