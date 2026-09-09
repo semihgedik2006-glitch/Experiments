@@ -1,16 +1,17 @@
 import { prisma } from "@/lib/prisma";
-import { updateBookingStatus } from "@/lib/actions/admin-bookings";
+import { notizSpeichern, updateBookingStatus } from "@/lib/actions/admin-bookings";
 import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
-import { SubmitButton } from "@/components/admin/admin-form";
+import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
-import { CalendarCheck, SearchX } from "lucide-react";
-import { AdminPage, EmptyState, StatusBadge } from "@/components/admin/ui";
+import { CalendarCheck, Download, SearchX } from "lucide-react";
+import { AdminPage, EmptyState, StatusBadge, adminInput } from "@/components/admin/ui";
 import { SearchBox } from "@/components/admin/search-box";
 import { FilterChips, Pagination } from "@/components/admin/list-nav";
 import { PRO_SEITE, param, seitenZahl, suchFilter, type SuchParams } from "@/lib/admin-list";
 import type { Prisma } from "@/generated/prisma/client";
 import type { BookingStatus } from "@/generated/prisma/enums";
+import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Offen",
@@ -33,8 +34,14 @@ export default async function AdminBookingsPage({
 }: {
   searchParams: Promise<SuchParams>;
 }) {
+  const admin = await verlangeAdmin();
   const params = await searchParams;
-  const studioFilter = param(params, "studio");
+
+  // Eine Studioleitung sieht nur den eigenen Standort. Der Wert aus der
+  // Adresszeile wird dabei nicht berücksichtigt - sonst genügte
+  // ?studio=... um in einen fremden Standort zu sehen.
+  const nurStudio = studioEinschraenkung(admin);
+  const studioFilter = nurStudio ?? param(params, "studio");
   const begriff = param(params, "q");
   const statusRoh = param(params, "status");
   // Nur bekannte Werte durchlassen - sonst ergibt ?status=XYZ eine leere
@@ -77,11 +84,21 @@ export default async function AdminBookingsPage({
     zaehler.find((eintrag) => eintrag.status === s)?._count ?? 0;
   const alle = zaehler.reduce((summe, eintrag) => summe + eintrag._count, 0);
 
-  const gefiltert = Boolean(begriff || status || studioFilter);
+  const gefiltert = Boolean(begriff || status || (admin.istLeitung && studioFilter));
 
   return (
     <AdminPage
       title="Buchungsanfragen"
+      action={
+        <a
+          href="/api/admin/tabelle/buchungen"
+          download
+          className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-semibold transition-colors hover:border-lime"
+        >
+          <Download size={14} aria-hidden />
+          Als Tabelle
+        </a>
+      }
       description={
         anzahl("PENDING") > 0
           ? `${anzahl("PENDING")} ${anzahl("PENDING") === 1 ? "Anfrage wartet" : "Anfragen warten"} auf eine Antwort.`
@@ -103,7 +120,9 @@ export default async function AdminBookingsPage({
           ]}
         />
 
-        {studios.length > 1 && (
+        {/* Die Auswahl entfällt für eine Studioleitung - es gibt nichts
+            zu wählen. */}
+        {admin.istLeitung && studios.length > 1 && (
           <FilterChips
             basis="/admin/bookings"
             params={params}
@@ -186,6 +205,25 @@ export default async function AdminBookingsPage({
                 </form>
               </div>
             )}
+
+            {/* Interner Vermerk - nur hier sichtbar, nie in einer E-Mail.
+                Bewusst offen statt hinter einem Knopf: Ein Vermerk, den man
+                erst aufklappen muss, wird beim Durchsehen übersehen. */}
+            <AdminForm action={notizSpeichern} className="mt-4 flex flex-wrap items-end gap-2">
+              <input type="hidden" name="id" value={booking.id} />
+              <label className="min-w-48 flex-1">
+                <span className="text-xs text-muted">Interner Vermerk</span>
+                <input
+                  type="text"
+                  name="internalNote"
+                  defaultValue={booking.internalNote ?? ""}
+                  maxLength={500}
+                  placeholder="z.B. ruft morgen zurück"
+                  className={`${adminInput} mt-1`}
+                />
+              </label>
+              <SubmitButton pendingLabel="Wird gespeichert...">Notiz sichern</SubmitButton>
+            </AdminForm>
 
             {booking.status === "CONFIRMED" && (
               <div className="mt-4">

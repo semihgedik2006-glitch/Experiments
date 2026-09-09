@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/auth";
+import { verlangeLeitungAktion } from "@/lib/admin-rechte";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
 function slugify(input: string) {
@@ -18,8 +18,7 @@ export async function createPost(
   _prevState: ActionResult | undefined,
   formData: FormData,
 ): Promise<ActionResult> {
-  const adminId = await getAdminSession();
-  if (!adminId) return { ok: false, message: "Nicht autorisiert." };
+  await verlangeLeitungAktion();
 
   const title = String(formData.get("title") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
@@ -50,8 +49,7 @@ export async function updatePost(
   _prevState: ActionResult | undefined,
   formData: FormData,
 ): Promise<ActionResult> {
-  const adminId = await getAdminSession();
-  if (!adminId) return { ok: false, message: "Nicht autorisiert." };
+  await verlangeLeitungAktion();
 
   const title = String(formData.get("title") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
@@ -84,8 +82,7 @@ export async function updatePost(
 }
 
 export async function deletePost(id: string) {
-  const adminId = await getAdminSession();
-  if (!adminId) throw new Error("Nicht autorisiert.");
+  await verlangeLeitungAktion();
 
   await prisma.blogPost.delete({ where: { id } });
   revalidatePath("/admin/blog");

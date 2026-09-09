@@ -1,8 +1,10 @@
 import { AlertTriangle, Download, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { AdminPage, AdminSection, Panel } from "@/components/admin/ui";
+import { verlangeLeitung } from "@/lib/admin-rechte";
 
 export default async function AdminSicherungPage() {
+  await verlangeLeitung();
   const [studios, bookings, posts, comments, faq, messages, subscribers, slots] =
     await Promise.all([
       prisma.studioLocation.count(),

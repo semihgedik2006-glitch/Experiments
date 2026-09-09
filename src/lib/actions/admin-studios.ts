@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/auth";
+import { verlangeLeitungAktion, verlangeStudioRecht } from "@/lib/admin-rechte";
 
 // Studio data appears on these public pages.
 const studioPaths = ["/", "/studio", "/kontakt", "/impressum", "/probetermin", "/admin/studios"];
@@ -11,10 +11,10 @@ function revalidateStudios() {
   for (const path of studioPaths) revalidatePath(path);
 }
 
-async function requireAdmin() {
-  const adminId = await getAdminSession();
-  if (!adminId) throw new Error("Nicht autorisiert.");
-}
+/* Anlegen, Löschen und Sammel-Import verändern den Bestand aller
+   Standorte - das bleibt der Leitung vorbehalten. Ändern darf eine
+   Studioleitung dagegen den eigenen Standort, sonst könnte sie nicht
+   einmal die Öffnungszeiten pflegen. */
 
 function readStudioForm(formData: FormData) {
   const latitude = String(formData.get("latitude") ?? "").trim();
@@ -36,7 +36,7 @@ function readStudioForm(formData: FormData) {
 }
 
 export async function createStudio(formData: FormData) {
-  await requireAdmin();
+  await verlangeLeitungAktion();
 
   const data = readStudioForm(formData);
   if (!data.name || !data.street || !data.postalCode || !data.city) return;
@@ -49,9 +49,11 @@ export async function createStudio(formData: FormData) {
 }
 
 export async function updateStudio(formData: FormData) {
-  await requireAdmin();
-
   const id = String(formData.get("id") ?? "");
+  // Geprüft wird gegen die Kennung aus dem Formular - sie ist zugleich der
+  // Standort, um den es geht. Eine fremde Kennung führt hier zum Abbruch.
+  await verlangeStudioRecht(id);
+
   const data = readStudioForm(formData);
   if (!id || !data.name || !data.street || !data.postalCode || !data.city) return;
 
@@ -60,7 +62,7 @@ export async function updateStudio(formData: FormData) {
 }
 
 export async function deleteStudio(id: string) {
-  await requireAdmin();
+  await verlangeLeitungAktion();
 
   await prisma.studioLocation.delete({ where: { id } });
   revalidateStudios();
@@ -88,7 +90,7 @@ export async function importStudios(
   _previous: ImportResult | null,
   formData: FormData,
 ): Promise<ImportResult> {
-  await requireAdmin();
+  await verlangeLeitungAktion();
 
   const raw = String(formData.get("rows") ?? "").replace(/\r\n?/g, "\n");
   const openingHours = String(formData.get("openingHours") ?? "").replace(/\r\n?/g, "\n").trim();
@@ -181,7 +183,7 @@ export async function importOpeningHours(
   _previous: ImportResult | null,
   formData: FormData,
 ): Promise<ImportResult> {
-  await requireAdmin();
+  await verlangeLeitungAktion();
 
   const raw = String(formData.get("blocks") ?? "").replace(/\r\n?/g, "\n");
   const result: ImportResult = { added: 0, skipped: [] };

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/auth";
+import { verlangeLeitungAktion } from "@/lib/admin-rechte";
 import { toggleDefinitions } from "@/lib/site-toggles";
 
 /**
@@ -12,8 +12,7 @@ import { toggleDefinitions } from "@/lib/site-toggles";
  * werden anschließend alle Seiten neu erzeugt, nicht nur die betroffene.
  */
 export async function saveToggles(formData: FormData) {
-  const adminId = await getAdminSession();
-  if (!adminId) throw new Error("Nicht autorisiert.");
+  await verlangeLeitungAktion();
 
   // Ein nicht angehaktes Kontrollkästchen wird vom Browser gar nicht
   // gesendet - fehlt der Schlüssel, bedeutet das also "ausgeblendet".

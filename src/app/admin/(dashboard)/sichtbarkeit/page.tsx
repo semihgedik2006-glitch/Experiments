@@ -4,8 +4,10 @@ import { saveToggles } from "@/lib/actions/admin-toggles";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { AdminPage } from "@/components/admin/ui";
+import { verlangeLeitung } from "@/lib/admin-rechte";
 
 export default async function AdminSichtbarkeitPage() {
+  await verlangeLeitung();
   const toggles = await getToggles();
   const hiddenCount = toggleDefinitions.filter((entry) => !toggles[entry.key]).length;
 

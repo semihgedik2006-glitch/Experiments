@@ -1,16 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
 import { AdminPage, EmptyState, Panel } from "@/components/admin/ui";
-import { Send, SearchX } from "lucide-react";
+import { Send, SearchX, Download } from "lucide-react";
 import { SearchBox } from "@/components/admin/search-box";
 import { Pagination } from "@/components/admin/list-nav";
 import { PRO_SEITE, param, seitenZahl, suchFilter, type SuchParams } from "@/lib/admin-list";
+import { verlangeLeitung } from "@/lib/admin-rechte";
 
 export default async function AdminNewsletterPage({
   searchParams,
 }: {
   searchParams: Promise<SuchParams>;
 }) {
+  // Diese Bereiche gelten für die ganze Marke, nicht für einen
+  // Standort - eine Studioleitung landet hier auf der Übersicht.
+  await verlangeLeitung();
   const params = await searchParams;
   const begriff = param(params, "q");
   const seite = seitenZahl(params);
@@ -36,6 +40,18 @@ export default async function AdminNewsletterPage({
     <AdminPage
       title="Newsletter-Abonnenten"
       description={`${alle} ${alle === 1 ? "Abonnent" : "Abonnenten"} insgesamt.`}
+      action={
+        alle > 0 ? (
+          <a
+            href="/api/admin/tabelle/newsletter"
+            download
+            className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-semibold transition-colors hover:border-lime"
+          >
+            <Download size={14} aria-hidden />
+            Als Tabelle
+          </a>
+        ) : undefined
+      }
     >
       {alle > 0 && <SearchBox platzhalter="E-Mail-Adresse" klasse="mb-4 max-w-md" />}
 

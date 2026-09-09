@@ -20,9 +20,17 @@ import { AdminNav } from "@/components/admin/admin-nav";
 export function AdminShell({
   children,
   logout,
+  istLeitung,
+  wer,
+  studioName,
 }: {
   children: ReactNode;
   logout: () => void | Promise<void>;
+  istLeitung: boolean;
+  /** Name oder E-Mail des angemeldeten Zugangs. */
+  wer: string;
+  /** Bei einer Studioleitung der Standort, für den der Zugang gilt. */
+  studioName: string | null;
 }) {
   const pathname = usePathname();
 
@@ -97,7 +105,7 @@ export function AdminShell({
             {/* Eigene Kennung für die Markierung des aktiven Eintrags: Die
                 Leiste links bleibt im Baum, und zwei Elemente mit derselben
                 Kennung würden sich die Markierung gegenseitig wegziehen. */}
-            <AdminNav idPrefix="drawer" />
+            <AdminNav idPrefix="drawer" istLeitung={istLeitung} />
           </div>
         </div>
       )}
@@ -109,9 +117,21 @@ export function AdminShell({
               Körper<span className="text-accent">formen</span> Admin
             </p>
 
-            <AdminNav />
+            <AdminNav istLeitung={istLeitung} />
 
-            <form action={logout} className="mt-6 border-t border-border pt-4">
+            {/* Wer angemeldet ist, und bei einer Studioleitung für welchen
+                Standort. Ohne diesen Hinweis wäre nicht erkennbar, warum
+                nur ein Teil der Buchungen zu sehen ist. */}
+            <div className="mt-6 border-t border-border pt-4">
+              <p className="truncate px-3 text-xs font-medium" title={wer}>
+                {wer}
+              </p>
+              <p className="mt-0.5 px-3 text-xs text-muted">
+                {studioName ? `Studioleitung ${studioName}` : "Leitung - alle Standorte"}
+              </p>
+            </div>
+
+            <form action={logout} className="mt-3">
               <button
                 type="submit"
                 className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted transition-colors hover:bg-surface hover:text-foreground"

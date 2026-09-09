@@ -15,10 +15,18 @@ import {
   Send,
   Eye,
   DatabaseBackup,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 
-type NavItem = { href: string; label: string; icon: LucideIcon };
+type NavItem = {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  /** Bereiche, die nur die Leitung sieht. Eine Studioleitung verwaltet
+      ihren Standort, nicht die Marke. */
+  nurLeitung?: boolean;
+};
 type NavGroup = { title: string | null; items: NavItem[] };
 
 const groups: NavGroup[] = [
@@ -33,24 +41,25 @@ const groups: NavGroup[] = [
   {
     title: "Inhalte",
     items: [
-      { href: "/admin/blog", label: "Blog", icon: Newspaper },
-      { href: "/admin/kommentare", label: "Kommentare", icon: MessageSquare },
-      { href: "/admin/faq", label: "FAQ", icon: HelpCircle },
+      { href: "/admin/blog", label: "Blog", icon: Newspaper, nurLeitung: true },
+      { href: "/admin/kommentare", label: "Kommentare", icon: MessageSquare, nurLeitung: true },
+      { href: "/admin/faq", label: "FAQ", icon: HelpCircle, nurLeitung: true },
     ],
   },
   {
     title: "Kontakt",
     items: [
-      { href: "/admin/nachrichten", label: "Nachrichten", icon: Mail },
-      { href: "/admin/newsletter", label: "Newsletter", icon: Send },
+      { href: "/admin/nachrichten", label: "Nachrichten", icon: Mail, nurLeitung: true },
+      { href: "/admin/newsletter", label: "Newsletter", icon: Send, nurLeitung: true },
     ],
   },
   {
     title: "Verwaltung",
     items: [
       { href: "/admin/studios", label: "Studios", icon: Building2 },
-      { href: "/admin/sichtbarkeit", label: "Sichtbarkeit", icon: Eye },
-      { href: "/admin/sicherung", label: "Datensicherung", icon: DatabaseBackup },
+      { href: "/admin/sichtbarkeit", label: "Sichtbarkeit", icon: Eye, nurLeitung: true },
+      { href: "/admin/sicherung", label: "Datensicherung", icon: DatabaseBackup, nurLeitung: true },
+      { href: "/admin/team", label: "Zugänge", icon: Users, nurLeitung: true },
     ],
   },
 ];
@@ -59,12 +68,24 @@ const navDelays = new Map(
   groups.flatMap((group) => group.items).map((item, index) => [item.href, index * 0.04]),
 );
 
-export function AdminNav({ idPrefix = "sidebar" }: { idPrefix?: string } = {}) {
+export function AdminNav({
+  idPrefix = "sidebar",
+  istLeitung = true,
+}: { idPrefix?: string; istLeitung?: boolean } = {}) {
   const pathname = usePathname();
+
+  // Ausgeblendet statt ausgegraut: Ein Menüpunkt, der nur zur Übersicht
+  // zurückwirft, ist kein Angebot.
+  const sichtbareGruppen = groups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => istLeitung || !item.nurLeitung),
+    }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <nav aria-label="Verwaltung" className="flex flex-col gap-5">
-      {groups.map((group, groupIndex) => (
+      {sichtbareGruppen.map((group, groupIndex) => (
         <div key={group.title ?? `group-${groupIndex}`}>
           {group.title && (
             <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted">

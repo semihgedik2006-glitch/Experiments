@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/auth";
+import { verlangeStudioRecht } from "@/lib/admin-rechte";
 import { syncSlotsForTemplate, deleteUnbookedFutureSlotsForTemplate } from "@/lib/slot-templates";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
@@ -10,10 +10,12 @@ export async function createSlot(
   _prevState: ActionResult | undefined,
   formData: FormData,
 ): Promise<ActionResult> {
-  const adminId = await getAdminSession();
-  if (!adminId) return { ok: false, message: "Nicht autorisiert." };
-
   const studioId = String(formData.get("studioId") ?? "");
+  // Der Standort steht im Formular - genau deshalb muss er geprüft werden.
+  // Eine Studioleitung darf keinen Termin an einem fremden Standort anlegen,
+  // auch nicht durch einen veränderten Wert im Formular.
+  await verlangeStudioRecht(studioId);
+
   const date = String(formData.get("date") ?? "");
   const startTime = String(formData.get("startTime") ?? "");
   const endTime = String(formData.get("endTime") ?? "");
@@ -34,8 +36,12 @@ export async function createSlot(
 }
 
 export async function deleteSlot(id: string) {
-  const adminId = await getAdminSession();
-  if (!adminId) throw new Error("Nicht autorisiert.");
+  // Der Standort kommt aus dem Datensatz selbst, nicht von außen.
+  const slot = await prisma.availabilitySlot.findUnique({
+    where: { id },
+    select: { studioId: true },
+  });
+  await verlangeStudioRecht(slot?.studioId);
 
   await prisma.availabilitySlot.delete({ where: { id } });
   revalidatePath("/admin/verfuegbarkeit");
@@ -48,10 +54,9 @@ export async function createSlotTemplate(
   _prevState: ActionResult | undefined,
   formData: FormData,
 ): Promise<ActionResult> {
-  const adminId = await getAdminSession();
-  if (!adminId) return { ok: false, message: "Nicht autorisiert." };
-
   const studioId = String(formData.get("studioId") ?? "");
+  await verlangeStudioRecht(studioId);
+
   const weekday = Number(formData.get("weekday") ?? -1);
   const startTime = String(formData.get("startTime") ?? "");
   const endTime = String(formData.get("endTime") ?? "");
@@ -76,8 +81,11 @@ export async function createSlotTemplate(
 }
 
 export async function deleteSlotTemplate(id: string) {
-  const adminId = await getAdminSession();
-  if (!adminId) throw new Error("Nicht autorisiert.");
+  const template = await prisma.slotTemplate.findUnique({
+    where: { id },
+    select: { studioId: true },
+  });
+  await verlangeStudioRecht(template?.studioId);
 
   await deleteUnbookedFutureSlotsForTemplate(id);
   await prisma.slotTemplate.delete({ where: { id } });

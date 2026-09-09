@@ -5,8 +5,17 @@ import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AdminPage, AdminSection, EmptyState, Panel, StatusBadge } from "@/components/admin/ui";
 import { TrendKarte } from "@/components/admin/trend";
+import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
 
 export default async function AdminDashboardPage() {
+  const admin = await verlangeAdmin();
+  const nurStudio = studioEinschraenkung(admin);
+
+  // Alle Zahlen dieser Seite gelten für den Bereich, den dieser Zugang
+  // sehen darf. Eine Studioleitung soll nicht an der Übersicht ablesen
+  // können, wie viele Anfragen die anderen dreizehn Standorte hatten.
+  const buchungBereich = nurStudio ? { slot: { is: { studioId: nurStudio } } } : {};
+
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
 
@@ -35,35 +44,50 @@ export default async function AdminDashboardPage() {
     kommentareJetzt,
     kommentareVorher,
   ] = await Promise.all([
-    prisma.booking.count({ where: { status: "PENDING" } }),
-    prisma.contactMessage.count({ where: { read: false } }),
-    prisma.comment.count({ where: { approved: false } }),
-    prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
+    prisma.booking.count({ where: { ...buchungBereich, status: "PENDING" } }),
+    // Nachrichten und Kommentare haben keinen Standortbezug - sie
+    // gehören zur Marke und zählen deshalb nur für die Leitung.
+    admin.istLeitung ? prisma.contactMessage.count({ where: { read: false } }) : Promise.resolve(0),
+    admin.istLeitung ? prisma.comment.count({ where: { approved: false } }) : Promise.resolve(0),
+    prisma.studioLocation.findMany({
+      where: nurStudio ? { id: nurStudio } : undefined,
+      orderBy: { sortOrder: "asc" },
+    }),
     prisma.booking.findMany({
-      where: { status: { not: "CANCELLED" }, slot: { is: { date: { gte: startOfToday } } } },
+      where: {
+        status: { not: "CANCELLED" },
+        slot: { is: { date: { gte: startOfToday }, ...(nurStudio ? { studioId: nurStudio } : {}) } },
+      },
       include: { slot: { include: { studio: true } } },
       orderBy: [{ slot: { date: "asc" } }, { slot: { startTime: "asc" } }, { id: "asc" }],
       take: 5,
     }),
-    prisma.booking.count({ where: { createdAt: letzteWoche } }),
-    prisma.booking.count({ where: { createdAt: vorwoche } }),
-    prisma.contactMessage.count({ where: { createdAt: letzteWoche } }),
-    prisma.contactMessage.count({ where: { createdAt: vorwoche } }),
-    prisma.newsletterSubscriber.count({ where: { createdAt: letzteWoche } }),
-    prisma.newsletterSubscriber.count({ where: { createdAt: vorwoche } }),
-    prisma.comment.count({ where: { createdAt: letzteWoche } }),
-    prisma.comment.count({ where: { createdAt: vorwoche } }),
+    prisma.booking.count({ where: { ...buchungBereich, createdAt: letzteWoche } }),
+    prisma.booking.count({ where: { ...buchungBereich, createdAt: vorwoche } }),
+    admin.istLeitung ? prisma.contactMessage.count({ where: { createdAt: letzteWoche } }) : Promise.resolve(0),
+    admin.istLeitung ? prisma.contactMessage.count({ where: { createdAt: vorwoche } }) : Promise.resolve(0),
+    admin.istLeitung ? prisma.newsletterSubscriber.count({ where: { createdAt: letzteWoche } }) : Promise.resolve(0),
+    admin.istLeitung ? prisma.newsletterSubscriber.count({ where: { createdAt: vorwoche } }) : Promise.resolve(0),
+    admin.istLeitung ? prisma.comment.count({ where: { createdAt: letzteWoche } }) : Promise.resolve(0),
+    admin.istLeitung ? prisma.comment.count({ where: { createdAt: vorwoche } }) : Promise.resolve(0),
   ]);
 
   const wartet = [
     { label: "Offene Buchungsanfragen", value: pendingBookings, href: "/admin/bookings?status=PENDING" },
-    { label: "Ungelesene Nachrichten", value: unreadMessages, href: "/admin/nachrichten?gelesen=neu" },
-    { label: "Kommentare zur Freigabe", value: pendingComments, href: "/admin/kommentare?freigabe=offen" },
+    ...(admin.istLeitung
+      ? [
+          { label: "Ungelesene Nachrichten", value: unreadMessages, href: "/admin/nachrichten?gelesen=neu" },
+          { label: "Kommentare zur Freigabe", value: pendingComments, href: "/admin/kommentare?freigabe=offen" },
+        ]
+      : []),
   ];
   const nichtsOffen = wartet.every((eintrag) => eintrag.value === 0);
 
   return (
-    <AdminPage title="Übersicht">
+    <AdminPage
+      title="Übersicht"
+      description={admin.studioName ? `Alle Zahlen gelten für ${admin.studioName}.` : undefined}
+    >
       <AdminSection
         title="Wartet auf dich"
         description={
@@ -72,7 +96,7 @@ export default async function AdminDashboardPage() {
             : "Diese Punkte sind noch nicht bearbeitet."
         }
       >
-        <AdminStagger className="grid gap-3 sm:grid-cols-3">
+        <AdminStagger className={`grid gap-3 ${wartet.length > 1 ? "sm:grid-cols-3" : ""}`}>
           {wartet.map((karte) => (
             <AdminStaggerItem key={karte.label}>
               <Link
@@ -108,6 +132,7 @@ export default async function AdminDashboardPage() {
               href="/admin/bookings"
             />
           </AdminStaggerItem>
+          {admin.istLeitung && (
           <AdminStaggerItem>
             <TrendKarte
               label="Kontaktnachrichten"
@@ -117,6 +142,8 @@ export default async function AdminDashboardPage() {
               href="/admin/nachrichten"
             />
           </AdminStaggerItem>
+          )}
+          {admin.istLeitung && (
           <AdminStaggerItem>
             <TrendKarte
               label="Newsletter-Anmeldungen"
@@ -126,6 +153,8 @@ export default async function AdminDashboardPage() {
               href="/admin/newsletter"
             />
           </AdminStaggerItem>
+          )}
+          {admin.istLeitung && (
           <AdminStaggerItem>
             <TrendKarte
               label="Blog-Kommentare"
@@ -135,6 +164,7 @@ export default async function AdminDashboardPage() {
               href="/admin/kommentare"
             />
           </AdminStaggerItem>
+          )}
         </AdminStagger>
       </AdminSection>
 

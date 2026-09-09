@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/auth";
+import { verlangeLeitungAktion } from "@/lib/admin-rechte";
 
 // FAQ appears on these public pages - refresh them all after any change.
 const faqPaths = ["/", "/preise", "/ems-training", "/admin/faq"];
@@ -12,8 +12,7 @@ function revalidateFaq() {
 }
 
 async function requireAdmin() {
-  const adminId = await getAdminSession();
-  if (!adminId) throw new Error("Nicht autorisiert.");
+  await verlangeLeitungAktion();
 }
 
 export async function createFaqItem(formData: FormData) {

@@ -9,12 +9,16 @@ import { SearchBox } from "@/components/admin/search-box";
 import { FilterChips, Pagination } from "@/components/admin/list-nav";
 import { PRO_SEITE, param, seitenZahl, suchFilter, type SuchParams } from "@/lib/admin-list";
 import type { Prisma } from "@/generated/prisma/client";
+import { verlangeLeitung } from "@/lib/admin-rechte";
 
 export default async function AdminMessagesPage({
   searchParams,
 }: {
   searchParams: Promise<SuchParams>;
 }) {
+  // Diese Bereiche gelten für die ganze Marke, nicht für einen
+  // Standort - eine Studioleitung landet hier auf der Übersicht.
+  await verlangeLeitung();
   const params = await searchParams;
   const begriff = param(params, "q");
   const gelesen = param(params, "gelesen"); // "" | "neu" | "erledigt"

@@ -10,15 +10,35 @@ datasource db {
   provider = "postgresql"
 }
 
+/// Wer darf was.
+///
+/// LEITUNG sieht und ändert alles. STUDIOLEITUNG sieht nur den eigenen
+/// Standort: dessen Buchungen, Termine und Studiodaten - und nichts von
+/// Blog, Kommentaren, Newsletter, Sichtbarkeit oder Datensicherung. Bei
+/// vierzehn Standorten ist ein einziger Zugang für alle nicht haltbar.
+enum AdminRole {
+  LEITUNG
+  STUDIOLEITUNG
+}
+
 model AdminUser {
   id           String   @id @default(cuid())
   email        String   @unique
+  name         String?
   passwordHash String
+  role         AdminRole @default(LEITUNG)
+  /// Nur für STUDIOLEITUNG gesetzt: der Standort, für den dieser Zugang
+  /// gilt. Wird das Studio gelöscht, bleibt der Zugang bestehen, sieht
+  /// dann aber nichts mehr - besser als ein Zugang, der plötzlich alles
+  /// sieht.
+  studio       StudioLocation? @relation(fields: [studioId], references: [id], onDelete: SetNull)
+  studioId     String?
   createdAt    DateTime @default(now())
 }
 
 model StudioLocation {
   id            String             @id @default(cuid())
+  admins        AdminUser[]
   name          String
   street        String
   postalCode    String
@@ -88,6 +108,10 @@ model Booking {
   // Wann die Erinnerung am Vortag verschickt wurde. Verhindert, dass der
   // tägliche Lauf dieselbe Erinnerung mehrfach schickt.
   reminderSentAt DateTime?
+
+  /// Interner Vermerk, nur im Adminbereich sichtbar - "ruft morgen zurück",
+  /// "will lieber abends". Geht nie in eine E-Mail an den Gast.
+  internalNote   String?
 }
 
 model BlogPost {

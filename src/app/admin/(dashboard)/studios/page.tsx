@@ -7,6 +7,7 @@ import { OpeningHoursImport } from "@/components/admin/opening-hours-import";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { AdminPage, EmptyState, StatusBadge, adminInput } from "@/components/admin/ui";
+import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
 
 const inputClass = adminInput;
 
@@ -100,20 +101,34 @@ function StudioFields({
 }
 
 export default async function AdminStudiosPage() {
-  const studios = await prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } });
+  const admin = await verlangeAdmin();
+  const nurStudio = studioEinschraenkung(admin);
+
+  const studios = await prisma.studioLocation.findMany({
+    where: nurStudio ? { id: nurStudio } : undefined,
+    orderBy: { sortOrder: "asc" },
+  });
   const ohneKoordinaten = studios.filter(
     (studio) => studio.latitude === null || studio.longitude === null,
   );
 
   return (
     <AdminPage
-      title="Studios"
+      title={admin.istLeitung ? "Studios" : "Dein Studio"}
       description={
-        <>
-          Diese Standorte erscheinen auf der Studio-Seite, der Startseite und der
-          Kontaktseite. Kleinere Zahl bei &bdquo;Position&ldquo; = weiter oben; das
-          oberste Studio wird im Impressum als Hauptsitz verwendet.
-        </>
+        admin.istLeitung ? (
+          <>
+            Diese Standorte erscheinen auf der Studio-Seite, der Startseite und der
+            Kontaktseite. Kleinere Zahl bei &bdquo;Position&ldquo; = weiter oben; das
+            oberste Studio wird im Impressum als Hauptsitz verwendet.
+          </>
+        ) : (
+          <>
+            Adresse, Telefonnummer und Öffnungszeiten deines Standorts. Was du hier
+            änderst, steht sofort auf der Website. Neue Standorte anlegen oder löschen
+            kann nur die Leitung.
+          </>
+        )
       }
     >
       {/* Ganz oben, weil eine einzige Lücke die Standortabfrage für alle
@@ -141,29 +156,33 @@ export default async function AdminStudiosPage() {
         </div>
       )}
 
-      <div className="mt-6">
-        <StudioImport />
-      </div>
+      {admin.istLeitung && (
+        <>
+          <div className="mt-6">
+            <StudioImport />
+          </div>
 
-      <div className="mt-6">
-        <OpeningHoursImport studios={studios.map((studio) => studio.name)} />
-      </div>
+          <div className="mt-6">
+            <OpeningHoursImport studios={studios.map((studio) => studio.name)} />
+          </div>
 
-      <AdminForm
-        action={createStudio}
-        resetOnSuccess
-        className="admin-panel mt-6 border-lime/40 p-4 sm:p-5"
-      >
-        <h2 className="text-base font-semibold">Neues Studio hinzufügen</h2>
-        <div className="mt-4">
-          <StudioFields />
-        </div>
-        <div className="mt-4">
-          <SubmitButton variant="primary" pendingLabel="Wird angelegt..." savedLabel="Angelegt">
-            Studio anlegen
-          </SubmitButton>
-        </div>
-      </AdminForm>
+          <AdminForm
+            action={createStudio}
+            resetOnSuccess
+            className="admin-panel mt-6 border-lime/40 p-4 sm:p-5"
+          >
+            <h2 className="text-base font-semibold">Neues Studio hinzufügen</h2>
+            <div className="mt-4">
+              <StudioFields />
+            </div>
+            <div className="mt-4">
+              <SubmitButton variant="primary" pendingLabel="Wird angelegt..." savedLabel="Angelegt">
+                Studio anlegen
+              </SubmitButton>
+            </div>
+          </AdminForm>
+        </>
+      )}
 
       {/* Eingeklappte Zeilen statt vierzehn offener Formulare untereinander.
           Bewusst das eingebaute <details> und kein eigener Aufklappmechanismus:
@@ -177,7 +196,7 @@ export default async function AdminStudiosPage() {
 
           return (
             <AdminStaggerItem key={studio.id}>
-              <details className="admin-panel group overflow-hidden">
+              <details className="admin-panel group overflow-hidden" open={!admin.istLeitung}>
                 <summary className="flex cursor-pointer list-none flex-wrap items-center gap-3 px-4 py-3 transition-colors hover:bg-lime/5">
                   <ChevronRight
                     size={16}
@@ -205,18 +224,20 @@ export default async function AdminStudiosPage() {
                       <SubmitButton pendingLabel="Wird gespeichert...">Speichern</SubmitButton>
                     </div>
                   </AdminForm>
-                  <form
-                    action={async () => {
-                      "use server";
-                      await deleteStudio(studio.id);
-                    }}
-                    className="mt-2"
-                  >
-                    <ConfirmButton
-                      question={`„${studio.name}“ wirklich löschen?`}
-                      confirmLabel="Ja, Studio löschen"
-                    />
-                  </form>
+                  {admin.istLeitung && (
+                    <form
+                      action={async () => {
+                        "use server";
+                        await deleteStudio(studio.id);
+                      }}
+                      className="mt-2"
+                    >
+                      <ConfirmButton
+                        question={`„${studio.name}“ wirklich löschen?`}
+                        confirmLabel="Ja, Studio löschen"
+                      />
+                    </form>
+                  )}
                 </div>
               </details>
             </AdminStaggerItem>
@@ -226,11 +247,18 @@ export default async function AdminStudiosPage() {
 
       {studios.length === 0 && (
         <div className="mt-6">
-          <EmptyState icon={Building2} title="Noch kein Studio angelegt">
-            Ohne Standort zeigt die Website keine Adresse, keine Öffnungszeiten und
-            keine Termine an. Leg oben das erste Studio an - oder trag mehrere auf
-            einmal über das Einfügefeld ein.
-          </EmptyState>
+          {admin.istLeitung ? (
+            <EmptyState icon={Building2} title="Noch kein Studio angelegt">
+              Ohne Standort zeigt die Website keine Adresse, keine Öffnungszeiten und
+              keine Termine an. Leg oben das erste Studio an - oder trag mehrere auf
+              einmal über das Einfügefeld ein.
+            </EmptyState>
+          ) : (
+            <EmptyState icon={Building2} title="Diesem Zugang ist kein Studio zugeordnet">
+              Bitte wende dich an die Leitung - sie kann den Zugang unter
+              &bdquo;Zugänge&ldquo; einem Standort zuweisen.
+            </EmptyState>
+          )}
         </div>
       )}
     </AdminPage>

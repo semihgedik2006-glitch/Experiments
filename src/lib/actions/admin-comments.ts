@@ -2,11 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/auth";
+import { verlangeLeitungAktion } from "@/lib/admin-rechte";
 
 export async function approveComment(id: string) {
-  const adminId = await getAdminSession();
-  if (!adminId) throw new Error("Nicht autorisiert.");
+  await verlangeLeitungAktion();
 
   const comment = await prisma.comment.update({
     where: { id },
@@ -19,8 +18,7 @@ export async function approveComment(id: string) {
 }
 
 export async function deleteComment(id: string) {
-  const adminId = await getAdminSession();
-  if (!adminId) throw new Error("Nicht autorisiert.");
+  await verlangeLeitungAktion();
 
   const comment = await prisma.comment.delete({
     where: { id },
@@ -32,8 +30,7 @@ export async function deleteComment(id: string) {
 }
 
 export async function replyToComment(parentId: string, formData: FormData) {
-  const adminId = await getAdminSession();
-  if (!adminId) throw new Error("Nicht autorisiert.");
+  await verlangeLeitungAktion();
 
   const content = String(formData.get("content") ?? "").trim();
   if (!content) return;

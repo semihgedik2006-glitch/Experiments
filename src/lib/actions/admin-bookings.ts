@@ -2,25 +2,29 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/auth";
+import { verlangeStudioRecht } from "@/lib/admin-rechte";
 import { sendBookingConfirmedEmail } from "@/lib/email";
 import { neuerVerwaltungsSchluessel, terminAngaben } from "@/lib/termin-angaben";
 import type { BookingStatus } from "@/generated/prisma/enums";
 
 export async function updateBookingStatus(id: string, status: BookingStatus) {
-  const adminId = await getAdminSession();
-  if (!adminId) throw new Error("Nicht autorisiert.");
+  // Der Standort kommt über den Termin aus dem Datensatz. Eine Buchung
+  // ohne festen Termin gehört keinem Standort - die darf deshalb nur die
+  // Leitung bearbeiten.
+  const zugehoerig = await prisma.booking.findUnique({
+    where: { id },
+    select: { manageToken: true, slot: { select: { studioId: true } } },
+  });
+  await verlangeStudioRecht(zugehoerig?.slot?.studioId);
 
   // Vor dem Bestätigen sicherstellen, dass ein Schlüssel für den
   // persönlichen Link vorhanden ist. Buchungen aus der Zeit davor haben
   // noch keinen; ohne ihn stünde in der Mail kein Weg zum Absagen.
-  const vorher = await prisma.booking.findUnique({ where: { id }, select: { manageToken: true } });
-
   const booking = await prisma.booking.update({
     where: { id },
     data: {
       status,
-      ...(vorher?.manageToken ? {} : { manageToken: neuerVerwaltungsSchluessel() }),
+      ...(zugehoerig?.manageToken ? {} : { manageToken: neuerVerwaltungsSchluessel() }),
     },
     include: { slot: { include: { studio: true } } },
   });
@@ -36,4 +40,30 @@ export async function updateBookingStatus(id: string, status: BookingStatus) {
       console.error("Bestätigungs-E-Mail konnte nicht gesendet werden:", error);
     }
   }
+}
+
+/**
+ * Interner Vermerk an einer Buchung.
+ *
+ * Steht nur im Adminbereich und geht in keine E-Mail an den Gast - dafür
+ * ist "will lieber abends" oder "ruft morgen zurück" auch nicht gedacht.
+ */
+export async function notizSpeichern(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+
+  const zugehoerig = await prisma.booking.findUnique({
+    where: { id },
+    select: { slot: { select: { studioId: true } } },
+  });
+  await verlangeStudioRecht(zugehoerig?.slot?.studioId);
+
+  const notiz = String(formData.get("internalNote") ?? "").trim();
+  await prisma.booking.update({
+    where: { id },
+    // Leeres Feld heißt "keine Notiz" - sonst stünde dort eine leere
+    // Zeichenkette und die Anzeige zeigte einen leeren Kasten.
+    data: { internalNote: notiz || null },
+  });
+
+  revalidatePath("/admin/bookings");
 }

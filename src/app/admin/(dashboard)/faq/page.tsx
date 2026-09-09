@@ -4,8 +4,10 @@ import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { AdminPage, EmptyState, adminInput } from "@/components/admin/ui";
 import { HelpCircle } from "lucide-react";
+import { verlangeLeitung } from "@/lib/admin-rechte";
 
 export default async function AdminFaqPage() {
+  await verlangeLeitung();
   const items = await prisma.faqItem.findMany({ orderBy: { sortOrder: "asc" } });
 
   return (

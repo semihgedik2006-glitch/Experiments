@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/auth";
+import { aktuellerAdmin } from "@/lib/admin-rechte";
 
 /**
  * Vollständiger Datenexport als JSON-Datei.
@@ -11,8 +11,8 @@ import { getAdminSession } from "@/lib/auth";
  * bis dahin und schützt vor dem häufigeren Fall: versehentlich gelöscht.
  *
  * Enthalten sind auch Namen, E-Mail-Adressen und Telefonnummern von
- * Interessenten. Deshalb ohne Anmeldung kein Zugriff - und deshalb gehört
- * die Datei nicht in eine Cloud, die nicht euch gehört.
+ * Interessenten - und zwar aller Standorte. Deshalb nur für die Leitung,
+ * und deshalb gehört die Datei nicht in eine Cloud, die nicht euch gehört.
  *
  * Das Administrator-Passwort wird bewusst NICHT mitgesichert: Ein Abzug
  * der Anmeldedaten in einer Datei auf einem Schreibtischrechner ist ein
@@ -20,9 +20,15 @@ import { getAdminSession } from "@/lib/auth";
  * gesetzt als ein altes wiederhergestellt.
  */
 export async function GET() {
-  const adminId = await getAdminSession();
-  if (!adminId) {
+  const admin = await aktuellerAdmin();
+  if (!admin) {
     return Response.json({ error: "Nicht autorisiert." }, { status: 401 });
+  }
+  // Nur die Leitung. Der Abzug enthält die Kundendaten aller Standorte -
+  // eine Studioleitung, die überall sonst nur ihren eigenen sieht, käme
+  // hier sonst an alle heran.
+  if (!admin.istLeitung) {
+    return Response.json({ error: "Dafür fehlt die Berechtigung." }, { status: 403 });
   }
 
   const [

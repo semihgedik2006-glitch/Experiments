@@ -11,6 +11,7 @@ import { WochenAnsicht, type WochenSlot } from "@/components/admin/wochen-ansich
 import { PRO_SEITE, param, seitenZahl, type SuchParams } from "@/lib/admin-list";
 import { montagAusText, tagePlus } from "@/lib/woche";
 import type { Prisma } from "@/generated/prisma/client";
+import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
 
 const weekdayNames = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 
@@ -19,8 +20,12 @@ export default async function AdminSlotsPage({
 }: {
   searchParams: Promise<SuchParams>;
 }) {
+  const admin = await verlangeAdmin();
   const params = await searchParams;
-  const studioFilter = param(params, "studio");
+
+  // Siehe Buchungen: Der Wert aus der Adresszeile zählt nur für die Leitung.
+  const erzwungenesStudio = studioEinschraenkung(admin);
+  const studioFilter = erzwungenesStudio ?? param(params, "studio");
   const alsListe = param(params, "ansicht") === "liste";
   const seite = seitenZahl(params);
   const montag = montagAusText(param(params, "woche"));
@@ -39,7 +44,15 @@ export default async function AdminSlotsPage({
   };
 
   const [studios, templates, wochenSlots, listenAnzahl, listenSlots] = await Promise.all([
-    prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
+    // Auch die Auswahlliste in den Formularen darf nur enthalten, was
+    // dieser Zugang sehen darf - sonst stünden dort die Namen aller
+    // vierzehn Standorte, und man könnte einen fremden auswählen. Die
+    // Aktion würde das zwar abweisen, aber die Liste selbst verrät schon
+    // zu viel.
+    prisma.studioLocation.findMany({
+      where: erzwungenesStudio ? { id: erzwungenesStudio } : undefined,
+      orderBy: { sortOrder: "asc" },
+    }),
     prisma.slotTemplate.findMany({
       where: studioFilter ? { studioId: studioFilter } : undefined,
       include: { studio: true },
@@ -76,7 +89,7 @@ export default async function AdminSlotsPage({
     studioName: slot.studio.name,
   }));
 
-  const mehrereStudios = studios.length > 1;
+  const mehrereStudios = admin.istLeitung && studios.length > 1;
 
   return (
     <AdminPage
@@ -89,7 +102,7 @@ export default async function AdminSlotsPage({
       }
     >
       <div className="space-y-3">
-        {mehrereStudios && (
+        {admin.istLeitung && studios.length > 1 && (
           <FilterChips
             basis="/admin/verfuegbarkeit"
             params={params}
