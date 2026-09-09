@@ -6,7 +6,11 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin"],
+      // /termin/... gehört jeweils genau einer Person: Name, Telefonnummer
+      // und Termin stehen dort. Der Schlüssel im Link ist nicht zu erraten,
+      // aber gelangt er einmal in eine Verweisliste oder in ein Formular,
+      // soll ihn wenigstens kein Suchdienst einsammeln.
+      disallow: ["/admin", "/termin"],
     },
     sitemap: `${siteConfig.url}/sitemap.xml`,
   };

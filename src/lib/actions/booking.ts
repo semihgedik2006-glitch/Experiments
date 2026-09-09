@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
+import { neuerVerwaltungsSchluessel } from "@/lib/termin-angaben";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
 export async function createBooking(
@@ -47,7 +48,14 @@ export async function createBooking(
   }
 
   await prisma.booking.create({
-    data: { slotId, name, email, phone, message: message || null },
+    data: {
+      slotId,
+      name,
+      email,
+      phone,
+      message: message || null,
+      manageToken: neuerVerwaltungsSchluessel(),
+    },
   });
 
   revalidatePath("/admin/bookings");

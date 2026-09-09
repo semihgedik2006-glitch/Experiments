@@ -80,6 +80,14 @@ model Booking {
   message   String?
   status    BookingStatus     @default(PENDING)
   createdAt DateTime          @default(now())
+
+  // Schlüssel für den persönlichen Link in der Bestätigungsmail, über den
+  // der Gast selbst absagen oder verschieben kann. Nicht erratbar und ohne
+  // Bezug zur id - wer den Link hat, sieht genau diese eine Buchung.
+  manageToken    String?   @unique
+  // Wann die Erinnerung am Vortag verschickt wurde. Verhindert, dass der
+  // tägliche Lauf dieselbe Erinnerung mehrfach schickt.
+  reminderSentAt DateTime?
 }
 
 model BlogPost {
