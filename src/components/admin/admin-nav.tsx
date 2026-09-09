@@ -14,6 +14,7 @@ import {
   Mail,
   Send,
   Eye,
+  DatabaseBackup,
   type LucideIcon,
 } from "lucide-react";
 
@@ -49,6 +50,7 @@ const groups: NavGroup[] = [
     items: [
       { href: "/admin/studios", label: "Studios", icon: Building2 },
       { href: "/admin/sichtbarkeit", label: "Sichtbarkeit", icon: Eye },
+      { href: "/admin/sicherung", label: "Datensicherung", icon: DatabaseBackup },
     ],
   },
 ];

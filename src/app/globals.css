@@ -212,11 +212,32 @@ h3,
     0 10px 30px -18px color-mix(in srgb, var(--foreground) 18%, transparent);
 }
 
-/* In dunklen Abschnitten trägt ein Schatten nichts bei - dort schafft eine
-   etwas hellere Fläche die Abstufung. */
+/* Korrektur einer eigenen früheren Entscheidung: Hier stand box-shadow:
+   none mit der Begründung, ein Schatten trage auf dunklem Grund nichts bei.
+   Gemessen stimmt das für einen Schatten in der Art der hellen Ansicht -
+   ein schwarzer Schleier auf fast schwarzem Grund ist unsichtbar. Die Folge
+   war aber, dass Karten in der dunklen Ansicht als einzige Ebene flach
+   auflagen, während sie in der hellen schweben.
+
+   Was auf dunklem Grund wirkt, ist die Gegenrichtung: eine hauchdünne helle
+   Kante an der Oberseite, so als fiele Licht von oben darauf, dazu ein
+   tiefer und weit auslaufender Schatten mit deutlich mehr Deckkraft als in
+   der hellen Ansicht. */
 .on-ink .card,
 .dark .card {
-  box-shadow: none;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #ffffff 5%, transparent),
+    0 14px 34px -16px rgb(0 0 0 / 0.7);
+}
+
+/* Dunkle Abschnitte sind in der hellen Ansicht das auffälligste Gestaltungs-
+   mittel der Seite. In der dunklen Ansicht lag ihr Ton (--ink) fast genau
+   auf dem der gewöhnlichen Flächen - der Abschnitt verschwand damit als
+   eigenständiger Block. Zwei Haarlinien geben ihm dort seine Grenze
+   zurück, ohne dass er in der hellen Ansicht etwas dazubekommt. */
+.dark .on-ink {
+  border-top: 1px solid var(--ink-border);
+  border-bottom: 1px solid var(--ink-border);
 }
 
 /* Logo-Umschaltung. Neben der dunklen Ansicht muss auch ein dunkler
