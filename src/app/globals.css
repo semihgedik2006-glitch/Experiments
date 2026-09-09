@@ -469,6 +469,28 @@ h3,
   color: #fff;
 }
 
+/* Übersichtskarte der Standorte. Die Kacheln sind für helle Ansichten
+   gezeichnet und leuchten in der dunklen Ansicht als weiße Fläche.
+   Umkehren und den Farbkreis halb drehen ergibt eine dunkle Karte, bei der
+   Grün grün und Blau blau bleibt - ein bewährter Behelf. Eine eigens
+   gezeichnete Nachtkarte gäbe es nur bei einem kostenpflichtigen Anbieter;
+   für eine Übersichtskarte ist das der falsche Aufwand. */
+.dark .karte img {
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92);
+}
+
+/* Die Markierungen dürfen sich nicht mitdrehen - sie liegen über der Karte
+   und tragen deshalb feste Farben, die auf hellem wie auf dunklem
+   Kartenbild lesbar sind. */
+.karte-marke {
+  background-color: #33610f;
+  color: #ffffff;
+}
+.karte-marke-naechste {
+  background-color: #c3f53c;
+  color: #12160b;
+}
+
 /* Aufklappbare Zeilen: Das eigene Dreieck ersetzt das Standardsymbol.
    list-style greift in Safari nicht, dort braucht es zusätzlich diese
    Regel - sonst stehen zwei Dreiecke nebeneinander. */
