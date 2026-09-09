@@ -448,6 +448,13 @@ h3,
   color: #fff;
 }
 
+/* Aufklappbare Zeilen: Das eigene Dreieck ersetzt das Standardsymbol.
+   list-style greift in Safari nicht, dort braucht es zusätzlich diese
+   Regel - sonst stehen zwei Dreiecke nebeneinander. */
+summary::-webkit-details-marker {
+  display: none;
+}
+
 /* Arbeitsfläche: etwas heller als die Umgebung, damit Listen und
    Formulare als zusammenhängender Block lesbar bleiben. */
 .admin-panel {

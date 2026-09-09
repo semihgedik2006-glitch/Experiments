@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { createStudio, updateStudio, deleteStudio } from "@/lib/actions/admin-studios";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
-import { AlertTriangle, Building2 } from "lucide-react";
+import { AlertTriangle, Building2, ChevronRight } from "lucide-react";
 import { StudioImport } from "@/components/admin/studio-import";
 import { OpeningHoursImport } from "@/components/admin/opening-hours-import";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
-import { AdminPage, EmptyState, adminInput } from "@/components/admin/ui";
+import { AdminPage, EmptyState, StatusBadge, adminInput } from "@/components/admin/ui";
 
 const inputClass = adminInput;
 
@@ -165,32 +165,63 @@ export default async function AdminStudiosPage() {
         </div>
       </AdminForm>
 
-      <AdminStagger className="mt-6 space-y-3">
-        {studios.map((studio) => (
-          <AdminStaggerItem key={studio.id}>
-            <div className="admin-panel p-4 transition-colors hover:border-lime/40 sm:p-5">
-              <AdminForm action={updateStudio}>
-                <input type="hidden" name="id" value={studio.id} />
-                <StudioFields defaults={studio} />
-                <div className="mt-4">
-                  <SubmitButton pendingLabel="Wird gespeichert...">Speichern</SubmitButton>
+      {/* Eingeklappte Zeilen statt vierzehn offener Formulare untereinander.
+          Bewusst das eingebaute <details> und kein eigener Aufklappmechanismus:
+          Es braucht kein JavaScript, lässt sich mit der Tastatur bedienen und
+          wird von der Sprachausgabe als aufklappbar angesagt. In die
+          zugeklappte Zeile ist das gehoben, was man beim Durchsehen sucht -
+          Name, Adresse, Position und ob Koordinaten oder E-Mail fehlen. */}
+      <AdminStagger className="mt-6 space-y-2">
+        {studios.map((studio) => {
+          const fehlenKoordinaten = studio.latitude === null || studio.longitude === null;
+
+          return (
+            <AdminStaggerItem key={studio.id}>
+              <details className="admin-panel group overflow-hidden">
+                <summary className="flex cursor-pointer list-none flex-wrap items-center gap-3 px-4 py-3 transition-colors hover:bg-lime/5">
+                  <ChevronRight
+                    size={16}
+                    aria-hidden
+                    className="shrink-0 text-muted transition-transform group-open:rotate-90"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-semibold">{studio.name}</span>
+                    <span className="block truncate text-xs text-muted">
+                      {studio.street}, {studio.postalCode} {studio.city}
+                    </span>
+                  </span>
+                  {fehlenKoordinaten && (
+                    <StatusBadge ton="open">Koordinaten fehlen</StatusBadge>
+                  )}
+                  {!studio.email && <StatusBadge ton="idle">keine E-Mail</StatusBadge>}
+                  <span className="text-xs text-muted">Pos. {studio.sortOrder}</span>
+                </summary>
+
+                <div className="border-t border-border p-4 sm:p-5">
+                  <AdminForm action={updateStudio}>
+                    <input type="hidden" name="id" value={studio.id} />
+                    <StudioFields defaults={studio} />
+                    <div className="mt-4">
+                      <SubmitButton pendingLabel="Wird gespeichert...">Speichern</SubmitButton>
+                    </div>
+                  </AdminForm>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await deleteStudio(studio.id);
+                    }}
+                    className="mt-2"
+                  >
+                    <ConfirmButton
+                      question={`„${studio.name}“ wirklich löschen?`}
+                      confirmLabel="Ja, Studio löschen"
+                    />
+                  </form>
                 </div>
-              </AdminForm>
-              <form
-                action={async () => {
-                  "use server";
-                  await deleteStudio(studio.id);
-                }}
-                className="mt-2"
-              >
-                <ConfirmButton
-                  question={`„${studio.name}“ wirklich löschen?`}
-                  confirmLabel="Ja, Studio löschen"
-                />
-              </form>
-            </div>
-          </AdminStaggerItem>
-        ))}
+              </details>
+            </AdminStaggerItem>
+          );
+        })}
       </AdminStagger>
 
       {studios.length === 0 && (

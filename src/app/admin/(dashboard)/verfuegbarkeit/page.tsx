@@ -7,7 +7,9 @@ import { ConfirmButton } from "@/components/admin/confirm-button";
 import { AdminPage, AdminSection, EmptyState, Panel, StatusBadge } from "@/components/admin/ui";
 import { CalendarClock } from "lucide-react";
 import { FilterChips, Pagination } from "@/components/admin/list-nav";
+import { WochenAnsicht, type WochenSlot } from "@/components/admin/wochen-ansicht";
 import { PRO_SEITE, param, seitenZahl, type SuchParams } from "@/lib/admin-list";
+import { montagAusText, tagePlus } from "@/lib/woche";
 import type { Prisma } from "@/generated/prisma/client";
 
 const weekdayNames = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
@@ -19,36 +21,62 @@ export default async function AdminSlotsPage({
 }) {
   const params = await searchParams;
   const studioFilter = param(params, "studio");
+  const alsListe = param(params, "ansicht") === "liste";
   const seite = seitenZahl(params);
+  const montag = montagAusText(param(params, "woche"));
 
-  const abHeute = new Date(new Date().setHours(0, 0, 0, 0));
-  const slotWhere: Prisma.AvailabilitySlotWhereInput = {
-    date: { gte: abHeute },
-    ...(studioFilter ? { studioId: studioFilter } : {}),
+  const nurStudio = studioFilter ? { studioId: studioFilter } : {};
+
+  // Die Wochenansicht zeigt genau eine Woche - dafür wird auch nur diese
+  // geladen. Die Liste zeigt weiterhin alles ab heute, seitenweise.
+  const wochenWhere: Prisma.AvailabilitySlotWhereInput = {
+    ...nurStudio,
+    date: { gte: montag, lt: tagePlus(montag, 7) },
+  };
+  const listenWhere: Prisma.AvailabilitySlotWhereInput = {
+    ...nurStudio,
+    date: { gte: new Date(new Date().setHours(0, 0, 0, 0)) },
   };
 
-  const [studios, templates, gesamt, slots] = await Promise.all([
+  const [studios, templates, wochenSlots, listenAnzahl, listenSlots] = await Promise.all([
     prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.slotTemplate.findMany({
       where: studioFilter ? { studioId: studioFilter } : undefined,
       include: { studio: true },
       orderBy: [{ weekday: "asc" }, { startTime: "asc" }],
     }),
-    prisma.availabilitySlot.count({ where: slotWhere }),
     prisma.availabilitySlot.findMany({
-      where: slotWhere,
+      where: wochenWhere,
       include: { bookings: { where: { status: { not: "CANCELLED" } } }, studio: true },
-      // Zweites Sortierkriterium: Ohne eindeutiges Merkmal darf die
-      // Datenbank Einträge mit gleichem Zeitstempel zwischen zwei Abfragen
-      // unterschiedlich anordnen. Beim Blättern kann dann ein Eintrag auf
-      // beiden Seiten stehen und ein anderer gar nicht.
       orderBy: [{ date: "asc" }, { startTime: "asc" }, { id: "asc" }],
-      // Wiederkehrende Termine legen für jede Woche neue Einträge an; nach
-      // ein paar Monaten stehen hier je Studio dreistellig viele.
-      take: PRO_SEITE,
-      skip: (seite - 1) * PRO_SEITE,
     }),
+    alsListe ? prisma.availabilitySlot.count({ where: listenWhere }) : Promise.resolve(0),
+    alsListe
+      ? prisma.availabilitySlot.findMany({
+          where: listenWhere,
+          include: { bookings: { where: { status: { not: "CANCELLED" } } }, studio: true },
+          // Zweites Sortierkriterium: Ohne eindeutiges Merkmal darf die
+          // Datenbank Einträge mit gleichem Zeitstempel zwischen zwei
+          // Abfragen unterschiedlich anordnen.
+          orderBy: [{ date: "asc" }, { startTime: "asc" }, { id: "asc" }],
+          take: PRO_SEITE,
+          skip: (seite - 1) * PRO_SEITE,
+        })
+      : Promise.resolve([]),
   ]);
+
+  const wochenDaten: WochenSlot[] = wochenSlots.map((slot) => ({
+    id: slot.id,
+    date: slot.date,
+    startTime: slot.startTime,
+    endTime: slot.endTime,
+    capacity: slot.capacity,
+    belegt: slot.bookings.length,
+    templateId: slot.templateId,
+    studioName: slot.studio.name,
+  }));
+
+  const mehrereStudios = studios.length > 1;
 
   return (
     <AdminPage
@@ -60,20 +88,164 @@ export default async function AdminSlotsPage({
         </>
       }
     >
-      {studios.length > 1 && (
+      <div className="space-y-3">
+        {mehrereStudios && (
+          <FilterChips
+            basis="/admin/verfuegbarkeit"
+            params={params}
+            name="studio"
+            optionen={[
+              { wert: "", label: "Alle Studios" },
+              ...studios.map((studio) => ({ wert: studio.id, label: studio.name })),
+            ]}
+          />
+        )}
+
         <FilterChips
           basis="/admin/verfuegbarkeit"
           params={params}
-          name="studio"
+          name="ansicht"
           optionen={[
-            { wert: "", label: "Alle Studios" },
-            ...studios.map((studio) => ({ wert: studio.id, label: studio.name })),
+            { wert: "", label: "Wochenansicht" },
+            { wert: "liste", label: "Alle kommenden Termine" },
           ]}
-          klasse="mb-6"
         />
-      )}
+      </div>
 
-      <AdminSection title="Wiederkehrende Termine">
+      <div className="mt-6">
+        {alsListe ? (
+          <AdminSection title="Alle kommenden Termine">
+            {/* Auf dem Handy als Kartenliste, ab Tablet als Tabelle. Eine
+                sechsspaltige Tabelle auf 360 Pixeln lässt sich nur noch
+                seitlich wegschieben - und der Löschknopf steht dabei
+                außerhalb des Bildes. */}
+            {listenSlots.length > 0 && (
+              <div className="space-y-2 sm:hidden">
+                {listenSlots.map((slot) => (
+                  <div key={slot.id} className="admin-panel p-3 text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-medium">{formatDate(slot.date)}</span>
+                      {slot.templateId && <StatusBadge ton="idle">wiederkehrend</StatusBadge>}
+                    </div>
+                    <p className="mt-1 text-muted">
+                      {slot.startTime} - {slot.endTime} Uhr &middot; belegt{" "}
+                      {slot.bookings.length} von {slot.capacity}
+                      {mehrereStudios && <> &middot; {slot.studio.name}</>}
+                    </p>
+                    <form
+                      action={async () => {
+                        "use server";
+                        await deleteSlot(slot.id);
+                      }}
+                      className="mt-2"
+                    >
+                      <ConfirmButton
+                        variant="link"
+                        question={
+                          slot.bookings.length > 0
+                            ? `Termin mit ${slot.bookings.length} Buchung${slot.bookings.length === 1 ? "" : "en"} löschen?`
+                            : "Diesen Termin löschen?"
+                        }
+                      />
+                    </form>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {listenSlots.length > 0 && (
+              <Panel className="hidden overflow-x-auto sm:block">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-muted">
+                      {mehrereStudios && <th className="py-2 pr-4">Studio</th>}
+                      <th className="py-2 pr-4">Datum</th>
+                      <th className="py-2 pr-4">Uhrzeit</th>
+                      <th className="py-2 pr-4">Belegung</th>
+                      <th className="py-2 pr-4" />
+                      <th className="py-2 pr-4" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {listenSlots.map((slot) => (
+                      <tr key={slot.id} className="border-b border-border/60">
+                        {mehrereStudios && <td className="py-3 pr-4">{slot.studio.name}</td>}
+                        <td className="py-3 pr-4">{formatDate(slot.date)}</td>
+                        <td className="py-3 pr-4">
+                          {slot.startTime} - {slot.endTime}
+                        </td>
+                        <td className="py-3 pr-4">
+                          {slot.bookings.length} / {slot.capacity}
+                        </td>
+                        <td className="py-3 pr-4">
+                          {slot.templateId && <StatusBadge ton="idle">wiederkehrend</StatusBadge>}
+                        </td>
+                        <td className="py-3 pr-4 text-right">
+                          <form
+                            action={async () => {
+                              "use server";
+                              await deleteSlot(slot.id);
+                            }}
+                          >
+                            <ConfirmButton
+                              variant="link"
+                              question={
+                                slot.bookings.length > 0
+                                  ? `Termin mit ${slot.bookings.length} Buchung${slot.bookings.length === 1 ? "" : "en"} löschen?`
+                                  : "Diesen Termin löschen?"
+                              }
+                            />
+                          </form>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Panel>
+            )}
+
+            {listenSlots.length > 0 && (
+              <Pagination
+                basis="/admin/verfuegbarkeit"
+                params={params}
+                seite={seite}
+                proSeite={PRO_SEITE}
+                gesamt={listenAnzahl}
+                einheit="Termine"
+              />
+            )}
+
+            {listenSlots.length === 0 && (
+              <EmptyState icon={CalendarClock} title="Keine Termine für die kommenden Tage">
+                {studioFilter
+                  ? "Für dieses Studio steht nichts an - über „Alle Studios“ siehst du wieder alle."
+                  : "Ohne freie Termine kann auf der Probetermin-Seite niemand eine Uhrzeit auswählen - die Anfrage kommt dann ohne festen Termin herein. Leg unten eine wiederkehrende Zeit an, dann füllen sich die nächsten Wochen von selbst."}
+              </EmptyState>
+            )}
+          </AdminSection>
+        ) : (
+          <>
+            {/* Ohne Filter stapeln sich bei vierzehn Standorten alle Termine
+                in denselben sieben Spalten - dann sieht man gerade das nicht
+                mehr, wofür die Ansicht da ist. */}
+            {mehrereStudios && !studioFilter && (
+              <p className="mb-3 text-sm text-muted">
+                Die Woche zeigt gerade alle Studios übereinander. Für Lücken und
+                Dopplungen eines einzelnen Standorts oben ein Studio auswählen.
+              </p>
+            )}
+            <WochenAnsicht
+              basis="/admin/verfuegbarkeit"
+              params={params}
+              montag={montag}
+              slots={wochenDaten}
+              mehrereStudios={mehrereStudios}
+            />
+          </>
+        )}
+      </div>
+
+      <AdminSection title="Wiederkehrende Termine" className="mt-10">
         <TemplateForm studios={studios} />
 
         <div className="mt-4 space-y-2">
@@ -85,7 +257,7 @@ export default async function AdminSlotsPage({
               <span>
                 <span className="font-medium">Jeden {weekdayNames[template.weekday]}</span>{" "}
                 {template.startTime} - {template.endTime} Uhr
-                {studios.length > 1 && <span className="text-muted"> &middot; {template.studio.name}</span>}
+                {mehrereStudios && <span className="text-muted"> &middot; {template.studio.name}</span>}
                 <span className="text-muted"> &middot; Kapazität {template.capacity}</span>
               </span>
               <form
@@ -118,115 +290,6 @@ export default async function AdminSlotsPage({
 
       <AdminSection title="Einzeltermin (Ausnahme)" className="mt-8">
         <SlotForm studios={studios} />
-      </AdminSection>
-
-      <AdminSection title="Alle kommenden Termine" className="mt-8">
-        {/* Auf dem Handy als Kartenliste, ab Tablet als Tabelle. Eine
-            sechsspaltige Tabelle auf 360 Pixeln lässt sich nur noch seitlich
-            wegschieben - und der Löschknopf steht dabei außerhalb des Bildes. */}
-        {slots.length > 0 && (
-        <div className="space-y-2 sm:hidden">
-          {slots.map((slot) => (
-            <div key={slot.id} className="admin-panel p-3 text-sm">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-medium">{formatDate(slot.date)}</span>
-                {slot.templateId && <StatusBadge ton="idle">wiederkehrend</StatusBadge>}
-              </div>
-              <p className="mt-1 text-muted">
-                {slot.startTime} - {slot.endTime} Uhr &middot; belegt {slot.bookings.length} von{" "}
-                {slot.capacity}
-                {studios.length > 1 && <> &middot; {slot.studio.name}</>}
-              </p>
-              <form
-                action={async () => {
-                  "use server";
-                  await deleteSlot(slot.id);
-                }}
-                className="mt-2"
-              >
-                <ConfirmButton
-                  variant="link"
-                  question={
-                    slot.bookings.length > 0
-                      ? `Termin mit ${slot.bookings.length} Buchung${slot.bookings.length === 1 ? "" : "en"} löschen?`
-                      : "Diesen Termin löschen?"
-                  }
-                />
-              </form>
-            </div>
-          ))}
-        </div>
-        )}
-
-        {slots.length > 0 && (
-        <Panel className="hidden overflow-x-auto sm:block">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-border text-muted">
-              {studios.length > 1 && <th className="py-2 pr-4">Studio</th>}
-              <th className="py-2 pr-4">Datum</th>
-              <th className="py-2 pr-4">Uhrzeit</th>
-              <th className="py-2 pr-4">Belegung</th>
-              <th className="py-2 pr-4" />
-              <th className="py-2 pr-4" />
-            </tr>
-          </thead>
-          <tbody>
-            {slots.map((slot) => (
-              <tr key={slot.id} className="border-b border-border/60">
-                {studios.length > 1 && <td className="py-3 pr-4">{slot.studio.name}</td>}
-                <td className="py-3 pr-4">{formatDate(slot.date)}</td>
-                <td className="py-3 pr-4">
-                  {slot.startTime} - {slot.endTime}
-                </td>
-                <td className="py-3 pr-4">
-                  {slot.bookings.length} / {slot.capacity}
-                </td>
-                <td className="py-3 pr-4">
-                  {slot.templateId && <StatusBadge ton="idle">wiederkehrend</StatusBadge>}
-                </td>
-                <td className="py-3 pr-4 text-right">
-                  <form
-                    action={async () => {
-                      "use server";
-                      await deleteSlot(slot.id);
-                    }}
-                  >
-                    <ConfirmButton
-                      variant="link"
-                      question={
-                        slot.bookings.length > 0
-                          ? `Termin mit ${slot.bookings.length} Buchung${slot.bookings.length === 1 ? "" : "en"} löschen?`
-                          : "Diesen Termin löschen?"
-                      }
-                    />
-                  </form>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        </Panel>
-        )}
-
-        {slots.length > 0 && (
-          <Pagination
-            basis="/admin/verfuegbarkeit"
-            params={params}
-            seite={seite}
-            proSeite={PRO_SEITE}
-            gesamt={gesamt}
-            einheit="Termine"
-          />
-        )}
-
-        {slots.length === 0 && (
-          <EmptyState icon={CalendarClock} title="Noch keine Termine für die kommenden Tage">
-            {studioFilter
-              ? "Für dieses Studio steht in den nächsten Tagen nichts an - über „Alle Studios“ siehst du wieder alle."
-              : "Ohne freie Termine kann auf der Probetermin-Seite niemand eine Uhrzeit auswählen - die Anfrage kommt dann ohne festen Termin herein. Leg oben eine wiederkehrende Zeit an, dann füllen sich die nächsten Wochen von selbst."}
-          </EmptyState>
-        )}
       </AdminSection>
     </AdminPage>
   );
