@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendKontaktInternEmail, TEAM_EMAIL } from "@/lib/email";
 import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
@@ -34,6 +36,22 @@ export async function sendContactMessage(
   await prisma.contactMessage.create({
     data: { name, email, phone: phone || null, subject, message },
   });
+
+  // Nach der Antwort: Der Absender soll nicht auf den Mailanbieter warten.
+  // Ohne diese Benachrichtigung erfährt von einer Nachricht nur, wer den
+  // Adminbereich öffnet - und das tut niemand stündlich.
+  const an = TEAM_EMAIL;
+  if (an) {
+    after(async () => {
+      await sendKontaktInternEmail(an, {
+        name,
+        email,
+        phone: phone || null,
+        subject,
+        message,
+      });
+    });
+  }
 
   revalidatePath("/admin/nachrichten");
   revalidatePath("/admin");

@@ -1,7 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { formatDate } from "@/lib/format";
+import {
+  sendAnfrageEingangEmail,
+  sendAnfrageInternEmail,
+  TEAM_EMAIL,
+  type AnfrageAngaben,
+} from "@/lib/email";
+import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
 import { neuerVerwaltungsSchluessel } from "@/lib/termin-angaben";
 import { istErreichbarkeit } from "@/lib/erreichbarkeit";
@@ -105,7 +114,7 @@ export async function createBooking(
 
   const herkunft = herkunftAusFormular(formData);
 
-  await prisma.booking.create({
+  const buchung = await prisma.booking.create({
     data: {
       slotId,
       studioId: studio?.id ?? null,
@@ -121,6 +130,50 @@ export async function createBooking(
       herkunftQuelle: herkunft.quelle,
       manageToken: neuerVerwaltungsSchluessel(),
     },
+    include: { slot: true, studio: { select: { name: true, email: true } } },
+  });
+
+  // Die beiden Mails laufen NACH der Antwort.
+  //
+  // Grund: Zwei Anfragen an den Mailanbieter kosten zusammen leicht eine
+  // Sekunde. Die Buchung steht zu diesem Zeitpunkt bereits in der
+  // Datenbank - der Besucher hat also nichts davon, darauf zu warten, und
+  // ein Ausfall des Anbieters darf nicht so aussehen, als sei die Anfrage
+  // fehlgeschlagen.
+  after(async () => {
+    const angaben: AnfrageAngaben = {
+      id: buchung.id,
+      name: buchung.name,
+      email: buchung.email,
+      phone: buchung.phone,
+      erreichbarkeit: erreichbarkeitText(buchung.erreichbarkeit),
+      studioName: buchung.studio?.name ?? null,
+      terminZeile: buchung.slot
+        ? `${formatDate(buchung.slot.date)} um ${buchung.slot.startTime} Uhr`
+        : "kein fester Termin - individuell abzustimmen",
+      terminWunsch: buchung.terminWunsch,
+      nachricht: buchung.message,
+      aktionsCode: codePruefung.aktion?.code ?? null,
+      herkunft: [herkunft.kampagne, herkunft.quelle, herkunft.seite]
+        .filter(Boolean)
+        .join(" · ") || null,
+    };
+
+    await sendAnfrageEingangEmail(angaben);
+
+    // An das Studio, sonst an die Sammeladresse. Gibt es beides nicht,
+    // unterbleibt die Benachrichtigung - eine Mail an eine geratene
+    // Adresse wäre schlimmer als keine.
+    const an = buchung.studio?.email?.trim() || TEAM_EMAIL;
+    if (an) {
+      const ok = await sendAnfrageInternEmail(an, angaben);
+      if (ok) {
+        await prisma.booking.update({
+          where: { id: buchung.id },
+          data: { studioBenachrichtigtAm: new Date() },
+        });
+      }
+    }
   });
 
   revalidatePath("/admin/bookings");

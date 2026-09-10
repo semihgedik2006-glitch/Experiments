@@ -36,6 +36,47 @@ model AdminUser {
   createdAt    DateTime @default(now())
 }
 
+/// Welche Art E-Mail verschickt wurde.
+///
+/// Die Namen stehen dauerhaft in der Datenbank. Fällt eine Art später weg,
+/// bleiben alte Einträge lesbar - deshalb wird hier nichts umbenannt.
+enum MailArt {
+  /// An den Interessenten, sobald seine Anfrage angekommen ist.
+  ANFRAGE_EINGANG
+  /// An das Studio, sobald eine Anfrage da ist.
+  ANFRAGE_INTERN
+  /// An das Studio, wenn eine Anfrage zu lange offen liegt.
+  NACHFASS_INTERN
+  /// An das Team, sobald eine Kontaktnachricht da ist.
+  KONTAKT_INTERN
+  BESTAETIGUNG
+  ERINNERUNG
+  ABSAGE_GAST
+  VERSCHOBEN_GAST
+}
+
+/// Nachweis, dass eine E-Mail den Weg nach draußen gefunden hat.
+///
+/// Ohne diesen Nachweis lässt sich die häufigste Frage nicht beantworten:
+/// "Hat der Kunde die Bestätigung bekommen?" Im Adminbereich steht damit
+/// schwarz auf weiß, was wann an wen ging - und was nicht ging.
+///
+/// Der Inhalt der Mail wird NICHT gespeichert, nur Empfänger und Betreff.
+/// Für die Frage "ist sie rausgegangen" genügt das, und ein Abzug der
+/// Datenbank enthält damit keine vollständigen Nachrichten.
+model MailLog {
+  id         String   @id @default(cuid())
+  art        MailArt
+  empfaenger String
+  betreff    String
+  ok         Boolean
+  /// Die Meldung des Anbieters, falls es schiefging.
+  fehler     String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 /// Ein Aktionscode aus einer Anzeige, einem Flyer oder einer Kooperation.
 ///
 /// Der Code wird im Anfrageformular eingegeben und an der Anfrage
@@ -190,6 +231,14 @@ model Booking {
   herkunftSeite    String?
   herkunftKampagne String?
   herkunftQuelle   String?
+
+  /// Wann das Studio über diese Anfrage informiert wurde. Verhindert eine
+  /// zweite Benachrichtigung, wenn etwas wiederholt wird.
+  studioBenachrichtigtAm DateTime?
+  /// Wann zuletzt daran erinnert wurde, dass diese Anfrage offen liegt.
+  /// Ohne diesen Merker käme die Erinnerung jeden Tag erneut - und wäre
+  /// nach drei Tagen nur noch Rauschen.
+  nachfassGesendetAm     DateTime?
 }
 
 model BlogPost {
