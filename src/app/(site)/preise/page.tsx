@@ -148,7 +148,7 @@ export default async function PreisePage() {
               wäre dort entweder unlesbar klein oder seitlich abgeschnitten. */}
           <Reveal className="space-y-4 sm:hidden">
             {timeComparison.map((row) => (
-              <div key={row.label} className="card p-5">
+              <div key={row.label} className="karte-hebt card p-5">
                 <p className="text-sm font-semibold">{row.label}</p>
                 <dl className="mt-3 space-y-2 text-sm">
                   <div className="flex justify-between gap-4">

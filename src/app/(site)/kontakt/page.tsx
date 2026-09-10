@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
-import { Phone, Mail, MapPin } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { PageHeader } from "@/components/ui/page-header";
+import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { ContactForm } from "@/components/contact-form";
-import { LottieBox } from "@/components/lottie-box";
 import { getStudios } from "@/lib/data";
+import { isVisible } from "@/lib/site-toggles";
+import { siteConfig } from "@/lib/site-config";
 import { StudioJsonLd } from "@/components/structured-data";
 
 export const metadata: Metadata = {
@@ -14,63 +18,160 @@ export const metadata: Metadata = {
   description: "Kontaktiere Körperformen bei Fragen rund um EMS-Training, Preise oder deinen Probetermin.",
 };
 
+/**
+ * Die Kontaktseite.
+ *
+ * Sie war die letzte Seite ohne eigenen Seitenkopf: Überschrift, Absatz,
+ * dann direkt der Inhalt. Neben allen anderen Unterseiten sah sie dadurch
+ * unfertig aus.
+ *
+ * Der zweite und größere Umbau betrifft die Standorte. Darunter standen
+ * bisher ALLE vierzehn mit voller Anschrift, Telefonnummer und E-Mail
+ * untereinander - eine Spalte von rund zweitausend Pixeln Höhe neben einem
+ * Formular, das nach fünfhundert zu Ende ist. Wer die Nummer seines
+ * Studios sucht, scrollt daran vorbei; wer schreiben will, sieht das
+ * Formular nicht mehr, sobald er einmal gescrollt hat.
+ *
+ * Jetzt: oben das Formular neben den zentralen Wegen, darunter die
+ * vierzehn Standorte als kompaktes Raster mit Name und Nummer. Jede Kachel
+ * führt auf die Seite des Standorts - dort steht ohnehin mehr, als hier je
+ * stehen könnte.
+ */
 export default async function KontaktPage() {
+  // Ist der Standortbereich ausgeblendet, entfällt auch das Raster - sonst
+  // führten vierzehn Kacheln auf Seiten, die es nicht mehr gibt.
+  const studioSeiteSichtbar = await isVisible("studio");
   const studios = await getStudios();
+
+  const wege = [
+    {
+      icon: Phone,
+      label: "Anrufen",
+      wert: siteConfig.contact.phone,
+      href: `tel:${siteConfig.contact.phone.replace(/\s/g, "")}`,
+      zusatz: "Zu den Öffnungszeiten direkt im Studio",
+    },
+    {
+      icon: Mail,
+      label: "E-Mail schreiben",
+      wert: siteConfig.contact.email,
+      href: `mailto:${siteConfig.contact.email}`,
+      zusatz: "Antwort in der Regel am selben Werktag",
+    },
+  ];
 
   return (
     <>
       <StudioJsonLd />
-    <section className="py-20 sm:py-24 md:py-32">
-      <Container className="grid gap-14 md:grid-cols-2">
-        <div>
-          <h1 className="text-4xl font-black tracking-tight md:text-5xl">
+
+      <PageHeader
+        kicker="Kontakt"
+        title={
+          <>
             Kontakt <span className="text-accent-strong">aufnehmen</span>
-          </h1>
-          <p className="mt-4 max-w-md text-muted">
-            Fragen zu EMS-Training, unseren Preisen oder deinem Probetermin?
-            Wir freuen uns auf deine Nachricht.
-          </p>
+          </>
+        }
+        intro="Fragen zu EMS-Training, unseren Preisen oder deinem Probetermin? Wir freuen uns auf deine Nachricht - und melden uns in der Regel am selben Werktag."
+      />
 
-          <div className="mt-10 space-y-8">
-            {studios.map((studio) => (
-              <div key={studio.id}>
-                {studios.length > 1 && (
-                  <p className="mb-3 text-sm font-semibold">{studio.name}</p>
-                )}
-                <ul className="space-y-4 text-sm">
-                  <li className="flex items-start gap-3">
-                    <MapPin size={18} className="mt-0.5 shrink-0 text-accent" />
-                    <span>
-                      {studio.street}, {studio.postalCode} {studio.city}
+      <section className="py-20 sm:py-24">
+        <Container className="grid gap-14 md:grid-cols-2">
+          <Reveal>
+            <h2 className="text-2xl font-bold tracking-tight">Schreib uns</h2>
+            <p className="mt-3 text-muted">
+              Ein paar Zeilen genügen. Wenn du eine Telefonnummer dalässt, rufen
+              wir auch gern zurück.
+            </p>
+
+            <div className="mt-8 space-y-3">
+              {wege.map((weg) => (
+                <a
+                  key={weg.label}
+                  href={weg.href}
+                  className="karte-hebt card flex items-center gap-4 p-4"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lime/12 text-accent">
+                    <weg.icon size={18} aria-hidden />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-xs text-muted">{weg.label}</span>
+                    <span className="block truncate font-semibold">{weg.wert}</span>
+                    <span className="block text-xs text-muted">{weg.zusatz}</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.12}>
+            <ContactForm />
+          </Reveal>
+        </Container>
+      </section>
+
+      {/* Die Standorte als Raster statt als endlose Spalte. */}
+      {studios.length > 0 && (
+        <section className="border-t border-border bg-surface py-20 sm:py-24">
+          <Container>
+            <Reveal className="max-w-2xl">
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                {studios.length > 1
+                  ? `Oder direkt an eines der ${studios.length} Studios`
+                  : "Oder direkt ans Studio"}
+              </h2>
+              <p className="mt-3 text-muted">
+                Jeder Standort hat eine eigene Nummer. Wer schon weiß, wo er
+                trainieren möchte, ist dort am schnellsten richtig.
+              </p>
+            </Reveal>
+
+            <Stagger className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {studios.map((studio) => {
+                const inhalt = (
+                  <>
+                    <span className="flex items-start gap-2.5 font-semibold">
+                      <MapPin size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
+                      {studio.name}
                     </span>
-                  </li>
-                  {studio.phone && (
-                    <li className="flex items-start gap-3">
-                      <Phone size={18} className="mt-0.5 shrink-0 text-accent" />
-                      <a href={`tel:${studio.phone}`} className="hover:underline">
-                        {studio.phone}
-                      </a>
-                    </li>
-                  )}
-                  {studio.email && (
-                    <li className="flex items-start gap-3">
-                      <Mail size={18} className="mt-0.5 shrink-0 text-accent" />
-                      <a href={`mailto:${studio.email}`} className="hover:underline">
-                        {studio.email}
-                      </a>
-                    </li>
-                  )}
-                </ul>
-              </div>
-            ))}
-          </div>
+                    <span className="mt-2 block text-sm text-muted">
+                      {studio.street}
+                      <br />
+                      {studio.postalCode} {studio.city}
+                    </span>
+                    {studio.phone && (
+                      <span className="mt-3 block text-sm font-medium">{studio.phone}</span>
+                    )}
+                    {studioSeiteSichtbar && (
+                      <span className="mt-3 inline-flex items-center gap-1.5 text-sm text-accent">
+                        Zum Standort
+                        <ArrowRight size={14} aria-hidden />
+                      </span>
+                    )}
+                  </>
+                );
 
-          <LottieBox src="/lottie/contact.json" ratio="800 / 600" className="mt-8 w-full max-w-sm" />
-        </div>
-
-        <ContactForm />
-      </Container>
-    </section>
+                return (
+                  <StaggerItem key={studio.id}>
+                    {/* Mit Standortseite wird die ganze Kachel zum Link.
+                        Ohne sie bleibt sie eine Kachel - ein Link ins Nichts
+                        wäre schlechter als keiner. */}
+                    {studioSeiteSichtbar && studio.slug ? (
+                      <Link
+                        href={`/studio/${studio.slug}`}
+                        className="karte-hebt card block h-full p-5"
+                      >
+                        {inhalt}
+                      </Link>
+                    ) : (
+                      <div className="card h-full p-5">{inhalt}</div>
+                    )}
+                  </StaggerItem>
+                );
+              })}
+            </Stagger>
+          </Container>
+        </section>
+      )}
     </>
   );
 }

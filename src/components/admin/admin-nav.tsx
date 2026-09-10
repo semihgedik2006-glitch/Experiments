@@ -21,6 +21,7 @@ import {
   Ticket,
   MailCheck,
   Hourglass,
+  FileText,
   type LucideIcon,
 } from "lucide-react";
 
@@ -59,6 +60,7 @@ const groups: NavGroup[] = [
       { href: "/admin/nachrichten", label: "Nachrichten", icon: Mail, nurLeitung: true },
       { href: "/admin/newsletter", label: "Newsletter", icon: Send, nurLeitung: true },
       { href: "/admin/aktionen", label: "Aktionscodes", icon: Ticket, nurLeitung: true },
+      { href: "/admin/vorlagen", label: "Antwortvorlagen", icon: FileText, nurLeitung: true },
       { href: "/admin/mails", label: "E-Mail-Versand", icon: MailCheck, nurLeitung: true },
     ],
   },

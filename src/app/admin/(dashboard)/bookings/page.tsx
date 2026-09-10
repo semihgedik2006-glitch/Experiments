@@ -14,6 +14,7 @@ import { PRO_SEITE, param, seitenZahl, suchFilter, type SuchParams } from "@/lib
 import type { Prisma } from "@/generated/prisma/client";
 import type { BookingStatus } from "@/generated/prisma/enums";
 import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
+import { AntwortKnopf } from "@/components/admin/antwort-knopf";
 
 const statusLabels: Record<string, string> = {
   PENDING: "Offen",
@@ -68,7 +69,7 @@ export default async function AdminBookingsPage({
   const ohneStatus: Prisma.BookingWhereInput = { ...where };
   delete ohneStatus.status;
 
-  const [studios, gesamt, bookings, zaehler] = await Promise.all([
+  const [studios, gesamt, bookings, zaehler, vorlagen] = await Promise.all([
     prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.booking.count({ where }),
     prisma.booking.findMany({
@@ -87,6 +88,12 @@ export default async function AdminBookingsPage({
       skip: (seite - 1) * PRO_SEITE,
     }),
     prisma.booking.groupBy({ by: ["status"], where: ohneStatus, _count: true }),
+    // Nur die eingeschalteten, und nur die Felder, die der Knopf braucht.
+    prisma.antwortvorlage.findMany({
+      where: { aktiv: true },
+      select: { id: true, titel: true, betreff: true, text: true },
+      orderBy: [{ sortOrder: "asc" }, { titel: "asc" }],
+    }),
   ]);
 
   const anzahl = (s: BookingStatus) =>
@@ -227,9 +234,25 @@ export default async function AdminBookingsPage({
                 )}
               </div>
 
-              <StatusBadge ton={statusTon[booking.status]}>
-                {statusLabels[booking.status]}
-              </StatusBadge>
+              <div className="flex flex-col items-end gap-2">
+                <StatusBadge ton={statusTon[booking.status]}>
+                  {statusLabels[booking.status]}
+                </StatusBadge>
+                {/* Antworten auch hier: Nicht jede Anfrage wird am Telefon
+                    erledigt, und wer dreimal nicht drangeht, bekommt sonst
+                    gar nichts. */}
+                <AntwortKnopf
+                  email={booking.email}
+                  vorlagen={vorlagen}
+                  werte={{
+                    name: booking.name,
+                    studio: booking.studio?.name ?? null,
+                    termin: booking.slot
+                      ? `${formatDate(booking.slot.date)} um ${booking.slot.startTime} Uhr`
+                      : null,
+                  }}
+                />
+              </div>
             </div>
 
             {booking.status === "PENDING" && (

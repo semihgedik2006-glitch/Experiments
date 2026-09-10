@@ -10,6 +10,7 @@ import { FilterChips, Pagination } from "@/components/admin/list-nav";
 import { PRO_SEITE, param, seitenZahl, suchFilter, type SuchParams } from "@/lib/admin-list";
 import type { Prisma } from "@/generated/prisma/client";
 import { verlangeLeitung } from "@/lib/admin-rechte";
+import { AntwortKnopf } from "@/components/admin/antwort-knopf";
 
 export default async function AdminMessagesPage({
   searchParams,
@@ -35,7 +36,7 @@ export default async function AdminMessagesPage({
     ...(suchFilter(begriff, ["name", "email", "subject", "message"]) ?? {}),
   };
 
-  const [gesamt, messages, ungelesen, alle] = await Promise.all([
+  const [gesamt, messages, ungelesen, alle, vorlagen] = await Promise.all([
     prisma.contactMessage.count({ where }),
     prisma.contactMessage.findMany({
       where,
@@ -49,6 +50,12 @@ export default async function AdminMessagesPage({
     }),
     prisma.contactMessage.count({ where: { ...ohneStatus, read: false } }),
     prisma.contactMessage.count({ where: ohneStatus }),
+    // Nur die eingeschalteten, und nur die Felder, die der Knopf braucht.
+    prisma.antwortvorlage.findMany({
+      where: { aktiv: true },
+      select: { id: true, titel: true, betreff: true, text: true },
+      orderBy: [{ sortOrder: "asc" }, { titel: "asc" }],
+    }),
   ]);
 
   const gefiltert = Boolean(begriff || gelesen);
@@ -97,18 +104,27 @@ export default async function AdminMessagesPage({
                 <p className="mt-3 text-xs text-muted">{formatDate(msg.createdAt)}</p>
               </div>
 
-              {!msg.read && (
-                <form
-                  action={async () => {
-                    "use server";
-                    await markMessageRead(msg.id);
-                  }}
-                >
-                  <SubmitButton pendingLabel="Wird gespeichert...">
-                    Als gelesen markieren
-                  </SubmitButton>
-                </form>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Antworten steht vor "als gelesen": In dieser Reihenfolge
+                    wird auch gearbeitet. */}
+                <AntwortKnopf
+                  email={msg.email}
+                  vorlagen={vorlagen}
+                  werte={{ name: msg.name }}
+                />
+                {!msg.read && (
+                  <form
+                    action={async () => {
+                      "use server";
+                      await markMessageRead(msg.id);
+                    }}
+                  >
+                    <SubmitButton pendingLabel="Wird gespeichert...">
+                      Als gelesen markieren
+                    </SubmitButton>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
           </AdminStaggerItem>

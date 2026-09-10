@@ -46,7 +46,7 @@ export function UspGrid() {
               <motion.div
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="h-full card p-7 transition-colors hover:border-lime/40"
+                className="karte-hebt h-full card p-7"
               >
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent">
                   <Icon size={20} />

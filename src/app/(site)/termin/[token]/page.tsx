@@ -75,6 +75,9 @@ export default async function TerminSeite({
   return (
     <>
       <PageHeader
+        // Die persönliche Terminseite eines Gastes ist kein Ort für
+        // Zierde - hier steht eine Verabredung.
+        ohneMotiv
         kicker="Dein Termin"
         title={
           <>

@@ -35,7 +35,7 @@ export default async function ErfolgsgeschichtenPage() {
           <Stagger className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {testimonials.map((t) => (
               <StaggerItem key={t.name}>
-                <figure className="flex h-full flex-col rounded-2xl border border-border bg-surface p-7">
+                <figure className="karte-hebt flex h-full flex-col rounded-2xl border border-border bg-surface p-7">
                   <div className="flex gap-1 text-accent" role="img" aria-label={`${t.rating} von 5 Sternen`}>
                     {Array.from({ length: t.rating }).map((_, i) => (
                       <Star key={i} size={15} fill="currentColor" />

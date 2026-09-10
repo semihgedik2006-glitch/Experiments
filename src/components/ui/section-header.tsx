@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/ui/reveal";
+import { KickerStrich } from "@/components/ui/kicker-strich";
 
 /**
  * Einheitlicher Kopf für alle Sektionen: kleiner Akzent-Kicker, große
@@ -40,7 +41,7 @@ export function SectionHeader({
               centered ? "justify-center" : ""
             }`}
           >
-            <span aria-hidden className="h-px w-8 bg-accent/50" />
+            <KickerStrich />
             {kicker}
           </span>
         )}

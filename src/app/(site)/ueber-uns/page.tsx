@@ -66,7 +66,7 @@ export default async function UeberUnsPage() {
           <Stagger className="mt-14 grid gap-6 md:grid-cols-3">
             {values.map(({ icon: Icon, title, text }) => (
               <StaggerItem key={title} className="h-full">
-                <div className="h-full rounded-2xl border border-border bg-surface p-6">
+                <div className="karte-hebt h-full rounded-2xl border border-border bg-surface p-6">
                   <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/15 text-accent">
                     <Icon size={20} />
                   </div>

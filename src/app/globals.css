@@ -250,6 +250,54 @@ h3,
     0 14px 34px -16px rgb(0 0 0 / 0.7);
 }
 
+/**
+ * Karten reagieren auf den Zeiger.
+ *
+ * Der Anlass: Die Website bestand über weite Strecken aus Karten, die sich
+ * beim Darüberfahren nicht rührten. Eine Fläche, die aussieht wie eine
+ * Schaltfläche und sich beim Berühren nicht meldet, wirkt tot - und bei
+ * Karten, die tatsächlich anklickbar sind (Studios, Blogbeiträge), ist es
+ * darüber hinaus eine fehlende Rückmeldung.
+ *
+ * Bewusst sehr klein: zwei Pixel nach oben und ein etwas tieferer Schatten.
+ * Alles darüber - Vergrößern, Kippen, Farbe wechseln - lenkt vom Inhalt ab
+ * und lässt eine Liste aus zwölf Karten unruhig wirken.
+ *
+ * Nur bei einem echten Zeiger: Auf dem Handy gibt es kein Darüberfahren,
+ * dort löst der Browser den Zustand beim Antippen aus und lässt ihn stehen.
+ * Eine Karte, die nach dem Tippen erhoben bleibt, sieht nach einem Fehler
+ * aus.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .karte-hebt {
+    transition:
+      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.25s ease;
+  }
+  .karte-hebt:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-lime) 45%, var(--border-color));
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--foreground) 5%, transparent),
+      0 18px 40px -20px color-mix(in srgb, var(--foreground) 28%, transparent);
+  }
+  .dark .karte-hebt:hover {
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, #ffffff 7%, transparent),
+      0 22px 46px -18px rgb(0 0 0 / 0.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .karte-hebt {
+    transition: border-color 0.25s ease;
+  }
+  .karte-hebt:hover {
+    transform: none;
+  }
+}
+
 /* Dunkle Abschnitte sind in der hellen Ansicht das auffälligste Gestaltungs-
    mittel der Seite. In der dunklen Ansicht lag ihr Ton (--ink) fast genau
    auf dem der gewöhnlichen Flächen - der Abschnitt verschwand damit als
@@ -382,11 +430,31 @@ h3,
   animation-delay: var(--hero-delay, 0s);
 }
 
+/* Der kurze Strich vor der Kennzeichnung wächst von links heraus.
+   Im Seitenkopf über CSS und nicht über die Bibliothek (siehe
+   kicker-strich.tsx für die scrollgebundene Fassung in den Abschnitten):
+   Der Seitenkopf ist das Erste, was gezeichnet wird, und darf nicht auf
+   JavaScript warten. */
+@keyframes strich-waechst {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.strich-waechst {
+  transform-origin: left;
+  animation: strich-waechst 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--hero-delay, 0s);
+}
+
 /* Wer reduzierte Bewegung eingestellt hat, sieht den Hero sofort fertig. */
 @media (prefers-reduced-motion: reduce) {
   .hero-anim,
   .hero-anim-logo,
-  .hero-anim-word {
+  .hero-anim-word,
+  .strich-waechst {
     animation: none;
   }
 }
@@ -660,6 +728,33 @@ h3,
    weiter, wo sie stehengeblieben ist, statt sichtbar neu zu starten. */
 .bewegung-aus * {
   animation-play-state: paused !important;
+}
+
+/**
+ * Zierde, die nur rechnet, wenn sie im Bild ist.
+ *
+ * Das Impuls-Motiv steht auf sieben Seitenköpfen und zweimal im Aufruf am
+ * Seitenende. Jede Fassung bringt zwölf pulsierende Punkte und drei
+ * kreisende Ringe mit - auf der Startseite kommen damit über dreißig
+ * dauernd laufende Animationen zusammen, von denen fast nie mehr als eine
+ * Handvoll sichtbar ist.
+ *
+ * content-visibility überlässt dem Browser die Entscheidung: Was außerhalb
+ * des Bildes liegt, wird gar nicht erst gezeichnet - und was nicht
+ * gezeichnet wird, animiert auch nicht. Anders als die Lösung im Hero
+ * braucht das keine Zeile JavaScript.
+ *
+ * contain-intrinsic-size ist dabei Pflicht: Ohne die Angabe hält der
+ * Browser das übersprungene Element für null Pixel hoch, und beim
+ * Hereinscrollen springt die Seite. Der Wert entspricht dem Seitenverhältnis
+ * der Grafik.
+ *
+ * Kennt ein Browser die Eigenschaft nicht, passiert schlicht nichts -
+ * dann läuft es wie vorher.
+ */
+.zierde-ruht {
+  content-visibility: auto;
+  contain-intrinsic-size: 360px 360px;
 }
 
 @media (prefers-reduced-motion: reduce) {

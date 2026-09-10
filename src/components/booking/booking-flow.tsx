@@ -179,8 +179,14 @@ export function BookingFlow({
                     setSelectedStudioId(studio.id);
                   }}
                   whileTap={{ scale: 0.98 }}
+                  // karte-hebt gibt derselben Kachel dieselbe Rückmeldung
+                  // wie überall sonst auf der Seite. Die ausgewählte hebt
+                  // sich nicht mit: Sie ist schon hervorgehoben, und eine
+                  // zweite Hervorhebung darüber macht die Auswahl unklar.
                   className={`rounded-xl border p-4 text-left transition-colors ${
-                    isSelected ? "border-lime bg-lime/10" : "border-border hover:border-lime/60"
+                    isSelected
+                      ? "border-lime bg-lime/10"
+                      : "karte-hebt border-border"
                   }`}
                 >
                   <span className="flex items-center gap-2 font-semibold">

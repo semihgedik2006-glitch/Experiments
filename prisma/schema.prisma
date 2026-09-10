@@ -367,3 +367,30 @@ model SiteToggle {
   visible   Boolean  @default(true)
   updatedAt DateTime @updatedAt
 }
+
+/// Vorlage für eine Antwort-E-Mail.
+///
+/// Die Website verschickt diese Antworten NICHT selbst. Eine Antwort auf
+/// eine Kontaktanfrage kommt aus dem Postfach des Studios: Nur so kann der
+/// Interessent darauf antworten, nur so steht der Verlauf dort, wo ihn alle
+/// sehen, und nur so landet die Antwort nicht als automatische Nachricht im
+/// Werbeordner. Die Vorlage öffnet stattdessen das Mailprogramm mit
+/// ausgefülltem Empfänger, Betreff und Text.
+///
+/// Im Text dürfen Platzhalter stehen - siehe src/lib/vorlagen.ts.
+model Antwortvorlage {
+  id        String   @id @default(cuid())
+  /// Kurzer Name für die Auswahlliste im Adminbereich ("Preisanfrage").
+  titel     String
+  betreff   String
+  text      String
+  /// Ausgeschaltete Vorlagen bleiben erhalten, tauchen aber nicht mehr in
+  /// der Auswahl auf. Besser als löschen: Eine saisonale Vorlage kommt im
+  /// nächsten Jahr wieder.
+  aktiv     Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([aktiv, sortOrder])
+}

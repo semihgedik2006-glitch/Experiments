@@ -70,7 +70,7 @@ export async function DirekterKontakt({
             <a
               key={weg.label}
               href={weg.href}
-              className="card flex flex-col p-5 transition-colors hover:border-lime"
+              className="karte-hebt card flex flex-col p-5"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-lime/12 text-accent">
                 <weg.icon size={17} aria-hidden />
