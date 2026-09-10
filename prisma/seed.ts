@@ -22,6 +22,8 @@ async function main() {
     studio = await prisma.studioLocation.create({
       data: {
         name: "Körperformen Hürth",
+        // Adresse der Standortseite: /studio/huerth
+        slug: "huerth",
         street: "Krankenhausstr. 111",
         postalCode: "50354",
         city: "Hürth",

@@ -18,6 +18,7 @@ const subscribeNothing = () => () => {};
 
 export type StudioEntry = {
   id: string;
+  slug: string;
   name: string;
   street: string;
   postalCode: string;
@@ -215,8 +216,12 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
                 </li>
               </ul>
 
-              <Button href="/probetermin" className="mt-8 w-full">
-                Probetermin in {studio.city} buchen
+              {/* Zur Standortseite statt zur allgemeinen Terminseite: Dort
+                  steht der Ort im Titel, die Anfahrt und nur die freien
+                  Zeiten dieses Studios - und die Anfrage kommt ohne weitere
+                  Auswahl beim richtigen Standort an. */}
+              <Button href={`/studio/${studio.slug}`} className="mt-8 w-full">
+                Studio {studio.city} ansehen
               </Button>
             </Reveal>
           </Container>

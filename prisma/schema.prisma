@@ -63,6 +63,10 @@ model StudioLocation {
   id            String             @id @default(cuid())
   admins        AdminUser[]
   bookings      Booking[]
+  /// Der Ort in der Adresse: /studio/koeln-nippes. Wird aus dem Namen
+  /// gebildet (siehe src/lib/slug.ts) und lässt sich im Adminbereich
+  /// ändern - dann sollte man wissen, dass alte Verweise ins Leere gehen.
+  slug          String             @unique
   name          String
   street        String
   postalCode    String
@@ -71,6 +75,15 @@ model StudioLocation {
   email         String
   mapEmbedUrl   String
   openingHours  String
+  /// Zwei, drei Sätze über genau diesen Standort - was das Studio
+  /// auszeichnet, wer dort trainiert, was es in der Nähe gibt. Ohne diesen
+  /// Text unterscheiden sich die vierzehn Standortseiten nur in der
+  /// Adresse, und fast gleiche Seiten wertet Google ab.
+  intro         String?
+  /// Der Weg zum Studio in eigenen Worten: Parkplätze, Haltestelle,
+  /// Eingang im Hinterhof. Genau danach wird lokal gesucht, und es steht
+  /// auf keiner anderen Seite.
+  anfahrt       String?
   latitude      Float?
   longitude     Float?
   sortOrder     Int                @default(0)

@@ -15,6 +15,7 @@ function StudioFields({
   defaults,
 }: {
   defaults?: {
+    slug: string;
     name: string;
     street: string;
     postalCode: string;
@@ -23,6 +24,8 @@ function StudioFields({
     email: string;
     mapEmbedUrl: string;
     openingHours: string;
+    intro: string | null;
+    anfahrt: string | null;
     latitude: number | null;
     longitude: number | null;
     sortOrder: number;
@@ -31,6 +34,33 @@ function StudioFields({
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       <input type="text" name="name" required placeholder="Studio-Name (z.B. Körperformen Hürth)" defaultValue={defaults?.name} className={`${inputClass} sm:col-span-2`} />
+
+      {/* Nur beim Ändern: Beim Anlegen entsteht die Adresse aus dem Namen.
+          Ein leeres Feld beim Anlegen auszufüllen wäre eine Aufgabe, die
+          sich der Rechner selbst stellen kann. */}
+      {defaults && (
+        <label className="block sm:col-span-2">
+          <span className="text-xs text-muted">
+            Adresse der Standortseite &ndash; koerperformen.de/studio/
+            <strong>{defaults.slug}</strong>
+          </span>
+          <input
+            type="text"
+            name="slug"
+            defaultValue={defaults.slug}
+            pattern="[a-z0-9]+(-[a-z0-9]+)*"
+            className={`${inputClass} mt-1`}
+          />
+          {/* Eine geänderte Adresse ist eine neue Seite. Wer das nicht
+              weiß, verliert damit die Platzierung bei Google und alle
+              Verweise, die schon irgendwo stehen. */}
+          <span className="mt-1 block text-xs text-muted">
+            Nur kleine Buchstaben, Ziffern und Bindestriche. Änderst du das, sind
+            alle bisherigen Verweise auf diese Seite tot &ndash; auch der Eintrag
+            bei Google. Also nur ändern, solange die Seite neu ist.
+          </span>
+        </label>
+      )}
       <input type="text" name="street" required placeholder="Straße + Hausnummer" defaultValue={defaults?.street} className={inputClass} />
       <div className="grid grid-cols-[110px_1fr] gap-3">
         <input type="text" name="postalCode" required placeholder="PLZ" defaultValue={defaults?.postalCode} className={inputClass} />
@@ -52,6 +82,38 @@ function StudioFields({
         defaultValue={defaults?.openingHours}
         className={`${inputClass} sm:col-span-2`}
       />
+
+      {/* Die beiden Textfelder sind der eigentliche Wert der Standortseite.
+          Ohne sie unterscheiden sich die vierzehn Seiten nur in Adresse und
+          Öffnungszeiten - und fast gleiche Seiten wertet Google ab. */}
+      <label className="block sm:col-span-2">
+        <span className="text-xs text-muted">
+          Text über diesen Standort &ndash; steht oben auf der Standortseite und im
+          Suchergebnis
+        </span>
+        <textarea
+          name="intro"
+          rows={3}
+          maxLength={600}
+          defaultValue={defaults?.intro ?? ""}
+          placeholder="Zwei, drei Sätze, die nur hier stimmen: Was zeichnet dieses Studio aus, wer trainiert hier, was gibt es in der Nähe?"
+          className={`${inputClass} mt-1`}
+        />
+      </label>
+
+      <label className="block sm:col-span-2">
+        <span className="text-xs text-muted">
+          Anfahrt &ndash; Parkplätze, Haltestelle, wo genau der Eingang ist
+        </span>
+        <textarea
+          name="anfahrt"
+          rows={3}
+          maxLength={800}
+          defaultValue={defaults?.anfahrt ?? ""}
+          placeholder="z.B.: Direkt an der Haltestelle Nippes/Sebastianstraße. Parkplätze im Hof hinter dem Haus, Einfahrt neben der Bäckerei."
+          className={`${inputClass} mt-1`}
+        />
+      </label>
       <div className="sm:col-span-2">
         <p className="mb-1.5 text-xs text-muted">
           Koordinaten (für &bdquo;nächstes Studio&ldquo; bei der Probetermin-Buchung) - in

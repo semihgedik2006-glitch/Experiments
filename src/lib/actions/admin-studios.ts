@@ -3,12 +3,43 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { verlangeLeitungAktion, verlangeStudioRecht } from "@/lib/admin-rechte";
+import { istGueltigerSlug, studioSlug } from "@/lib/slug";
 
 // Studio data appears on these public pages.
 const studioPaths = ["/", "/studio", "/kontakt", "/impressum", "/probetermin", "/admin/studios"];
 
 function revalidateStudios() {
   for (const path of studioPaths) revalidatePath(path);
+  // Die Standortseiten liegen unter einer gemeinsamen Adressform. Ohne
+  // "page" würde nur die Adresse /studio/[slug] selbst erneuert und keine
+  // der vierzehn tatsächlichen Seiten.
+  revalidatePath("/studio/[slug]", "page");
+  // In der Sitemap stehen Änderungsdaten der Standorte.
+  revalidatePath("/sitemap.xml");
+}
+
+/**
+ * Eine Adresse, die es noch nicht gibt.
+ *
+ * Zwei Standorte im selben Ort ergäben sonst zweimal dieselbe Adresse -
+ * und die Datenbank würde den zweiten mit einem Fehler abweisen, statt
+ * dass jemand etwas davon hätte.
+ */
+async function freierSlug(wunsch: string, ausser?: string): Promise<string> {
+  const basis = wunsch || "studio";
+  let kandidat = basis;
+
+  for (let nummer = 2; nummer < 100; nummer++) {
+    const belegt = await prisma.studioLocation.findUnique({
+      where: { slug: kandidat },
+      select: { id: true },
+    });
+    if (!belegt || belegt.id === ausser) return kandidat;
+    kandidat = `${basis}-${nummer}`;
+  }
+
+  // Sollte nie eintreten - aber eine Kennung ist immer eindeutig.
+  return `${basis}-${Date.now()}`;
 }
 
 /* Anlegen, Löschen und Sammel-Import verändern den Bestand aller
@@ -29,6 +60,8 @@ function readStudioForm(formData: FormData) {
     email: String(formData.get("email") ?? "").trim(),
     mapEmbedUrl: String(formData.get("mapEmbedUrl") ?? "").trim(),
     openingHours: String(formData.get("openingHours") ?? "").trim(),
+    intro: String(formData.get("intro") ?? "").trim().slice(0, 600) || null,
+    anfahrt: String(formData.get("anfahrt") ?? "").trim().slice(0, 800) || null,
     latitude: latitude ? Number(latitude) : null,
     longitude: longitude ? Number(longitude) : null,
     sortOrder: Number(formData.get("sortOrder") ?? 0) || 0,
@@ -43,7 +76,13 @@ export async function createStudio(formData: FormData) {
 
   const last = await prisma.studioLocation.findFirst({ orderBy: { sortOrder: "desc" } });
   await prisma.studioLocation.create({
-    data: { ...data, sortOrder: data.sortOrder || (last?.sortOrder ?? 0) + 10 },
+    data: {
+      ...data,
+      // Die Adresse der Standortseite entsteht aus dem Namen. Von Hand
+      // eintragen lässt sie sich danach beim Ändern.
+      slug: await freierSlug(studioSlug(data.name)),
+      sortOrder: data.sortOrder || (last?.sortOrder ?? 0) + 10,
+    },
   });
   revalidateStudios();
 }
@@ -57,7 +96,19 @@ export async function updateStudio(formData: FormData) {
   const data = readStudioForm(formData);
   if (!id || !data.name || !data.street || !data.postalCode || !data.city) return;
 
-  await prisma.studioLocation.update({ where: { id }, data });
+  // Die Adresse der Standortseite nur ändern, wenn sie mitgeschickt und
+  // brauchbar ist. Ein leeres oder unsinniges Feld lässt die vorhandene
+  // stehen - eine kaputte Adresse wäre schlimmer als eine unschöne.
+  const slugWunsch = String(formData.get("slug") ?? "").trim().toLowerCase();
+  const slug =
+    slugWunsch && istGueltigerSlug(slugWunsch)
+      ? await freierSlug(slugWunsch, id)
+      : undefined;
+
+  await prisma.studioLocation.update({
+    where: { id },
+    data: { ...data, ...(slug ? { slug } : {}) },
+  });
   revalidateStudios();
 }
 
@@ -136,6 +187,10 @@ export async function importStudios(
     await prisma.studioLocation.create({
       data: {
         name,
+        // Auch beim Sammel-Import: ohne Adresse der Standortseite gäbe es
+        // die Seite nicht, und der Import ist genau der Weg, auf dem alle
+        // vierzehn Standorte entstehen.
+        slug: await freierSlug(studioSlug(name)),
         street,
         postalCode,
         city,

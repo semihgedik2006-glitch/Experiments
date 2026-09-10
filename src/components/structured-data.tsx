@@ -92,10 +92,13 @@ export async function StudioJsonLd() {
     // HealthClub ist die passende Unterart von LocalBusiness für ein
     // Trainingsstudio.
     "@type": "HealthClub",
-    "@id": `${siteConfig.url}/#studio-${studio.id}`,
+    // Kennung und Adresse zeigen auf die Standortseite. Vorher verwiesen
+    // alle vierzehn auf die Startseite - für Google war damit nicht
+    // erkennbar, welche Seite zu welchem Standort gehört.
+    "@id": `${siteConfig.url}/studio/${studio.slug}#studio`,
     name: studio.name,
-    description: siteConfig.description,
-    url: siteConfig.url,
+    description: studio.intro?.trim() || siteConfig.description,
+    url: `${siteConfig.url}/studio/${studio.slug}`,
     telephone: studio.phone,
     email: studio.email,
     address: {
@@ -120,6 +123,82 @@ export async function StudioJsonLd() {
   }));
 
   return <JsonLd data={data.length === 1 ? data[0] : data} />;
+}
+
+/**
+ * Ein einzelner Standort auf seiner eigenen Seite.
+ *
+ * Unterschied zu StudioJsonLd: Dort steht eine Liste aller Standorte, und
+ * alle verweisen auf die Startadresse. Hier steht genau ein Ort, und seine
+ * "url" zeigt auf diese Seite - erst dadurch weiß Google, welche Adresse zu
+ * welchem Studio gehört. Dazu die Brotkrumen, damit im Suchergebnis
+ * "Startseite › Standorte › Köln Nippes" statt der nackten Adresse steht.
+ */
+export function StandortJsonLd({
+  studio,
+}: {
+  studio: {
+    id: string;
+    slug: string;
+    name: string;
+    street: string;
+    postalCode: string;
+    city: string;
+    phone: string;
+    email: string;
+    openingHours: string;
+    intro: string | null;
+    latitude: number | null;
+    longitude: number | null;
+  };
+}) {
+  const url = `${siteConfig.url}/studio/${studio.slug}`;
+
+  return (
+    <JsonLd
+      data={[
+        {
+          "@context": "https://schema.org",
+          "@type": "HealthClub",
+          "@id": `${url}#studio`,
+          name: studio.name,
+          description: studio.intro?.trim() || siteConfig.description,
+          url,
+          telephone: studio.phone,
+          email: studio.email,
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: studio.street,
+            postalCode: studio.postalCode,
+            addressLocality: studio.city,
+            addressCountry: "DE",
+          },
+          ...(studio.latitude != null && studio.longitude != null
+            ? {
+                geo: {
+                  "@type": "GeoCoordinates",
+                  latitude: studio.latitude,
+                  longitude: studio.longitude,
+                },
+              }
+            : {}),
+          openingHoursSpecification: parseOpeningHours(studio.openingHours),
+          parentOrganization: { "@type": "Organization", name: siteConfig.name },
+          sameAs: Object.values(siteConfig.social),
+          ...(legalConfig.vatId ? { vatID: legalConfig.vatId } : {}),
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Startseite", item: siteConfig.url },
+            { "@type": "ListItem", position: 2, name: "Standorte", item: `${siteConfig.url}/studio` },
+            { "@type": "ListItem", position: 3, name: studio.name, item: url },
+          ],
+        },
+      ]}
+    />
+  );
 }
 
 /**
