@@ -30,6 +30,12 @@ export function NewsletterForm() {
       {state?.message && (
         <p className={`text-xs ${state.ok ? "text-accent" : "text-danger"}`}>{state.message}</p>
       )}
+      {/* Steht hier, weil es beim Eintragen zählt und nicht erst in der
+          Datenschutzerklärung: Wer weiß, dass er jederzeit wieder rauskommt,
+          trägt sich eher ein. */}
+      <p className="text-xs text-muted">
+        Jederzeit abbestellbar - der Abmeldelink steht in jeder E-Mail.
+      </p>
     </form>
   );
 }

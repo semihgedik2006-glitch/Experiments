@@ -58,6 +58,11 @@ enum MailArt {
   /// An den Ersten auf der Warteliste, wenn ein Platz frei wird.
   WARTELISTE_FREI
   WARTELISTE_INTERN
+  /// Eine Newsletter-Ausgabe an einen Abonnenten.
+  NEWSLETTER
+  /// Der Probeversand an die eigene Adresse. Eigene Art, damit ein
+  /// Testlauf im Protokoll nicht wie ein Versand an einen Kunden aussieht.
+  NEWSLETTER_TEST
 }
 
 /// Nachweis, dass eine E-Mail den Weg nach draußen gefunden hat.
@@ -352,6 +357,83 @@ model NewsletterSubscriber {
   id        String   @id @default(cuid())
   email     String   @unique
   createdAt DateTime @default(now())
+
+  /// Schlüssel für den Abmeldelink in jeder Newsletter-Mail.
+  ///
+  /// Ohne funktionierende Abmeldung darf ein Newsletter gar nicht erst
+  /// rausgehen (§ 7 UWG, Art. 21 DSGVO) - und "schreib uns eine Mail"
+  /// genügt dafür nicht. Der Schlüssel ist nicht erratbar und hat keinen
+  /// Bezug zur Kennung: Wer den Link hat, meldet genau diese eine Adresse
+  /// ab und kann mit ihm sonst nichts anfangen.
+  abmeldeToken String @unique
+}
+
+enum NewsletterStatus {
+  ENTWURF
+  /// Der Versand läuft gerade. Ein eigener Zustand, weil er Minuten
+  /// dauern kann - ohne ihn sähe eine laufende Ausgabe wie ein Entwurf
+  /// aus, und jemand könnte sie ein zweites Mal losschicken.
+  LAEUFT
+  VERSENDET
+}
+
+/// Eine Newsletter-Ausgabe.
+///
+/// Bis hierher wurden Abonnenten gesammelt, aber es gab keinen Weg, ihnen
+/// zu schreiben - die Liste war ein Adressbuch ohne Briefkasten.
+///
+/// Der Text wird gespeichert, anders als bei MailLog: Eine Ausgabe ist
+/// keine Nachricht an einen einzelnen Menschen, sondern eine
+/// Veröffentlichung. Was wann an alle ging, muss nachlesbar bleiben.
+model Newsletter {
+  id      String @id @default(cuid())
+  betreff String
+  text    String
+
+  status      NewsletterStatus @default(ENTWURF)
+  versendetAm DateTime?
+
+  /// Laufend mitgezählt, damit der Fortschritt sichtbar ist, während der
+  /// Versand noch läuft.
+  zugestellt Int @default(0)
+  gescheitert Int @default(0)
+
+  /// Wer den Versand ausgelöst hat - als Adresse, nicht als Verknüpfung.
+  /// Ein gelöschter Zugang darf die Nachvollziehbarkeit nicht mitnehmen.
+  versendetVon String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  empfaenger NewsletterEmpfang[]
+
+  @@index([createdAt])
+}
+
+/// Wer eine Ausgabe bekommen hat.
+///
+/// Zwei Aufgaben, und beide sind der Grund, warum das eine eigene Tabelle
+/// ist und keine Zahl an der Ausgabe:
+///
+/// Erstens der Nachweis. Bei einer Beschwerde ist die Frage nicht "wie
+/// viele", sondern "hat DIESE Adresse die Ausgabe bekommen".
+///
+/// Zweitens das Fortsetzen. Ein Versand an hunderte Adressen passt nicht in
+/// einen Durchlauf; er läuft in Abschnitten. Ohne festzuhalten, wer schon
+/// dran war, bekäme beim zweiten Abschnitt die halbe Liste alles doppelt.
+///
+/// Die Adresse steht als Text da, nicht als Verknüpfung zum Abonnenten:
+/// Wer sich abmeldet, verschwindet aus der Abonnentenliste - dass die
+/// Ausgabe an ihn ging, bleibt trotzdem wahr.
+model NewsletterEmpfang {
+  id           String     @id @default(cuid())
+  newsletter   Newsletter @relation(fields: [newsletterId], references: [id], onDelete: Cascade)
+  newsletterId String
+  empfaenger   String
+  ok           Boolean
+  createdAt    DateTime   @default(now())
+
+  @@unique([newsletterId, empfaenger])
 }
 
 model FaqItem {

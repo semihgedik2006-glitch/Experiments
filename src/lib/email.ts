@@ -46,6 +46,11 @@ async function verschicken(
     text: string;
     /** Die Termindatei kommt als Buffer - so verlangt es der Anbieter. */
     attachments?: { filename: string; content: Buffer; contentType?: string }[];
+    /**
+     * Zusätzliche Kopfzeilen. Bisher nur für List-Unsubscribe am
+     * Newsletter - siehe sendNewsletterEmail.
+     */
+    headers?: Record<string, string>;
   },
 ): Promise<boolean> {
   const protokoll = async (ok: boolean, fehler?: string) => {
@@ -499,6 +504,40 @@ Dein Körperformen-Team`,
  * dass seine Wunschzeit gerade belegt ist - und häufig lässt sich das mit
  * einem Anruf und einer anderen Zeit lösen, lange bevor jemand storniert.
  */
+/**
+ * Eine Newsletter-Ausgabe an einen Abonnenten.
+ *
+ * Der Abmeldelink wird hier angehängt und nicht dem Text überlassen, den
+ * jemand im Adminbereich getippt hat - siehe src/lib/newsletter.ts. Wer
+ * eine Ausgabe verschickt, kann ihn also nicht vergessen.
+ *
+ * Dazu die Kopfzeilen List-Unsubscribe und List-Unsubscribe-Post: Damit
+ * blenden Gmail, Outlook und Apple Mail neben dem Absender einen eigenen
+ * Abmelden-Knopf ein. Das ist kein Beiwerk - wer den nicht findet, drückt
+ * stattdessen auf "Spam", und das trifft dann auch die Terminbestätigungen
+ * an alle anderen.
+ */
+export async function sendNewsletterEmail(angaben: {
+  empfaenger: string;
+  betreff: string;
+  /** Der fertige Text einschließlich Fuß (newsletterText). */
+  text: string;
+  abmeldeAdresse: string;
+  /** Probeversand an die eigene Adresse - eigene Art im Protokoll. */
+  test?: boolean;
+}) {
+  return verschicken(angaben.test ? "NEWSLETTER_TEST" : "NEWSLETTER", {
+    to: angaben.empfaenger,
+    subject: angaben.test ? `[Test] ${angaben.betreff}` : angaben.betreff,
+    text: angaben.text,
+    headers: {
+      "List-Unsubscribe": `<${angaben.abmeldeAdresse}>`,
+      // Sagt dem Postfach: Der Knopf darf ohne Rückfrage gedrückt werden.
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    },
+  });
+}
+
 export async function sendWartelisteInternEmail(
   an: string,
   angaben: {

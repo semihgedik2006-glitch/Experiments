@@ -33,6 +33,8 @@ const artText: Record<MailArt, string> = {
   BEWERTUNG: "Bitte um eine Bewertung",
   WARTELISTE_FREI: "Platz frei geworden - an die Warteliste",
   WARTELISTE_INTERN: "Neuer Wartelisteneintrag ans Studio",
+  NEWSLETTER: "Newsletter-Ausgabe an einen Abonnenten",
+  NEWSLETTER_TEST: "Newsletter-Probeversand an den eigenen Zugang",
 };
 
 const ablaeufe: { titel: string; wann: string; an: string }[] = [
@@ -85,6 +87,14 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
     titel: "Platz frei geworden",
     wann: "sobald ein Platz frei wird - durch Stornieren, Absagen oder Verschieben",
     an: "an den Ersten auf der Warteliste dieses Termins, der noch hineinpasst",
+  },
+  {
+    // Als Einziger in dieser Liste kein Ablauf, der von allein anspringt -
+    // er steht hier trotzdem, weil sonst der Eindruck entsteht, der
+    // Newsletter ginge automatisch raus.
+    titel: "Newsletter",
+    wann: "nie von allein - nur wenn ihr unter Newsletter auf Senden drückt",
+    an: "an alle Abonnenten, mit Abmeldelink in jeder einzelnen Mail",
   },
 ];
 

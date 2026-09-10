@@ -40,6 +40,13 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            // Ein benannter Bereich, kein bloßes div: Der Hinweis liegt
+            // außerhalb von Kopf, Inhalt und Fuß und gehörte damit zu
+            // keinem Abschnitt der Seite - beim Durchgehen der Bereiche
+            // wurde er einfach übersprungen. Betroffen war jeder erste
+            // Besuch, denn danach ist der Hinweis weg.
+            role="region"
+            aria-label="Hinweis zu Cookies"
             className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-surface-raised"
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">

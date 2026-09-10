@@ -268,9 +268,17 @@ export default function DatenschutzPage() {
               Rechtsgrundlage ist Ihre Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO.
             </p>
             <p>
-              Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen,
-              etwa durch eine formlose Nachricht an {email}. Ihre E-Mail-Adresse wird nach
-              dem Widerruf aus dem Verteiler gelöscht.
+              Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen.
+              Am einfachsten über den Abmeldelink, der am Ende jeder Newsletter-E-Mail steht:
+              Ein Klick darauf genügt, eine Begründung ist nicht erforderlich. Alternativ
+              genügt eine formlose Nachricht an {email}. Ihre E-Mail-Adresse wird nach dem
+              Widerruf aus dem Verteiler gelöscht.
+            </p>
+            <p>
+              Vom Widerruf nicht betroffen sind E-Mails, die zu einem gebuchten Termin
+              gehören - etwa Terminbestätigungen und Erinnerungen. Diese verarbeiten wir
+              nicht auf Grundlage Ihrer Newsletter-Einwilligung, sondern zur Durchführung
+              des Termins.
             </p>
           </Section>
 
