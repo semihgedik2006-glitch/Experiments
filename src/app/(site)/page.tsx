@@ -8,10 +8,12 @@ import { TrustSection } from "@/components/trust-section";
 import { BlogTeaser } from "@/components/home/blog-teaser";
 import { FaqSection } from "@/components/faq-section";
 import { CtaBanner } from "@/components/cta-banner";
+import { InstagramWand } from "@/components/instagram-wand";
 import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { StudioJsonLd, WebsiteJsonLd, FaqJsonLd } from "@/components/structured-data";
 import { getToggles } from "@/lib/site-toggles";
 import { getStudios, getUpcomingSlots } from "@/lib/data";
+import { letzteBeitraege } from "@/lib/instagram";
 import { formatDateShort } from "@/lib/format";
 
 export default async function Home() {
@@ -37,6 +39,11 @@ export default async function Home() {
   // Bewusst aus den echten Daten und nicht aus einem festen Text: Steht
   // dort ein Termin, den es nicht gibt, ist das Vertrauen beim ersten
   // Klick weg. Gibt es keinen, entfällt die Zeile ersatzlos.
+  // Die Instagram-Wand. Ist kein Zugang hinterlegt oder Instagram gerade
+  // nicht erreichbar, kommt eine leere Liste zurück und der Abschnitt
+  // entfällt - die Startseite hängt nie an einem fremden Dienst.
+  const instagram = toggles.instagram ? await letzteBeitraege() : [];
+
   const naechsteSlots = toggles.studio ? await getUpcomingSlots() : [];
   const naechster = naechsteSlots[0];
   const naechsterTermin = naechster
@@ -78,6 +85,10 @@ export default async function Home() {
           <BlogTeaser />
         </>
       )}
+      {/* Instagram steht zwischen Blog und Fragen: Bis hierher hat die
+          Seite erklärt und belegt - sechs Bilder aus dem Studio zeigen
+          danach, wie es dort tatsächlich aussieht. */}
+      <InstagramWand beitraege={instagram} />
       <ImpulsTrenner variante="c" className="mx-auto max-w-6xl px-6" />
       <FaqSection />
       <CtaBanner />

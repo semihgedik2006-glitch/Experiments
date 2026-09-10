@@ -149,6 +149,81 @@ model StudioLocation {
   updatedAt     DateTime           @updatedAt
   slots         AvailabilitySlot[]
   slotTemplates SlotTemplate[]
+  trainer       Trainer[]
+}
+
+/// Wer im Studio betreut.
+///
+/// Der Anlass: Ein Probetraining bedeutet, sich vor einem Fremden in enge
+/// Trainingskleidung zu stellen und sich Elektroden anlegen zu lassen. Wer
+/// vorher weiß, wer ihn erwartet, überwindet diese Hürde leichter - ein
+/// Gesicht und zwei Sätze wirken hier mehr als jede weitere Erklärung zum
+/// Training selbst.
+///
+/// Je Standort und nicht für die Marke: Bei vierzehn Studios wäre eine
+/// gemeinsame Teamseite die Aussage "irgendwer von diesen vierzehn" - also
+/// keine.
+model Trainer {
+  id       String         @id @default(cuid())
+  studio   StudioLocation @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  studioId String
+  name     String
+
+  /// "Studioleitung", "Trainerin", "Physiotherapeut" - eine Zeile.
+  rolle String?
+
+  /// Ausbildung und Lizenzen, kurz. Bewusst ein freies Feld und keine
+  /// Auswahlliste: Was hier steht, muss stimmen, und niemand außer dem
+  /// Studio kann das beurteilen.
+  qualifikation String?
+
+  /// Zwei, drei Sätze in eigenen Worten. Was ihn ausmacht, nicht was EMS
+  /// ist - das steht auf jeder anderen Seite schon.
+  text String?
+
+  /// Adresse eines Fotos, wie beim Titelbild eines Blogbeitrags. Ohne Foto
+  /// erscheint ein Feld mit den Anfangsbuchstaben, kein leerer Rahmen.
+  fotoUrl String?
+
+  /// Ausgeblendet statt gelöscht: Wer im Urlaub ist oder das Studio
+  /// wechselt, soll nicht neu angelegt werden müssen.
+  aktiv     Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([studioId, sortOrder])
+}
+
+/// Der Zugang zu Instagram.
+///
+/// Warum in der Datenbank und nicht in einer Umgebungsvariablen: Der
+/// Schlüssel von Instagram läuft nach 60 Tagen ab und muss vorher gegen
+/// einen neuen getauscht werden. Ein neuer Wert lässt sich aber nicht in
+/// eine Umgebungsvariable zurückschreiben - die Wand wäre also nach zwei
+/// Monaten still verschwunden, und niemand hätte gewusst warum.
+///
+/// Genau eine Zeile, festgenagelt über id = "instagram". Ein zweiter
+/// Zugang ergäbe keinen Sinn, und ohne festen Schlüssel entstünde beim
+/// zweiten Speichern eine zweite Zeile.
+model ExternerZugang {
+  id String @id
+
+  /// Der Schlüssel selbst. Er steht nie auf einer Seite und wird im
+  /// Adminbereich nur als Länge und Ablaufdatum angezeigt.
+  token String
+
+  /// Wann er ungültig wird. Danach holt die Seite nichts mehr.
+  laeuftAb DateTime?
+
+  /// Wann zuletzt erneuert wurde - für die Anzeige im Adminbereich.
+  erneuertAm DateTime?
+
+  /// Was beim letzten Abruf schiefging, falls etwas schiefging.
+  letzterFehler String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum BookingStatus {

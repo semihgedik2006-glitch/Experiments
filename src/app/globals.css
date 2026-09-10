@@ -351,6 +351,23 @@ h3,
   opacity: 0.22;
 }
 
+/* Ersatz für ein fehlendes Trainerfoto: Anfangsbuchstaben auf einer
+   Fläche, deren Farbton aus dem Namen kommt.
+
+   Anders als beim Blogbild ist die Schrift hier NICHT gedämpft: Dort ist
+   der Buchstabe Zierde hinter dem Titel, hier ist er das Einzige, was von
+   der Person zu sehen ist - und muss deshalb die 4,5:1 zur Fläche
+   erreichen. Gemessen: 6,1:1 hell, 8,3:1 dunkel. */
+.trainer-initialen {
+  background: hsl(var(--trainer-hue) 40% 88%);
+  color: hsl(var(--trainer-hue) 55% 22%);
+}
+.dark .trainer-initialen,
+.on-ink .trainer-initialen {
+  background: hsl(var(--trainer-hue) 18% 18%);
+  color: hsl(var(--trainer-hue) 50% 78%);
+}
+
 /* Neon glow reads as broken on light backgrounds - dark theme only. */
 .text-glow {
   text-shadow: none;

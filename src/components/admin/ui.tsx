@@ -1,6 +1,20 @@
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
+
+/**
+ * Ein Symbol - aus lucide oder aus src/components/icons.
+ *
+ * Vorher stand hier LucideIcon. Damit ließen sich die eigenen
+ * Markensymbole (Instagram, Facebook, TikTok) nirgends einsetzen, obwohl
+ * sie dieselben Angaben entgegennehmen - lucide führt seine Symbole über
+ * forwardRef, unsere sind einfache Funktionen. Geprüft wird jetzt, was
+ * tatsächlich gebraucht wird: Größe, Klasse, Ausblenden.
+ */
+export type SymbolTyp = ComponentType<{
+  size?: number | string;
+  className?: string;
+  "aria-hidden"?: boolean | "true" | "false";
+}>;
 
 /**
  * Gemeinsame Bausteine für alle Admin-Seiten.
@@ -98,7 +112,7 @@ export function StatusBadge({
 }: {
   ton: Ton;
   children: ReactNode;
-  icon?: LucideIcon;
+  icon?: SymbolTyp;
 }) {
   return (
     <span className={`badge badge-${ton}`}>
@@ -119,7 +133,7 @@ export function EmptyState({
   actionHref,
   actionLabel,
 }: {
-  icon: LucideIcon;
+  icon: SymbolTyp;
   title: string;
   children?: ReactNode;
   actionHref?: string;

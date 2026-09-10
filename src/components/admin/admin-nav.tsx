@@ -18,18 +18,20 @@ import {
   DatabaseBackup,
   Users,
   UserCog,
+  UserRound,
   BarChart3,
   Ticket,
   MailCheck,
   Hourglass,
   FileText,
-  type LucideIcon,
 } from "lucide-react";
+import { InstagramIcon } from "@/components/icons/social-icons";
+import type { SymbolTyp } from "@/components/admin/ui";
 
 type NavItem = {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: SymbolTyp;
   /** Bereiche, die nur die Leitung sieht. Eine Studioleitung verwaltet
       ihren Standort, nicht die Marke. */
   nurLeitung?: boolean;
@@ -63,6 +65,7 @@ const groups: NavGroup[] = [
       { href: "/admin/newsletter", label: "Newsletter", icon: Send, nurLeitung: true },
       { href: "/admin/aktionen", label: "Aktionscodes", icon: Ticket, nurLeitung: true },
       { href: "/admin/vorlagen", label: "Antwortvorlagen", icon: FileText, nurLeitung: true },
+      { href: "/admin/instagram", label: "Instagram", icon: InstagramIcon, nurLeitung: true },
       { href: "/admin/mails", label: "E-Mail-Versand", icon: MailCheck, nurLeitung: true },
     ],
   },
@@ -70,6 +73,7 @@ const groups: NavGroup[] = [
     title: "Verwaltung",
     items: [
       { href: "/admin/studios", label: "Studios", icon: Building2 },
+      { href: "/admin/trainer", label: "Trainer", icon: UserRound },
       { href: "/admin/sichtbarkeit", label: "Sichtbarkeit", icon: Eye, nurLeitung: true },
       { href: "/admin/sicherung", label: "Datensicherung", icon: DatabaseBackup, nurLeitung: true },
       { href: "/admin/team", label: "Zugänge", icon: Users, nurLeitung: true },

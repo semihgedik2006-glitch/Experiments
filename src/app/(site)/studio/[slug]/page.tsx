@@ -10,6 +10,7 @@ import { haversineDistanceKm } from "@/lib/geo";
 import { tageAusSlots } from "@/lib/termin-tage";
 import { freiePlaetze } from "@/lib/kapazitaet";
 import { Container } from "@/components/ui/container";
+import { TrainerWand } from "@/components/studio/trainer-wand";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
@@ -96,12 +97,26 @@ export default async function StudioDetailSeite({
   const ort = ortsname(studio.name, studio.city);
   const anschrift = `${studio.street}, ${studio.postalCode} ${studio.city}`;
 
-  const [alleStudios, slots] = await Promise.all([
+  const [alleStudios, slots, trainer] = await Promise.all([
     prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.availabilitySlot.findMany({
       where: { studioId: studio.id, date: { gte: heuteMitternacht() } },
       include: { bookings: { where: { status: { not: "CANCELLED" } } } },
       orderBy: [{ date: "asc" }, { startTime: "asc" }, { id: "asc" }],
+    }),
+    // Nur die eingeschalteten Profile, und nur die Felder, die die Karte
+    // braucht - die Reihenfolge legt das Studio im Adminbereich fest.
+    prisma.trainer.findMany({
+      where: { studioId: studio.id, aktiv: true },
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      select: {
+        id: true,
+        name: true,
+        rolle: true,
+        qualifikation: true,
+        text: true,
+        fotoUrl: true,
+      },
     }),
   ]);
 
@@ -228,6 +243,10 @@ export default async function StudioDetailSeite({
           </Container>
         </section>
       )}
+
+      {/* Wer betreut - steht vor der Terminbuchung, weil er genau die
+          Frage beantwortet, die unmittelbar davor aufkommt. */}
+      <TrainerWand ort={ort} trainer={trainer} />
 
       {/* Terminbuchung für genau diesen Standort */}
       <section id="termin" className="scroll-mt-20 border-t border-border py-20 sm:py-24">

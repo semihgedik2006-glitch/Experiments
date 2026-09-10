@@ -19,7 +19,8 @@ export type ToggleKey =
   | "preise"
   | "google-bewertungen"
   | "newsletter"
-  | "kommentare";
+  | "kommentare"
+  | "instagram";
 
 export const toggleDefinitions: {
   key: ToggleKey;
@@ -76,6 +77,13 @@ export const toggleDefinitions: {
     key: "newsletter",
     label: "Newsletter-Anmeldung",
     description: "Das Anmeldefeld im Fußbereich der Seite.",
+    defaultVisible: true,
+  },
+  {
+    key: "instagram",
+    label: "Instagram-Wand",
+    description:
+      "Sechs Bilder aus dem Instagram-Konto auf der Startseite. Erscheint erst, wenn unter „Instagram“ ein Zugang hinterlegt ist.",
     defaultVisible: true,
   },
   {

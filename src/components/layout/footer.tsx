@@ -38,7 +38,7 @@ export async function Footer({
                 aria-label={label}
                 className="flex h-9 w-9 items-center justify-center rounded-full border border-border transition-colors hover:border-lime hover:text-accent"
               >
-                <Icon width={16} height={16} />
+                <Icon size={16} />
               </a>
             ))}
           </div>
