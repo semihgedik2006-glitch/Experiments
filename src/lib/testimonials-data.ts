@@ -26,7 +26,7 @@ export const testimonials: Testimonial[] = [
     age: 55,
     goal: "Muskelaufbau",
     quote:
-      "Ich dachte, für richtiges Krafttraining wäre ich zu spät dran. Falsch gedacht. Die Trainer holen mich genau da ab, wo ich stehe, und die Betreuung ist wirklich 1:1.",
+      "Ich dachte, für richtiges Krafttraining wäre ich zu spät dran. Falsch gedacht. Die Trainer holen mich genau da ab, wo ich stehe, und die Betreuung ist wirklich persönlich.",
     rating: 5,
     months: 14,
   },

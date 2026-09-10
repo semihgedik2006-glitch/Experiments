@@ -62,6 +62,13 @@
      Balken: Die Länge zeigt schon die Menge - sie zusätzlich einzufärben
      verbraucht den Kanal, der sonst Zugehörigkeit zeigen könnte. */
   --chart-mark: #527012;
+
+  /* Der Ring im Hero. Nicht das Marken-Limette: Gemessen kam es auf der
+     nahezu weißen Karte auf 2,30:1 - unter den 3:1, die eine Grafik
+     braucht, die eine Aussage trägt. Dieser Ton stammt aus derselben
+     Familie und misst 5,4:1. Im Dunkelmodus bleibt das Marken-Limette
+     stehen, dort erreicht es 13:1. */
+  --ring-mark: #4a6810;
 }
 
 .dark {
@@ -98,6 +105,7 @@
      blendet. Dieser Ton stammt aus derselben Farbfamilie und erfüllt
      zugleich den Mindestabstand von 3:1 zur Fläche. */
   --chart-mark: #6f9622;
+  --ring-mark: #c3f53c;
 }
 
 /* Ein dunkler Abschnitt schreibt die Farbvariablen nur für sich selbst um.
@@ -410,6 +418,89 @@ h3,
       color-mix(in srgb, var(--color-lime) 12%, transparent),
       transparent 70%
     );
+}
+
+/* ---------------------------------------------------------------------------
+   Impulskarte im Hero.
+
+   Sie steht auf demselben Verlauf wie der Rest des Abschnitts und braucht
+   deshalb einen eigenen Grund - sonst schwimmt sie darin. Die Fläche ist
+   halb durchsichtig mit Weichzeichner: Der Schimmer bleibt sichtbar, die
+   Karte hebt sich trotzdem ab. Klein genug, dass der Weichzeichner die
+   Bildrate nicht kostet - anders als eine bildschirmfüllende Ebene.
+--------------------------------------------------------------------------- */
+.impuls-karte {
+  background-color: color-mix(in srgb, var(--color-surface-raised) 82%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, #fff 60%, transparent) inset,
+    0 18px 50px -20px rgb(0 0 0 / 0.25);
+}
+.dark .impuls-karte {
+  background-color: color-mix(in srgb, var(--color-surface-raised) 72%, transparent);
+  /* Auf dunklem Grund trägt ein Schatten nicht - eine helle Kante oben
+     schon. Sie ist es, die eine Fläche als erhoben lesbar macht. */
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, #fff 10%, transparent) inset,
+    0 24px 60px -24px rgb(0 0 0 / 0.6);
+}
+
+/* Der Ring zeichnet sich beim Öffnen einmal selbst. */
+@keyframes impuls-ring-fuellen {
+  from {
+    stroke-dashoffset: var(--ring-len);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.impuls-ring {
+  stroke: var(--ring-mark);
+  animation: impuls-ring-fuellen 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.65s;
+}
+
+/* Die Welle dahinter und der Punkt in der Kennzeichnung atmen im selben
+   Takt. Beides nur Deckkraft und Skalierung - das rechnet die Grafikkarte,
+   ohne die Seite neu zu vermessen. */
+@keyframes impuls-atmen {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+.impuls-welle {
+  animation: impuls-atmen 3.2s ease-in-out infinite;
+}
+@keyframes puls-ring {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+.puls-welle {
+  animation: puls-ring 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .impuls-ring {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .impuls-welle,
+  .puls-welle {
+    animation: none;
+  }
 }
 
 /* ---------------------------------------------------------------------------

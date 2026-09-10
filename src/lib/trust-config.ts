@@ -50,7 +50,7 @@ export const studioFacts: { value: string; label: string }[] = [
 export const trustPoints = [
   {
     icon: "user" as const,
-    title: "Immer 1:1 betreut",
+    title: "Immer persönlich betreut",
     text: "Kein Training auf eigene Faust. Bei jeder Einheit steht ein Trainer neben dir und stellt die Intensität ein.",
   },
   {

@@ -106,7 +106,7 @@ export default async function UeberUnsPage() {
                 initials: "T2",
                 name: "Dein/e Trainer/in",
                 role: "EMS-Coach (Platzhalter)",
-                text: "Begleitet dich 1:1 durchs Training und passt jede Übung an deine Tagesform an.",
+                text: "Begleitet dich persönlich durchs Training und passt jede Übung an deine Tagesform an.",
               },
             ].map((member) => (
               <StaggerItem key={member.role} className="h-full">

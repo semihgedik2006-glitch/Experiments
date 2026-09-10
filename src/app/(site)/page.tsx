@@ -10,7 +10,8 @@ import { FaqSection } from "@/components/faq-section";
 import { CtaBanner } from "@/components/cta-banner";
 import { StudioJsonLd, WebsiteJsonLd, FaqJsonLd } from "@/components/structured-data";
 import { getToggles } from "@/lib/site-toggles";
-import { getStudios } from "@/lib/data";
+import { getStudios, getUpcomingSlots } from "@/lib/data";
+import { formatDateShort } from "@/lib/format";
 
 export default async function Home() {
   // Ausgeblendete Bereiche entfallen auch auf der Startseite - sonst
@@ -28,12 +29,33 @@ export default async function Home() {
         ? `EMS-Studio in ${studios[0].city}`
         : "EMS-Training in Köln und Umgebung";
 
+  // Der nächste tatsächlich freie Termin. Er steht im Hero und macht aus
+  // einem Versprechen eine Verabredung: "Donnerstag um 9" ist etwas
+  // anderes als "jetzt Termin sichern".
+  //
+  // Bewusst aus den echten Daten und nicht aus einem festen Text: Steht
+  // dort ein Termin, den es nicht gibt, ist das Vertrauen beim ersten
+  // Klick weg. Gibt es keinen, entfällt die Zeile ersatzlos.
+  const naechsteSlots = toggles.studio ? await getUpcomingSlots() : [];
+  const naechster = naechsteSlots[0];
+  const naechsterTermin = naechster
+    ? {
+        label: `${formatDateShort(naechster.date)} um ${naechster.startTime} Uhr`,
+        studio: studios.find((s) => s.id === naechster.studioId)?.name ?? "",
+        href: "/probetermin",
+      }
+    : null;
+
   return (
     <>
       <StudioJsonLd />
       <WebsiteJsonLd />
       <FaqJsonLd />
-      <Hero standorte={standorte} />
+      <Hero
+        standorte={standorte}
+        anzahlStudios={studios.length}
+        naechsterTermin={naechsterTermin}
+      />
       <StatsStrip />
       <UspGrid />
       <HowItWorks />

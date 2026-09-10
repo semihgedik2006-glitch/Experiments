@@ -64,7 +64,7 @@ const comparison = [
   { label: "Zeitaufwand pro Woche", ems: "20 Minuten", gym: "3-5 Stunden inkl. Anfahrt" },
   { label: "Aktivierte Muskelfasern", ems: "bis zu 90% gleichzeitig", gym: "je Übung einzelne Muskelgruppen" },
   { label: "Gelenkbelastung", ems: "minimal - ohne Zusatzgewichte", gym: "hoch bei schweren Gewichten" },
-  { label: "Betreuung", ems: "immer 1:1 durch Trainer", gym: "meist auf sich gestellt" },
+  { label: "Betreuung", ems: "immer persönlich durch einen Trainer", gym: "meist auf sich gestellt" },
   { label: "Einstiegshürde", ems: "niedrig - Plan wird angepasst", gym: "hoch - Technik muss sitzen" },
   { label: "Tiefenmuskulatur", ems: "wird direkt mitstimuliert", gym: "nur über spezielle Übungen" },
 ];

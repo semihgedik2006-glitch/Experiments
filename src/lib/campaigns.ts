@@ -34,7 +34,7 @@ export const campaigns: Record<string, Campaign> = {
       "Probier EMS-Training kostenlos aus - mit persönlicher Betreuung, ohne Vertrag und ohne Verpflichtung. Danach entscheidest du in Ruhe.",
     bullets: [
       "Nur 20 Minuten pro Woche statt stundenlang im Fitnessstudio",
-      "Immer 1:1 betreut - kein Training auf eigene Faust",
+      "Immer persönlich betreut - kein Training auf eigene Faust",
       "Gelenkschonend und auch für Wiedereinsteiger geeignet",
     ],
     formTitle: "Sichere dir deinen Termin",

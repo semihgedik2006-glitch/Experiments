@@ -19,7 +19,7 @@ const items = [
   },
   {
     icon: Users,
-    title: "1:1 Betreuung",
+    title: "Persönlich betreut",
     text: "Persönliche Trainer begleiten jede Einheit individuell und passen sie an dich an.",
   },
   {
