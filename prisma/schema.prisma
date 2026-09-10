@@ -306,6 +306,16 @@ model BlogPost {
   excerpt     String
   content     String
   coverImage  String?
+  /// Schlagwörter zu diesem Beitrag, im Adminbereich vergeben.
+  ///
+  /// Sie tragen zwei Dinge: den Filter in der Blogübersicht und die
+  /// verwandten Beiträge unter einem Artikel. Ohne Themen heißt "verwandt"
+  /// nur "zuletzt erschienen", und das ist bei wenigen Beiträgen zufällig.
+  ///
+  /// Als Textliste und nicht als eigene Tabelle: Ein Thema hat keine
+  /// Eigenschaft außer seinem Namen, und eine Verknüpfungstabelle für reine
+  /// Schlagwörter macht jedes Auslesen aufwendiger, ohne etwas zu können.
+  themen      String[]  @default([])
   published   Boolean   @default(false)
   publishedAt DateTime?
   createdAt   DateTime  @default(now())

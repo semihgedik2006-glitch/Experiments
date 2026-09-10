@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { themenLesen } from "@/lib/blog-themen";
 import { verlangeLeitungAktion } from "@/lib/admin-rechte";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
@@ -23,6 +24,10 @@ export async function createPost(
   const title = String(formData.get("title") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
+  // Freiwillig - ein Beitrag ohne Themen erscheint weiterhin, nur ohne
+  // Filterzuordnung. Aufbereitet wird zentral (siehe blog-themen.ts):
+  // Doppelte raus, Länge begrenzt, höchstens acht.
+  const themen = themenLesen(String(formData.get("themen") ?? ""));
   const published = formData.get("published") === "on";
 
   if (!title || !excerpt || !content) {
@@ -36,7 +41,7 @@ export async function createPost(
   }
 
   await prisma.blogPost.create({
-    data: { title, slug, excerpt, content, published, publishedAt: published ? new Date() : null },
+    data: { title, slug, excerpt, content, themen, published, publishedAt: published ? new Date() : null },
   });
 
   revalidatePath("/admin/blog");
@@ -54,6 +59,10 @@ export async function updatePost(
   const title = String(formData.get("title") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
+  // Freiwillig - ein Beitrag ohne Themen erscheint weiterhin, nur ohne
+  // Filterzuordnung. Aufbereitet wird zentral (siehe blog-themen.ts):
+  // Doppelte raus, Länge begrenzt, höchstens acht.
+  const themen = themenLesen(String(formData.get("themen") ?? ""));
   const published = formData.get("published") === "on";
 
   if (!title || !excerpt || !content) {
@@ -69,6 +78,7 @@ export async function updatePost(
       title,
       excerpt,
       content,
+      themen,
       published,
       publishedAt: published ? (existing.publishedAt ?? new Date()) : existing.publishedAt,
     },

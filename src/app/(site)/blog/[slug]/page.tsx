@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { MessageCircle } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, MessageCircle } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { CommentForm } from "@/components/comment-form";
 import { CommentReplyToggle } from "@/components/comment-reply-toggle";
-import { getPostBySlug, getApprovedComments } from "@/lib/data";
+import { getPostBySlug, getApprovedComments, getPublishedPosts } from "@/lib/data";
+import { verwandteBeitraege } from "@/lib/blog-themen";
 import { formatDate } from "@/lib/format";
 import { PostThumb } from "@/components/blog/post-thumb";
 import { ArticleJsonLd } from "@/components/structured-data";
@@ -46,6 +48,12 @@ export default async function BlogPostPage({ params }: Props) {
 
   const comments = toggles.kommentare ? await getApprovedComments(post.id) : [];
 
+  // Alle veröffentlichten Beiträge, um daraus die passenden auszuwählen.
+  // Bei einer Handvoll Beiträgen ist das billiger als eine eigene Abfrage
+  // mit Themenvergleich in der Datenbank - und es bleibt lesbar.
+  const alle = await getPublishedPosts();
+  const verwandte = verwandteBeitraege(post, alle);
+
   return (
     <article className="py-20">
       <ArticleJsonLd
@@ -60,6 +68,22 @@ export default async function BlogPostPage({ params }: Props) {
           {post.publishedAt ? formatDate(post.publishedAt) : ""}
         </span>
         <h1 className="mt-3 text-3xl font-black tracking-tight md:text-4xl">{post.title}</h1>
+
+        {/* Die Themen sind Links: Wer den Beitrag interessant fand, findet
+            damit in einem Klick die anderen zum selben Thema. */}
+        {post.themen.length > 0 && (
+          <nav aria-label="Themen dieses Beitrags" className="mt-4 flex flex-wrap gap-2">
+            {post.themen.map((thema) => (
+              <Link
+                key={thema}
+                href={`/blog?thema=${encodeURIComponent(thema)}`}
+                className="rounded-full border border-border px-3 py-1 text-xs transition-colors hover:border-lime hover:text-accent"
+              >
+                {thema}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         {post.coverImage && (
           <div className="mt-8 overflow-hidden rounded-2xl border border-border">
@@ -77,6 +101,32 @@ export default async function BlogPostPage({ params }: Props) {
             <p key={i}>{paragraph}</p>
           ))}
         </div>
+
+        {/* Verwandte Beiträge.
+            Wer bis hierher gelesen hat, ist der aufmerksamste Besucher der
+            Seite - und stand bisher am Ende vor nichts. */}
+        {verwandte.length > 0 && (
+          <div className="mt-14 border-t border-border pt-10">
+            <h2 className="text-lg font-semibold">Passt dazu</h2>
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              {verwandte.map((anderer) => (
+                <Link
+                  key={anderer.id}
+                  href={`/blog/${anderer.slug}`}
+                  className="karte-hebt flex h-full flex-col rounded-xl border border-border bg-surface p-4"
+                >
+                  <span className="text-sm font-semibold">{anderer.title}</span>
+                  <span className="mt-2 line-clamp-3 flex-1 text-xs text-muted">
+                    {anderer.excerpt}
+                  </span>
+                  <span className="mt-3 inline-flex items-center gap-1 text-xs text-accent">
+                    Lesen <ArrowRight size={12} aria-hidden />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-14 border-t border-border pt-10 text-center">
           <p className="text-muted">Neugierig geworden?</p>

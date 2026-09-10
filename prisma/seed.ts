@@ -68,6 +68,7 @@ async function main() {
   const articles = [
     {
       slug: "was-ist-ems-training",
+      themen: ["Grundlagen", "EMS erklärt"],
       title: "Was ist EMS-Training und wie funktioniert es?",
       excerpt:
         "EMS steht für Elektro-Muskel-Stimulation. Wir erklären, wie das Training funktioniert und warum 20 Minuten pro Woche ausreichen.",
@@ -76,6 +77,7 @@ async function main() {
     },
     {
       slug: "ems-fuer-berufstaetige",
+      themen: ["Alltag", "Wenig Zeit"],
       title: "EMS-Training für Berufstätige mit wenig Zeit",
       excerpt:
         "Kein Zeitaufwand für Anfahrt, Umziehen oder lange Trainingseinheiten. So passt effektives Training in einen vollen Alltag.",
@@ -84,6 +86,7 @@ async function main() {
     },
     {
       slug: "ems-gegen-rueckenschmerzen",
+      themen: ["Rücken", "Gesundheit"],
       title: "EMS gegen Rückenschmerzen: Was steckt dahinter?",
       excerpt:
         "Rund 80% der Deutschen kennen Rückenschmerzen. Warum EMS-Training gerade die tiefe Rumpfmuskulatur erreicht, die klassisches Training oft verfehlt.",
@@ -92,6 +95,7 @@ async function main() {
     },
     {
       slug: "abnehmen-mit-ems",
+      themen: ["Abnehmen", "Ernährung"],
       title: "Abnehmen mit EMS: realistisch erklärt",
       excerpt:
         "Kann man mit 20 Minuten pro Woche wirklich abnehmen? Ja - aber anders, als die Werbung mancher Anbieter verspricht. Ein ehrlicher Blick.",
@@ -100,6 +104,7 @@ async function main() {
     },
     {
       slug: "5-mythen-ueber-ems",
+      themen: ["Grundlagen", "EMS erklärt", "Gesundheit"],
       title: "5 Mythen über EMS-Training im Faktencheck",
       excerpt:
         "Strom am Körper? Da halten sich hartnäckige Gerüchte. Wir räumen mit den fünf häufigsten Mythen auf.",
