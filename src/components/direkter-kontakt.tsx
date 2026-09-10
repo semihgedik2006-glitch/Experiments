@@ -4,6 +4,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { siteConfig } from "@/lib/site-config";
 import { getStudios } from "@/lib/data";
 import { isVisible } from "@/lib/site-toggles";
+import { WhatsappKnopf } from "@/components/whatsapp-knopf";
 
 /**
  * Direkter Kontaktweg.
@@ -25,6 +26,11 @@ export async function DirekterKontakt({
   text?: string;
 }) {
   const studios = (await isVisible("studio")) ? await getStudios() : [];
+
+  // WhatsApp nur, wenn wenigstens ein Standort eine Nummer hinterlegt hat.
+  // Genommen wird die des obersten - das ist derselbe Standort, dessen
+  // Anschrift auch im Impressum als Hauptsitz steht.
+  const mitWhatsapp = studios.find((studio) => studio.whatsapp?.trim());
 
   const wege = [
     {
@@ -74,6 +80,19 @@ export async function DirekterKontakt({
             </a>
           ))}
         </div>
+
+        {/* WhatsApp steht unter den drei Karten und nicht als vierte: Es
+            ist ein zusätzlicher Weg, kein gleichwertiger - nicht jeder
+            Standort hat eine Nummer, und dann stünde dort eine Lücke. */}
+        {mitWhatsapp?.whatsapp && (
+          <div className="mt-5">
+            <WhatsappKnopf
+              nummer={mitWhatsapp.whatsapp}
+              variante="schlicht"
+              text="Hallo, ich habe eine Frage zum EMS-Training bei Körperformen."
+            />
+          </div>
+        )}
 
         {/* Bei vierzehn Standorten ist die zentrale Nummer nicht immer die
             richtige - jedes Studio hat eine eigene. */}

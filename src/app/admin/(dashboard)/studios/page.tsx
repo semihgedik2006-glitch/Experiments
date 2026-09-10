@@ -24,6 +24,8 @@ function StudioFields({
     email: string;
     mapEmbedUrl: string;
     openingHours: string;
+    whatsapp: string | null;
+    googleReviewUrl: string | null;
     intro: string | null;
     anfahrt: string | null;
     latitude: number | null;
@@ -68,6 +70,40 @@ function StudioFields({
       </div>
       <input type="tel" name="phone" placeholder="Telefon" defaultValue={defaults?.phone} className={inputClass} />
       <input type="email" name="email" placeholder="E-Mail" defaultValue={defaults?.email} className={inputClass} />
+
+      {/* Getrennt vom Telefonfeld: Nicht jede Festnetznummer ist auch bei
+          WhatsApp erreichbar, und ein Knopf, der in einem Konto landet,
+          das niemand liest, ist schlimmer als keiner. Leer lassen heißt:
+          kein WhatsApp-Knopf auf der Standortseite. */}
+      <label className="block">
+        <span className="text-xs text-muted">WhatsApp-Nummer (optional)</span>
+        <input
+          type="tel"
+          name="whatsapp"
+          defaultValue={defaults?.whatsapp ?? ""}
+          placeholder="z.B. 0157 85090199"
+          className={`${inputClass} mt-1`}
+        />
+      </label>
+
+      <label className="block">
+        <span className="text-xs text-muted">Google-Bewertungslink (optional)</span>
+        <input
+          type="url"
+          name="googleReviewUrl"
+          defaultValue={defaults?.googleReviewUrl ?? ""}
+          placeholder="https://g.page/r/..."
+          className={`${inputClass} mt-1`}
+        />
+        {/* Ohne diesen Link unterbleibt die Bitte um eine Bewertung. Eine
+            Mail, die jemanden auf die Suche nach dem richtigen Profil
+            schickt, bringt keine Bewertung. */}
+        <span className="mt-1 block text-xs text-muted">
+          Im Google-Unternehmensprofil unter &bdquo;Rezensionen&ldquo; &rarr;
+          &bdquo;Mehr Rezensionen erhalten&ldquo;. Ohne diesen Link geht einen Tag
+          nach dem Termin keine Bitte um eine Bewertung raus.
+        </span>
+      </label>
       <input
         type="url"
         name="mapEmbedUrl"

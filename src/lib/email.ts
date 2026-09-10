@@ -412,3 +412,43 @@ Im Adminbereich:
 ${siteConfig.url}/admin/nachrichten?gelesen=neu`,
   });
 }
+
+/**
+ * Die Bitte um eine Bewertung, einen Tag nach dem Termin.
+ *
+ * Drei Entscheidungen, die hier bewusst so getroffen sind:
+ *
+ * Einmal fragen. Eine zweite Bitte ist eine Belästigung, und wer beim
+ * ersten Mal nicht wollte, will beim zweiten erst recht nicht.
+ *
+ * Alle fragen, nicht nur die Zufriedenen. Vorher abzuklopfen, wie jemand
+ * das Training fand, und nur die Guten weiterzuschicken, ist verbotene
+ * Rosinenpickerei - und man sieht es einem Profil an, in dem ausschließlich
+ * fünf Sterne stehen.
+ *
+ * Ohne Gegenleistung. Eine Bewertung gegen einen Rabatt ist erkauft und
+ * verstößt gegen die Richtlinien von Google.
+ */
+export async function sendBewertungEmail(
+  angaben: TerminAngaben & { bewertungsLink: string },
+) {
+  return verschicken("BEWERTUNG", {
+    to: angaben.email,
+    subject: "Wie war dein Probetraining?",
+    text: `Hallo ${angaben.name},
+
+gestern warst du bei uns${angaben.studioName ? ` in ${angaben.studioName.replace(/^Körperformen\s+/i, "")}` : ""} zum Probetraining.
+
+Falls du dir zwei Minuten nehmen magst: Eine kurze Bewertung bei Google
+hilft uns mehr als jede Anzeige - und sie hilft dem Nächsten, der überlegt,
+ob EMS etwas für ihn ist.
+
+${angaben.bewertungsLink}
+
+Ehrlich ist uns dabei lieber als nett. Wenn etwas nicht gepasst hat,
+schreib es gern auch einfach uns - dann können wir es ändern.
+
+Viele Grüße
+Dein Körperformen-Team`,
+  });
+}

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { sendNachfassInternEmail, sendReminderEmail, TEAM_EMAIL } from "@/lib/email";
+import {
+  sendBewertungEmail,
+  sendNachfassInternEmail,
+  sendReminderEmail,
+  TEAM_EMAIL,
+} from "@/lib/email";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { terminAngaben } from "@/lib/termin-angaben";
 
@@ -13,13 +18,14 @@ const PROTOKOLL_TAGE = 90;
 /**
  * Der tägliche Lauf.
  *
- * Drei Dinge, alle einmal am Tag (siehe vercel.json):
+ * Vier Dinge, alle einmal am Tag (siehe vercel.json):
  *
  * 1. Erinnerung am Vortag an alle, deren bestätigter Termin morgen ansteht.
  * 2. Erinnerung an das Studio, wenn eine Anfrage zu lange offen liegt.
- * 3. Aufräumen im Mail-Protokoll.
+ * 3. Bitte um eine Bewertung, einen Tag nach dem Termin.
+ * 4. Aufräumen im Mail-Protokoll.
  *
- * Alle drei in einem Weg statt in dreien: Es ist derselbe Takt, dieselbe
+ * Alle vier in einem Weg statt in vieren: Es ist derselbe Takt, dieselbe
  * Absicherung, und jeder weitere Zeitplan ist eine weitere Stelle, an der
  * jemand vergisst, das Geheimnis zu setzen.
  *
@@ -99,6 +105,7 @@ export async function GET(request: NextRequest) {
   }
 
   const nachfass = await nachfassen();
+  const bewertungen = await umBewertungBitten(morgen);
   const aufgeraeumt = await altesProtokollLoeschen();
 
   return NextResponse.json({
@@ -108,8 +115,56 @@ export async function GET(request: NextRequest) {
     verschickt,
     fehlgeschlagen: fehler.length,
     nachfass,
+    bewertungen,
     protokollGeloescht: aufgeraeumt,
   });
+}
+
+/**
+ * Einen Tag nach dem Termin um eine Bewertung bitten.
+ *
+ * Warum ausgerechnet einen Tag danach: Direkt nach dem Training ist
+ * niemand am Handy, und nach einer Woche erinnert sich niemand mehr an
+ * das Gefühl. Der Tag danach trifft beides.
+ *
+ * Gefragt wird nur, wenn beim Studio ein Bewertungslink hinterlegt ist.
+ * Eine Mail, die jemanden auf die Suche nach dem richtigen Profil
+ * schickt, bringt keine Bewertung - sie kostet nur den einen Versuch,
+ * den man hat.
+ */
+async function umBewertungBitten(morgen: Date) {
+  // "Gestern" ist der Tag vor heute; morgen minus zwei Tage.
+  const gestern = new Date(morgen.getTime() - 2 * 24 * 60 * 60 * 1000);
+  const heute = new Date(morgen.getTime() - 24 * 60 * 60 * 1000);
+
+  const termine = await prisma.booking.findMany({
+    where: {
+      status: "CONFIRMED",
+      bewertungGesendetAm: null,
+      slot: { is: { date: { gte: gestern, lt: heute } } },
+      // Ohne Bewertungslink hat die Mail kein Ziel.
+      studio: { is: { googleReviewUrl: { not: null } } },
+    },
+    include: { slot: { include: { studio: true } }, studio: true },
+  });
+
+  let verschickt = 0;
+  for (const termin of termine) {
+    const link = termin.studio?.googleReviewUrl?.trim();
+    if (!link) continue;
+
+    const ok = await sendBewertungEmail({ ...terminAngaben(termin), bewertungsLink: link });
+    // Auch ein gescheiterter Versuch wird vermerkt: Diese Mail ist nicht
+    // wichtig genug, um sie tagelang erneut zu versuchen - und eine Bitte
+    // um eine Bewertung, die eine Woche später eintrudelt, wirkt seltsam.
+    await prisma.booking.update({
+      where: { id: termin.id },
+      data: { bewertungGesendetAm: new Date() },
+    });
+    if (ok) verschickt++;
+  }
+
+  return { gefunden: termine.length, verschickt };
 }
 
 /**

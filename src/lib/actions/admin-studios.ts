@@ -5,8 +5,28 @@ import { prisma } from "@/lib/prisma";
 import { verlangeLeitungAktion, verlangeStudioRecht } from "@/lib/admin-rechte";
 import { istGueltigerSlug, studioSlug } from "@/lib/slug";
 
-// Studio data appears on these public pages.
-const studioPaths = ["/", "/studio", "/kontakt", "/impressum", "/probetermin", "/admin/studios"];
+/**
+ * Seiten, auf denen Studiodaten stehen.
+ *
+ * "/preise" stand hier lange nicht drin, obwohl der Abschnitt "Lieber
+ * direkt fragen?" dort Studiodaten anzeigt. Folge: Eine geänderte
+ * Telefonnummer erschien überall - nur auf der Preisseite nicht, und zwar
+ * so lange, bis dort zufällig etwas anderes eine Erneuerung auslöste.
+ * Aufgefallen ist es erst beim WhatsApp-Knopf, der dort schlicht nicht
+ * erschien.
+ *
+ * Die Kopf- und Fußzeile zeigt ebenfalls Studiodaten. Sie steckt im
+ * gemeinsamen Rahmen, deshalb wird der Rahmen unten mit erneuert.
+ */
+const studioPaths = [
+  "/",
+  "/studio",
+  "/kontakt",
+  "/impressum",
+  "/probetermin",
+  "/preise",
+  "/admin/studios",
+];
 
 function revalidateStudios() {
   for (const path of studioPaths) revalidatePath(path);
@@ -14,6 +34,8 @@ function revalidateStudios() {
   // "page" würde nur die Adresse /studio/[slug] selbst erneuert und keine
   // der vierzehn tatsächlichen Seiten.
   revalidatePath("/studio/[slug]", "page");
+  // Die Kampagnenseiten zeigen die Studioauswahl im Buchungsformular.
+  revalidatePath("/aktion/[slug]", "page");
   // In der Sitemap stehen Änderungsdaten der Standorte.
   revalidatePath("/sitemap.xml");
 }
@@ -60,6 +82,8 @@ function readStudioForm(formData: FormData) {
     email: String(formData.get("email") ?? "").trim(),
     mapEmbedUrl: String(formData.get("mapEmbedUrl") ?? "").trim(),
     openingHours: String(formData.get("openingHours") ?? "").trim(),
+    whatsapp: String(formData.get("whatsapp") ?? "").trim() || null,
+    googleReviewUrl: String(formData.get("googleReviewUrl") ?? "").trim().slice(0, 500) || null,
     intro: String(formData.get("intro") ?? "").trim().slice(0, 600) || null,
     anfahrt: String(formData.get("anfahrt") ?? "").trim().slice(0, 800) || null,
     latitude: latitude ? Number(latitude) : null,

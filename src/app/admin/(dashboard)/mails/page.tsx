@@ -30,6 +30,7 @@ const artText: Record<MailArt, string> = {
   ERINNERUNG: "Erinnerung am Vortag",
   ABSAGE_GAST: "Absage durch den Gast",
   VERSCHOBEN_GAST: "Verlegung durch den Gast",
+  BEWERTUNG: "Bitte um eine Bewertung",
 };
 
 const ablaeufe: { titel: string; wann: string; an: string }[] = [
@@ -67,6 +68,11 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
     titel: "Absage und Verlegung",
     wann: "sobald ein Gast seinen Termin selbst ändert",
     an: "an den Gast, mit aktualisierter Termindatei",
+  },
+  {
+    titel: "Bitte um eine Bewertung",
+    wann: "täglich, einen Tag nach einem stattgefundenen Termin - und nur einmal",
+    an: "an den Gast, aber nur wenn beim Studio ein Bewertungslink hinterlegt ist",
   },
 ];
 

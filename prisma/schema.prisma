@@ -53,6 +53,8 @@ enum MailArt {
   ERINNERUNG
   ABSAGE_GAST
   VERSCHOBEN_GAST
+  /// Nach dem Termin: die Bitte um eine Bewertung.
+  BEWERTUNG
 }
 
 /// Nachweis, dass eine E-Mail den Weg nach draußen gefunden hat.
@@ -125,6 +127,13 @@ model StudioLocation {
   /// Eingang im Hinterhof. Genau danach wird lokal gesucht, und es steht
   /// auf keiner anderen Seite.
   anfahrt       String?
+  /// Link, unter dem man diesem Standort eine Google-Bewertung schreibt.
+  /// Ohne ihn unterbleibt die Bitte um eine Bewertung - eine Mail, die
+  /// jemanden auf die Suche schickt, bringt keine Bewertung.
+  googleReviewUrl String?
+  /// WhatsApp-Nummer dieses Standorts. Getrennt vom Telefonfeld, weil
+  /// nicht jede Festnetznummer bei WhatsApp erreichbar ist.
+  whatsapp      String?
   latitude      Float?
   longitude     Float?
   sortOrder     Int                @default(0)
@@ -239,6 +248,9 @@ model Booking {
   /// Ohne diesen Merker käme die Erinnerung jeden Tag erneut - und wäre
   /// nach drei Tagen nur noch Rauschen.
   nachfassGesendetAm     DateTime?
+  /// Wann nach dem Termin um eine Bewertung gebeten wurde. Einmal, nie
+  /// wieder - eine zweite Bitte ist eine Belästigung.
+  bewertungGesendetAm    DateTime?
 }
 
 model BlogPost {

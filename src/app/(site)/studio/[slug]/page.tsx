@@ -15,6 +15,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { MapEmbed } from "@/components/map-embed";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { StandortJsonLd } from "@/components/structured-data";
+import { WhatsappKnopf } from "@/components/whatsapp-knopf";
 
 /**
  * Eine eigene Seite je Standort.
@@ -151,6 +152,16 @@ export default async function StudioDetailSeite({
             <Button href={`tel:${studio.phone}`} variant="secondary">
               <Phone size={16} /> {studio.phone}
             </Button>
+          )}
+          {/* Nur wenn eine WhatsApp-Nummer hinterlegt ist. Ein Knopf, der
+              in einem Konto landet, das niemand liest, ist schlimmer als
+              keiner. */}
+          {studio.whatsapp && (
+            <WhatsappKnopf
+              nummer={studio.whatsapp}
+              variante="schlicht"
+              text={`Hallo, ich interessiere mich für ein Probetraining bei Körperformen in ${ort}.`}
+            />
           )}
         </div>
       </PageHeader>
