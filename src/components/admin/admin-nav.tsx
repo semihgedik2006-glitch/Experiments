@@ -18,6 +18,7 @@ import {
   Users,
   UserCog,
   BarChart3,
+  Ticket,
   type LucideIcon,
 } from "lucide-react";
 
@@ -54,6 +55,7 @@ const groups: NavGroup[] = [
     items: [
       { href: "/admin/nachrichten", label: "Nachrichten", icon: Mail, nurLeitung: true },
       { href: "/admin/newsletter", label: "Newsletter", icon: Send, nurLeitung: true },
+      { href: "/admin/aktionen", label: "Aktionscodes", icon: Ticket, nurLeitung: true },
     ],
   },
   {

@@ -59,7 +59,16 @@ export default async function AdminAuswertungPage({
       },
       // Nur, was gezählt wird. Namen und Telefonnummern haben in einer
       // Auswertung nichts zu suchen.
-      select: { createdAt: true, status: true, studioId: true, erreichbarkeit: true },
+      select: {
+        createdAt: true,
+        status: true,
+        studioId: true,
+        erreichbarkeit: true,
+        herkunftSeite: true,
+        herkunftKampagne: true,
+        herkunftQuelle: true,
+        promotion: { select: { code: true, label: true } },
+      },
     }),
     prisma.studioLocation.findMany({
       where: nurStudio ? { id: nurStudio } : undefined,
@@ -72,6 +81,8 @@ export default async function AdminAuswertungPage({
   const proStudio = new Map<string, number>();
   const proStudioWoche = new Map<string, number[]>();
   const proErreichbarkeit = new Map<string, number>();
+  const proQuelle = new Map<string, number>();
+  const proAktion = new Map<string, number>();
   let ohneStandort = 0;
   let ohneErreichbarkeit = 0;
   let bestaetigt = 0;
@@ -94,6 +105,23 @@ export default async function AdminAuswertungPage({
       // und ausgewiesen, statt stillschweigend zu fehlen - sonst sähe die
       // Verteilung genauer aus, als sie ist.
       ohneErreichbarkeit += 1;
+    }
+
+    // Woher jemand kam. Vorrang hat, was ihr selbst benannt habt: der
+    // Aktionscode, dann die Kampagnenkennung aus der beworbenen Adresse,
+    // dann die verweisende Seite. Sonst wüsste man bei einer Anzeige mit
+    // eigenem Code nur, dass jemand "über instagram.com" kam - und nicht,
+    // welche der drei Anzeigen es war.
+    const quelle = anfrage.promotion
+      ? `Code ${anfrage.promotion.code}`
+      : anfrage.herkunftKampagne
+        ? `Kampagne ${anfrage.herkunftKampagne}`
+        : (anfrage.herkunftQuelle ?? "nicht bekannt");
+    proQuelle.set(quelle, (proQuelle.get(quelle) ?? 0) + 1);
+
+    if (anfrage.promotion) {
+      const name = `${anfrage.promotion.code} - ${anfrage.promotion.label}`;
+      proAktion.set(name, (proAktion.get(name) ?? 0) + 1);
     }
 
     // Ohne Standort sind nur noch Anfragen von vor der Umstellung: Seither
@@ -145,6 +173,22 @@ export default async function AdminAuswertungPage({
 
   // Die Kurzdaten enden schon auf einen Punkt ("13.9."). Ein Satzpunkt
   // dahinter ergäbe "13.9.." - deshalb steht am Ende keiner.
+  // Herkunft nach Menge sortiert - anders als bei den Tageszeiten gibt es
+  // hier keine natürliche Reihenfolge, und die Frage lautet ausdrücklich
+  // "was bringt am meisten".
+  const herkunft = [...proQuelle.entries()]
+    .map(([name, wert]) => ({
+      schluessel: name,
+      name,
+      wert,
+      matt: name === "nicht bekannt" || name === "direkt",
+    }))
+    .sort((a, b) => b.wert - a.wert);
+
+  const aktionen = [...proAktion.entries()]
+    .map(([name, wert]) => ({ schluessel: name, name, wert }))
+    .sort((a, b) => b.wert - a.wert);
+
   const zeitraumText = `${wochen[0].zeitraum.split(" - ")[0]} bis ${wochen[wochen.length - 1].zeitraum.split(" - ")[1]}`;
 
   return (
@@ -231,6 +275,46 @@ export default async function AdminAuswertungPage({
               </details>
             </Panel>
           </AdminSection>
+
+          <AdminSection
+            title="Woher die Anfragen kamen"
+            description="Aktionscode zuerst, dann die Kennung aus der beworbenen Adresse, sonst die verweisende Seite."
+            className="mt-8"
+          >
+            <Panel>
+              <Rangbalken
+                beschriftung={`Herkunft der Anfragen, ${zeitraumText}`}
+                eintraege={herkunft}
+              />
+
+              {/* Ohne diesen Absatz liest man die Zahlen genauer, als sie
+                  sind. Das gehört daneben, nicht in eine Fußnote. */}
+              <p className="mt-4 flex items-start gap-2 border-t border-border pt-3 text-xs text-muted">
+                <Info size={14} className="mt-0.5 shrink-0" aria-hidden />
+                Gemessen wird ohne Cookies und ohne Drittanbieter - aus der
+                aufgerufenen Adresse und dem Verweis des Browsers. Deshalb ist
+                &bdquo;direkt&ldquo; eine Sammelkiste: Adresse selbst eingetippt,
+                aus einer App heraus geöffnet, oder der Browser hat den Verweis
+                unterdrückt. Belastbar wird die Zuordnung erst über eigene
+                Aktionscodes und Kampagnenkennungen in euren Anzeigen.
+              </p>
+            </Panel>
+          </AdminSection>
+
+          {aktionen.length > 0 && (
+            <AdminSection
+              title="Anfragen je Aktionscode"
+              description="Nur Anfragen, bei denen ein gültiger Code eingegeben wurde."
+              className="mt-8"
+            >
+              <Panel>
+                <Rangbalken
+                  beschriftung={`Anfragen je Aktionscode, ${zeitraumText}`}
+                  eintraege={aktionen}
+                />
+              </Panel>
+            </AdminSection>
+          )}
 
           <AdminSection
             title="Wann Interessenten erreichbar sind"

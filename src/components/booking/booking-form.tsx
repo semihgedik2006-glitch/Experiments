@@ -1,10 +1,11 @@
 "use client";
 
-import { startTransition, useActionState, useState } from "react";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { CheckCircle2 } from "lucide-react";
 import { createBooking } from "@/lib/actions/booking";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
+import { herkunftAusBrowser, type Herkunft } from "@/lib/herkunft";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
 type DayGroup = {
@@ -45,7 +46,26 @@ export function BookingForm({
     message: "",
     terminWunsch: "",
     erreichbarkeit: "",
+    aktionsCode: "",
   });
+
+  /**
+   * Woher der Besucher kam - Seite, Kampagnenkennung und die verweisende
+   * Seite.
+   *
+   * Einmal beim Aufbau festgehalten und nicht erst beim Absenden: Bis
+   * dahin kann jemand längst auf eine andere Seite geblättert haben, und
+   * dann stünde die falsche Herkunft an der Anfrage.
+   *
+   * Erst nach dem Aufbau im Browser, nicht schon beim Rendern auf dem
+   * Server: Dort gibt es weder Adresszeile noch Verweis. Würde die
+   * Startbelegung daraus abgeleitet, käme im Browser etwas anderes heraus
+   * als auf dem Server und React verwürfe die gelieferte Seite.
+   */
+  const herkunft = useRef<Herkunft>({ seite: null, kampagne: null, quelle: null });
+  useEffect(() => {
+    herkunft.current = herkunftAusBrowser();
+  }, []);
 
   const aendern =
     (feld: keyof typeof felder) =>
@@ -68,6 +88,11 @@ export function BookingForm({
   function absenden(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const daten = new FormData(event.currentTarget);
+    // Die Herkunft steht in keinem sichtbaren Feld - sie kommt aus dem,
+    // was der Browser ohnehin weiß, und wird hier angehängt.
+    daten.set("herkunftSeite", herkunft.current.seite ?? "");
+    daten.set("herkunftKampagne", herkunft.current.kampagne ?? "");
+    daten.set("herkunftQuelle", herkunft.current.quelle ?? "");
     startTransition(() => formAction(daten));
   }
 
@@ -282,6 +307,29 @@ export function BookingForm({
           ))}
         </div>
       </fieldset>
+
+      {/* Freiwillig und deshalb schmal: Wer keinen Code hat, soll nicht
+          das Gefühl bekommen, ihm fehle etwas. Ein falscher Code wird beim
+          Absenden benannt statt stillschweigend verworfen - sonst käme
+          jemand mit einer Erwartung ins Studio, von der dort niemand
+          weiß. */}
+      <label className="block max-w-xs">
+        <span className="text-sm">Aktionscode</span>
+        <span className="mt-0.5 block text-xs text-muted">
+          Nur, wenn du einen aus einer Anzeige oder von einem Flyer hast.
+        </span>
+        <input
+          type="text"
+          name="aktionsCode"
+          maxLength={40}
+          autoComplete="off"
+          autoCapitalize="characters"
+          value={felder.aktionsCode}
+          onChange={aendern("aktionsCode")}
+          placeholder="z.B. SOMMER26"
+          className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm uppercase outline-none placeholder:normal-case focus:border-lime"
+        />
+      </label>
 
       {state.message && !state.ok && (
         <motion.p

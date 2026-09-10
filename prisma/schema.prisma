@@ -36,6 +36,29 @@ model AdminUser {
   createdAt    DateTime @default(now())
 }
 
+/// Ein Aktionscode aus einer Anzeige, einem Flyer oder einer Kooperation.
+///
+/// Der Code wird im Anfrageformular eingegeben und an der Anfrage
+/// festgehalten. Damit lässt sich hinterher sagen, welche Anzeige
+/// tatsächlich Anfragen gebracht hat - und nicht nur, welche Klicks.
+model Promotion {
+  id          String    @id @default(cuid())
+  /// Immer in Großbuchstaben gespeichert. Wer "sommer26" tippt, meint
+  /// denselben Code wie "SOMMER26" - alles andere wäre eine Falle.
+  code        String    @unique
+  /// Wofür der Code steht, für den Adminbereich: "Anzeige Kölner
+  /// Wochenspiegel, KW 30".
+  label       String
+  /// Was der Gast bekommt. Erscheint als Bestätigung im Formular, sobald
+  /// der Code angenommen wurde.
+  benefit     String?
+  active      Boolean   @default(true)
+  validFrom   DateTime?
+  validUntil  DateTime?
+  createdAt   DateTime  @default(now())
+  bookings    Booking[]
+}
+
 model StudioLocation {
   id            String             @id @default(cuid())
   admins        AdminUser[]
@@ -131,6 +154,29 @@ model Booking {
   /// Text und nicht als Aufzählungstyp, damit sich die Spannen ändern
   /// lassen, ohne die Datenbank umzubauen.
   erreichbarkeit String?
+
+  /// Der eingelöste Aktionscode. Nur gesetzt, wenn er beim Absenden
+  /// gültig war - abgelaufene und unbekannte Codes werden im Formular
+  /// abgewiesen, damit niemand mit einer Erwartung ins Studio kommt, die
+  /// dort niemand kennt.
+  promotion   Promotion? @relation(fields: [promotionId], references: [id], onDelete: SetNull)
+  promotionId String?
+
+  /// Woher die Anfrage kam. Drei Angaben, alle ohne Cookies und ohne
+  /// einen Drittanbieter - sie stehen entweder in der aufgerufenen
+  /// Adresse oder im Verweis des Browsers:
+  ///
+  /// herkunftSeite    - auf welcher Seite das Formular stand
+  ///                    ("/probetermin", "/aktion/rueckenschmerzen")
+  /// herkunftKampagne - die Kennung aus der Adresse (utm_campaign oder k),
+  ///                    also das, was ihr selbst in die Anzeige schreibt
+  /// herkunftQuelle   - nur der Name der verweisenden Seite, etwa
+  ///                    "google.com". Bewusst ohne den Rest der Adresse:
+  ///                    Der volle Verweis kann Suchbegriffe und mehr
+  ///                    enthalten, und den brauchen wir nicht.
+  herkunftSeite    String?
+  herkunftKampagne String?
+  herkunftQuelle   String?
 }
 
 model BlogPost {

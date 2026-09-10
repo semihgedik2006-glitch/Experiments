@@ -51,7 +51,11 @@ export async function GET(
 
     const buchungen = await prisma.booking.findMany({
       where: nurStudio ? { studioId: nurStudio } : undefined,
-      include: { slot: true, studio: { select: { name: true } } },
+      include: {
+        slot: true,
+        studio: { select: { name: true } },
+        promotion: { select: { code: true } },
+      },
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     });
 
@@ -67,6 +71,10 @@ export async function GET(
         "Studio",
         "Erreichbar",
         "Terminwunsch",
+        "Aktionscode",
+        "Kampagne",
+        "Kam über",
+        "Seite",
         "Nachricht",
         "Interner Vermerk",
       ],
@@ -81,6 +89,10 @@ export async function GET(
         b.studio?.name ?? "",
         erreichbarkeitText(b.erreichbarkeit),
         b.terminWunsch ?? "",
+        b.promotion?.code ?? "",
+        b.herkunftKampagne ?? "",
+        b.herkunftQuelle ?? "",
+        b.herkunftSeite ?? "",
         b.message ?? "",
         b.internalNote ?? "",
       ]),

@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
-import { CalendarCheck, Download, PhoneCall, SearchX } from "lucide-react";
+import { CalendarCheck, Download, PhoneCall, SearchX, Ticket } from "lucide-react";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { AdminPage, EmptyState, StatusBadge, adminInput } from "@/components/admin/ui";
 import { SearchBox } from "@/components/admin/search-box";
@@ -72,7 +72,11 @@ export default async function AdminBookingsPage({
     prisma.booking.count({ where }),
     prisma.booking.findMany({
       where,
-      include: { slot: true, studio: { select: { name: true } } },
+      include: {
+        slot: true,
+        studio: { select: { name: true } },
+        promotion: { select: { code: true, label: true } },
+      },
       // Zweites Sortierkriterium: Ohne eindeutiges Merkmal darf die
       // Datenbank Einträge mit gleichem Zeitstempel zwischen zwei Abfragen
       // unterschiedlich anordnen. Beim Blättern kann dann ein Eintrag auf
@@ -178,6 +182,28 @@ export default async function AdminBookingsPage({
                 )}
                 {booking.message && (
                   <p className="mt-2 text-sm text-muted">„{booking.message}“</p>
+                )}
+
+                {/* Herkunft: nur, wenn etwas davon bekannt ist. Eine Zeile
+                    mit lauter "nicht bekannt" wäre reiner Platzverbrauch. */}
+                {(booking.promotion ||
+                  booking.herkunftKampagne ||
+                  booking.herkunftQuelle ||
+                  booking.herkunftSeite) && (
+                  <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+                    {booking.promotion && (
+                      <span className="inline-flex items-center gap-1 font-semibold text-accent">
+                        <Ticket size={12} aria-hidden />
+                        {booking.promotion.code}
+                        <span className="font-normal text-muted">
+                          ({booking.promotion.label})
+                        </span>
+                      </span>
+                    )}
+                    {booking.herkunftKampagne && <span>Kampagne: {booking.herkunftKampagne}</span>}
+                    {booking.herkunftQuelle && <span>über {booking.herkunftQuelle}</span>}
+                    {booking.herkunftSeite && <span>von {booking.herkunftSeite}</span>}
+                  </p>
                 )}
               </div>
 

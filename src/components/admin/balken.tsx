@@ -108,20 +108,33 @@ export function Rangbalken({
   const groesster = Math.max(...eintraege.map((e) => e.wert), 1);
 
   return (
-    <table className="w-full">
+    // table-fixed ist hier keine Kosmetik: Ohne feste Aufteilung richtet
+    // sich eine Tabellenspalte nach ihrem längsten Inhalt und ignoriert
+    // eine Höchstbreite. Ein Eintrag wie "WOCHENSPIEGEL30 - Anzeige
+    // Kölner Wochenspiegel KW 30" schob damit die ganze Seite auf dem
+    // Handy zur Seite. Mit fester Aufteilung greift das Kürzen.
+    <table className="w-full table-fixed">
       <caption className="sr-only">{beschriftung}</caption>
+      <colgroup>
+        <col className="w-[45%]" />
+        <col />
+        <col className="w-12" />
+      </colgroup>
       <tbody>
         {eintraege.map((eintrag) => (
           <tr key={eintrag.schluessel}>
             <th
               scope="row"
-              className={`max-w-[45%] truncate py-1.5 pr-3 text-left text-sm font-normal ${
+              // Der volle Text im Titel: Gekürzt wird nur die Anzeige,
+              // nicht die Information.
+              title={eintrag.name}
+              className={`truncate py-1.5 pr-3 text-left text-sm font-normal ${
                 eintrag.matt ? "text-muted" : ""
               }`}
             >
               {eintrag.name}
             </th>
-            <td className="w-full py-1.5">
+            <td className="py-1.5">
               {/* Rechts vier Pixel gerundet - das ist das Datenende. Links
                   gerade an der gemeinsamen Startlinie. */}
               <span

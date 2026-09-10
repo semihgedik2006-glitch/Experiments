@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
 import { neuerVerwaltungsSchluessel } from "@/lib/termin-angaben";
 import { istErreichbarkeit } from "@/lib/erreichbarkeit";
+import { aktionscodePruefen } from "@/lib/aktionscode";
+import { herkunftAusFormular } from "@/lib/herkunft";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
 export async function createBooking(
@@ -69,6 +71,14 @@ export async function createBooking(
     }
   }
 
+  // Der Code wird geprüft, bevor die Anfrage entsteht: Eine angenommene
+  // Anfrage mit einem Code, den es nicht gibt, führt später im Studio zu
+  // einem unangenehmen Gespräch.
+  const codePruefung = await aktionscodePruefen(String(formData.get("aktionsCode") ?? ""));
+  if (!codePruefung.ok) {
+    return { ok: false, message: codePruefung.meldung };
+  }
+
   if (slotId) {
     const slot = await prisma.availabilitySlot.findUnique({
       where: { id: slotId },
@@ -93,6 +103,8 @@ export async function createBooking(
     }
   }
 
+  const herkunft = herkunftAusFormular(formData);
+
   await prisma.booking.create({
     data: {
       slotId,
@@ -103,6 +115,10 @@ export async function createBooking(
       message: message || null,
       terminWunsch: terminWunsch || null,
       erreichbarkeit,
+      promotionId: codePruefung.aktion?.id ?? null,
+      herkunftSeite: herkunft.seite,
+      herkunftKampagne: herkunft.kampagne,
+      herkunftQuelle: herkunft.quelle,
       manageToken: neuerVerwaltungsSchluessel(),
     },
   });
