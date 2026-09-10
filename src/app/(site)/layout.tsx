@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { CursorGlow } from "@/components/cursor-glow";
+import { Lesefortschritt } from "@/components/ui/lesefortschritt";
 import { mainNav } from "@/lib/site-config";
 import { getToggles } from "@/lib/site-toggles";
 import { getStudios } from "@/lib/data";
@@ -30,6 +31,10 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         Zum Inhalt springen
       </a>
       <CursorGlow />
+      {/* Der Balken liegt über der Kopfzeile und bleibt beim Scrollen
+          sichtbar - er ist die einzige Anzeige dafür, wie viel Seite noch
+          kommt. */}
+      <Lesefortschritt />
       <Header nav={nav} studioLabel={studioLabel} />
       <main id="main-content" className="flex-1">
         {children}

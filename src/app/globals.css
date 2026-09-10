@@ -31,6 +31,7 @@
   --background: #fcfbf8;
   --surface: #f4f2ec;
   --surface-raised: #ffffff;
+
   --foreground: #171914;
   --muted: #61645a;
   --border-color: #e7e4da;
@@ -500,6 +501,187 @@ h3,
   .impuls-welle,
   .puls-welle {
     animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   EMS-Figur im Hero.
+
+   Der Umriss ist bewusst zurückhaltend gezeichnet: Er ist der Träger,
+   nicht der Inhalt. Was leuchtet, sind der Anzug und die Elektroden -
+   also das, worum es geht.
+
+   Alle Bewegungen laufen nur über Deckkraft und Skalierung. Skalierung in
+   einer SVG braucht transform-box und transform-origin, sonst rechnet der
+   Browser vom Nullpunkt der gesamten Grafik aus und der Punkt wandert quer
+   durchs Bild, statt an seiner Stelle größer zu werden.
+--------------------------------------------------------------------------- */
+/* Die Ringe. Bewusst sehr zurückhaltend: Sie sind der Rahmen, nicht der
+   Inhalt - was leuchtet, sind die Punkte und die Kurve. */
+.impuls-aussenring {
+  stroke: color-mix(in srgb, var(--color-foreground) 22%, transparent);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: impuls-drehen 60s linear infinite;
+}
+.impuls-innenring {
+  stroke: color-mix(in srgb, var(--color-foreground) 14%, transparent);
+}
+.impuls-bahn {
+  stroke: color-mix(in srgb, var(--color-foreground) 10%, transparent);
+}
+/* Die Scheibe unter der Zahl deckt die Kurve ab. Sie ist NICHT ganz
+   deckend: Der Schimmer des Abschnitts soll durchscheinen, sonst sitzt
+   ein weißer Kreis mitten im Bild. */
+.impuls-scheibe {
+  fill: color-mix(in srgb, var(--color-background) 88%, transparent);
+}
+
+@keyframes impuls-drehen {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Zwei Bögen, gegenläufig und mit unterschiedlichem Tempo. Gleiches Tempo
+   in dieselbe Richtung sähe aus wie ein einzelner dicker Ring. */
+.impuls-bogen-rechts,
+.impuls-bogen-links {
+  transform-box: fill-box;
+  transform-origin: 180px 180px;
+}
+.impuls-bogen-rechts {
+  animation: impuls-drehen 26s linear infinite;
+}
+.impuls-bogen-links {
+  animation: impuls-drehen 38s linear infinite reverse;
+}
+
+/* Die Signalkurve läuft von links nach rechts: ein kurzer sichtbarer
+   Abschnitt in einer sonst unsichtbaren Linie.
+
+   Die Zahlen müssen zur tatsächlichen Länge des Pfades passen (rund 200
+   Einheiten, die Ausschläge mitgerechnet). Mit den Werten der ersten
+   Fassung - 60 sichtbar, 700 Lücke - war die Kurve die meiste Zeit
+   vollständig unsichtbar und blitzte nur alle paar Sekunden kurz auf. */
+.impuls-kurve {
+  stroke-dasharray: 40 200;
+  animation: impuls-signal 3.4s linear infinite;
+}
+@keyframes impuls-signal {
+  from {
+    stroke-dashoffset: 240;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Die Zahl in der Mitte. Sie benutzt dieselbe Schrift wie die
+   Überschriften - eine SVG erbt sie nicht von allein. */
+.impuls-zahl {
+  font-family: var(--font-heading), system-ui, sans-serif;
+  fill: var(--color-foreground);
+}
+.impuls-einheit {
+  font-family: var(--font-body), system-ui, sans-serif;
+  fill: var(--color-muted);
+}
+
+/* Die Punkte auf dem Kreis sprechen der Reihe nach an - wie die Elektroden
+   im Anzug nacheinander die Muskelgruppen ansteuern. --takt kommt je Punkt
+   aus dem Markup. */
+.figur-punkt,
+.figur-welle {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.figur-punkt {
+  animation: figur-leuchten 4.8s ease-in-out infinite;
+  animation-delay: var(--takt, 0s);
+}
+@keyframes figur-leuchten {
+  0%,
+  55%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  8% {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+  28% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+}
+.figur-welle {
+  opacity: 0;
+  animation: figur-ausbreiten 4.8s ease-out infinite;
+  animation-delay: var(--takt, 0s);
+}
+/* Startet gedämpft: Am Anfang liegt die Welle deckungsgleich auf dem Punkt
+   darunter. Mit voller Deckkraft addieren sich beide, und der Punkt sieht
+   für einen Moment doppelt so kräftig aus wie alle anderen. */
+@keyframes figur-ausbreiten {
+  0% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  22%,
+  100% {
+    opacity: 0;
+    transform: scale(3.6);
+  }
+}
+
+/* Der Schein hinter der Figur atmet im Takt der Einheit. */
+.figur-schein {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: figur-atmen 6s ease-in-out infinite;
+}
+@keyframes figur-atmen {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+/* Angehalten, sobald die Grafik aus dem Bild ist. Der Browser rechnet
+   Animationen sonst weiter, auch wenn sie zehn Bildschirme weiter oben
+   stehen - gemessen kostet das beim Scrollen acht Bilder pro Sekunde.
+   "paused" statt "none": Beim Zurückscrollen läuft die Bewegung dort
+   weiter, wo sie stehengeblieben ist, statt sichtbar neu zu starten. */
+.bewegung-aus * {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .impuls-aussenring,
+  .impuls-bogen-rechts,
+  .impuls-bogen-links,
+  .impuls-kurve,
+  .figur-punkt,
+  .figur-welle,
+  .figur-schein {
+    animation: none;
+  }
+  /* Ohne Bewegung bleibt ein stimmiges Standbild: Kurve durchgezogen,
+     Punkte an, Wellen unsichtbar. */
+  .impuls-kurve {
+    stroke-dasharray: none;
+  }
+  .figur-punkt {
+    opacity: 1;
+  }
+  .figur-welle {
+    opacity: 0;
   }
 }
 

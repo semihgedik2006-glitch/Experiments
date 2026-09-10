@@ -6,6 +6,7 @@ import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { CalendarCheck, Download, PhoneCall, SearchX, Ticket, Users } from "lucide-react";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
+import { zielText } from "@/lib/ziel";
 import { AdminPage, EmptyState, StatusBadge, adminInput } from "@/components/admin/ui";
 import { SearchBox } from "@/components/admin/search-box";
 import { FilterChips, Pagination } from "@/components/admin/list-nav";
@@ -114,7 +115,7 @@ export default async function AdminBookingsPage({
       }
     >
       <div className="space-y-3">
-        <SearchBox platzhalter="Name, E-Mail, Telefon, Wunsch oder Nachricht" klasse="max-w-md" />
+        <SearchBox platzhalter="Name, E-Mail, Telefon oder Nachricht" klasse="max-w-md" />
 
         <FilterChips
           basis="/admin/bookings"
@@ -181,9 +182,18 @@ export default async function AdminBookingsPage({
                     Kommt zu zweit &ndash; zwei Plätze
                   </p>
                 )}
-                {/* Der Wunsch in eigenen Worten steht direkt unter dem
-                    Termin und nicht bei der Nachricht: Er entscheidet
-                    darüber, wann man zurückruft. */}
+                {/* Das Ziel entscheidet, worüber im ersten Gespräch
+                    geredet wird - deshalb steht es weit oben und nicht
+                    unten bei der Nachricht. */}
+                {booking.ziel && (
+                  <p className="mt-1 text-sm">
+                    <span className="text-muted">Ziel: </span>
+                    {zielText(booking.ziel)}
+                  </p>
+                )}
+                {/* Die Wunschzeit wird nicht mehr abgefragt. An älteren
+                    Anfragen steht dort echter Text - der bleibt sichtbar,
+                    solange es diese Anfragen gibt. */}
                 {booking.terminWunsch && (
                   <p className="mt-1 text-sm">
                     <span className="text-muted">Wunsch: </span>

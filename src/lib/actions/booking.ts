@@ -15,6 +15,7 @@ import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
 import { neuerVerwaltungsSchluessel } from "@/lib/termin-angaben";
 import { istErreichbarkeit } from "@/lib/erreichbarkeit";
+import { istZiel, zielText } from "@/lib/ziel";
 import { aktionscodePruefen } from "@/lib/aktionscode";
 import { herkunftAusFormular } from "@/lib/herkunft";
 import { passtNoch } from "@/lib/kapazitaet";
@@ -43,11 +44,15 @@ export async function createBooking(
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
-  const message = String(formData.get("message") ?? "").trim();
-  // Gekürzt statt abgewiesen: Der Wunsch ist ein Zusatz, an dem keine
-  // Anfrage scheitern soll. 200 Zeichen sind mehr als jede Zeitangabe
-  // braucht.
-  const terminWunsch = String(formData.get("terminWunsch") ?? "").trim().slice(0, 200);
+  // Gekürzt statt abgewiesen: Die Nachricht ist ein Zusatz, an dem keine
+  // Anfrage scheitern soll.
+  const message = String(formData.get("message") ?? "").trim().slice(0, 1000);
+  // Freiwillig, deshalb hier keine Abweisung: Ein Wert, den es nicht gibt,
+  // wird stillschweigend verworfen. Er kommt aus einer Auswahl, aber ein
+  // Formular lässt sich auch ohne Browser abschicken - ungeprüft stünde
+  // hier beliebiger Text und liefe später in die Auswertung.
+  const zielRoh = String(formData.get("ziel") ?? "").trim();
+  const ziel = istZiel(zielRoh) ? zielRoh : null;
 
   if (!name || !email || !phone) {
     return { ok: false, message: "Bitte fülle alle Pflichtfelder aus." };
@@ -172,7 +177,7 @@ export async function createBooking(
       email,
       phone,
       message: message || null,
-      terminWunsch: terminWunsch || null,
+      ziel,
       erreichbarkeit,
       zuZweit,
       promotionId: codePruefung.aktion?.id ?? null,
@@ -202,7 +207,9 @@ export async function createBooking(
       terminZeile: buchung.slot
         ? `${formatDate(buchung.slot.date)} um ${buchung.slot.startTime} Uhr`
         : "kein fester Termin - individuell abzustimmen",
-      terminWunsch: buchung.terminWunsch,
+      // Als Beschriftung, nicht als gespeicherter Wert: In der Mail soll
+      // "Rücken stärken" stehen und nicht "ruecken".
+      ziel: buchung.ziel ? zielText(buchung.ziel) : null,
       nachricht: buchung.message,
       aktionsCode: codePruefung.aktion?.code ?? null,
       herkunft: [herkunft.kampagne, herkunft.quelle, herkunft.seite]

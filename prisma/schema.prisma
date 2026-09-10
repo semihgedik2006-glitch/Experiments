@@ -237,11 +237,21 @@ model Booking {
   /// "will lieber abends". Geht nie in eine E-Mail an den Gast.
   internalNote   String?
 
-  /// Was sich der Gast an Zeit wünscht, in eigenen Worten: "abends ab 18
-  /// Uhr", "nur samstags". Steht gleichberechtigt neben den festen Zeiten -
-  /// wer keinen der angebotenen Termine kann, soll trotzdem anfragen können,
-  /// ohne seinen Wunsch in die Nachricht schreiben zu müssen.
+  /// Was sich der Gast an Zeit wünschte, in eigenen Worten.
+  ///
+  /// WIRD NICHT MEHR ABGEFRAGT. Das Feld war doppelt gemoppelt: Die festen
+  /// Zeiten stehen zur Auswahl, die telefonische Erreichbarkeit wird
+  /// gesondert erfragt, und wann es tatsächlich passt, klärt sich im
+  /// Rückruf. Die Spalte bleibt, weil an bereits eingegangenen Anfragen
+  /// echter Text von echten Menschen steht - er wird im Adminbereich
+  /// weiterhin angezeigt, nur nichts Neues mehr hineingeschrieben.
   terminWunsch   String?
+
+  /// Was der Gast erreichen will - einer der Werte aus src/lib/ziel.ts.
+  /// Freiwillig: Eine Anfrage darf nicht daran scheitern, dass jemand sein
+  /// Ziel noch nicht benennen kann. Bewusst KEINE Gesundheitsangabe, siehe
+  /// die Begründung in src/lib/ziel.ts.
+  ziel           String?
 
   /// Wann der Gast telefonisch am besten erreichbar ist - eine der
   /// Zeitspannen aus src/lib/erreichbarkeit.ts. Pflichtangabe im Formular:

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
 import { letzteWochen, wocheVon } from "@/lib/auswertung";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
+import { ZIELE } from "@/lib/ziel";
 import { AdminPage, AdminSection, EmptyState, Panel } from "@/components/admin/ui";
 import { Kennzahl, Rangbalken, Wochenbalken } from "@/components/admin/balken";
 import { FilterChips } from "@/components/admin/list-nav";
@@ -64,6 +65,7 @@ export default async function AdminAuswertungPage({
         status: true,
         studioId: true,
         erreichbarkeit: true,
+        ziel: true,
         herkunftSeite: true,
         herkunftKampagne: true,
         herkunftQuelle: true,
@@ -81,10 +83,12 @@ export default async function AdminAuswertungPage({
   const proStudio = new Map<string, number>();
   const proStudioWoche = new Map<string, number[]>();
   const proErreichbarkeit = new Map<string, number>();
+  const proZiel = new Map<string, number>();
   const proQuelle = new Map<string, number>();
   const proAktion = new Map<string, number>();
   let ohneStandort = 0;
   let ohneErreichbarkeit = 0;
+  let ohneZiel = 0;
   let bestaetigt = 0;
   let offen = 0;
 
@@ -105,6 +109,14 @@ export default async function AdminAuswertungPage({
       // und ausgewiesen, statt stillschweigend zu fehlen - sonst sähe die
       // Verteilung genauer aus, als sie ist.
       ohneErreichbarkeit += 1;
+    }
+
+    // Das Ziel ist freiwillig - "nicht angegeben" ist deshalb keine Lücke,
+    // sondern ein gültiges Ergebnis und wird als solches ausgewiesen.
+    if (anfrage.ziel) {
+      proZiel.set(anfrage.ziel, (proZiel.get(anfrage.ziel) ?? 0) + 1);
+    } else {
+      ohneZiel += 1;
     }
 
     // Woher jemand kam. Vorrang hat, was ihr selbst benannt habt: der
@@ -152,6 +164,21 @@ export default async function AdminAuswertungPage({
     })),
     ...(ohneErreichbarkeit > 0
       ? [{ schluessel: "ohne", name: "nicht angegeben", wert: ohneErreichbarkeit, matt: true }]
+      : []),
+  ];
+
+  // Hier ist die Reihenfolge NICHT vorgegeben - anders als bei den
+  // Tageszeiten gibt es unter den Zielen keine natürliche Abfolge. Deshalb
+  // nach Menge sortiert: Die Frage lautet "womit kommen die Leute zu uns",
+  // und darauf antwortet eine Rangfolge.
+  const ziele = [
+    ...ZIELE.map((option) => ({
+      schluessel: option.wert,
+      name: option.label,
+      wert: proZiel.get(option.wert) ?? 0,
+    })).sort((a, b) => b.wert - a.wert),
+    ...(ohneZiel > 0
+      ? [{ schluessel: "ohne", name: "nicht angegeben", wert: ohneZiel, matt: true }]
       : []),
   ];
 
@@ -325,6 +352,19 @@ export default async function AdminAuswertungPage({
               <Rangbalken
                 beschriftung={`Angegebene telefonische Erreichbarkeit, ${zeitraumText}`}
                 eintraege={erreichbarkeiten}
+              />
+            </Panel>
+          </AdminSection>
+
+          <AdminSection
+            title="Womit Interessenten zu euch kommen"
+            description="Die freiwillige Angabe aus dem Anfrageformular. Sie sagt, worüber im ersten Gespräch geredet werden sollte - und womit sich werben lässt."
+            className="mt-8"
+          >
+            <Panel>
+              <Rangbalken
+                beschriftung={`Angegebenes Ziel, ${zeitraumText}`}
+                eintraege={ziele}
               />
             </Panel>
           </AdminSection>

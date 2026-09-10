@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { CheckCircle2 } from "lucide-react";
 import { createBooking } from "@/lib/actions/booking";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
+import { ZIELE } from "@/lib/ziel";
 import { herkunftAusBrowser, type Herkunft } from "@/lib/herkunft";
 import type { TerminTag as DayGroup } from "@/lib/termin-tage";
 import type { ActionResult } from "@/lib/actions/newsletter";
@@ -42,8 +43,8 @@ export function BookingForm({
     email: "",
     phone: "",
     message: "",
-    terminWunsch: "",
     erreichbarkeit: "",
+    ziel: "",
     aktionsCode: "",
   });
 
@@ -223,25 +224,12 @@ export function BookingForm({
           </p>
         )}
 
-        {/* Der freie Wunsch steht bewusst im selben Schritt wie die festen
-            Zeiten und nicht als Nachsatz weiter unten: Wer keine der
-            angebotenen Zeiten kann, soll nicht das Gefühl haben, hier falsch
-            zu sein. Vorher landete so ein Hinweis im Nachrichtenfeld - oder
-            der Besucher brach ab. */}
-        <label className="block">
-          <span className="text-sm">
-            {days.length > 0 ? "Passt nichts davon? Schreib deine Wunschzeit:" : "Deine Wunschzeit"}
-          </span>
-          <input
-            type="text"
-            name="terminWunsch"
-            maxLength={200}
-            value={felder.terminWunsch}
-            onChange={aendern("terminWunsch")}
-            placeholder="z.B. abends ab 18 Uhr oder samstags vormittags"
-            className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
-          />
-        </label>
+        {/* Hier stand ein Feld "Deine Wunschzeit". Es ist entfallen: Die
+            festen Zeiten stehen darüber zur Auswahl, wann jemand
+            telefonisch erreichbar ist, wird weiter unten gefragt - und wann
+            es tatsächlich passt, klärt sich im Rückruf in zwanzig
+            Sekunden. Übrig blieb ein Feld, das Text sammelte, den niemand
+            auswertete. */}
 
         {/* Zu zweit ist keine Nebensache, sondern eine Frage der Plätze:
             Zwei Personen brauchen zwei Geräte und zwei Westen. Steht es
@@ -307,15 +295,56 @@ export function BookingForm({
             placeholder="Telefonnummer"
             className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
           />
-          <textarea
-            name="message"
-            rows={3}
-            value={felder.message}
-            onChange={aendern("message")}
-            placeholder="Nachricht (optional)"
-            className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime sm:col-span-2"
-          />
+          {/* Der Platzhalter war "Nachricht (optional)" - und entsprechend
+              kam meist nichts oder "Bitte um Rückruf" zurück. Ein Feld
+              bekommt die Antworten, nach denen es fragt: Hier steht jetzt,
+              was im Studio tatsächlich etwas ändert.
+
+              Bewusst NICHT nach Beschwerden oder Vorerkrankungen gefragt -
+              das sind besonders geschützte Gesundheitsdaten und gehören in
+              die Anamnese vor Ort, nicht in ein Webformular. Begründung in
+              src/lib/ziel.ts. */}
+          <label className="sm:col-span-2">
+            <span className="text-sm">Noch etwas, das wir vorher wissen sollten?</span>
+            <textarea
+              name="message"
+              rows={3}
+              maxLength={1000}
+              value={felder.message}
+              onChange={aendern("message")}
+              placeholder="Freiwillig - z.B. ob du schon EMS-Erfahrung hast, oder worauf wir bei dir achten sollen."
+              className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
+            />
+          </label>
         </div>
+
+        {/* Freiwillig, aber die nützlichste Angabe im ganzen Formular: Wer
+            abnehmen will, bekommt ein anderes erstes Gespräch als jemand,
+            der seinen Rücken stärken möchte. Über alle Anfragen zusammen
+            zeigt die Verteilung außerdem, womit geworben werden sollte. */}
+        <fieldset className="mt-6">
+          <legend className="text-sm font-medium">Was möchtest du erreichen?</legend>
+          <p className="mt-1 text-xs text-muted">
+            Freiwillig - hilft uns, das erste Gespräch auf dich abzustimmen.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {ZIELE.map((option) => (
+              <label key={option.wert} className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="ziel"
+                  value={option.wert}
+                  checked={felder.ziel === option.wert}
+                  onChange={aendern("ziel")}
+                  className="peer sr-only"
+                />
+                <span className="block rounded-full border border-border px-4 py-2 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-lime">
+                  {option.label}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
       </div>
 
       {/* Pflichtangabe - als einzige neben Name, E-Mail und Telefon.

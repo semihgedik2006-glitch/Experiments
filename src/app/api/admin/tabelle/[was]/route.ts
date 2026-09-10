@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { aktuellerAdmin, studioEinschraenkung } from "@/lib/admin-rechte";
 import { formatDate } from "@/lib/format";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
+import { zielText } from "@/lib/ziel";
 
 /**
  * Buchungen und Newsletter-Abonnenten als Tabelle zum Weiterverarbeiten.
@@ -71,7 +72,8 @@ export async function GET(
         "Studio",
         "Erreichbar",
         "Personen",
-        "Terminwunsch",
+        "Ziel",
+        "Terminwunsch (alt)",
         "Aktionscode",
         "Kampagne",
         "Kam über",
@@ -90,6 +92,7 @@ export async function GET(
         b.studio?.name ?? "",
         erreichbarkeitText(b.erreichbarkeit),
         b.zuZweit ? "2" : "1",
+        b.ziel ? zielText(b.ziel) : "",
         b.terminWunsch ?? "",
         b.promotion?.code ?? "",
         b.herkunftKampagne ?? "",

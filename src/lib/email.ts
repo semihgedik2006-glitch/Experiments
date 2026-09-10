@@ -287,7 +287,7 @@ export type AnfrageAngaben = {
   erreichbarkeit: string;
   studioName: string | null;
   terminZeile: string;
-  terminWunsch: string | null;
+  ziel: string | null;
   nachricht: string | null;
   aktionsCode: string | null;
   herkunft: string | null;
@@ -315,7 +315,7 @@ erreichen - daran halten wir uns.
 
 Das haben wir notiert:
 - ${angaben.terminZeile}${angaben.studioName ? `\n- Studio: ${angaben.studioName}` : ""}${
-      angaben.terminWunsch ? `\n- Dein Wunsch: ${angaben.terminWunsch}` : ""
+      angaben.ziel ? `\n- Dein Ziel: ${angaben.ziel}` : ""
     }
 - Telefon: ${angaben.phone}
 
@@ -342,7 +342,7 @@ export async function sendAnfrageInternEmail(an: string, angaben: AnfrageAngaben
     `Erreichbar:  ${angaben.erreichbarkeit}`,
     `Termin:      ${angaben.terminZeile}`,
     angaben.studioName ? `Studio:      ${angaben.studioName}` : null,
-    angaben.terminWunsch ? `Wunschzeit:  ${angaben.terminWunsch}` : null,
+    angaben.ziel ? `Ziel:        ${angaben.ziel}` : null,
     angaben.aktionsCode ? `Aktionscode: ${angaben.aktionsCode}` : null,
     angaben.herkunft ? `Kam über:    ${angaben.herkunft}` : null,
   ].filter(Boolean);
