@@ -31,6 +31,8 @@ const artText: Record<MailArt, string> = {
   ABSAGE_GAST: "Absage durch den Gast",
   VERSCHOBEN_GAST: "Verlegung durch den Gast",
   BEWERTUNG: "Bitte um eine Bewertung",
+  WARTELISTE_FREI: "Platz frei geworden - an die Warteliste",
+  WARTELISTE_INTERN: "Neuer Wartelisteneintrag ans Studio",
 };
 
 const ablaeufe: { titel: string; wann: string; an: string }[] = [
@@ -73,6 +75,16 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
     titel: "Bitte um eine Bewertung",
     wann: "täglich, einen Tag nach einem stattgefundenen Termin - und nur einmal",
     an: "an den Gast, aber nur wenn beim Studio ein Bewertungslink hinterlegt ist",
+  },
+  {
+    titel: "Neuer Wartelisteneintrag",
+    wann: "sofort, wenn sich jemand auf eine belegte Zeit setzt",
+    an: "an das Studio - nicht an den Wartenden",
+  },
+  {
+    titel: "Platz frei geworden",
+    wann: "sobald ein Platz frei wird - durch Stornieren, Absagen oder Verschieben",
+    an: "an den Ersten auf der Warteliste dieses Termins, der noch hineinpasst",
   },
 ];
 

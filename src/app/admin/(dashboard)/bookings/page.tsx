@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
-import { CalendarCheck, Download, PhoneCall, SearchX, Ticket } from "lucide-react";
+import { CalendarCheck, Download, PhoneCall, SearchX, Ticket, Users } from "lucide-react";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { AdminPage, EmptyState, StatusBadge, adminInput } from "@/components/admin/ui";
 import { SearchBox } from "@/components/admin/search-box";
@@ -171,6 +171,16 @@ export default async function AdminBookingsPage({
                     <span className="text-muted"> &middot; {booking.studio.name}</span>
                   )}
                 </p>
+                {/* Zu zweit ist eine Angabe über Plätze, nicht über
+                    Vorlieben: Zwei Personen brauchen zwei Geräte und zwei
+                    Westen. Wer das erst an der Tür erfährt, muss jemanden
+                    wegschicken. */}
+                {booking.zuZweit && (
+                  <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-accent">
+                    <Users size={13} className="shrink-0" aria-hidden />
+                    Kommt zu zweit &ndash; zwei Plätze
+                  </p>
+                )}
                 {/* Der Wunsch in eigenen Worten steht direkt unter dem
                     Termin und nicht bei der Nachricht: Er entscheidet
                     darüber, wann man zurückruft. */}

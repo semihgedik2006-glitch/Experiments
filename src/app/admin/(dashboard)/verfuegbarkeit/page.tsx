@@ -10,6 +10,7 @@ import { FilterChips, Pagination } from "@/components/admin/list-nav";
 import { WochenAnsicht, type WochenSlot } from "@/components/admin/wochen-ansicht";
 import { PRO_SEITE, param, seitenZahl, type SuchParams } from "@/lib/admin-list";
 import { montagAusText, tagePlus } from "@/lib/woche";
+import { belegtePlaetze } from "@/lib/kapazitaet";
 import type { Prisma } from "@/generated/prisma/client";
 import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
 
@@ -84,7 +85,11 @@ export default async function AdminSlotsPage({
     startTime: slot.startTime,
     endTime: slot.endTime,
     capacity: slot.capacity,
-    belegt: slot.bookings.length,
+    // Plätze, nicht Buchungen: Eine Anfrage "wir kommen zu zweit" belegt
+    // zwei. Vorher stand hier 1/2 belegt, während der Termin tatsächlich
+    // voll war.
+    belegt: belegtePlaetze(slot.bookings),
+    buchungen: slot.bookings.length,
     templateId: slot.templateId,
     studioName: slot.studio.name,
   }));
@@ -142,7 +147,7 @@ export default async function AdminSlotsPage({
                     </div>
                     <p className="mt-1 text-muted">
                       {slot.startTime} - {slot.endTime} Uhr &middot; belegt{" "}
-                      {slot.bookings.length} von {slot.capacity}
+                      {belegtePlaetze(slot.bookings)} von {slot.capacity}
                       {mehrereStudios && <> &middot; {slot.studio.name}</>}
                     </p>
                     <form
@@ -188,7 +193,7 @@ export default async function AdminSlotsPage({
                           {slot.startTime} - {slot.endTime}
                         </td>
                         <td className="py-3 pr-4">
-                          {slot.bookings.length} / {slot.capacity}
+                          {belegtePlaetze(slot.bookings)} / {slot.capacity}
                         </td>
                         <td className="py-3 pr-4">
                           {slot.templateId && <StatusBadge ton="idle">wiederkehrend</StatusBadge>}

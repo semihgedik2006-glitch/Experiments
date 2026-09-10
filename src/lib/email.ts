@@ -452,3 +452,86 @@ Viele Grüße
 Dein Körperformen-Team`,
   });
 }
+
+/**
+ * Ein Platz ist frei geworden.
+ *
+ * Bewusst ohne Reservierung: Der Platz wird nicht festgehalten, während
+ * jemand überlegt. Wer zuerst bucht, bekommt ihn - und genau das steht
+ * auch in der Mail. Alles andere wäre ein Versprechen, das eine
+ * Terminliste nicht halten kann, sobald zwei Leute gleichzeitig klicken.
+ */
+export async function sendWartelisteFreiEmail(angaben: {
+  email: string;
+  name: string;
+  terminZeile: string;
+  studioName: string | null;
+  studioAdresse: string | null;
+  link: string;
+}) {
+  return verschicken("WARTELISTE_FREI", {
+    to: angaben.email,
+    subject: `Ein Platz ist frei: ${angaben.terminZeile}`,
+    text: `Hallo ${angaben.name},
+
+du wolltest Bescheid, wenn bei ${angaben.terminZeile} etwas frei wird - jetzt ist es so weit.${
+      angaben.studioAdresse ? `\n\n${angaben.studioName}\n${angaben.studioAdresse}` : ""
+    }
+
+Hier kannst du die Zeit buchen:
+${angaben.link}
+
+Ehrlich gesagt: Wir halten den Platz nicht für dich fest. Wer zuerst bucht,
+bekommt ihn - also lieber gleich als später.
+
+Viele Grüße
+Dein Körperformen-Team`,
+  });
+}
+
+/**
+ * Neuer Eintrag auf der Warteliste - ans Studio.
+ *
+ * Ohne diese Mail erfährt das Studio von jemandem, der sich eingetragen
+ * hat, erst dann, wenn zufällig jemand in die Warteliste schaut. Dabei
+ * ist das ein Interessent wie jeder andere: Er hat seine Daten
+ * hinterlassen und weiß genau, wann er kann. Der einzige Unterschied ist,
+ * dass seine Wunschzeit gerade belegt ist - und häufig lässt sich das mit
+ * einem Anruf und einer anderen Zeit lösen, lange bevor jemand storniert.
+ */
+export async function sendWartelisteInternEmail(
+  an: string,
+  angaben: {
+    name: string;
+    email: string;
+    phone: string;
+    erreichbarkeit: string;
+    terminZeile: string;
+    studioName: string | null;
+    zuZweit: boolean;
+  },
+) {
+  const zeilen = [
+    `Name:        ${angaben.name}`,
+    `Telefon:     ${angaben.phone}`,
+    `E-Mail:      ${angaben.email}`,
+    `Erreichbar:  ${angaben.erreichbarkeit}`,
+    `Wunschzeit:  ${angaben.terminZeile} (belegt)`,
+    angaben.studioName ? `Studio:      ${angaben.studioName}` : null,
+    angaben.zuZweit ? "Personen:    2 (kommt zu zweit)" : null,
+  ].filter(Boolean);
+
+  return verschicken("WARTELISTE_INTERN", {
+    to: an,
+    subject: `Warteliste: ${angaben.name} für ${angaben.terminZeile}`,
+    text: `Jemand hat sich auf eine belegte Zeit gesetzt.
+
+${zeilen.join("\n")}
+
+Wird der Platz frei, geht die Benachrichtigung automatisch raus. Bis dahin
+lohnt oft ein Anruf mit einer anderen Zeit - warten muss niemand.
+
+In der Warteliste ansehen:
+${siteConfig.url}/admin/warteliste`,
+  });
+}

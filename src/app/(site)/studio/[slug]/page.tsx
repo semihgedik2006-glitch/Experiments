@@ -7,7 +7,8 @@ import { isVisible } from "@/lib/site-toggles";
 import { siteConfig } from "@/lib/site-config";
 import { studioMapUrl } from "@/lib/studio-map";
 import { haversineDistanceKm } from "@/lib/geo";
-import { formatDateShort } from "@/lib/format";
+import { tageAusSlots } from "@/lib/termin-tage";
+import { freiePlaetze } from "@/lib/kapazitaet";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -104,25 +105,12 @@ export default async function StudioDetailSeite({
     }),
   ]);
 
-  const freieSlots = slots.filter((slot) => slot.bookings.length < slot.capacity);
-
   // Tage für das Buchungsformular - dieselbe Form wie auf /probetermin,
-  // nur auf diesen einen Standort begrenzt.
-  const tage: {
-    dateKey: string;
-    dateLabel: string;
-    slots: { id: string; startTime: string; endTime: string }[];
-  }[] = [];
-  for (const slot of freieSlots) {
-    if (Number.isNaN(slot.date.getTime())) continue;
-    const dateKey = slot.date.toISOString().slice(0, 10);
-    let tag = tage.find((t) => t.dateKey === dateKey);
-    if (!tag) {
-      tag = { dateKey, dateLabel: formatDateShort(slot.date), slots: [] };
-      tage.push(tag);
-    }
-    tag.slots.push({ id: slot.id, startTime: slot.startTime, endTime: slot.endTime });
-  }
+  // nur auf diesen einen Standort begrenzt. Belegte Zeiten bleiben dabei:
+  // Sie sind der Einstieg in die Warteliste.
+  const tage = tageAusSlots(
+    slots.map((slot) => ({ ...slot, frei: freiePlaetze(slot.capacity, slot.bookings) })),
+  );
 
   const nachbarn = naechsteStudios(studio, alleStudios, NACHBARN);
 

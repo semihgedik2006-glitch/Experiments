@@ -20,7 +20,12 @@ export type WochenSlot = {
   startTime: string;
   endTime: string;
   capacity: number;
+  /** Belegte Plätze - wer zu zweit kommt, zählt doppelt. */
   belegt: number;
+  /** Anzahl der Buchungen. Steht in der Rückfrage vor dem Löschen, denn
+   *  dort geht es um Menschen, die angeschrieben werden müssen, nicht um
+   *  Plätze. */
+  buchungen: number;
   templateId: string | null;
   studioName: string;
 };
@@ -137,8 +142,8 @@ export function WochenAnsicht({
                         <ConfirmButton
                           variant="link"
                           question={
-                            slot.belegt > 0
-                              ? `Termin mit ${slot.belegt} Buchung${slot.belegt === 1 ? "" : "en"} löschen?`
+                            slot.buchungen > 0
+                              ? `Termin mit ${slot.buchungen} Buchung${slot.buchungen === 1 ? "" : "en"} löschen?`
                               : "Diesen Termin löschen?"
                           }
                         />
@@ -190,8 +195,8 @@ export function WochenAnsicht({
                       <ConfirmButton
                         variant="link"
                         question={
-                          slot.belegt > 0
-                            ? `Termin mit ${slot.belegt} Buchung${slot.belegt === 1 ? "" : "en"} löschen?`
+                          slot.buchungen > 0
+                            ? `Termin mit ${slot.buchungen} Buchung${slot.buchungen === 1 ? "" : "en"} löschen?`
                             : "Diesen Termin löschen?"
                         }
                       />

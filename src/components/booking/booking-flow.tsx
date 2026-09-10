@@ -5,16 +5,11 @@ import { MapPin, LocateFixed } from "lucide-react";
 import { motion } from "motion/react";
 import { BookingForm } from "@/components/booking/booking-form";
 import { allStudiosLocatable, anyStudioLocatable, sortStudiosByDistance } from "@/lib/geo";
+import type { TerminTag as DayGroup } from "@/lib/termin-tage";
 
 /** Der Zustand ändert sich nie - useSyncExternalStore dient hier nur dazu,
  *  Server und Browser sauber zu unterscheiden. */
 const subscribeNothing = () => () => {};
-
-type DayGroup = {
-  dateKey: string;
-  dateLabel: string;
-  slots: { id: string; startTime: string; endTime: string }[];
-};
 
 type StudioOption = {
   id: string;

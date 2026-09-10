@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verlangeStudioRecht } from "@/lib/admin-rechte";
 import { sendBookingConfirmedEmail } from "@/lib/email";
 import { neuerVerwaltungsSchluessel, terminAngaben } from "@/lib/termin-angaben";
+import { wartelisteBenachrichtigen } from "@/lib/warteliste";
 import type { BookingStatus } from "@/generated/prisma/enums";
 
 export async function updateBookingStatus(id: string, status: BookingStatus) {
@@ -31,6 +33,16 @@ export async function updateBookingStatus(id: string, status: BookingStatus) {
   });
   revalidatePath("/admin/bookings");
   revalidatePath("/admin");
+
+  // Wird eine Buchung storniert, wird ihr Platz frei - und der Nächste auf
+  // der Warteliste bekommt Bescheid. Nach der Antwort, damit das Stornieren
+  // im Adminbereich nicht auf den Mailanbieter wartet.
+  if (status === "CANCELLED" && booking.slotId) {
+    const slotId = booking.slotId;
+    after(async () => {
+      await wartelisteBenachrichtigen(slotId);
+    });
+  }
 
   if (status === "CONFIRMED") {
     try {

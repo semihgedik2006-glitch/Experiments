@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
 import { sendCancelledByGuestEmail, sendMovedByGuestEmail } from "@/lib/email";
 import { terminAngaben } from "@/lib/termin-angaben";
+import { wartelisteBenachrichtigen } from "@/lib/warteliste";
+import { passtNoch } from "@/lib/kapazitaet";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
 /**
@@ -70,6 +72,10 @@ export async function terminAbsagen(
     console.error("Absage-Bestätigung konnte nicht gesendet werden:", error);
   }
 
+  // Der Platz ist jetzt frei - der Nächste auf der Warteliste bekommt
+  // Bescheid.
+  await wartelisteBenachrichtigen(buchung.slotId);
+
   revalidatePath("/admin/bookings");
   revalidatePath("/admin");
   revalidatePath("/probetermin");
@@ -124,9 +130,18 @@ export async function terminVerschieben(
   }
   // Die eigene Buchung zählt nicht gegen die Kapazität des Ziels - sie
   // steht ja noch am alten Termin.
-  const belegt = ziel.bookings.filter((b) => b.id !== buchung.id).length;
-  if (belegt >= ziel.capacity) {
-    return { ok: false, message: "Diese Zeit ist inzwischen ausgebucht. Bitte wähle eine andere." };
+  //
+  // Gezählt werden Plätze, nicht Buchungen: Wer zu zweit kommt, braucht
+  // auch nach dem Verschieben zwei. Vorher wurden hier Buchungen gezählt,
+  // und ein Paar wäre in einen Termin mit einem freien Platz gerutscht.
+  const andere = ziel.bookings.filter((b) => b.id !== buchung.id);
+  if (!passtNoch(ziel.capacity, andere, buchung.zuZweit)) {
+    return {
+      ok: false,
+      message: buchung.zuZweit
+        ? "Für diese Zeit sind nicht mehr zwei Plätze frei. Bitte wähle eine andere."
+        : "Diese Zeit ist inzwischen ausgebucht. Bitte wähle eine andere.",
+    };
   }
 
   const verschoben = await prisma.booking.update({
@@ -149,6 +164,11 @@ export async function terminVerschieben(
   } catch (error) {
     console.error("Bestätigung der Verlegung konnte nicht gesendet werden:", error);
   }
+
+  // Die alte Zeit ist jetzt frei - wer dafür auf der Warteliste steht,
+  // bekommt Bescheid. Die neue Zeit war frei, sonst wäre der Wechsel
+  // abgelehnt worden.
+  await wartelisteBenachrichtigen(buchung.slotId);
 
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/verfuegbarkeit");

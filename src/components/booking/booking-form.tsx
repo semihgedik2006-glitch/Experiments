@@ -6,13 +6,8 @@ import { CheckCircle2 } from "lucide-react";
 import { createBooking } from "@/lib/actions/booking";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
 import { herkunftAusBrowser, type Herkunft } from "@/lib/herkunft";
+import type { TerminTag as DayGroup } from "@/lib/termin-tage";
 import type { ActionResult } from "@/lib/actions/newsletter";
-
-type DayGroup = {
-  dateKey: string;
-  dateLabel: string;
-  slots: { id: string; startTime: string; endTime: string }[];
-};
 
 const initialState: ActionResult = { ok: false, message: "" };
 
@@ -29,6 +24,9 @@ export function BookingForm({
 }) {
   const [selectedDay, setSelectedDay] = useState("");
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+  // "Wir kommen zu zweit" steht außerhalb von `felder`, weil es kein Text
+  // ist - ein Kontrollkästchen kennt nur an und aus.
+  const [zuZweit, setZuZweit] = useState(false);
   const [state, formAction, pending] = useActionState(createBooking, initialState);
 
   // Die Eingaben liegen in React und nicht nur im Formular.
@@ -169,21 +167,50 @@ export function BookingForm({
               <div>
                 <p className="mb-3 text-xs text-muted">Uhrzeit am {activeDay.dateLabel}:</p>
                 <div className="flex flex-wrap gap-2">
-                  {activeDay.slots.map((slot) => (
-                    <button
-                      key={slot.id}
-                      type="button"
-                      onClick={() => setSelectedSlotId(selectedSlotId === slot.id ? null : slot.id)}
-                      className={`rounded-full border px-4 py-2 text-sm transition-colors ${
-                        selectedSlotId === slot.id
-                          ? "border-lime bg-lime text-on-lime"
-                          : "border-border hover:border-lime"
-                      }`}
-                    >
-                      {slot.startTime}
-                    </button>
-                  ))}
+                  {activeDay.slots.map((slot) => {
+                    // Belegte Zeiten verschwinden nicht mehr, sondern sind
+                    // anwählbar und führen auf die Warteliste. Wer genau um
+                    // 18 Uhr kann und nur die 19 Uhr sieht, geht sonst
+                    // wieder - und wir erfahren nie, dass er da war.
+                    const reicht = slot.frei >= (zuZweit ? 2 : 1);
+                    const gewaehlt = selectedSlotId === slot.id;
+                    return (
+                      <button
+                        key={slot.id}
+                        type="button"
+                        onClick={() => setSelectedSlotId(gewaehlt ? null : slot.id)}
+                        aria-pressed={gewaehlt}
+                        className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                          gewaehlt
+                            ? "border-lime bg-lime text-on-lime"
+                            : reicht
+                              ? "border-border hover:border-lime"
+                              : "border-dashed border-border text-muted hover:border-lime"
+                        }`}
+                      >
+                        {slot.startTime}
+                        {!reicht && (
+                          <span className={`ml-1.5 text-xs ${gewaehlt ? "" : "text-muted"}`}>
+                            belegt
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
+
+                {/* Der Hinweis erscheint erst, wenn eine belegte Zeit
+                    tatsächlich angeklickt ist - vorher wäre er eine Warnung
+                    vor etwas, das noch niemand vorhat. */}
+                {activeDay.slots.some(
+                  (slot) => slot.id === selectedSlotId && slot.frei < (zuZweit ? 2 : 1),
+                ) && (
+                  <p className="mt-3 rounded-lg border border-border bg-surface px-4 py-3 text-xs text-muted">
+                    Diese Zeit ist schon vergeben. Schick die Anfrage trotzdem ab -
+                    dann stehst du auf der Warteliste und wir melden uns sofort,
+                    wenn dort ein Platz frei wird.
+                  </p>
+                )}
               </div>
             )}
           </>
@@ -214,6 +241,27 @@ export function BookingForm({
             placeholder="z.B. abends ab 18 Uhr oder samstags vormittags"
             className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
           />
+        </label>
+
+        {/* Zu zweit ist keine Nebensache, sondern eine Frage der Plätze:
+            Zwei Personen brauchen zwei Geräte und zwei Westen. Steht es
+            nicht im Formular, erfährt es das Studio erst an der Tür - und
+            muss dann jemanden wieder wegschicken. */}
+        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-4">
+          <input
+            type="checkbox"
+            name="zuZweit"
+            checked={zuZweit}
+            onChange={(event) => setZuZweit(event.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 accent-lime"
+          />
+          <span className="text-sm">
+            Wir kommen zu zweit
+            <span className="mt-0.5 block text-xs text-muted">
+              Probetraining zusammen mit Partner, Freundin oder Freund. Wir
+              reservieren dann zwei Plätze.
+            </span>
+          </span>
         </label>
       </div>
 

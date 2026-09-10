@@ -3,8 +3,8 @@ import { Container } from "@/components/ui/container";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { LottieBox } from "@/components/lottie-box";
 import { TrustBar } from "@/components/trust-bar";
-import { getStudios, getUpcomingSlots } from "@/lib/data";
-import { formatDateShort } from "@/lib/format";
+import { getStudios, getSlotsMitBelegung } from "@/lib/data";
+import { tageJeStudio } from "@/lib/termin-tage";
 
 export const metadata: Metadata = {
   // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
@@ -15,25 +15,11 @@ export const metadata: Metadata = {
 };
 
 export default async function ProbeterminPage() {
-  const [studios, slots] = await Promise.all([getStudios(), getUpcomingSlots()]);
+  // Auch belegte Termine: Sie werden im Formular als belegt angezeigt und
+  // führen auf die Warteliste, statt gar nicht erst zu erscheinen.
+  const [studios, slots] = await Promise.all([getStudios(), getSlotsMitBelegung()]);
 
-  const slotsByStudio: Record<
-    string,
-    { dateKey: string; dateLabel: string; slots: { id: string; startTime: string; endTime: string }[] }[]
-  > = {};
-
-  for (const slot of slots) {
-    if (Number.isNaN(slot.date.getTime())) continue; // skip slots with a corrupt date
-
-    const dayMap = (slotsByStudio[slot.studioId] ??= []);
-    const dateKey = slot.date.toISOString().slice(0, 10);
-    let day = dayMap.find((d) => d.dateKey === dateKey);
-    if (!day) {
-      day = { dateKey, dateLabel: formatDateShort(slot.date), slots: [] };
-      dayMap.push(day);
-    }
-    day.slots.push({ id: slot.id, startTime: slot.startTime, endTime: slot.endTime });
-  }
+  const slotsByStudio = tageJeStudio(slots);
 
   return (
     <section className="py-20 sm:py-24 md:py-32">

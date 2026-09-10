@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { CalendarCheck, CalendarX, Clock, MapPin } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
+import { passtNoch } from "@/lib/kapazitaet";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
 import { TerminVerwaltung, type FreieZeit } from "@/components/termin/termin-verwaltung";
@@ -59,8 +60,11 @@ export default async function TerminSeite({
       orderBy: [{ date: "asc" }, { startTime: "asc" }, { id: "asc" }],
     });
 
+    // Wer zu zweit kommt, braucht auch nach dem Verschieben zwei Plätze -
+    // sonst stünden hier Zeiten zur Auswahl, die die Aktion anschließend
+    // ablehnt.
     freieZeiten = slots
-      .filter((slot) => slot.bookings.length < slot.capacity)
+      .filter((slot) => passtNoch(slot.capacity, slot.bookings, buchung.zuZweit))
       .slice(0, 60)
       .map((slot) => ({
         id: slot.id,

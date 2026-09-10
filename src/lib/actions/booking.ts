@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/format";
 import {
   sendAnfrageEingangEmail,
   sendAnfrageInternEmail,
+  sendWartelisteInternEmail,
   TEAM_EMAIL,
   type AnfrageAngaben,
 } from "@/lib/email";
@@ -16,6 +17,7 @@ import { neuerVerwaltungsSchluessel } from "@/lib/termin-angaben";
 import { istErreichbarkeit } from "@/lib/erreichbarkeit";
 import { aktionscodePruefen } from "@/lib/aktionscode";
 import { herkunftAusFormular } from "@/lib/herkunft";
+import { passtNoch } from "@/lib/kapazitaet";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
 export async function createBooking(
@@ -37,6 +39,7 @@ export async function createBooking(
   const slotId = String(formData.get("slotId") ?? "").trim() || null;
   const studioIdRoh = String(formData.get("studioId") ?? "").trim();
   const erreichbarkeit = String(formData.get("erreichbarkeit") ?? "").trim();
+  const zuZweit = formData.get("zuZweit") === "on";
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
@@ -107,8 +110,55 @@ export async function createBooking(
       return { ok: false, message: "Termin und Studio passen nicht zusammen. Bitte wähle die Zeit noch einmal." };
     }
 
-    if (slot.bookings.length >= slot.capacity) {
-      return { ok: false, message: "Dieser Termin ist leider bereits ausgebucht. Bitte wähle einen anderen." };
+    // Voll? Dann auf die Warteliste statt in eine Fehlermeldung.
+    //
+    // Vorher endete dieser Fall mit "leider ausgebucht" - und damit
+    // meistens im Abbruch. Dabei ist das jemand, der alles ausgefüllt hat
+    // und genau weiß, wann er kann. Der Fall trifft zwei Gruppen: die,
+    // die absichtlich eine belegte Zeit angeklickt haben, und die, bei
+    // denen der Platz zwischen Aufrufen und Absenden weg war.
+    if (!passtNoch(slot.capacity, slot.bookings, zuZweit)) {
+      await prisma.warteliste.create({
+        data: {
+          slotId: slot.id,
+          studioId: slot.studioId,
+          name,
+          email,
+          phone,
+          erreichbarkeit,
+          zuZweit,
+        },
+      });
+
+      // Das Studio erfährt davon sofort - genau wie bei einer regulären
+      // Anfrage. Ein Wartender ist ein Interessent mit Telefonnummer;
+      // meistens lässt sich mit einem Anruf und einer anderen Zeit
+      // schneller etwas finden als durch Abwarten.
+      const studioMail = await prisma.studioLocation
+        .findUnique({ where: { id: slot.studioId }, select: { name: true, email: true } })
+        .catch(() => null);
+      const an = studioMail?.email?.trim() || TEAM_EMAIL;
+      if (an) {
+        after(async () => {
+          await sendWartelisteInternEmail(an, {
+            name,
+            email,
+            phone,
+            erreichbarkeit: erreichbarkeitText(erreichbarkeit),
+            terminZeile: `${formatDate(slot.date)} um ${slot.startTime} Uhr`,
+            studioName: studioMail?.name ?? null,
+            zuZweit,
+          });
+        });
+      }
+
+      revalidatePath("/admin/warteliste");
+      return {
+        ok: true,
+        message: zuZweit
+          ? "Für diese Zeit sind gerade nicht mehr zwei Plätze frei - wir haben dich auf die Warteliste gesetzt und melden uns, sobald etwas frei wird."
+          : "Diese Zeit ist gerade belegt - wir haben dich auf die Warteliste gesetzt und melden uns, sobald etwas frei wird.",
+      };
     }
   }
 
@@ -124,6 +174,7 @@ export async function createBooking(
       message: message || null,
       terminWunsch: terminWunsch || null,
       erreichbarkeit,
+      zuZweit,
       promotionId: codePruefung.aktion?.id ?? null,
       herkunftSeite: herkunft.seite,
       herkunftKampagne: herkunft.kampagne,

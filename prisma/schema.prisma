@@ -55,6 +55,9 @@ enum MailArt {
   VERSCHOBEN_GAST
   /// Nach dem Termin: die Bitte um eine Bewertung.
   BEWERTUNG
+  /// An den Ersten auf der Warteliste, wenn ein Platz frei wird.
+  WARTELISTE_FREI
+  WARTELISTE_INTERN
 }
 
 /// Nachweis, dass eine E-Mail den Weg nach draußen gefunden hat.
@@ -106,6 +109,7 @@ model StudioLocation {
   id            String             @id @default(cuid())
   admins        AdminUser[]
   bookings      Booking[]
+  warteliste    Warteliste[]
   /// Der Ort in der Adresse: /studio/koeln-nippes. Wird aus dem Namen
   /// gebildet (siehe src/lib/slug.ts) und lässt sich im Adminbereich
   /// ändern - dann sollte man wissen, dass alte Verweise ins Leere gehen.
@@ -174,7 +178,35 @@ model AvailabilitySlot {
   endTime    String
   capacity   Int            @default(1)
   bookings   Booking[]
+  warteliste Warteliste[]
   createdAt  DateTime       @default(now())
+}
+
+/// Wer benachrichtigt werden will, wenn ein belegter Termin frei wird.
+///
+/// Bis hierher endete eine ausgebuchte Zeit in einer Fehlermeldung - und
+/// damit meistens im Abbruch. Ein Eintrag auf dieser Liste ist dagegen ein
+/// Interessent mit Namen und Telefonnummer, der genau weiß, wann er kann.
+model Warteliste {
+  id       String           @id @default(cuid())
+  slot     AvailabilitySlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  slotId   String
+  /// Doppelt zum Termin gehalten, damit eine Studioleitung ihre Liste auch
+  /// dann sieht, wenn der Termin schon weg ist.
+  studio   StudioLocation?  @relation(fields: [studioId], references: [id], onDelete: SetNull)
+  studioId String?
+  name     String
+  email    String
+  phone    String
+  erreichbarkeit String?
+  zuZweit  Boolean          @default(false)
+  /// Wann Bescheid gegeben wurde, dass etwas frei ist. Einmal - wer nicht
+  /// reagiert, blockiert sonst den Nächsten.
+  benachrichtigtAm DateTime?
+  createdAt DateTime        @default(now())
+
+  @@index([slotId])
+  @@index([studioId])
 }
 
 model Booking {
@@ -251,6 +283,10 @@ model Booking {
   /// Wann nach dem Termin um eine Bewertung gebeten wurde. Einmal, nie
   /// wieder - eine zweite Bitte ist eine Belästigung.
   bewertungGesendetAm    DateTime?
+
+  /// Kommt zu zweit. Belegt dann zwei Plätze des Termins - sonst stünde
+  /// bei einem Termin für eine Person plötzlich ein Paar.
+  zuZweit                Boolean   @default(false)
 }
 
 model BlogPost {

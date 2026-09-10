@@ -20,6 +20,7 @@ import {
   BarChart3,
   Ticket,
   MailCheck,
+  Hourglass,
   type LucideIcon,
 } from "lucide-react";
 
@@ -40,6 +41,7 @@ const groups: NavGroup[] = [
     items: [
       { href: "/admin/bookings", label: "Buchungen", icon: CalendarCheck },
       { href: "/admin/verfuegbarkeit", label: "Verfügbarkeit", icon: CalendarClock },
+      { href: "/admin/warteliste", label: "Warteliste", icon: Hourglass },
       { href: "/admin/auswertung", label: "Auswertung", icon: BarChart3 },
     ],
   },

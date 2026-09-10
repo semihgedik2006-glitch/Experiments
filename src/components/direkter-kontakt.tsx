@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Mail, MapPin, MessageSquare, Phone } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
@@ -100,9 +101,11 @@ export async function DirekterKontakt({
           <p className="mt-5 flex flex-wrap items-center gap-2 text-sm text-muted">
             <MapPin size={15} className="text-accent" />
             Du erreichst auch jedes Studio direkt &ndash;{" "}
-            <a href="/studio" className="text-accent underline underline-offset-2">
+            {/* Link statt <a>: Next lädt damit nur den geänderten Teil der
+                Seite nach, statt sie komplett neu aufzubauen. */}
+            <Link href="/studio" className="text-accent underline underline-offset-2">
               alle {studios.length} Standorte mit Telefonnummer
-            </a>
+            </Link>
           </p>
         )}
       </Container>
