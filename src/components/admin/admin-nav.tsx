@@ -8,6 +8,7 @@ import {
   Building2,
   CalendarCheck,
   CalendarClock,
+  CalendarDays,
   Newspaper,
   MessageSquare,
   HelpCircle,
@@ -40,6 +41,7 @@ const groups: NavGroup[] = [
   {
     title: "Termine",
     items: [
+      { href: "/admin/kalender", label: "Kalender", icon: CalendarDays },
       { href: "/admin/bookings", label: "Buchungen", icon: CalendarCheck },
       { href: "/admin/verfuegbarkeit", label: "Verfügbarkeit", icon: CalendarClock },
       { href: "/admin/warteliste", label: "Warteliste", icon: Hourglass },

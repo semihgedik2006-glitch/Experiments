@@ -13,24 +13,9 @@ import { FilterChips, Pagination } from "@/components/admin/list-nav";
 import { PRO_SEITE, param, seitenZahl, suchFilter, type SuchParams } from "@/lib/admin-list";
 import type { Prisma } from "@/generated/prisma/client";
 import type { BookingStatus } from "@/generated/prisma/enums";
+import { STATUS_LABEL, STATUS_TON, statusAusText } from "@/lib/buchung-status";
 import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
 import { AntwortKnopf } from "@/components/admin/antwort-knopf";
-
-const statusLabels: Record<string, string> = {
-  PENDING: "Offen",
-  CONFIRMED: "Bestätigt",
-  CANCELLED: "Storniert",
-};
-
-// Zuordnung Status -> Statusfarbe. Die Töne selbst stehen in globals.css,
-// damit "offen" im Adminbereich überall gleich aussieht.
-const statusTon = {
-  PENDING: "open",
-  CONFIRMED: "ok",
-  CANCELLED: "off",
-} as const;
-
-const gueltigeStatus = ["PENDING", "CONFIRMED", "CANCELLED"] as const;
 
 export default async function AdminBookingsPage({
   searchParams,
@@ -46,12 +31,7 @@ export default async function AdminBookingsPage({
   const nurStudio = studioEinschraenkung(admin);
   const studioFilter = nurStudio ?? param(params, "studio");
   const begriff = param(params, "q");
-  const statusRoh = param(params, "status");
-  // Nur bekannte Werte durchlassen - sonst ergibt ?status=XYZ eine leere
-  // Liste, ohne dass erkennbar wäre warum.
-  const status = (gueltigeStatus as readonly string[]).includes(statusRoh)
-    ? (statusRoh as BookingStatus)
-    : "";
+  const status = statusAusText(param(params, "status"));
   const seite = seitenZahl(params);
 
   const where: Prisma.BookingWhereInput = {
@@ -235,8 +215,8 @@ export default async function AdminBookingsPage({
               </div>
 
               <div className="flex flex-col items-end gap-2">
-                <StatusBadge ton={statusTon[booking.status]}>
-                  {statusLabels[booking.status]}
+                <StatusBadge ton={STATUS_TON[booking.status]}>
+                  {STATUS_LABEL[booking.status]}
                 </StatusBadge>
                 {/* Antworten auch hier: Nicht jede Anfrage wird am Telefon
                     erledigt, und wer dreimal nicht drangeht, bekommt sonst

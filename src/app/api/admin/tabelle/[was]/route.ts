@@ -3,6 +3,7 @@ import { aktuellerAdmin, studioEinschraenkung } from "@/lib/admin-rechte";
 import { formatDate } from "@/lib/format";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { zielText } from "@/lib/ziel";
+import { STATUS_LABEL } from "@/lib/buchung-status";
 
 /**
  * Buchungen und Newsletter-Abonnenten als Tabelle zum Weiterverarbeiten.
@@ -30,12 +31,6 @@ function alsCsv(kopf: string[], zeilen: unknown[][]): string {
   const inhalt = [kopf, ...zeilen].map((zeile) => zeile.map(feld).join(";")).join("\r\n");
   return "﻿" + inhalt + "\r\n";
 }
-
-const statusText: Record<string, string> = {
-  PENDING: "Offen",
-  CONFIRMED: "Bestätigt",
-  CANCELLED: "Storniert",
-};
 
 export async function GET(
   _request: Request,
@@ -86,7 +81,7 @@ export async function GET(
         b.name,
         b.email,
         b.phone,
-        statusText[b.status] ?? b.status,
+        STATUS_LABEL[b.status] ?? b.status,
         b.slot ? formatDate(b.slot.date) : "kein fester Termin",
         b.slot ? `${b.slot.startTime} - ${b.slot.endTime}` : "",
         b.studio?.name ?? "",
