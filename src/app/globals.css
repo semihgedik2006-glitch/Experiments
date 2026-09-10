@@ -757,6 +757,77 @@ h3,
   contain-intrinsic-size: 360px 360px;
 }
 
+/* ---------------------------------------------------------------------------
+   Der Impuls quer durch die Seite.
+
+   Der Kreis im Seitenkopf beantwortet nur die erste Sekunde. Ab dem
+   zweiten Bildschirm stand die Seite still - weiße Karten auf weißer
+   Fläche, Abschnitt für Abschnitt. Diese beiden Bausteine tragen die
+   Bewegung mit nach unten: eine Linie zwischen den Abschnitten und ein
+   Streufeld dahinter.
+
+   Beide bestehen aus gewöhnlichen HTML-Elementen, nicht aus SVG. Deshalb
+   eigene Klassen statt der bestehenden: In einer SVG dreht sich eine
+   Skalierung ohne transform-box um den Nullpunkt der ganzen Grafik, bei
+   einem HTML-Element dagegen von Haus aus um die eigene Mitte - genau das,
+   was hier gebraucht wird.
+--------------------------------------------------------------------------- */
+.streu-punkt {
+  opacity: 0.35;
+  animation: figur-leuchten 6.5s ease-in-out infinite;
+  animation-delay: var(--takt, 0s);
+}
+.streu-welle {
+  opacity: 0;
+  animation: figur-ausbreiten 6.5s ease-out infinite;
+  animation-delay: var(--takt, 0s);
+}
+
+/* Die ruhende Linie ist fast nur Andeutung - sie ist der Weg, nicht das
+   Ereignis. */
+.trenner-linie {
+  stroke: color-mix(in srgb, var(--color-foreground) 14%, transparent);
+}
+.dark .trenner-linie {
+  stroke: color-mix(in srgb, var(--color-foreground) 18%, transparent);
+}
+
+/* Der Impuls: ein kurzes helles Stück, das an der Linie entlangwandert.
+   Die Länge des Pfades liegt bei rund 1050 Einheiten - die Lücke ist
+   deshalb bewusst größer, damit zwischen zwei Durchläufen eine Pause
+   steht. Ein Signal ohne Pause ist ein Lauflicht. */
+.trenner-impuls {
+  stroke: var(--color-lime);
+  stroke-dasharray: 90 1100;
+  animation: trenner-lauf var(--trenner-dauer, 6s) linear infinite;
+  animation-delay: var(--trenner-verzug, 0s);
+}
+@keyframes trenner-lauf {
+  from {
+    stroke-dashoffset: 1190;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .streu-punkt {
+    animation: none;
+    opacity: 0.3;
+  }
+  .streu-welle {
+    animation: none;
+    opacity: 0;
+  }
+  /* Ohne Bewegung bleibt eine ruhige, durchgezogene Linie stehen. */
+  .trenner-impuls {
+    animation: none;
+    stroke-dasharray: none;
+    stroke-opacity: 0.35;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .impuls-aussenring,
   .impuls-bogen-rechts,

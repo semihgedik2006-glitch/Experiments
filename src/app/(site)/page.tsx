@@ -8,6 +8,7 @@ import { TrustSection } from "@/components/trust-section";
 import { BlogTeaser } from "@/components/home/blog-teaser";
 import { FaqSection } from "@/components/faq-section";
 import { CtaBanner } from "@/components/cta-banner";
+import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { StudioJsonLd, WebsiteJsonLd, FaqJsonLd } from "@/components/structured-data";
 import { getToggles } from "@/lib/site-toggles";
 import { getStudios, getUpcomingSlots } from "@/lib/data";
@@ -58,11 +59,26 @@ export default async function Home() {
       />
       <StatsStrip />
       <UspGrid />
+      {/* Die Trenner stehen dort, wo zwei helle Abschnitte aneinander
+          stoßen - genau die Stellen, an denen die Seite beim Scrollen
+          bisher stillstand. Nicht überall: Wo ohnehin ein dunkles Band
+          oder eine Flächenfarbe wechselt, ist der Schnitt schon sichtbar,
+          und eine Linie obendrauf wäre eine Verzierung zu viel.
+
+          Drei verschiedene Varianten, damit die Linien nicht wie dreimal
+          dasselbe Bauteil wirken und nicht im Gleichschritt blinken. */}
+      <ImpulsTrenner variante="a" className="mx-auto max-w-6xl px-6" />
       <HowItWorks />
       {toggles.studio && <StudioTeaser />}
       {toggles.erfolgsgeschichten && <TestimonialsTeaser />}
       <TrustSection />
-      {toggles.blog && <BlogTeaser />}
+      {toggles.blog && (
+        <>
+          <ImpulsTrenner variante="b" className="mx-auto max-w-6xl px-6" />
+          <BlogTeaser />
+        </>
+      )}
+      <ImpulsTrenner variante="c" className="mx-auto max-w-6xl px-6" />
       <FaqSection />
       <CtaBanner />
     </>

@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { Clock, HeartPulse, Users, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/ui/section-header";
 
@@ -31,8 +32,12 @@ const items = [
 
 export function UspGrid() {
   return (
-    <section className="py-20 sm:py-24 md:py-32">
-      <Container>
+    // Das Streufeld liegt hinter den Karten. Anordnung "rand": Die Karten
+    // reichen hier bis in die Mitte, dort wäre ein Punkt entweder verdeckt
+    // oder störend.
+    <section className="relative overflow-hidden py-20 sm:py-24 md:py-32">
+      <ImpulsStreu anordnung="rand" />
+      <Container className="relative">
         <SectionHeader
           kicker="Warum EMS"
           title="Vier Gründe, warum es funktioniert"

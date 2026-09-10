@@ -12,6 +12,8 @@ import {
   Activity,
 } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { ImpulsStreu } from "@/components/ui/impuls-streu";
+import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
@@ -184,8 +186,15 @@ export default function EmsTrainingPage() {
         </Container>
       </section>
 
-      <section className="py-20 sm:py-24 md:py-32">
-        <Container>
+      {/* Ein Trenner zwischen zwei hellen Abschnitten - genau die Stelle,
+          an der die Seite beim Scrollen bisher stillstand. */}
+      <ImpulsTrenner variante="b" className="mx-auto max-w-6xl px-6" />
+
+      {/* Streufeld hinter den Zielgruppenkarten. Anordnung "rand", weil
+          die Karten bis in die Mitte reichen. */}
+      <section className="relative overflow-hidden py-20 sm:py-24 md:py-32">
+        <ImpulsStreu anordnung="rand" />
+        <Container className="relative">
           <Reveal className="mb-12 max-w-2xl">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Für wen ist EMS geeignet?</h2>
             <p className="mt-4 text-muted">

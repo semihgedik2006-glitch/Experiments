@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { MapEmbed } from "@/components/map-embed";
+import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { studioMapUrl } from "@/lib/studio-map";
 import { getStudios } from "@/lib/data";
 
@@ -14,8 +15,9 @@ export async function StudioTeaser() {
   if (studios.length === 1) {
     const studio = studios[0];
     return (
-      <section className="py-20 sm:py-24 md:py-32">
-        <Container className="grid gap-10 md:grid-cols-2 md:items-center">
+      <section className="relative overflow-hidden py-20 sm:py-24 md:py-32">
+      <ImpulsStreu anordnung="rand" />
+        <Container className="relative grid gap-10 md:grid-cols-2 md:items-center">
           <Reveal>
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
               Standort
@@ -72,8 +74,9 @@ export async function StudioTeaser() {
   const weitere = studios.length - gezeigt.length;
 
   return (
-    <section className="py-20 sm:py-24 md:py-32">
-      <Container>
+    <section className="relative overflow-hidden py-20 sm:py-24 md:py-32">
+      <ImpulsStreu anordnung="rand" />
+      <Container className="relative">
         <Reveal className="mb-14 max-w-2xl">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
             Standorte

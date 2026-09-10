@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { isVisible } from "@/lib/site-toggles";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
+import { ImpulsStreu } from "@/components/ui/impuls-streu";
+import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
@@ -51,8 +53,12 @@ export default async function UeberUnsPage() {
         </p>
       </PageHeader>
 
-      <section className="py-20 sm:py-24 md:py-32">
-        <Container>
+      {/* Diagonal: Die Welle läuft von links unten nach rechts oben durch
+          den Abschnitt - der Blick geht beim Scrollen ohnehin in diese
+          Richtung. */}
+      <section className="relative overflow-hidden py-20 sm:py-24 md:py-32">
+        <ImpulsStreu anordnung="diagonal" />
+        <Container className="relative">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Was ist EMS-Training?</h2>
           <p className="mt-4 max-w-2xl text-muted">
             EMS steht für Elektro-Muskel-Stimulation. Während du klassische
@@ -124,7 +130,9 @@ export default async function UeberUnsPage() {
         </Container>
       </section>
 
-      <section className="border-t border-border py-20 sm:py-24 md:py-32">
+      <ImpulsTrenner variante="c" className="mx-auto max-w-6xl px-6" />
+
+      <section className="py-20 sm:py-24 md:py-32">
         <Container className="flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Lerne uns persönlich kennen</h2>
           <p className="mt-4 max-w-md text-muted">

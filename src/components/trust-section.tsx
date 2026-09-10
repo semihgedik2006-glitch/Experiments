@@ -3,6 +3,7 @@ import { UserRound, ShieldCheck, FileText, Lock, Star } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/ui/section-header";
+import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { googleReviews, studioFacts, trustPoints } from "@/lib/trust-config";
 import { isVisible } from "@/lib/site-toggles";
 
@@ -27,8 +28,9 @@ export async function TrustSection() {
   const showReviews = googleReviews !== null && (await isVisible("google-bewertungen"));
 
   return (
-    <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
-      <Container>
+    <section className="relative overflow-hidden border-t border-border bg-surface py-20 sm:py-24 md:py-32">
+      <ImpulsStreu anordnung="diagonal" />
+      <Container className="relative">
         <SectionHeader
           kicker="Ohne Kleingedrucktes"
           title="Worauf du dich verlassen kannst"

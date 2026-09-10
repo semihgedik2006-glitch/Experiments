@@ -3,6 +3,7 @@ import { isVisible } from "@/lib/site-toggles";
 import { notFound } from "next/navigation";
 import { Check, CalendarDays, Target, Clock, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Button } from "@/components/ui/button";
@@ -101,7 +102,9 @@ export default async function PreisePage() {
         </Container>
       </section>
 
-      <section className="border-t border-border bg-surface py-20 sm:py-24 md:py-32">
+      <ImpulsTrenner variante="a" className="mx-auto max-w-6xl px-6" />
+
+      <section className="bg-surface py-20 sm:py-24 md:py-32">
         <Container>
           <SectionHeader
             kicker="Transparenz"

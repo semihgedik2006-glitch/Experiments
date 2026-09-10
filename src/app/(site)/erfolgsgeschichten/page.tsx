@@ -3,6 +3,7 @@ import { isVisible } from "@/lib/site-toggles";
 import { notFound } from "next/navigation";
 import { Star } from "lucide-react";
 import { Container } from "@/components/ui/container";
+import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
@@ -30,8 +31,9 @@ export default async function ErfolgsgeschichtenPage() {
         intro="Unsere Mitglieder kommen mit ganz unterschiedlichen Zielen - vom schmerzfreien Rücken bis zur Strandfigur. Das sagen sie über ihr Training bei Körperformen."
       />
 
-      <section className="py-20 sm:py-24 md:py-32">
-        <Container>
+      <section className="relative overflow-hidden py-20 sm:py-24 md:py-32">
+        <ImpulsStreu anordnung="weit" />
+        <Container className="relative">
           <Stagger className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {testimonials.map((t) => (
               <StaggerItem key={t.name}>

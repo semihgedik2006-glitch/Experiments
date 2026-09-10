@@ -8,6 +8,7 @@ import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { getPublishedPosts } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 import { PostThumb } from "@/components/blog/post-thumb";
+import { ImpulsStreu } from "@/components/ui/impuls-streu";
 
 export const metadata: Metadata = {
   // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
@@ -25,8 +26,9 @@ export default async function BlogPage() {
   const posts = await getPublishedPosts();
 
   return (
-    <section className="py-20 sm:py-24 md:py-32">
-      <Container>
+    <section className="relative overflow-hidden py-20 sm:py-24 md:py-32">
+      <ImpulsStreu anordnung="weit" />
+      <Container className="relative">
         <h1 className="text-4xl font-black tracking-tight md:text-5xl">
           Der <span className="text-accent">Blog</span>
         </h1>
