@@ -207,7 +207,16 @@ export function BookingFlow({
         </div>
       )}
 
-      <BookingForm days={slotsByStudio[selectedStudioId] ?? []} />
+      {/* Der Standort geht als verstecktes Feld mit ins Formular. Ohne ihn
+          hing eine Anfrage nur dann an einem Studio, wenn zusätzlich eine
+          feste Zeit angeklickt wurde. */}
+      <BookingForm
+        days={slotsByStudio[selectedStudioId] ?? []}
+        studioId={selectedStudioId}
+        studioName={
+          orderedStudios.find((studio) => studio.id === selectedStudioId)?.name ?? ""
+        }
+      />
     </div>
   );
 }

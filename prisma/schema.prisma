@@ -39,6 +39,7 @@ model AdminUser {
 model StudioLocation {
   id            String             @id @default(cuid())
   admins        AdminUser[]
+  bookings      Booking[]
   name          String
   street        String
   postalCode    String
@@ -94,6 +95,11 @@ model Booking {
   id        String            @id @default(cuid())
   slot      AvailabilitySlot? @relation(fields: [slotId], references: [id], onDelete: SetNull)
   slotId    String?
+  /// Der Standort, für den angefragt wurde - unabhängig davon, ob eine
+  /// feste Zeit dabei war. Vorher stand er nur mittelbar über den Termin
+  /// da, und wer keine Zeit anklickte, landete bei niemandem.
+  studio    StudioLocation?   @relation(fields: [studioId], references: [id], onDelete: SetNull)
+  studioId  String?
   name      String
   email     String
   phone     String
@@ -118,6 +124,13 @@ model Booking {
   /// wer keinen der angebotenen Termine kann, soll trotzdem anfragen können,
   /// ohne seinen Wunsch in die Nachricht schreiben zu müssen.
   terminWunsch   String?
+
+  /// Wann der Gast telefonisch am besten erreichbar ist - eine der
+  /// Zeitspannen aus src/lib/erreichbarkeit.ts. Pflichtangabe im Formular:
+  /// Ohne sie beginnt jede Anfrage mit Rückrufversuchen ins Leere. Als
+  /// Text und nicht als Aufzählungstyp, damit sich die Spannen ändern
+  /// lassen, ohne die Datenbank umzubauen.
+  erreichbarkeit String?
 }
 
 model BlogPost {

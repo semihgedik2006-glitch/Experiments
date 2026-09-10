@@ -28,7 +28,7 @@ export function NewsletterForm() {
         </button>
       </div>
       {state?.message && (
-        <p className={`text-xs ${state.ok ? "text-accent" : "text-red-500"}`}>{state.message}</p>
+        <p className={`text-xs ${state.ok ? "text-accent" : "text-danger"}`}>{state.message}</p>
       )}
     </form>
   );

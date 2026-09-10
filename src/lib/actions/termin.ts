@@ -32,7 +32,7 @@ async function ladeBuchung(token: string) {
   if (!token) return null;
   return prisma.booking.findUnique({
     where: { manageToken: token },
-    include: { slot: { include: { studio: true } } },
+    include: { slot: { include: { studio: true } }, studio: true },
   });
 }
 
@@ -59,7 +59,7 @@ export async function terminAbsagen(
   const abgesagt = await prisma.booking.update({
     where: { id: buchung.id },
     data: { status: "CANCELLED" },
-    include: { slot: { include: { studio: true } } },
+    include: { slot: { include: { studio: true } }, studio: true },
   });
 
   try {
@@ -111,6 +111,17 @@ export async function terminVerschieben(
   if (istVorbei(ziel.date)) {
     return { ok: false, message: "Diese Zeit liegt in der Vergangenheit." };
   }
+  // Verschieben heißt: andere Zeit, gleicher Ort. Die Seite bietet auch
+  // nur Zeiten des eigenen Studios an - aber die Kennung ließe sich von
+  // Hand austauschen, und dann stünde die Anfrage plötzlich bei einem
+  // anderen Standort im Kalender, ohne dass dort jemand davon weiß.
+  const eigenesStudio = buchung.studioId ?? buchung.slot?.studioId ?? null;
+  if (eigenesStudio && ziel.studioId !== eigenesStudio) {
+    return {
+      ok: false,
+      message: "Diese Zeit gehört zu einem anderen Studio. Für einen Wechsel des Standorts buche bitte einen neuen Probetermin.",
+    };
+  }
   // Die eigene Buchung zählt nicht gegen die Kapazität des Ziels - sie
   // steht ja noch am alten Termin.
   const belegt = ziel.bookings.filter((b) => b.id !== buchung.id).length;
@@ -122,11 +133,15 @@ export async function terminVerschieben(
     where: { id: buchung.id },
     data: {
       slotId: ziel.id,
+      // Anfragen von vor der Standortspalte haben noch keinen Standort.
+      // Beim Verschieben ist er hier bekannt - dann setzen wir ihn gleich,
+      // statt die Lücke weiterzuschleppen.
+      studioId: ziel.studioId,
       // Die Erinnerung gilt dem neuen Termin - der Merker muss zurück,
       // sonst bliebe sie aus.
       reminderSentAt: null,
     },
-    include: { slot: { include: { studio: true } } },
+    include: { slot: { include: { studio: true } }, studio: true },
   });
 
   try {

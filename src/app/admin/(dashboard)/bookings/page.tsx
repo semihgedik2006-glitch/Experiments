@@ -4,7 +4,8 @@ import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
-import { CalendarCheck, Download, SearchX } from "lucide-react";
+import { CalendarCheck, Download, PhoneCall, SearchX } from "lucide-react";
+import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { AdminPage, EmptyState, StatusBadge, adminInput } from "@/components/admin/ui";
 import { SearchBox } from "@/components/admin/search-box";
 import { FilterChips, Pagination } from "@/components/admin/list-nav";
@@ -52,7 +53,10 @@ export default async function AdminBookingsPage({
   const seite = seitenZahl(params);
 
   const where: Prisma.BookingWhereInput = {
-    ...(studioFilter ? { slot: { is: { studioId: studioFilter } } } : {}),
+    // Der Standort steht seit der Umstellung direkt an der Anfrage, nicht
+    // mehr nur am Termin. Anfragen ohne feste Zeit sind damit ebenfalls
+    // einem Studio zugeordnet - vorher sah sie nur die Leitung.
+    ...(studioFilter ? { studioId: studioFilter } : {}),
     ...(status ? { status } : {}),
     ...(suchFilter(begriff, ["name", "email", "phone", "message", "terminWunsch"]) ?? {}),
   };
@@ -68,7 +72,7 @@ export default async function AdminBookingsPage({
     prisma.booking.count({ where }),
     prisma.booking.findMany({
       where,
-      include: { slot: { include: { studio: true } } },
+      include: { slot: true, studio: { select: { name: true } } },
       // Zweites Sortierkriterium: Ohne eindeutiges Merkmal darf die
       // Datenbank Einträge mit gleichem Zeitstempel zwischen zwei Abfragen
       // unterschiedlich anordnen. Beim Blättern kann dann ein Eintrag auf
@@ -145,16 +149,22 @@ export default async function AdminBookingsPage({
                 <p className="text-sm text-muted">
                   {booking.email} &middot; {booking.phone}
                 </p>
+                {/* Direkt unter der Telefonnummer: Wer anruft, liest hier
+                    ab, ob jetzt der richtige Zeitpunkt dafür ist. */}
+                <p className="mt-1 flex items-center gap-1.5 text-sm">
+                  <PhoneCall size={13} className="shrink-0 text-accent" aria-hidden />
+                  Erreichbar: {erreichbarkeitText(booking.erreichbarkeit)}
+                </p>
                 <p className="mt-2 text-sm">
                   {booking.slot ? (
                     <>
                       Termin: {formatDate(booking.slot.date)} um {booking.slot.startTime} Uhr
-                      {studios.length > 1 && (
-                        <span className="text-muted"> &middot; {booking.slot.studio.name}</span>
-                      )}
                     </>
                   ) : (
                     <span className="text-muted">Kein bestimmter Termin - individuell abzustimmen</span>
+                  )}
+                  {studios.length > 1 && booking.studio && (
+                    <span className="text-muted"> &middot; {booking.studio.name}</span>
                   )}
                 </p>
                 {/* Der Wunsch in eigenen Worten steht direkt unter dem

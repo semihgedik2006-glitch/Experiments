@@ -8,14 +8,15 @@ import { neuerVerwaltungsSchluessel, terminAngaben } from "@/lib/termin-angaben"
 import type { BookingStatus } from "@/generated/prisma/enums";
 
 export async function updateBookingStatus(id: string, status: BookingStatus) {
-  // Der Standort kommt über den Termin aus dem Datensatz. Eine Buchung
-  // ohne festen Termin gehört keinem Standort - die darf deshalb nur die
-  // Leitung bearbeiten.
+  // Der Standort steht am Datensatz selbst, nicht im Formular - sonst
+  // ließe er sich mitschicken und man erteilte sich damit die Erlaubnis.
+  // Alte Anfragen aus der Zeit vor dieser Spalte haben keinen; die darf
+  // weiterhin nur die Leitung bearbeiten.
   const zugehoerig = await prisma.booking.findUnique({
     where: { id },
-    select: { manageToken: true, slot: { select: { studioId: true } } },
+    select: { manageToken: true, studioId: true },
   });
-  await verlangeStudioRecht(zugehoerig?.slot?.studioId);
+  await verlangeStudioRecht(zugehoerig?.studioId);
 
   // Vor dem Bestätigen sicherstellen, dass ein Schlüssel für den
   // persönlichen Link vorhanden ist. Buchungen aus der Zeit davor haben
@@ -26,7 +27,7 @@ export async function updateBookingStatus(id: string, status: BookingStatus) {
       status,
       ...(zugehoerig?.manageToken ? {} : { manageToken: neuerVerwaltungsSchluessel() }),
     },
-    include: { slot: { include: { studio: true } } },
+    include: { slot: { include: { studio: true } }, studio: true },
   });
   revalidatePath("/admin/bookings");
   revalidatePath("/admin");
@@ -53,9 +54,9 @@ export async function notizSpeichern(formData: FormData) {
 
   const zugehoerig = await prisma.booking.findUnique({
     where: { id },
-    select: { slot: { select: { studioId: true } } },
+    select: { studioId: true },
   });
-  await verlangeStudioRecht(zugehoerig?.slot?.studioId);
+  await verlangeStudioRecht(zugehoerig?.studioId);
 
   const notiz = String(formData.get("internalNote") ?? "").trim();
   await prisma.booking.update({

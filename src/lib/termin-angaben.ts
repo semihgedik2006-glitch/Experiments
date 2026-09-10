@@ -7,21 +7,33 @@ import type { TerminAngaben } from "@/lib/email";
  * E-Mails brauchen. An einer Stelle, damit Bestätigung, Erinnerung und
  * Absage denselben Termin gleich beschreiben.
  */
+type Ort = { name: string; street: string; postalCode: string; city: string };
+
 export type BuchungMitTermin = {
   id: string;
   name: string;
   email: string;
   manageToken: string | null;
+  /** Der Standort an der Anfrage selbst. Optional, damit Aufrufe ohne
+      diesen Bezug weiter gültig sind - etwa an alten Datensätzen. */
+  studio?: Ort | null;
   slot: {
     date: Date;
     startTime: string;
     endTime: string;
-    studio: { name: string; street: string; postalCode: string; city: string };
+    studio: Ort;
   } | null;
 };
 
 export function terminAngaben(buchung: BuchungMitTermin): TerminAngaben {
   const slot = buchung.slot;
+
+  // Der Standort an der Anfrage geht vor. Bei einer Anfrage ohne feste
+  // Zeit ist er der einzige - vorher stand in deren Bestätigungsmail
+  // weder Studioname noch Adresse. Steht ein Termin dran, sind beide
+  // ohnehin derselbe: Beim Anlegen und beim Verschieben wird geprüft,
+  // dass Termin und Standort zusammengehören.
+  const ort = buchung.studio ?? slot?.studio ?? null;
 
   return {
     bookingId: buchung.id,
@@ -30,10 +42,8 @@ export function terminAngaben(buchung: BuchungMitTermin): TerminAngaben {
     dateLabel: slot ? formatDate(slot.date) : null,
     startTime: slot?.startTime ?? null,
     endTime: slot?.endTime ?? null,
-    studioName: slot?.studio.name ?? null,
-    studioAdresse: slot
-      ? `${slot.studio.street}, ${slot.studio.postalCode} ${slot.studio.city}`
-      : null,
+    studioName: ort?.name ?? null,
+    studioAdresse: ort ? `${ort.street}, ${ort.postalCode} ${ort.city}` : null,
     datum: slot?.date ?? null,
     manageToken: buchung.manageToken,
   };

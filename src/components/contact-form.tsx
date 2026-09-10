@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { motion } from "motion/react";
 import { CheckCircle2 } from "lucide-react";
 import { sendContactMessage } from "@/lib/actions/contact";
@@ -10,6 +10,24 @@ const initialState: ActionResult = { ok: false, message: "" };
 
 export function ContactForm() {
   const [state, formAction, pending] = useActionState(sendContactMessage, initialState);
+
+  // Die Eingaben liegen in React, nicht nur im Formular: Nach einer
+  // Serveraktion setzt React das Formular zurück. Ohne diesen Zustand
+  // stand nach einer abgewiesenen Nachricht ("Bitte fülle alle
+  // Pflichtfelder aus") ein leeres Formular da - samt der eben
+  // geschriebenen Nachricht.
+  const [felder, setFelder] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+  });
+
+  const aendern =
+    (feld: keyof typeof felder) =>
+    (event: { target: { value: string } }) =>
+      setFelder((bisher) => ({ ...bisher, [feld]: event.target.value }));
 
   if (state.ok) {
     return (
@@ -50,6 +68,9 @@ export function ContactForm() {
           type="text"
           name="name"
           required
+          autoComplete="name"
+          value={felder.name}
+          onChange={aendern("name")}
           placeholder="Vor- und Nachname"
           className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime sm:col-span-2"
         />
@@ -57,12 +78,18 @@ export function ContactForm() {
           type="email"
           name="email"
           required
+          autoComplete="email"
+          value={felder.email}
+          onChange={aendern("email")}
           placeholder="E-Mail-Adresse"
           className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
         />
         <input
           type="tel"
           name="phone"
+          autoComplete="tel"
+          value={felder.phone}
+          onChange={aendern("phone")}
           placeholder="Telefonnummer (optional)"
           className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
         />
@@ -70,6 +97,8 @@ export function ContactForm() {
           type="text"
           name="subject"
           required
+          value={felder.subject}
+          onChange={aendern("subject")}
           placeholder="Betreff"
           className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime sm:col-span-2"
         />
@@ -77,6 +106,8 @@ export function ContactForm() {
           name="message"
           required
           rows={5}
+          value={felder.message}
+          onChange={aendern("message")}
           placeholder="Deine Nachricht"
           className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime sm:col-span-2"
         />
@@ -88,7 +119,7 @@ export function ContactForm() {
           animate={{ x: [0, -8, 8, -5, 5, 0] }}
           transition={{ duration: 0.4 }}
           role="alert"
-          className="text-sm text-red-500"
+          className="text-sm text-danger"
         >
           {state.message}
         </motion.p>

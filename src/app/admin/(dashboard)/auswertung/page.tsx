@@ -2,6 +2,7 @@ import { BarChart3, Info } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
 import { letzteWochen, wocheVon } from "@/lib/auswertung";
+import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
 import { AdminPage, AdminSection, EmptyState, Panel } from "@/components/admin/ui";
 import { Kennzahl, Rangbalken, Wochenbalken } from "@/components/admin/balken";
 import { FilterChips } from "@/components/admin/list-nav";
@@ -54,11 +55,11 @@ export default async function AdminAuswertungPage({
     prisma.booking.findMany({
       where: {
         createdAt: { gte: wochen[0].von },
-        ...(nurStudio ? { slot: { is: { studioId: nurStudio } } } : {}),
+        ...(nurStudio ? { studioId: nurStudio } : {}),
       },
       // Nur, was gezählt wird. Namen und Telefonnummern haben in einer
       // Auswertung nichts zu suchen.
-      select: { createdAt: true, status: true, slot: { select: { studioId: true } } },
+      select: { createdAt: true, status: true, studioId: true, erreichbarkeit: true },
     }),
     prisma.studioLocation.findMany({
       where: nurStudio ? { id: nurStudio } : undefined,
@@ -70,7 +71,9 @@ export default async function AdminAuswertungPage({
   const proWoche = wochen.map(() => 0);
   const proStudio = new Map<string, number>();
   const proStudioWoche = new Map<string, number[]>();
+  const proErreichbarkeit = new Map<string, number>();
   let ohneStandort = 0;
+  let ohneErreichbarkeit = 0;
   let bestaetigt = 0;
   let offen = 0;
 
@@ -81,10 +84,21 @@ export default async function AdminAuswertungPage({
     if (anfrage.status === "CONFIRMED") bestaetigt += 1;
     if (anfrage.status === "PENDING") offen += 1;
 
-    // Eine Anfrage ohne festen Termin hängt an keinem Standort - sie ist
-    // über das Formular ohne Terminauswahl gekommen. Sie zählt in die
-    // Wochen, aber nicht auf ein Studio.
-    const studioId = anfrage.slot?.studioId;
+    if (anfrage.erreichbarkeit) {
+      proErreichbarkeit.set(
+        anfrage.erreichbarkeit,
+        (proErreichbarkeit.get(anfrage.erreichbarkeit) ?? 0) + 1,
+      );
+    } else {
+      // Anfragen aus der Zeit vor dem Pflichtfeld. Sie werden mitgezählt
+      // und ausgewiesen, statt stillschweigend zu fehlen - sonst sähe die
+      // Verteilung genauer aus, als sie ist.
+      ohneErreichbarkeit += 1;
+    }
+
+    // Ohne Standort sind nur noch Anfragen von vor der Umstellung: Seither
+    // wird der oben gewählte Standort mitgeschickt, auch ohne feste Zeit.
+    const studioId = anfrage.studioId;
     if (!studioId) {
       ohneStandort += 1;
       continue;
@@ -98,6 +112,21 @@ export default async function AdminAuswertungPage({
     }
   }
 
+  // Bewusst NICHT nach Größe sortiert: Vormittag, Mittag, Nachmittag und
+  // Abend sind eine Reihenfolge. Nach Menge umgestellt verlöre die
+  // Darstellung genau die Information, wegen der man sie ansieht - nämlich
+  // zu welcher Tageszeit die Leute ans Telefon gehen.
+  const erreichbarkeiten = [
+    ...ERREICHBARKEITEN.map((option) => ({
+      schluessel: option.wert,
+      name: option.spanne ? `${option.kurz} (${option.spanne})` : option.kurz,
+      wert: proErreichbarkeit.get(option.wert) ?? 0,
+    })),
+    ...(ohneErreichbarkeit > 0
+      ? [{ schluessel: "ohne", name: "nicht angegeben", wert: ohneErreichbarkeit, matt: true }]
+      : []),
+  ];
+
   const gesamt = anfragen.length;
   const schnitt = gesamt / wochen.length;
   const anteilBestaetigt = gesamt > 0 ? Math.round((bestaetigt / gesamt) * 100) : 0;
@@ -110,7 +139,7 @@ export default async function AdminAuswertungPage({
     })),
     // Am Ende und gedämpft: Das ist kein Standort, sondern eine Restmenge.
     ...(admin.istLeitung && ohneStandort > 0
-      ? [{ schluessel: "ohne", name: "ohne festen Termin", wert: ohneStandort, matt: true }]
+      ? [{ schluessel: "ohne", name: "ohne Standort", wert: ohneStandort, matt: true }]
       : []),
   ].sort((a, b) => b.wert - a.wert);
 
@@ -203,6 +232,19 @@ export default async function AdminAuswertungPage({
             </Panel>
           </AdminSection>
 
+          <AdminSection
+            title="Wann Interessenten erreichbar sind"
+            description="Die Angabe aus dem Anfrageformular. Sie sagt, wann Rückrufe ankommen - und wann die Leitung am Telefon eingeplant sein sollte."
+            className="mt-8"
+          >
+            <Panel>
+              <Rangbalken
+                beschriftung={`Angegebene telefonische Erreichbarkeit, ${zeitraumText}`}
+                eintraege={erreichbarkeiten}
+              />
+            </Panel>
+          </AdminSection>
+
           {admin.istLeitung && rangliste.length > 0 && (
             <AdminSection title="Anfragen je Standort" className="mt-8">
               <Panel>
@@ -215,9 +257,9 @@ export default async function AdminAuswertungPage({
                   <p className="mt-4 flex items-start gap-2 border-t border-border pt-3 text-xs text-muted">
                     <Info size={14} className="mt-0.5 shrink-0" aria-hidden />
                     {ohneStandort === 1
-                      ? "Eine Anfrage kam ohne Auswahl eines festen Termins herein und lässt sich deshalb keinem Standort zuordnen."
-                      : `${ohneStandort} Anfragen kamen ohne Auswahl eines festen Termins herein und lassen sich deshalb keinem Standort zuordnen.`}{" "}
-                    Wer sie annimmt, entscheidet ihr beim Zurückrufen.
+                      ? "Eine Anfrage stammt aus der Zeit, bevor der Standort mitgeschickt wurde, und lässt sich deshalb keinem Studio zuordnen."
+                      : `${ohneStandort} Anfragen stammen aus der Zeit, bevor der Standort mitgeschickt wurde, und lassen sich deshalb keinem Studio zuordnen.`}{" "}
+                    Neue Anfragen tragen ihn immer.
                   </p>
                 )}
 

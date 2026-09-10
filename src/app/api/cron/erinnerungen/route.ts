@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       reminderSentAt: null,
       slot: { is: { date: { gte: morgen, lt: uebermorgen } } },
     },
-    include: { slot: { include: { studio: true } } },
+    include: { slot: { include: { studio: true } }, studio: true },
   });
 
   let verschickt = 0;

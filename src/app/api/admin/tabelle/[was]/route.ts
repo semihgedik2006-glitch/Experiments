@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { aktuellerAdmin, studioEinschraenkung } from "@/lib/admin-rechte";
 import { formatDate } from "@/lib/format";
+import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 
 /**
  * Buchungen und Newsletter-Abonnenten als Tabelle zum Weiterverarbeiten.
@@ -49,8 +50,8 @@ export async function GET(
     const nurStudio = studioEinschraenkung(admin);
 
     const buchungen = await prisma.booking.findMany({
-      where: nurStudio ? { slot: { is: { studioId: nurStudio } } } : undefined,
-      include: { slot: { include: { studio: true } } },
+      where: nurStudio ? { studioId: nurStudio } : undefined,
+      include: { slot: true, studio: { select: { name: true } } },
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     });
 
@@ -64,6 +65,7 @@ export async function GET(
         "Termin",
         "Uhrzeit",
         "Studio",
+        "Erreichbar",
         "Terminwunsch",
         "Nachricht",
         "Interner Vermerk",
@@ -76,7 +78,8 @@ export async function GET(
         statusText[b.status] ?? b.status,
         b.slot ? formatDate(b.slot.date) : "kein fester Termin",
         b.slot ? `${b.slot.startTime} - ${b.slot.endTime}` : "",
-        b.slot?.studio.name ?? "",
+        b.studio?.name ?? "",
+        erreichbarkeitText(b.erreichbarkeit),
         b.terminWunsch ?? "",
         b.message ?? "",
         b.internalNote ?? "",

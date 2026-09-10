@@ -61,7 +61,7 @@ export function CommentForm({
         className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
       />
 
-      {state.message && !state.ok && <p className="text-sm text-red-500">{state.message}</p>}
+      {state.message && !state.ok && <p className="text-sm text-danger">{state.message}</p>}
 
       <button
         type="submit"

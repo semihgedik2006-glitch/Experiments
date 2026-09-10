@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
 import { neuerVerwaltungsSchluessel } from "@/lib/termin-angaben";
+import { istErreichbarkeit } from "@/lib/erreichbarkeit";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
 export async function createBooking(
@@ -23,6 +24,8 @@ export async function createBooking(
   }
 
   const slotId = String(formData.get("slotId") ?? "").trim() || null;
+  const studioIdRoh = String(formData.get("studioId") ?? "").trim();
+  const erreichbarkeit = String(formData.get("erreichbarkeit") ?? "").trim();
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
@@ -36,6 +39,36 @@ export async function createBooking(
     return { ok: false, message: "Bitte fülle alle Pflichtfelder aus." };
   }
 
+  // Nur eine der vorgesehenen Zeitspannen. Das Feld kommt aus einer
+  // Auswahl, aber ein Formular lässt sich auch ohne Browser abschicken -
+  // ungeprüft stünde hier beliebiger Text.
+  if (!istErreichbarkeit(erreichbarkeit)) {
+    return {
+      ok: false,
+      message: "Bitte sag uns, wann wir dich telefonisch am besten erreichen.",
+    };
+  }
+
+  // Der Standort wird gegen die Datenbank geprüft, nicht geglaubt. Sonst
+  // ließe sich eine beliebige Kennung mitschicken und die Anfrage landete
+  // bei einem Studio, das es nicht gibt.
+  const studio = studioIdRoh
+    ? await prisma.studioLocation.findUnique({
+        where: { id: studioIdRoh },
+        select: { id: true },
+      })
+    : null;
+
+  // Gibt es überhaupt Studios, muss eines dabei sein. Ist noch keines
+  // angelegt, soll eine Anfrage trotzdem durchgehen - sie ohne Standort
+  // anzunehmen ist besser, als einen Interessenten wegzuschicken.
+  if (!studio) {
+    const gibtStudios = (await prisma.studioLocation.count()) > 0;
+    if (gibtStudios) {
+      return { ok: false, message: "Bitte wähle oben das Studio aus, in dem du trainieren möchtest." };
+    }
+  }
+
   if (slotId) {
     const slot = await prisma.availabilitySlot.findUnique({
       where: { id: slotId },
@@ -46,6 +79,15 @@ export async function createBooking(
       return { ok: false, message: "Dieser Termin existiert nicht mehr. Bitte wähle einen anderen." };
     }
 
+    // Termin und Standort müssen zusammenpassen. Im Formular ist das immer
+    // so - die Zeiten stammen aus dem gewählten Studio. Ohne Prüfung
+    // stünde an der Anfrage aber ein Standort, an dem der Termin gar nicht
+    // stattfindet, und die Studioleitung sähe eine Buchung für einen
+    // Termin, den sie nicht hat.
+    if (studio && slot.studioId !== studio.id) {
+      return { ok: false, message: "Termin und Studio passen nicht zusammen. Bitte wähle die Zeit noch einmal." };
+    }
+
     if (slot.bookings.length >= slot.capacity) {
       return { ok: false, message: "Dieser Termin ist leider bereits ausgebucht. Bitte wähle einen anderen." };
     }
@@ -54,11 +96,13 @@ export async function createBooking(
   await prisma.booking.create({
     data: {
       slotId,
+      studioId: studio?.id ?? null,
       name,
       email,
       phone,
       message: message || null,
       terminWunsch: terminWunsch || null,
+      erreichbarkeit,
       manageToken: neuerVerwaltungsSchluessel(),
     },
   });

@@ -27,7 +27,7 @@ export default async function TerminSeite({
 
   const buchung = await prisma.booking.findUnique({
     where: { manageToken: token },
-    include: { slot: { include: { studio: true } } },
+    include: { slot: { include: { studio: true } }, studio: true },
   });
 
   // Bewusst dieselbe Antwort wie für eine Adresse, die es nie gab: Wer

@@ -14,7 +14,9 @@ export default async function AdminDashboardPage() {
   // Alle Zahlen dieser Seite gelten für den Bereich, den dieser Zugang
   // sehen darf. Eine Studioleitung soll nicht an der Übersicht ablesen
   // können, wie viele Anfragen die anderen dreizehn Standorte hatten.
-  const buchungBereich = nurStudio ? { slot: { is: { studioId: nurStudio } } } : {};
+  // Der Standort steht direkt an der Anfrage - auch bei Anfragen ohne
+  // feste Zeit.
+  const buchungBereich = nurStudio ? { studioId: nurStudio } : {};
 
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
@@ -56,7 +58,8 @@ export default async function AdminDashboardPage() {
     prisma.booking.findMany({
       where: {
         status: { not: "CANCELLED" },
-        slot: { is: { date: { gte: startOfToday }, ...(nurStudio ? { studioId: nurStudio } : {}) } },
+        ...buchungBereich,
+        slot: { is: { date: { gte: startOfToday } } },
       },
       include: { slot: { include: { studio: true } } },
       orderBy: [{ slot: { date: "asc" } }, { slot: { startTime: "asc" } }, { id: "asc" }],
