@@ -125,7 +125,13 @@ const fahnen: {
   },
 ];
 
-export type NaechsterTermin = { label: string; studio: string; href: string };
+export type NaechsterTermin = {
+  label: string;
+  studio: string;
+  href: string;
+  /** Wie viele Plätze in den nächsten sieben Tagen noch frei sind. */
+  freieDieseWoche: number | null;
+};
 
 export function Hero({
   standorte,
@@ -206,8 +212,17 @@ export function Hero({
             Textspalte wird schmaler als sie aussieht. Hier greift der
             Abstand genau einmal - zwischen Text und Figur. */}
         <Container className="grid items-center gap-10 py-20 sm:py-24 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
-          {/* ---------------- Linke Spalte: die Aussage ---------------- */}
-          <motion.div style={{ y: textY }}>
+          {/* ---------------- Linke Spalte: die Aussage ----------------
+
+              min-w-0: Rasterspalten dürfen von sich aus nicht schmaler
+              werden als ihr breitester Inhalt. Der Terminkasten weiter
+              unten ist ein inline-flex und damit so breit wie sein Text -
+              auf einem 390 Pixel breiten Gerät wuchs die Spalte dadurch
+              auf 429 Pixel, und der Hero schnitt rechts alles ab, was
+              nicht mehr hineinpasste. Gemerkt hat man davon nichts: Der
+              Abschnitt hat overflow-hidden, die Seite scrollt also nicht
+              quer, der Text war einfach weg. */}
+          <motion.div style={{ y: textY }} className="min-w-0">
             <span
               className="hero-anim inline-flex items-center gap-2.5 rounded-full border border-border bg-surface-raised px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-muted"
               style={{ "--hero-delay": "0.15s" } as React.CSSProperties}
@@ -267,20 +282,44 @@ export function Hero({
             {naechsterTermin && (
               <Link
                 href={naechsterTermin.href}
-                className="hero-anim group mt-7 inline-flex max-w-full items-center gap-3 rounded-2xl border border-lime/40 bg-lime/5 px-4 py-3 transition-colors hover:border-lime"
+                className="hero-anim group mt-7 inline-flex max-w-full items-center gap-4 rounded-2xl border border-lime/40 bg-lime/5 px-5 py-4 transition-colors hover:border-lime"
                 style={{ "--hero-delay": "0.84s" } as React.CSSProperties}
               >
+                {/* Derselbe pulsende Punkt wie oben an der Standortzahl.
+                    Er sagt in einem Zeichen, was drei Wörter bräuchten:
+                    Das hier ist gerade eben so, nicht irgendwann mal
+                    aufgeschrieben. */}
+                <span aria-hidden className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span className="puls-welle absolute inset-0 rounded-full bg-lime" />
+                  <span className="relative h-2.5 w-2.5 rounded-full bg-lime" />
+                </span>
+
                 <span className="min-w-0">
                   <span className="block text-[11px] uppercase tracking-widest text-muted">
                     Nächster freier Termin
                   </span>
-                  <span className="mt-0.5 block truncate text-sm font-semibold">
+                  {/* Eine Stufe größer als vorher. Das ist der einzige
+                      Satz auf dem ersten Bildschirm, der etwas Prüfbares
+                      sagt - er stand bisher in derselben Größe wie das
+                      Kleingedruckte darunter. */}
+                  {/* Kein truncate mehr: Auf einem schmalen Gerät passt
+                      "Fr., 11.09. um 09:00 Uhr · Körperformen Hürth" nicht
+                      in eine Zeile, und abgeschnitten wurde ausgerechnet
+                      der Studioname - also die Hälfte der Auskunft. Zwei
+                      Zeilen sind hier besser als eine mit Auslassung. */}
+                  <span className="mt-0.5 block text-base font-semibold">
                     {naechsterTermin.label}
                     {naechsterTermin.studio && (
                       <span className="font-normal text-muted"> · {naechsterTermin.studio}</span>
                     )}
                   </span>
+                  {naechsterTermin.freieDieseWoche && (
+                    <span className="mt-1 block text-xs text-muted">
+                      {naechsterTermin.freieDieseWoche} freie Termine in den nächsten 7 Tagen
+                    </span>
+                  )}
                 </span>
+
                 <ArrowRight
                   size={17}
                   aria-hidden

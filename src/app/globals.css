@@ -774,6 +774,26 @@ h3,
   contain-intrinsic-size: 360px 360px;
 }
 
+/*
+   Dasselbe für flache Zierde, die IM Textfluss steht - die Trennlinie
+   zwischen zwei Abschnitten.
+
+   Sie hatte .zierde-ruht und damit dessen Platzhaltergröße von 360 x 360
+   Pixeln. Die Linie ist aber 40 Pixel hoch. Solange sie außerhalb des
+   Bildes lag, hielt der Browser also 360 Pixel frei und schrumpfte sie
+   beim Hereinscrollen auf 40 - zweimal auf der Startseite. Das ergab
+   zwei Löcher von je 320 Pixeln, eine Bildlaufleiste, die zu lang war,
+   und einen Sprung im Text, während man daran vorbeiscrollte.
+
+   Bei den anderen Verwendungen fiel es nicht auf: Die stehen alle
+   absolut positioniert und damit außerhalb des Flusses, wo eine falsche
+   Platzhaltergröße nichts verschiebt.
+*/
+.zierde-linie {
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px 40px;
+}
+
 /* ---------------------------------------------------------------------------
    Der Impuls quer durch die Seite.
 

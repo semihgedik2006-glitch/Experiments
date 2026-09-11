@@ -12,24 +12,42 @@ import {
 } from "motion/react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
+import type { Kennzahl } from "@/lib/beweise";
 
 // Hier stand als erste Zahl eine hochzählende "90 %" für die
 // aktivierten Muskelfasern. Die steht in jedem zweiten EMS-Prospekt,
 // aber nirgends eine Quelle dazu - und als hochzählende Ziffer trat sie
-// auf wie ein Messwert. Geblieben sind Zahlen, die beschreiben, wie hier
-// tatsächlich trainiert wird, plus die Zahl der Standorte. Die kommt von
-// außen und wird nicht hier hineingeschrieben: Kommt ein Studio dazu,
-// stimmte sie sonst ab diesem Tag nicht mehr.
-const feste = [
-  { value: 20, suffix: " Min", label: "pro Trainingseinheit - mehr braucht es nicht" },
-  { value: 1, suffix: "x", label: "pro Woche, mit persönlicher Betreuung" },
-];
+// auf wie ein Messwert.
+//
+// Was jetzt hier steht, kommt vollständig aus der eigenen Datenbank
+// (siehe src/lib/beweise.ts): die Dauer einer Einheit, die Zahl der
+// Standorte und die freien Termine der nächsten sieben Tage. Das sind
+// Zahlen, die niemand nachschlagen muss, die kein Wettbewerber
+// abschreiben kann und die sich jeden Tag von selbst aktualisieren - und
+// sie beantworten genau die Frage, mit der jemand hier ist: Kann ich da
+// hin, und wann?
+//
+// Keine Zahl wird hier hineingeschrieben. Kommt ein Studio dazu, stimmt
+// die Seite am selben Tag.
 
+/**
+ * Eine hochzählende Zahl.
+ *
+ * Der Startwert ist die ENDZAHL und nicht 0 - das ist der Unterschied
+ * zwischen "steht 20" und "steht 0". Vorher begann der Zähler bei null
+ * und zählte erst hoch, wenn jemand hinscrollte. Für jeden, der nie so
+ * weit scrollte, stand dort dauerhaft "0 Min"; im ausgelieferten HTML,
+ * das eine Suchmaschine liest, ebenfalls. Ausgerechnet bei den Zahlen,
+ * die Vertrauen schaffen sollen, stand also überall eine Null.
+ *
+ * Jetzt steht die richtige Zahl von Anfang an da und springt erst im
+ * Moment des Sichtbarwerdens auf null, um hochzulaufen.
+ */
 function Counter({ value, suffix }: { value: number; suffix: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15% 0px" });
   const wenigerBewegung = useReducedMotion();
-  const count = useMotionValue(0);
+  const count = useMotionValue(value);
   const rounded = useTransform(count, (v) => `${Math.round(v)}${suffix}`);
 
   useEffect(() => {
@@ -42,6 +60,7 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
       count.set(value);
       return;
     }
+    count.set(0);
     const controls = animate(count, value, { duration: 1.6, ease: [0.16, 1, 0.3, 1] });
     return () => controls.stop();
   }, [inView, count, value, wenigerBewegung]);
@@ -53,12 +72,7 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
   );
 }
 
-export function StatsStrip({ studios }: { studios: number }) {
-  const stats = [
-    ...feste,
-    { value: studios, suffix: "", label: studios === 1 ? "Studio rund um Köln" : "Studios rund um Köln" },
-  ];
-
+export function StatsStrip({ zahlen }: { zahlen: Kennzahl[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const wenigerBewegung = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
@@ -93,21 +107,26 @@ export function StatsStrip({ studios }: { studios: number }) {
             Warum EMS
           </span>
           <p className="mt-4 text-lg leading-relaxed text-muted">
-            Drei Zahlen erklären, warum 20 Minuten reichen - und warum EMS
-            gerade für Menschen mit vollem Kalender funktioniert.
+            Keine Zahlen aus Prospekten - das hier steht gerade so in unserem
+            Terminkalender.
           </p>
         </Reveal>
 
         {/* Trennlinien nur ab sm: untereinander wirken sie wie abgehackte
             Kästchen statt wie eine zusammengehörige Reihe. */}
+        {/* Die Spaltenzahl richtet sich nach dem, was tatsächlich da ist.
+            Fest auf drei gestellt, klaffte bei einer fehlenden Zahl eine
+            leere Spalte - und die sieht aus wie ein Fehler. */}
         <Reveal
           delay={0.1}
-          className="mt-14 grid gap-12 text-center sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border"
+          className={`mt-14 grid gap-12 text-center sm:gap-0 sm:divide-x sm:divide-border ${
+            zahlen.length >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"
+          }`}
         >
-          {stats.map((stat) => (
-            <div key={stat.label} className="sm:px-6">
-              <Counter value={stat.value} suffix={stat.suffix} />
-              <p className="mx-auto mt-3 max-w-[220px] text-sm text-muted">{stat.label}</p>
+          {zahlen.map((zahl) => (
+            <div key={zahl.label} className="sm:px-6">
+              <Counter value={Number(zahl.wert)} suffix={zahl.einheit ?? ""} />
+              <p className="mx-auto mt-3 max-w-[230px] text-sm text-muted">{zahl.label}</p>
             </div>
           ))}
         </Reveal>

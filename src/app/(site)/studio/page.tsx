@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { isVisible } from "@/lib/site-toggles";
 import { PageHeader } from "@/components/ui/page-header";
 import { getStudios } from "@/lib/data";
+import { freieTermineJeStudio } from "@/lib/beweise";
 import { StudioJsonLd } from "@/components/structured-data";
 import { StudioList } from "@/components/studio/studio-list";
 import { StandortUebersicht } from "@/components/studio/standort-uebersicht";
@@ -24,6 +25,13 @@ export default async function StudioPage() {
 
   const studios = await getStudios();
   if (studios.length === 0) return notFound();
+
+  // Freie Plätze je Standort, für die Karte unter der Adresse.
+  const freie = await freieTermineJeStudio();
+  const mitTerminen = studios.map((studio) => ({
+    ...studio,
+    freieTermine: freie.get(studio.id) ?? null,
+  }));
 
   return (
     <>
@@ -59,7 +67,7 @@ export default async function StudioPage() {
         </Container>
       )}
 
-      <StudioList studios={studios} />
+      <StudioList studios={mitTerminen} />
     </>
   );
 }

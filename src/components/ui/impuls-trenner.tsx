@@ -18,7 +18,7 @@
  * Gleichschritt blinken, was den Blick festhält, statt ihn weiterzuführen.
  *
  * Reine Zierde, deshalb für Vorleseprogramme ausgeblendet. Und ein
- * Element, das nur rechnet, wenn es im Bild ist (siehe .zierde-ruht).
+ * Element, das nur rechnet, wenn es im Bild ist (siehe .zierde-linie).
  */
 
 type Variante = "a" | "b" | "c";
@@ -58,7 +58,7 @@ export function ImpulsTrenner({
     `H 1000`;
 
   return (
-    <div aria-hidden className={`zierde-ruht pointer-events-none w-full ${className}`}>
+    <div aria-hidden className={`zierde-linie pointer-events-none w-full ${className}`}>
       <svg
         viewBox="0 0 1000 40"
         // Die Linie soll die volle Breite einnehmen und dabei NICHT höher

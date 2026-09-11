@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { MapPin, Phone, Mail, Clock, LocateFixed } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, LocateFixed, CalendarCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
@@ -29,6 +29,13 @@ export type StudioEntry = {
   openingHours: string;
   latitude: number | null;
   longitude: number | null;
+  /**
+   * Freie Plätze in den nächsten sieben Tagen. Ist nichts frei, steht
+   * hier null und die Zeile entfällt - "0 freie Termine" liest sich wie
+   * "brauchst du gar nicht erst zu fragen", dabei ergibt ein Anruf
+   * häufig trotzdem eine Zeit.
+   */
+  freieTermine: number | null;
 };
 
 /**
@@ -214,6 +221,19 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
                   <Clock size={18} className="mt-0.5 shrink-0 text-accent" />
                   <span className="whitespace-pre-line">{studio.openingHours}</span>
                 </li>
+                {/* Die Zahl, die auf dieser Seite tatsächlich gesucht
+                    wird: Kann ich da diese Woche überhaupt hin? Sie stand
+                    bisher erst zwei Klicks weiter auf der Standortseite. */}
+                {studio.freieTermine !== null && (
+                  <li className="flex items-start gap-3">
+                    <CalendarCheck size={18} className="mt-0.5 shrink-0 text-accent" />
+                    <span>
+                      <strong className="font-semibold">{studio.freieTermine}</strong>{" "}
+                      {studio.freieTermine === 1 ? "freier Termin" : "freie Termine"} in den
+                      nächsten 7 Tagen
+                    </span>
+                  </li>
+                )}
               </ul>
 
               {/* Zur Standortseite statt zur allgemeinen Terminseite: Dort
