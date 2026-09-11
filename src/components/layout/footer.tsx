@@ -54,6 +54,17 @@ export async function Footer({
                 </Link>
               </li>
             ))}
+            {/* Getrennt von der Hauptnavigation und bewusst hier unten:
+                Diese Seite sucht nur, wer schon einen Termin hat - im
+                Kopfbereich stünde sie jedem im Weg, der noch keinen hat. */}
+            <li className="pt-2">
+              <Link
+                href="/meine-termine"
+                className="text-sm text-muted hover:text-foreground"
+              >
+                Meine Termine
+              </Link>
+            </li>
           </ul>
         </div>
 

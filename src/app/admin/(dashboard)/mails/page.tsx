@@ -35,6 +35,7 @@ const artText: Record<MailArt, string> = {
   WARTELISTE_INTERN: "Neuer Wartelisteneintrag ans Studio",
   NEWSLETTER: "Newsletter-Ausgabe an einen Abonnenten",
   NEWSLETTER_TEST: "Newsletter-Probeversand an den eigenen Zugang",
+  KUNDENBEREICH: "Zugangslink zu den eigenen Terminen",
 };
 
 const ablaeufe: { titel: string; wann: string; an: string }[] = [
@@ -95,6 +96,11 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
     titel: "Newsletter",
     wann: "nie von allein - nur wenn ihr unter Newsletter auf Senden drückt",
     an: "an alle Abonnenten, mit Abmeldelink in jeder einzelnen Mail",
+  },
+  {
+    titel: "Zugangslink zu den eigenen Terminen",
+    wann: "wenn jemand auf „Meine Termine“ seine Adresse einträgt - und nur, wenn es zu dieser Adresse tatsächlich Termine gibt",
+    an: "an den Gast. Der Link gilt 30 Minuten",
   },
 ];
 

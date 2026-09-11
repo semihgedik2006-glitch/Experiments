@@ -9,6 +9,7 @@ import {
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { terminAngaben } from "@/lib/termin-angaben";
 import { PROTOKOLL_TAGE } from "@/lib/protokoll";
+import { alteZugaengeLoeschen } from "@/lib/kundenbereich";
 
 /** Ab wann eine offene Anfrage als liegengeblieben gilt. */
 const NACHFASS_NACH_TAGEN = 3;
@@ -109,6 +110,10 @@ export async function GET(request: NextRequest) {
   const bewertungen = await umBewertungBitten(morgen);
   const aufgeraeumt = await altesProtokollLoeschen();
   const protokollAufgeraeumt = await altesAenderungsprotokollLoeschen();
+  // Abgelaufene Zugangslinks zum eigenen Terminbereich. Sie sind längst
+  // wirkungslos - hier verschwindet nur die Zeile, die noch die E-Mail-
+  // Adresse enthält.
+  const zugaengeAufgeraeumt = await alteZugaengeLoeschen();
 
   return NextResponse.json({
     ok: true,
@@ -120,6 +125,7 @@ export async function GET(request: NextRequest) {
     bewertungen,
     protokollGeloescht: aufgeraeumt,
     aenderungsprotokollGeloescht: protokollAufgeraeumt,
+    zugaengeGeloescht: zugaengeAufgeraeumt,
   });
 }
 

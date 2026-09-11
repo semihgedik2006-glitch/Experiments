@@ -63,6 +63,8 @@ enum MailArt {
   /// Der Probeversand an die eigene Adresse. Eigene Art, damit ein
   /// Testlauf im Protokoll nicht wie ein Versand an einen Kunden aussieht.
   NEWSLETTER_TEST
+  /// Der Zugangslink zum eigenen Terminbereich.
+  KUNDENBEREICH
 }
 
 /// Nachweis, dass eine E-Mail den Weg nach draußen gefunden hat.
@@ -819,4 +821,50 @@ model Verwandlung {
 
   @@index([sortOrder])
   @@index([studioId])
+}
+
+/// Ein Zugangslink zum eigenen Terminbereich.
+///
+/// Kein Konto, kein Passwort - und das ist eine Entscheidung, keine
+/// Abkürzung. Wer ein Probetraining anfragt, legt sich dafür kein Konto
+/// an; er gibt seine Adresse ein, bekommt einen Link und ist drin. Ein
+/// Passwort wäre eine zusätzliche Hürde vor Inhalten, die ohnehin nur aus
+/// den eigenen Terminen bestehen - und ein weiteres Passwort, das
+/// irgendwo aufgeschrieben wird.
+///
+/// Drei Dinge machen das trotzdem sicher genug:
+///
+/// NUR DER ABDRUCK LIEGT HIER. Gespeichert wird der Hash, nicht der
+/// Schlüssel. Wer die Datenbank in die Hand bekommt, kann damit keinen
+/// Link bauen - und der Schlüssel selbst steht einzig im Postfach dessen,
+/// der ihn angefordert hat.
+///
+/// ER LÄUFT AB. Ein Link, der ein Jahr später noch funktioniert, ist ein
+/// offenes Fenster in einem weitergegebenen Postfach.
+///
+/// ER VERRÄT NICHTS. Die Anforderung antwortet immer gleich, egal ob es
+/// zu der Adresse Termine gibt. Sonst wäre das Formular eine Auskunft
+/// darüber, wer hier Kunde ist.
+model Kundenzugang {
+  id String @id @default(cuid())
+
+  /// Immer kleingeschrieben abgelegt, damit "Max@..." und "max@..."
+  /// derselbe Mensch sind.
+  email String
+
+  /// Der Abdruck des Schlüssels (SHA-256). NIE der Schlüssel selbst.
+  tokenHash String @unique
+
+  ablaufAm DateTime
+
+  /// Wann der Link zum ersten Mal geöffnet wurde. Reiner Vermerk - er
+  /// beantwortet die Frage "ist die Mail angekommen?", ohne dass jemand
+  /// im Postfach nachsehen muss.
+  geoeffnetAm DateTime?
+
+  createdAt DateTime @default(now())
+
+  /// Für die Begrenzung je Adresse und fürs Aufräumen.
+  @@index([email, createdAt])
+  @@index([ablaufAm])
 }

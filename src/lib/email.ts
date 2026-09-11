@@ -574,3 +574,49 @@ In der Warteliste ansehen:
 ${siteConfig.url}/admin/warteliste`,
   });
 }
+
+/**
+ * Der Zugangslink zum eigenen Terminbereich.
+ *
+ * Bewusst nüchtern und kurz: Diese Mail wird im Postfach gesucht,
+ * überflogen und angeklickt - alles innerhalb einer halben Minute, denn
+ * jemand steht gerade vor dem Formular und wartet darauf. Alles, was den
+ * Link umstellt, verlängert diese halbe Minute.
+ *
+ * Die Gültigkeitsdauer steht im Text, nicht nur im Kleingedruckten: Wer
+ * die Mail morgen findet und der Link tut nichts mehr, soll den Grund
+ * lesen können statt an einen Fehler zu glauben.
+ *
+ * Und der letzte Absatz gehört dazu: Diesen Link kann jeder anfordern,
+ * der die Adresse kennt. Wer ihn ungefragt bekommt, soll wissen, dass
+ * nichts passiert ist und nichts zu tun ist.
+ */
+export async function sendKundenbereichEmail(angaben: {
+  email: string;
+  /** Der Vorname, falls wir ihn aus einer Anfrage kennen. */
+  name: string | null;
+  link: string;
+  gueltigMinuten: number;
+}) {
+  const anrede = angaben.name ? `Hallo ${angaben.name},` : "Hallo,";
+
+  return verschicken("KUNDENBEREICH", {
+    to: angaben.email,
+    subject: "Deine Termine bei Körperformen",
+    text: `${anrede}
+
+hier ist dein Link zu deinen Terminen:
+
+${angaben.link}
+
+Er gilt ${angaben.gueltigMinuten} Minuten. Danach forderst du dir einfach
+einen neuen an - das geht beliebig oft.
+
+Du hast diesen Link nicht angefordert? Dann hat jemand deine Adresse in
+unser Formular getippt. Passiert ist nichts: Ohne den Link oben kommt
+niemand an deine Termine. Du kannst diese Mail einfach löschen.
+
+Viele Grüße
+Dein Körperformen-Team`,
+  });
+}

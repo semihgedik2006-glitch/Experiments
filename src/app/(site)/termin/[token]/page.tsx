@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarCheck, CalendarX, Clock, MapPin } from "lucide-react";
 import { prisma } from "@/lib/prisma";
@@ -170,6 +171,20 @@ export default async function TerminSeite({
               )}
             </p>
           )}
+
+          {/* Der Weg zu allen Terminen. Steht hier und nicht oben: Wer
+              diesen Link geöffnet hat, wollte diesen einen Termin - die
+              Übersicht ist das, was er danach vielleicht noch sucht. */}
+          <p className="mt-8 text-sm text-muted">
+            Du hast mehrere Termine bei uns?{" "}
+            <Link
+              href="/meine-termine"
+              className="text-accent underline underline-offset-2"
+            >
+              Hier siehst du alle auf einmal
+            </Link>
+            .
+          </p>
 
           {aenderbar && buchung.slot && freieZeiten.length === 0 && (
             <p className="mt-4 text-sm text-muted">
