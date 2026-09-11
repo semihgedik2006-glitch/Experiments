@@ -261,7 +261,29 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="10. Newsletter">
+          <Section title="10. Zugang zu Ihren Terminen ohne Konto">
+            <p>
+              Unter „Meine Termine“ können Sie sich einen Link zusenden lassen, über den Sie
+              die zu Ihrer E-Mail-Adresse gespeicherten Terminanfragen einsehen können. Ein
+              Benutzerkonto und ein Passwort sind hierfür nicht erforderlich.
+            </p>
+            <p>
+              Wir speichern hierzu Ihre E-Mail-Adresse, einen kryptografischen Prüfwert des
+              Zugangsschlüssels sowie den Zeitpunkt der Anforderung und des erstmaligen
+              Aufrufs. Der Zugangsschlüssel selbst wird nicht gespeichert; er ist
+              ausschließlich in der an Sie versandten E-Mail enthalten. Der Link verliert
+              nach 30 Minuten seine Gültigkeit, der zugehörige Datensatz wird spätestens
+              einen Tag nach Ablauf automatisch gelöscht.
+            </p>
+            <p>
+              Eine E-Mail wird nur versandt, wenn zu der eingegebenen Adresse tatsächlich
+              Terminanfragen vorliegen. Die Anzeige im Formular ist in jedem Fall
+              identisch, damit sich aus ihr nicht ableiten lässt, ob eine Adresse bei uns
+              gespeichert ist. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+            </p>
+          </Section>
+
+          <Section title="11. Newsletter">
             <p>
               Wenn Sie sich für unseren Newsletter anmelden, speichern wir Ihre
               E-Mail-Adresse, um Ihnen Trainingstipps und Angebote zuzusenden.
@@ -282,7 +304,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="11. Gesundheitsbezogene Angaben">
+          <Section title="12. Gesundheitsbezogene Angaben">
             <p>
               Im Zusammenhang mit EMS-Training können Nutzer uns freiwillig Informationen
               über Trainingsziele, körperliche Beschwerden, Rückenbeschwerden,
@@ -305,7 +327,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="12. Blog, redaktionelle Inhalte und Kommentarfunktion">
+          <Section title="13. Blog, redaktionelle Inhalte und Kommentarfunktion">
             <p>
               Auf unserer Website stellen wir Blogbeiträge, Ratgeber und Informationen zu
               EMS-Training, Bewegung, Gesundheit und verwandten Themen zur Verfügung. Beim
@@ -332,7 +354,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="13. Verarbeitung von Kunden- und Vertragsdaten">
+          <Section title="14. Verarbeitung von Kunden- und Vertragsdaten">
             <p>
               Soweit über die Website Anfragen gestellt werden, die anschließend zu einer
               Mitgliedschaft, einem Probetraining oder einem sonstigen Vertragsverhältnis
@@ -347,7 +369,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="14. Empfänger personenbezogener Daten und Auftragsverarbeitung">
+          <Section title="15. Empfänger personenbezogener Daten und Auftragsverarbeitung">
             <p>
               Wir geben personenbezogene Daten grundsätzlich nur weiter, wenn dies zur
               Erfüllung eines Vertrages erforderlich ist, eine gesetzliche Verpflichtung
@@ -364,7 +386,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="15. Übermittlung von Daten in Drittländer">
+          <Section title="16. Übermittlung von Daten in Drittländer">
             <p>
               Soweit im Rahmen bestimmter Dienste personenbezogene Daten an Empfänger
               außerhalb der Europäischen Union beziehungsweise des Europäischen
@@ -381,7 +403,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="16. Speicherdauer">
+          <Section title="17. Speicherdauer">
             <p>
               Personenbezogene Daten werden grundsätzlich nur so lange gespeichert, wie dies
               für den jeweiligen Verarbeitungszweck erforderlich ist. Bestehen gesetzliche
@@ -397,7 +419,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="17. Ihre Rechte">
+          <Section title="18. Ihre Rechte">
             <p>
               Sie haben nach Maßgabe der gesetzlichen Voraussetzungen insbesondere folgende
               Rechte:
@@ -417,7 +439,7 @@ export default function DatenschutzPage() {
             <p>Zur Ausübung Ihrer Rechte können Sie sich jederzeit an uns wenden: {email}</p>
           </Section>
 
-          <Section title="18. Widerspruchsrecht">
+          <Section title="19. Widerspruchsrecht">
             <p>
               Soweit personenbezogene Daten auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO
               verarbeitet werden, haben Sie gemäß Art. 21 DSGVO das Recht, aus Gründen, die
@@ -431,7 +453,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="19. Widerruf Ihrer Einwilligung">
+          <Section title="20. Widerruf Ihrer Einwilligung">
             <p>
               Soweit eine Datenverarbeitung auf Ihrer Einwilligung beruht, können Sie diese
               Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen. Die
@@ -440,7 +462,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="20. Beschwerderecht bei der Aufsichtsbehörde">
+          <Section title="21. Beschwerderecht bei der Aufsichtsbehörde">
             <p>
               Sie haben das Recht, sich bei einer Datenschutzaufsichtsbehörde über die
               Verarbeitung Ihrer personenbezogenen Daten zu beschweren. Für Unternehmen mit
@@ -461,7 +483,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="21. Automatisierte Entscheidungsfindung und Profiling">
+          <Section title="22. Automatisierte Entscheidungsfindung und Profiling">
             <p>
               Eine ausschließlich auf einer automatisierten Verarbeitung beruhende
               Entscheidungsfindung im Sinne von Art. 22 DSGVO, die Ihnen gegenüber rechtliche
@@ -470,7 +492,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="22. Google Analytics">
+          <Section title="23. Google Analytics">
             <p>
               Soweit Sie hierzu über unseren Cookie-Hinweis Ihre Zustimmung erteilt haben,
               nutzen wir Google Analytics, einen Webanalysedienst der Google Ireland Limited,
@@ -495,7 +517,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="23. Google Maps">
+          <Section title="24. Google Maps">
             <p>
               Soweit Sie hierzu Ihre Einwilligung erteilen, setzen wir Google Maps zur
               Darstellung unserer Studiostandorte und zur erleichterten Anfahrtsplanung ein.
@@ -527,7 +549,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="24. Schriftarten">
+          <Section title="25. Schriftarten">
             <p>
               Die auf dieser Website verwendeten Schriftarten werden lokal auf unserem Server
               gespeichert und von dort ausgeliefert. Beim Laden der Schriften wird{" "}
@@ -536,7 +558,7 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="25. Aktualität und Änderung dieser Datenschutzerklärung">
+          <Section title="26. Aktualität und Änderung dieser Datenschutzerklärung">
             <p>
               Wir behalten uns vor, diese Datenschutzerklärung anzupassen, wenn sich
               gesetzliche Vorgaben, unsere Website, die eingesetzten technischen Dienste oder
