@@ -11,6 +11,8 @@ import { tageAusSlots } from "@/lib/termin-tage";
 import { freiePlaetze } from "@/lib/kapazitaet";
 import { Container } from "@/components/ui/container";
 import { TrainerWand } from "@/components/studio/trainer-wand";
+import { Zusatzangebote } from "@/components/preise/zusatzangebote";
+import { giltAn } from "@/lib/zusatzangebote";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
@@ -97,7 +99,7 @@ export default async function StudioDetailSeite({
   const ort = ortsname(studio.name, studio.city);
   const anschrift = `${studio.street}, ${studio.postalCode} ${studio.city}`;
 
-  const [alleStudios, slots, trainer] = await Promise.all([
+  const [alleStudios, slots, trainer, angebote] = await Promise.all([
     prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.availabilitySlot.findMany({
       where: { studioId: studio.id, date: { gte: heuteMitternacht() } },
@@ -117,6 +119,15 @@ export default async function StudioDetailSeite({
         text: true,
         fotoUrl: true,
       },
+    }),
+    // Die Einschränkung auf Standorte steckt in einer Liste am Angebot,
+    // nicht in der Abfrage: Eine leere Liste heißt "überall", und das
+    // ließe sich nur mit einer zweiten Bedingung abfragen. Bei einer
+    // Handvoll Angeboten ist Filtern im Anschluss das Einfachere.
+    prisma.zusatzangebot.findMany({
+      where: { aktiv: true },
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      select: { id: true, name: true, text: true, preis: true, symbol: true, nurStudios: true },
     }),
   ]);
 
@@ -247,6 +258,14 @@ export default async function StudioDetailSeite({
       {/* Wer betreut - steht vor der Terminbuchung, weil er genau die
           Frage beantwortet, die unmittelbar davor aufkommt. */}
       <TrainerWand ort={ort} trainer={trainer} />
+
+      {/* Nur die Angebote, die es an DIESEM Standort gibt. Ein Angebot,
+          das hier steht und vor Ort nicht existiert, ist schlimmer als
+          keines - der Gast fragt danach und bekommt ein Nein. */}
+      <Zusatzangebote
+        angebote={angebote.filter((angebot) => giltAn(angebot, studio.id))}
+        kompakt
+      />
 
       {/* Terminbuchung für genau diesen Standort */}
       <section id="termin" className="scroll-mt-20 border-t border-border py-20 sm:py-24">

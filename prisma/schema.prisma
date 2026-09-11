@@ -535,6 +535,93 @@ model SiteToggle {
   updatedAt DateTime @updatedAt
 }
 
+/// Einzelne Texte, die im Adminbereich änderbar sein müssen.
+///
+/// Das Gegenstück zu SiteToggle: dort ein Schalter je Bereich, hier ein
+/// Text je Schlüssel. Angelegt für den Preishinweis - eine Angabe, die
+/// rechtlich gefordert ist (§ 3 PAngV) und deren genauer Wortlaut vom
+/// Studio kommen muss, nicht aus dem Code.
+///
+/// Ein Eintrag entsteht erst beim ersten Speichern; bis dahin gilt der
+/// Standardtext aus src/lib/site-texte.ts.
+model SiteText {
+  key       String   @id
+  wert      String
+  updatedAt DateTime @updatedAt
+}
+
+/// Ein Tarif auf der Preisseite.
+///
+/// Die Preisseite sagt bisher ausdrücklich, dass hier keine Preisliste
+/// steht - und das ist eine bewusste Entscheidung des Studios, keine
+/// Lücke. Diese Tabelle ändert daran nichts: Solange kein Tarif
+/// eingetragen ist, bleibt die Seite genau so, wie sie ist. Erst wenn das
+/// Studio Preise nennen WILL, erscheint die Gegenüberstellung.
+model Tarif {
+  id   String  @id @default(cuid())
+  name String
+  /// Eine Zeile darunter: "für den Einstieg", "unsere Empfehlung".
+  untertitel String?
+
+  /// Der Preis als TEXT, nicht als Zahl.
+  ///
+  /// Absicht: "ab 69 €", "auf Anfrage" und "89 € / Monat" sind alle
+  /// zulässig und alle keine Zahl. Eine Dezimalspalte würde das Studio
+  /// zwingen, sich auf einen Betrag festzulegen, den es vielleicht gar
+  /// nicht nennen will - und genau daran ist die Preisseite bisher
+  /// bewusst vorbeigeschrieben.
+  preis String?
+  /// "pro Monat", "je Einheit" - steht klein hinter dem Preis.
+  preisZusatz String?
+
+  /// Was enthalten ist, ein Punkt je Eintrag.
+  leistungen String[]
+
+  /// Hervorgehoben. Höchstens einer - die Aktion setzt das durch.
+  empfohlen Boolean @default(false)
+
+  /// Kleingedrucktes zu genau diesem Tarif, etwa die Mindestlaufzeit.
+  hinweis String?
+
+  aktiv     Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+}
+
+/// Was es zusätzlich zum Training gibt.
+///
+/// Ernährungsberatung und Messungen werden auf der Preisseite erwähnt,
+/// hatten aber keinen eigenen Platz - sie standen als Halbsatz in einer
+/// Aufzählung von Preisfaktoren. Wer danach sucht, findet sie dort nicht.
+model Zusatzangebot {
+  id   String  @id @default(cuid())
+  name String
+  text String?
+  /// Wie beim Tarif ein Text: "ab 49 €" oder "im Beitrag enthalten".
+  preis String?
+
+  /// Eines von wenigen Sinnbildern - siehe src/lib/zusatzangebote.ts.
+  symbol String @default("sonstiges")
+
+  /// Leere Liste heißt: an allen Standorten.
+  ///
+  /// Bewusst eine Liste am Angebot statt einer Verknüpfungstabelle: Es
+  /// gibt nichts, was an der Verbindung zwischen Angebot und Standort
+  /// hinge - kein Preis, kein Termin, keine Person. Eine eigene Tabelle
+  /// wäre nur ein zweiter Ort zum Pflegen.
+  nurStudios String[]
+
+  aktiv     Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+}
+
 /// Vorlage für eine Antwort-E-Mail.
 ///
 /// Die Website verschickt diese Antworten NICHT selbst. Eine Antwort auf

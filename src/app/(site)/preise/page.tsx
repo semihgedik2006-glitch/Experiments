@@ -10,6 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { FaqSection } from "@/components/faq-section";
 import { DirekterKontakt } from "@/components/direkter-kontakt";
+import { TarifVergleich, type TarifAnzeige } from "@/components/preise/tarif-vergleich";
+import { Zusatzangebote } from "@/components/preise/zusatzangebote";
+import { prisma } from "@/lib/prisma";
+import { getText } from "@/lib/site-texte";
 
 export const metadata: Metadata = {
   // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
@@ -64,6 +68,37 @@ export default async function PreisePage() {
   // nicht mehr erreichbar.
   if (!(await isVisible("preise"))) return notFound();
 
+  const [tarife, angebote, preisHinweis] = await Promise.all([
+    prisma.tarif.findMany({
+      where: { aktiv: true },
+      // Zweites Sortierkriterium: Bei gleicher Reihenfolge darf die
+      // Datenbank die Karten sonst zwischen zwei Aufrufen tauschen.
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      select: {
+        id: true,
+        name: true,
+        untertitel: true,
+        preis: true,
+        preisZusatz: true,
+        leistungen: true,
+        empfohlen: true,
+        hinweis: true,
+      },
+    }),
+    prisma.zusatzangebot.findMany({
+      where: { aktiv: true },
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      select: { id: true, name: true, text: true, preis: true, symbol: true, nurStudios: true },
+    }),
+    getText("preis-hinweis"),
+  ]);
+
+  // Ohne Tarife bleibt die Seite genau so, wie sie ist: Sie erklärt dann
+  // weiterhin, warum hier keine Preisliste steht. Das ist eine Haltung
+  // des Studios und keine Lücke - deshalb entfällt in dem Fall auch der
+  // Abschnitt darüber nicht.
+  const mitTarifen: TarifAnzeige[] = tarife;
+
   return (
     <>
       <PageHeader
@@ -71,6 +106,11 @@ export default async function PreisePage() {
         title={<>Faire <span className="text-accent">Preise</span></>}
         intro="Jedes Trainingsziel ist anders - deshalb besprechen wir dein persönliches Paket direkt bei deinem kostenlosen Probetermin. So zahlst du nur für das, was wirklich zu dir passt."
       />
+
+      {/* Die Tarife stehen ganz oben, sobald es welche gibt: Wer die
+          Preisseite öffnet, sucht eine Zahl. Alles Erklärende darunter
+          bleibt trotzdem stehen - es beantwortet die nächste Frage. */}
+      <TarifVergleich tarife={mitTarifen} hinweis={preisHinweis} />
 
       <section className="py-20 sm:py-24 md:py-32">
         <Container>
@@ -137,6 +177,8 @@ export default async function PreisePage() {
           </Reveal>
         </Container>
       </section>
+
+      <Zusatzangebote angebote={angebote} />
 
       <section className="on-ink py-20 sm:py-24 md:py-32">
         <Container>

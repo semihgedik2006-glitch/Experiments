@@ -23,6 +23,7 @@ import {
   Ticket,
   MailCheck,
   Hourglass,
+  Euro,
   FileText,
 } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/social-icons";
@@ -56,6 +57,7 @@ const groups: NavGroup[] = [
       { href: "/admin/blog", label: "Blog", icon: Newspaper, nurLeitung: true },
       { href: "/admin/kommentare", label: "Kommentare", icon: MessageSquare, nurLeitung: true },
       { href: "/admin/faq", label: "FAQ", icon: HelpCircle, nurLeitung: true },
+      { href: "/admin/preise", label: "Preise", icon: Euro, nurLeitung: true },
     ],
   },
   {
