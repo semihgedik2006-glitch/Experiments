@@ -68,6 +68,15 @@ export function Header({
 
         <div className="hidden shrink-0 items-center gap-3 lg:flex xl:gap-4">
           <SearchOverlay />
+          {/* Der Weg zur englischen Seite. Auf Englisch beschriftet: Wer
+              ihn sucht, sucht "English" - nicht "Englisch". */}
+          <Link
+            href="/en"
+            hrefLang="en"
+            className="whitespace-nowrap text-sm text-muted transition-colors hover:text-foreground"
+          >
+            English
+          </Link>
           <ThemeToggle />
           <Link
             href="/probetermin"
@@ -154,8 +163,16 @@ export function Header({
                   </Link>
                 )}
               </div>
-              <div className="pt-2">
+              <div className="flex items-center gap-4 pt-2">
                 <ThemeToggle />
+                <Link
+                  href="/en"
+                  hrefLang="en"
+                  onClick={() => setOpen(false)}
+                  className="text-sm text-muted hover:text-foreground"
+                >
+                  English
+                </Link>
               </div>
             </nav>
           </motion.div>

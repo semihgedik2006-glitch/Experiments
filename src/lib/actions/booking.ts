@@ -12,7 +12,7 @@ import {
   type AnfrageAngaben,
 } from "@/lib/email";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
-import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { neuerVerwaltungsSchluessel } from "@/lib/termin-angaben";
 import { istErreichbarkeit } from "@/lib/erreichbarkeit";
 import { istZiel, zielText } from "@/lib/ziel";
@@ -20,21 +20,28 @@ import { aktionscodePruefen } from "@/lib/aktionscode";
 import { herkunftAusFormular } from "@/lib/herkunft";
 import { passtNoch } from "@/lib/kapazitaet";
 import type { ActionResult } from "@/lib/actions/newsletter";
+import { spracheAusText, texte } from "@/lib/sprache";
 
 export async function createBooking(
   _prevState: ActionResult | undefined,
   formData: FormData,
 ): Promise<ActionResult> {
+  // Die Sprache kommt aus dem Formular und bestimmt nur, in welcher
+  // Sprache geantwortet wird - gespeichert wird sie nicht. Ein Rückruf
+  // auf Englisch ergibt sich aus dem Gespräch, nicht aus einem Feld.
+  const sprache = spracheAusText(String(formData.get("sprache") ?? ""));
+  const t = texte(sprache);
+
   const ip = await getClientIp();
   const limit = checkRateLimit(`booking:${ip}`, 5, 60 * 60 * 1000);
   if (!limit.allowed) {
-    return { ok: false, message: waitMessage(limit.retryAfterSeconds) };
+    return { ok: false, message: t.wartezeit(limit.retryAfterSeconds) };
   }
 
   // Bot-Falle: echte Besucher füllen dieses Feld nie aus.
   const honeypot = String(formData.get("website") ?? "").trim();
   if (honeypot) {
-    return { ok: true, message: "Danke für deine Anfrage! Wir melden uns in Kürze zur Bestätigung deines Probetermins." };
+    return { ok: true, message: t.danke };
   }
 
   const slotId = String(formData.get("slotId") ?? "").trim() || null;
@@ -55,7 +62,7 @@ export async function createBooking(
   const ziel = istZiel(zielRoh) ? zielRoh : null;
 
   if (!name || !email || !phone) {
-    return { ok: false, message: "Bitte fülle alle Pflichtfelder aus." };
+    return { ok: false, message: t.pflichtfelder };
   }
 
   // Nur eine der vorgesehenen Zeitspannen. Das Feld kommt aus einer
@@ -64,7 +71,7 @@ export async function createBooking(
   if (!istErreichbarkeit(erreichbarkeit)) {
     return {
       ok: false,
-      message: "Bitte sag uns, wann wir dich telefonisch am besten erreichen.",
+      message: t.erreichbarkeitFehlt,
     };
   }
 
@@ -84,14 +91,17 @@ export async function createBooking(
   if (!studio) {
     const gibtStudios = (await prisma.studioLocation.count()) > 0;
     if (gibtStudios) {
-      return { ok: false, message: "Bitte wähle oben das Studio aus, in dem du trainieren möchtest." };
+      return { ok: false, message: t.studioFehlt };
     }
   }
 
   // Der Code wird geprüft, bevor die Anfrage entsteht: Eine angenommene
   // Anfrage mit einem Code, den es nicht gibt, führt später im Studio zu
   // einem unangenehmen Gespräch.
-  const codePruefung = await aktionscodePruefen(String(formData.get("aktionsCode") ?? ""));
+  const codePruefung = await aktionscodePruefen(
+    String(formData.get("aktionsCode") ?? ""),
+    sprache,
+  );
   if (!codePruefung.ok) {
     return { ok: false, message: codePruefung.meldung };
   }
@@ -103,7 +113,7 @@ export async function createBooking(
     });
 
     if (!slot) {
-      return { ok: false, message: "Dieser Termin existiert nicht mehr. Bitte wähle einen anderen." };
+      return { ok: false, message: t.terminWeg };
     }
 
     // Termin und Standort müssen zusammenpassen. Im Formular ist das immer
@@ -112,7 +122,7 @@ export async function createBooking(
     // stattfindet, und die Studioleitung sähe eine Buchung für einen
     // Termin, den sie nicht hat.
     if (studio && slot.studioId !== studio.id) {
-      return { ok: false, message: "Termin und Studio passen nicht zusammen. Bitte wähle die Zeit noch einmal." };
+      return { ok: false, message: t.terminStudioPasstNicht };
     }
 
     // Voll? Dann auf die Warteliste statt in eine Fehlermeldung.
@@ -160,9 +170,7 @@ export async function createBooking(
       revalidatePath("/admin/warteliste");
       return {
         ok: true,
-        message: zuZweit
-          ? "Für diese Zeit sind gerade nicht mehr zwei Plätze frei - wir haben dich auf die Warteliste gesetzt und melden uns, sobald etwas frei wird."
-          : "Diese Zeit ist gerade belegt - wir haben dich auf die Warteliste gesetzt und melden uns, sobald etwas frei wird.",
+        message: zuZweit ? t.wartelisteZuZweit : t.warteliste,
       };
     }
   }
@@ -245,8 +253,5 @@ export async function createBooking(
   revalidatePath("/admin/bookings");
   revalidatePath("/admin");
 
-  return {
-    ok: true,
-    message: "Danke für deine Anfrage! Wir melden uns in Kürze zur Bestätigung deines Probetermins.",
-  };
+  return { ok: true, message: t.danke };
 }

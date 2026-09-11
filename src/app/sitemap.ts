@@ -25,9 +25,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/agb",
     "/impressum",
     "/datenschutz",
+    // Die englische Einstiegsseite. Sie steht hier ausdrücklich drin:
+    // Gefunden wird sie über eine andere Suche ("EMS training Cologne")
+    // als die deutsche, und über die deutsche Navigation ist sie nur ein
+    // kleiner Link in der Kopfzeile.
+    "/en",
   ].map((route) => ({
     url: `${siteConfig.url}${route}`,
     lastModified: new Date(),
+    // Die beiden Fassungen zeigen aufeinander. Ohne diese Angabe hält
+    // Google sie für zwei Seiten über dasselbe Thema und wertet eine
+    // davon ab - beide Adressen bekommen deshalb denselben Verweis auf
+    // die jeweils andere.
+    ...(route === "" || route === "/en"
+      ? {
+          alternates: {
+            languages: {
+              de: siteConfig.url,
+              en: `${siteConfig.url}/en`,
+            },
+          },
+        }
+      : {}),
   }));
 
   const postRoutes = (toggles.blog ? posts : []).map((post) => ({

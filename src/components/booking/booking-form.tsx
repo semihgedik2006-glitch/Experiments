@@ -9,6 +9,7 @@ import { ZIELE } from "@/lib/ziel";
 import { herkunftAusBrowser, type Herkunft } from "@/lib/herkunft";
 import type { TerminTag as DayGroup } from "@/lib/termin-tage";
 import type { ActionResult } from "@/lib/actions/newsletter";
+import { erreichbarkeitLabel, spanneLabel, texte, zielLabel, type Sprache } from "@/lib/sprache";
 
 const initialState: ActionResult = { ok: false, message: "" };
 
@@ -16,13 +17,17 @@ export function BookingForm({
   days,
   studioId,
   studioName,
+  sprache = "de",
 }: {
   days: DayGroup[];
   /** Der oben gewählte Standort. Er wird mitgeschickt, damit die Anfrage
       auch dann bei einem Studio landet, wenn keine feste Zeit dabei ist. */
   studioId: string;
   studioName: string;
+  /** Auf der englischen Seite "en" - siehe src/lib/sprache.ts. */
+  sprache?: Sprache;
 }) {
+  const t = texte(sprache);
   const [selectedDay, setSelectedDay] = useState("");
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   // "Wir kommen zu zweit" steht außerhalb von `felder`, weil es kein Text
@@ -92,6 +97,10 @@ export function BookingForm({
     daten.set("herkunftSeite", herkunft.current.seite ?? "");
     daten.set("herkunftKampagne", herkunft.current.kampagne ?? "");
     daten.set("herkunftQuelle", herkunft.current.quelle ?? "");
+    // Die Sprache mitschicken: Die Meldungen des Servers ("Bitte gib eine
+    // gültige E-Mail-Adresse ein") entstehen dort und müssen zur Seite
+    // passen, auf der das Formular steht.
+    daten.set("sprache", sprache);
     startTransition(() => formAction(daten));
   }
 
@@ -113,7 +122,7 @@ export function BookingForm({
         >
           <CheckCircle2 size={30} />
         </motion.div>
-        <h3 className="mt-5 text-xl font-semibold text-accent">Anfrage gesendet!</h3>
+        <h3 className="mt-5 text-xl font-semibold text-accent">{t.gesendet}</h3>
         <p className="mt-3 text-muted">{state.message}</p>
       </motion.div>
     );
@@ -133,15 +142,16 @@ export function BookingForm({
 
       <div className="space-y-6">
         <p className="text-sm font-semibold">
-          {days.length > 0 ? "1. Wann passt es dir?" : "Wann passt es dir?"}
+          {days.length > 0 ? t.wannPasstNummeriert : t.wannPasst}
         </p>
 
         {days.length > 0 ? (
           <>
             <div>
               <p className="mb-3 text-xs text-muted">
-                Such dir einen Tag aus - oder lass die Auswahl leer und schreib
-                unten, wann du kannst.
+                {sprache === "de"
+                  ? "Such dir einen Tag aus - oder lass die Auswahl leer und schreib unten, wann du kannst."
+                  : "Pick a day - or leave it empty and tell us below when you can make it."}
               </p>
               <div className="flex flex-wrap gap-2">
                 {days.map((day) => (
@@ -166,7 +176,7 @@ export function BookingForm({
 
             {activeDay && (
               <div>
-                <p className="mb-3 text-xs text-muted">Uhrzeit am {activeDay.dateLabel}:</p>
+                <p className="mb-3 text-xs text-muted">{t.uhrzeitAm(activeDay.dateLabel)}</p>
                 <div className="flex flex-wrap gap-2">
                   {activeDay.slots.map((slot) => {
                     // Belegte Zeiten verschwinden nicht mehr, sondern sind
@@ -192,7 +202,7 @@ export function BookingForm({
                         {slot.startTime}
                         {!reicht && (
                           <span className={`ml-1.5 text-xs ${gewaehlt ? "" : "text-muted"}`}>
-                            belegt
+                            {sprache === "de" ? "belegt" : "taken"}
                           </span>
                         )}
                       </button>
@@ -207,9 +217,9 @@ export function BookingForm({
                   (slot) => slot.id === selectedSlotId && slot.frei < (zuZweit ? 2 : 1),
                 ) && (
                   <p className="mt-3 rounded-lg border border-border bg-surface px-4 py-3 text-xs text-muted">
-                    Diese Zeit ist schon vergeben. Schick die Anfrage trotzdem ab -
-                    dann stehst du auf der Warteliste und wir melden uns sofort,
-                    wenn dort ein Platz frei wird.
+                    {sprache === "de"
+                      ? "Diese Zeit ist schon vergeben. Schick die Anfrage trotzdem ab - dann stehst du auf der Warteliste und wir melden uns sofort, wenn dort ein Platz frei wird."
+                      : "That time is taken. Send the request anyway - you will be on the waiting list and we will get in touch the moment a spot opens up."}
                   </p>
                 )}
               </div>
@@ -217,10 +227,14 @@ export function BookingForm({
           </>
         ) : (
           <p className="text-sm text-muted">
-            {studioName
+            {studioName && sprache === "de"
               ? `Für ${studioName} sind aktuell keine festen Termine hinterlegt`
-              : "Aktuell sind keine festen Termine hinterlegt"}{" "}
-            - schreib uns einfach, wann es dir passt.
+              : studioName
+                ? `No fixed slots are listed for ${studioName} right now`
+                : t.keineTermine}{" "}
+            {sprache === "de"
+              ? "- schreib uns einfach, wann es dir passt."
+              : "- just tell us when it suits you."}
           </p>
         )}
 
@@ -244,11 +258,8 @@ export function BookingForm({
             className="mt-0.5 h-4 w-4 shrink-0 accent-lime"
           />
           <span className="text-sm">
-            Wir kommen zu zweit
-            <span className="mt-0.5 block text-xs text-muted">
-              Probetraining zusammen mit Partner, Freundin oder Freund. Wir
-              reservieren dann zwei Plätze.
-            </span>
+            {t.zuZweit}
+            <span className="mt-0.5 block text-xs text-muted">{t.zuZweitHinweis}</span>
           </span>
         </label>
       </div>
@@ -262,7 +273,7 @@ export function BookingForm({
 
       <div>
         <p className="mb-3 text-sm font-semibold">
-          {days.length > 0 ? "2. Deine Daten" : "Deine Daten"}
+          {days.length > 0 ? t.deineDatenNummeriert : t.deineDaten}
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <input
@@ -272,7 +283,7 @@ export function BookingForm({
             autoComplete="name"
             value={felder.name}
             onChange={aendern("name")}
-            placeholder="Vor- und Nachname"
+            placeholder={t.name}
             className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime sm:col-span-2"
           />
           <input
@@ -282,7 +293,7 @@ export function BookingForm({
             autoComplete="email"
             value={felder.email}
             onChange={aendern("email")}
-            placeholder="E-Mail-Adresse"
+            placeholder={t.email}
             className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
           />
           <input
@@ -292,7 +303,7 @@ export function BookingForm({
             autoComplete="tel"
             value={felder.phone}
             onChange={aendern("phone")}
-            placeholder="Telefonnummer"
+            placeholder={t.telefon}
             className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
           />
           {/* Der Platzhalter war "Nachricht (optional)" - und entsprechend
@@ -305,14 +316,14 @@ export function BookingForm({
               die Anamnese vor Ort, nicht in ein Webformular. Begründung in
               src/lib/ziel.ts. */}
           <label className="sm:col-span-2">
-            <span className="text-sm">Noch etwas, das wir vorher wissen sollten?</span>
+            <span className="text-sm">{t.nachrichtLabel}</span>
             <textarea
               name="message"
               rows={3}
               maxLength={1000}
               value={felder.message}
               onChange={aendern("message")}
-              placeholder="Freiwillig - z.B. ob du schon EMS-Erfahrung hast, oder worauf wir bei dir achten sollen."
+              placeholder={t.nachrichtPlatzhalter}
               className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
             />
           </label>
@@ -323,9 +334,11 @@ export function BookingForm({
             der seinen Rücken stärken möchte. Über alle Anfragen zusammen
             zeigt die Verteilung außerdem, womit geworben werden sollte. */}
         <fieldset className="mt-6">
-          <legend className="text-sm font-medium">Was möchtest du erreichen?</legend>
+          <legend className="text-sm font-medium">{t.zielFrage}</legend>
           <p className="mt-1 text-xs text-muted">
-            Freiwillig - hilft uns, das erste Gespräch auf dich abzustimmen.
+            {sprache === "de"
+              ? "Freiwillig - hilft uns, das erste Gespräch auf dich abzustimmen."
+              : "Optional - it helps us tailor the first conversation to you."}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {ZIELE.map((option) => (
@@ -339,7 +352,7 @@ export function BookingForm({
                   className="peer sr-only"
                 />
                 <span className="block rounded-full border border-border px-4 py-2 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-lime">
-                  {option.label}
+                  {zielLabel(sprache, option.wert)}
                 </span>
               </label>
             ))}
@@ -358,11 +371,12 @@ export function BookingForm({
           es eine Auswahl ist und wie viele Möglichkeiten es gibt. */}
       <fieldset>
         <legend className="text-sm font-semibold">
-          {days.length > 0 ? "3. Wann erreichen wir dich am besten?" : "Wann erreichen wir dich am besten?"}
+          {days.length > 0 ? t.wannErreichbarNummeriert : t.wannErreichbar}
         </legend>
         <p className="mt-1.5 text-xs text-muted">
-          Wir rufen dich zur Bestätigung an. Sag uns, wann es dir passt - dann
-          landen wir nicht dreimal auf der Mailbox.
+          {sprache === "de"
+            ? "Wir rufen dich zur Bestätigung an. Sag uns, wann es dir passt - dann landen wir nicht dreimal auf der Mailbox."
+            : "We call you to confirm. Tell us when that works, so we do not end up on your voicemail three times."}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {ERREICHBARKEITEN.map((option) => (
@@ -377,8 +391,13 @@ export function BookingForm({
                 className="peer sr-only"
               />
               <span className="block rounded-full border border-border px-4 py-2 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-lime">
-                {option.kurz}
-                {option.spanne && <span className="ml-1.5 text-xs">{option.spanne}</span>}
+                {erreichbarkeitLabel(sprache, option.wert)}
+                {/* Die Spanne kommt aus dem Wörterbuch und nicht aus den
+                    Daten: Im Deutschen steht dort "8 - 12 Uhr", im
+                    Englischen muss "8 am - 12 pm" stehen. */}
+                {spanneLabel(sprache, option.wert) && (
+                  <span className="ml-1.5 text-xs">{spanneLabel(sprache, option.wert)}</span>
+                )}
               </span>
             </label>
           ))}
@@ -394,11 +413,8 @@ export function BookingForm({
           es "der Code, den ich bekommen habe" - ihn zwischen zwei Feldern
           wählen zu lassen wäre eine Hürde ohne Nutzen. */}
       <label className="block max-w-xs">
-        <span className="text-sm">Aktions- oder Empfehlungscode</span>
-        <span className="mt-0.5 block text-xs text-muted">
-          Nur, wenn du einen hast - aus einer Anzeige, von einem Flyer oder
-          von jemandem, der bei uns trainiert.
-        </span>
+        <span className="text-sm">{t.codeLabel}</span>
+        <span className="mt-0.5 block text-xs text-muted">{t.codeHinweis}</span>
         <input
           type="text"
           name="aktionsCode"
@@ -407,7 +423,7 @@ export function BookingForm({
           autoCapitalize="characters"
           value={felder.aktionsCode}
           onChange={aendern("aktionsCode")}
-          placeholder="z.B. SOMMER26"
+          placeholder={t.codePlatzhalter}
           className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm uppercase outline-none placeholder:normal-case focus:border-lime"
         />
       </label>
@@ -429,7 +445,7 @@ export function BookingForm({
         disabled={pending}
         className="w-full rounded-full bg-lime px-7 py-3 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-50"
       >
-        {pending ? "Wird gesendet..." : "Probetermin anfragen"}
+        {pending ? t.absendenLaeuft : t.absenden}
       </button>
     </form>
   );

@@ -25,6 +25,13 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
   const inAdmin = pathname?.startsWith("/admin") ?? false;
   if (inAdmin) return null;
 
+  // Der Hinweis ist das Erste, was ein Besucher auf der englischen Seite
+  // sieht - auf Deutsch wäre er dort ein Fremdkörper und obendrein
+  // unverständlich für genau die Leute, für die die Seite gemacht ist.
+  // Die Sprache steckt hier im Pfad, weil die englische Fassung unter
+  // /en liegt (siehe src/lib/sprache.ts).
+  const englisch = pathname?.startsWith("/en") ?? false;
+
   function choose(value: Consent) {
     writeConsent(value);
   }
@@ -46,18 +53,36 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
             // wurde er einfach übersprungen. Betroffen war jeder erste
             // Besuch, denn danach ist der Hinweis weg.
             role="region"
-            aria-label="Hinweis zu Cookies"
+            aria-label={englisch ? "Cookie notice" : "Hinweis zu Cookies"}
             className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-surface-raised"
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-muted">
-                Wir verwenden nur technisch notwendige Cookies. Mit deiner
-                Zustimmung nutzen wir zusätzlich Google Analytics, um die
-                Website zu verbessern. Mehr dazu in unserer{" "}
-                <a href="/datenschutz" className="text-accent underline underline-offset-2">
-                  Datenschutzerklärung
-                </a>
-                .
+                {englisch ? (
+                  <>
+                    We only use cookies that are technically necessary. With your
+                    consent we also use Google Analytics to improve the site. More
+                    in our{" "}
+                    <a
+                      href="/datenschutz"
+                      hrefLang="de"
+                      className="text-accent underline underline-offset-2"
+                    >
+                      privacy policy
+                    </a>{" "}
+                    (German).
+                  </>
+                ) : (
+                  <>
+                    Wir verwenden nur technisch notwendige Cookies. Mit deiner
+                    Zustimmung nutzen wir zusätzlich Google Analytics, um die
+                    Website zu verbessern. Mehr dazu in unserer{" "}
+                    <a href="/datenschutz" className="text-accent underline underline-offset-2">
+                      Datenschutzerklärung
+                    </a>
+                    .
+                  </>
+                )}
               </p>
               <div className="flex shrink-0 gap-3">
                 <button
@@ -65,14 +90,14 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
                   onClick={() => choose("declined")}
                   className="rounded-full border border-border px-5 py-2 text-sm font-semibold transition-colors hover:border-lime hover:text-accent"
                 >
-                  Nur notwendige
+                  {englisch ? "Necessary only" : "Nur notwendige"}
                 </button>
                 <button
                   type="button"
                   onClick={() => choose("accepted")}
                   className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime transition-transform hover:scale-105"
                 >
-                  Akzeptieren
+                  {englisch ? "Accept" : "Akzeptieren"}
                 </button>
               </div>
             </div>

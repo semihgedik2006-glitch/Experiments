@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { BookingForm } from "@/components/booking/booking-form";
 import { allStudiosLocatable, anyStudioLocatable, sortStudiosByDistance } from "@/lib/geo";
 import type { TerminTag as DayGroup } from "@/lib/termin-tage";
+import { texte, type Sprache } from "@/lib/sprache";
 
 /** Der Zustand ändert sich nie - useSyncExternalStore dient hier nur dazu,
  *  Server und Browser sauber zu unterscheiden. */
@@ -24,10 +25,15 @@ type StudioOption = {
 export function BookingFlow({
   studios,
   slotsByStudio,
+  sprache = "de",
 }: {
   studios: StudioOption[];
   slotsByStudio: Record<string, DayGroup[]>;
+  /** Auf der englischen Seite "en" - siehe src/lib/sprache.ts. */
+  sprache?: Sprache;
 }) {
+  const t = texte(sprache);
+  const englisch = sprache === "en";
   const [selectedStudioId, setSelectedStudioId] = useState(studios[0]?.id ?? "");
   const [recommendedStudioId, setRecommendedStudioId] = useState<string | null>(null);
   // Nach der Standortermittlung nach Entfernung sortiert - das nächste
@@ -125,8 +131,9 @@ export function BookingFlow({
   if (studios.length === 0) {
     return (
       <div className="rounded-2xl border border-border bg-surface p-10 text-center text-muted">
-        Aktuell ist kein Studio hinterlegt. Kontaktiere uns gerne direkt über die
-        Kontaktseite.
+        {sprache === "de"
+          ? "Aktuell ist kein Studio hinterlegt. Kontaktiere uns gerne direkt über die Kontaktseite."
+          : "No studio is listed right now. Please get in touch with us directly."}
       </div>
     );
   }
@@ -136,10 +143,11 @@ export function BookingFlow({
       {studios.length > 1 && (
         <div>
           <p className="mb-3 flex flex-wrap items-center gap-2 text-sm font-semibold">
-            Studio wählen
+            {t.studioWaehlen}
             {locating && (
               <span className="inline-flex items-center gap-1 text-xs font-normal text-muted">
-                <LocateFixed size={13} className="animate-pulse" /> Standort wird ermittelt...
+                <LocateFixed size={13} className="animate-pulse" />{" "}
+                {englisch ? "Finding your location..." : "Standort wird ermittelt..."}
               </span>
             )}
             {/* Verweigert der Browser den Standort oder dauert es zu lange,
@@ -147,9 +155,7 @@ export function BookingFlow({
                 in der gespeicherten Reihenfolge da. Jetzt lässt sich der
                 Versuch bewusst wiederholen. */}
             {canLocate && failure === "denied" && (
-              <span className="text-xs font-normal text-muted">
-                Standort nicht freigegeben - wähle dein Studio einfach selbst.
-              </span>
+              <span className="text-xs font-normal text-muted">{t.ortAbgelehnt}</span>
             )}
             {canLocate && failure === "unavailable" && (
               <button
@@ -162,7 +168,7 @@ export function BookingFlow({
                 }}
                 className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-xs font-normal text-muted transition-colors hover:border-lime hover:text-foreground"
               >
-                <LocateFixed size={13} /> Nächstes Studio finden
+                <LocateFixed size={13} /> {t.naechstesFinden}
               </button>
             )}
           </p>
@@ -194,7 +200,7 @@ export function BookingFlow({
                     {studio.name}
                     {isRecommended && (
                       <span className="rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-on-lime">
-                        Am nächsten
+                        {englisch ? "Closest" : "Am nächsten"}
                       </span>
                     )}
                   </span>
@@ -217,6 +223,7 @@ export function BookingFlow({
         studioName={
           orderedStudios.find((studio) => studio.id === selectedStudioId)?.name ?? ""
         }
+        sprache={sprache}
       />
     </div>
   );

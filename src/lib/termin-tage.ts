@@ -34,8 +34,18 @@ type SlotMitBelegung = {
   frei: number;
 };
 
-/** Erwartet nach Datum und Uhrzeit sortierte Termine. */
-export function tageAusSlots(slots: SlotMitBelegung[]): TerminTag[] {
+/**
+ * Erwartet nach Datum und Uhrzeit sortierte Termine.
+ *
+ * Die Sprache bestimmt nur die Beschriftung des Tages. Sie steht hier und
+ * nicht im Browser, weil die Beschriftung schon beim Erzeugen der Seite
+ * feststeht - sie erst im Browser zu bilden hieße, dass sie beim ersten
+ * Bild noch fehlt.
+ */
+export function tageAusSlots(
+  slots: SlotMitBelegung[],
+  sprache: "de" | "en" = "de",
+): TerminTag[] {
   const tage: TerminTag[] = [];
 
   for (const slot of slots) {
@@ -47,7 +57,7 @@ export function tageAusSlots(slots: SlotMitBelegung[]): TerminTag[] {
     const dateKey = slot.date.toISOString().slice(0, 10);
     let tag = tage.find((t) => t.dateKey === dateKey);
     if (!tag) {
-      tag = { dateKey, dateLabel: formatDateShort(slot.date), slots: [] };
+      tag = { dateKey, dateLabel: formatDateShort(slot.date, sprache), slots: [] };
       tage.push(tag);
     }
     tag.slots.push({
@@ -64,11 +74,15 @@ export function tageAusSlots(slots: SlotMitBelegung[]): TerminTag[] {
 /** Nach Studio getrennt - für die Seiten mit Studioauswahl. */
 export function tageJeStudio(
   slots: (SlotMitBelegung & { studioId: string })[],
+  sprache: "de" | "en" = "de",
 ): Record<string, TerminTag[]> {
   const nachStudio: Record<string, SlotMitBelegung[]> = {};
   for (const slot of slots) (nachStudio[slot.studioId] ??= []).push(slot);
 
   return Object.fromEntries(
-    Object.entries(nachStudio).map(([studioId, eigene]) => [studioId, tageAusSlots(eigene)]),
+    Object.entries(nachStudio).map(([studioId, eigene]) => [
+      studioId,
+      tageAusSlots(eigene, sprache),
+    ]),
   );
 }

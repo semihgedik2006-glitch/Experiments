@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { empfehlungNachschlagen, type GefundeneEmpfehlung } from "@/lib/empfehlung";
+import { texte, type Sprache } from "@/lib/sprache";
 
 /**
  * Aktionscodes aus Anzeigen, Flyern und Kooperationen.
@@ -46,7 +47,11 @@ function alsDatum(datum: Date): string {
     .format(datum);
 }
 
-export async function aktionscodePruefen(roh: string): Promise<CodePruefung> {
+export async function aktionscodePruefen(
+  roh: string,
+  sprache: Sprache = "de",
+): Promise<CodePruefung> {
+  const t = texte(sprache);
   const code = codeNormalisieren(roh);
   // Das Feld ist freiwillig. Kein Code heißt: keine Aktion, kein Fehler.
   if (!code) return { ok: true, aktion: null, empfehlung: null };
@@ -65,19 +70,19 @@ export async function aktionscodePruefen(roh: string): Promise<CodePruefung> {
     // gewesen sein.
     return {
       ok: false,
-      meldung: `Den Code „${code}“ kennen wir nicht. Prüf bitte die Schreibweise - oder lass das Feld einfach leer.`,
+      meldung: t.codeUnbekannt(code),
     };
   }
 
   if (!aktion.active) {
-    return { ok: false, meldung: `Der Aktionscode „${code}“ ist nicht mehr gültig.` };
+    return { ok: false, meldung: t.codeUngueltig(code) };
   }
 
   const jetzt = new Date();
   if (aktion.validFrom && jetzt < aktion.validFrom) {
     return {
       ok: false,
-      meldung: `Der Aktionscode „${code}“ gilt erst ab dem ${alsDatum(aktion.validFrom)}.`,
+      meldung: t.codeAbGueltig(code, alsDatum(aktion.validFrom)),
     };
   }
   // Der letzte Tag zählt mit: Ein Code "gültig bis 31.08." soll am 31.08.
@@ -88,7 +93,7 @@ export async function aktionscodePruefen(roh: string): Promise<CodePruefung> {
     if (jetzt > endeDesTages) {
       return {
         ok: false,
-        meldung: `Der Aktionscode „${code}“ ist am ${alsDatum(aktion.validUntil)} abgelaufen.`,
+        meldung: t.codeAbgelaufen(code, alsDatum(aktion.validUntil)),
       };
     }
   }

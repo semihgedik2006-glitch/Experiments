@@ -38,7 +38,13 @@ export const metadata: Metadata = {
   keywords: siteConfig.keywords,
   // Grundwert für alle Seiten ohne eigene Angabe - im Wesentlichen die
   // Startseite.
-  alternates: { canonical: "/" },
+  alternates: {
+    canonical: "/",
+    // Verweis auf die englische Fassung. Sie ist keine Übersetzung dieser
+    // Seite, sondern ein eigener Einstieg - für Google sind es trotzdem
+    // zwei Sprachfassungen desselben Angebots.
+    languages: { de: "/", en: "/en" },
+  },
   openGraph: {
     type: "website",
     locale: "de_DE",
