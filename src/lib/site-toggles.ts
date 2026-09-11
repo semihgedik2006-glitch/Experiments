@@ -14,6 +14,7 @@ import { prisma } from "@/lib/prisma";
 export type ToggleKey =
   | "ueber-uns"
   | "erfolgsgeschichten"
+  | "verwandlungen"
   | "blog"
   | "studio"
   | "preise"
@@ -43,6 +44,13 @@ export const toggleDefinitions: {
     description:
       "Die Seite mit den Kundenstimmen und der Bereich dazu auf der Startseite. Solange dort Platzhalter stehen, besser ausblenden.",
     href: "/erfolgsgeschichten",
+    defaultVisible: true,
+  },
+  {
+    key: "verwandlungen",
+    label: "Vorher-Nachher-Bilder",
+    description:
+      "Der Bildbereich auf der Seite „Erfolgsgeschichten“. Zeigt nur Einträge mit dokumentierter Einwilligung - ohne die erscheint nichts, auch wenn dieser Schalter an ist.",
     defaultVisible: true,
   },
   {

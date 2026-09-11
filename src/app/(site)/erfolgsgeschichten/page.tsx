@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { testimonials } from "@/lib/testimonials-data";
+import { VerwandlungenWand } from "@/components/verwandlungen-wand";
 
 export const metadata: Metadata = {
   // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
@@ -65,6 +66,12 @@ export default async function ErfolgsgeschichtenPage() {
           </Stagger>
         </Container>
       </section>
+
+      {/* Die Bilder stehen nach den Zitaten: Wer bis hierher gelesen hat,
+          hat schon Worte gehört - das Bildpaar bestätigt sie dann, statt
+          allein am Anfang eine Behauptung aufzustellen. Der Abschnitt
+          fehlt ganz, solange kein freigegebener Eintrag vorliegt. */}
+      <VerwandlungenWand />
 
       <section className="on-ink py-20 sm:py-24 md:py-32">
         <Container className="flex flex-col items-center text-center">

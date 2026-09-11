@@ -27,6 +27,7 @@ import {
   Gift,
   History,
   FileText,
+  Images,
 } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/social-icons";
 import type { SymbolTyp } from "@/components/admin/ui";
@@ -61,6 +62,9 @@ const groups: NavGroup[] = [
       { href: "/admin/kommentare", label: "Kommentare", icon: MessageSquare, nurLeitung: true },
       { href: "/admin/faq", label: "FAQ", icon: HelpCircle, nurLeitung: true },
       { href: "/admin/preise", label: "Preise", icon: Euro, nurLeitung: true },
+      // Nicht nurLeitung: Die Einwilligung holt der Standort ein, der die
+      // Person kennt - und der muss das Bild auch wieder wegnehmen können.
+      { href: "/admin/verwandlungen", label: "Vorher-Nachher", icon: Images },
     ],
   },
   {

@@ -42,6 +42,7 @@ export async function GET() {
     contactMessages,
     newsletterSubscribers,
     siteToggles,
+    verwandlungen,
   ] = await Promise.all([
     prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.slotTemplate.findMany(),
@@ -53,6 +54,11 @@ export async function GET() {
     prisma.contactMessage.findMany(),
     prisma.newsletterSubscriber.findMany(),
     prisma.siteToggle.findMany().catch(() => []),
+    // Mitgesichert, weil hier der Vermerk über die Einwilligung der
+    // abgebildeten Personen steht. Genau der muss belegbar sein, wenn
+    // jemand nachfragt - und genau der wäre nach einem Datenverlust nicht
+    // mehr zu rekonstruieren.
+    prisma.verwandlung.findMany().catch(() => []),
   ]);
 
   const daten = {
@@ -70,6 +76,7 @@ export async function GET() {
       contactMessages,
       newsletterSubscribers,
       siteToggles,
+      verwandlungen,
     },
   };
 

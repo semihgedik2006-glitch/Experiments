@@ -151,6 +151,7 @@ model StudioLocation {
   slotTemplates SlotTemplate[]
   trainer       Trainer[]
   empfehlungen  Empfehlung[]
+  verwandlungen Verwandlung[]
 }
 
 /// Wer im Studio betreut.
@@ -753,4 +754,69 @@ model Protokoll {
 
   @@index([createdAt])
   @@index([studioId, createdAt])
+}
+
+/// Ein Vorher-Nachher-Paar.
+///
+/// Der heikelste Inhalt der ganzen Website - aus zwei Gründen, die nichts
+/// miteinander zu tun haben:
+///
+/// ERSTENS DAS BILD. Ein Foto, auf dem jemand erkennbar ist, darf nur mit
+/// dessen Einwilligung veröffentlicht werden (§ 22 KUG, Art. 6 Abs. 1
+/// lit. a DSGVO) - und bei einem Vorher-Nachher-Bild in Unterwäsche gilt
+/// das doppelt. Die Einwilligung wird deshalb hier festgehalten, und ohne
+/// sie lässt sich der Eintrag nicht veröffentlichen: Die Serveraktion
+/// weist es ab, nicht nur die Anzeige.
+///
+/// ZWEITENS DIE AUSSAGE. Ein Bildpaar behauptet etwas, ohne einen Satz zu
+/// sagen. Deshalb gehören der Zeitraum und das, was die Person sonst
+/// getan hat, zwingend dazu - vier Kilo in vier Wochen sehen anders aus
+/// als vier Kilo in einem Jahr, und wer nebenher die Ernährung umgestellt
+/// hat, hat das nicht allein dem Training zu verdanken. Ohne diese
+/// Angaben ist es Werbung mit einem Ergebnis, das so niemand erwarten
+/// kann - und damit irreführend (§ 5 UWG).
+model Verwandlung {
+  id String @id @default(cuid())
+
+  /// Vorname oder Initialen. Der volle Name gehört hier nicht hin, auch
+  /// nicht mit Einwilligung: Er hilft niemandem und steht danach für
+  /// immer in Suchmaschinen.
+  name String
+
+  /// Der Zeitraum. Pflicht - siehe oben.
+  zeitraum String
+
+  /// Was die Person dabei sonst getan hat. Ebenfalls Pflicht: "zweimal
+  /// pro Woche EMS, dazu Ernährungsberatung" ist die ehrliche Angabe,
+  /// "durch EMS" wäre die unehrliche.
+  kontext String
+
+  /// In eigenen Worten, freigegeben. Freiwillig.
+  text String?
+
+  vorherUrl  String
+  nachherUrl String
+
+  /// Der Standort, damit eine Studioleitung ihre eigenen Fälle pflegt.
+  studio   StudioLocation? @relation(fields: [studioId], references: [id], onDelete: SetNull)
+  studioId String?
+
+  /// Wann die Einwilligung vorlag. OHNE DIESES DATUM GEHT NICHTS RAUS.
+  einwilligungAm DateTime?
+  /// In welcher Form: "schriftlich", "per E-Mail". Für den Nachweis.
+  einwilligungForm String?
+  /// Wo das Dokument liegt. Ein Vermerk, kein Anhang - Einwilligungen
+  /// gehören in eure Ablage, nicht in eine Website-Datenbank.
+  einwilligungNotiz String?
+
+  /// Voreinstellung ausdrücklich FALSCH: Ein Bildpaar erscheint erst,
+  /// wenn jemand es bewusst freigibt. Bei jedem anderen Inhalt wäre das
+  /// unnötig umständlich, hier ist es der Sinn der Sache.
+  aktiv     Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@index([studioId])
 }
