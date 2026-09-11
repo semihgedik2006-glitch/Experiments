@@ -8,7 +8,15 @@ const easeOut = [0.16, 1, 0.3, 1] as const;
 
 export default function NotFound() {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-6 text-center">
+    // Ein <main> und kein <div>: Diese Seite bringt ihren eigenen Rahmen
+    // mit, also auch das, was sonst das Layout beisteuert. Ohne gehörte
+    // der ganze Inhalt zu keinem Bereich der Seite - wer sie mit einem
+    // Vorleseprogramm über die Bereiche durchgeht, fand hier gar nichts.
+    // Gemessen auf genau dieser Seite, nicht vermutet.
+    <main
+      id="main-content"
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-6 text-center"
+    >
       <div
         className="pointer-events-none absolute -top-48 left-1/2 h-[680px] w-[900px] -translate-x-1/2 opacity-15"
         style={{ background: "radial-gradient(circle, var(--color-lime), transparent 70%)" }}
@@ -71,6 +79,6 @@ export default function NotFound() {
           Probetermin buchen
         </Link>
       </motion.div>
-    </div>
+    </main>
   );
 }

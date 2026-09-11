@@ -11,7 +11,7 @@ const steps = [
   {
     step: "02",
     heading: "Brust & Rücken",
-    text: "Bis zu 90% der Muskelfasern werden gleichzeitig aktiviert - deutlich mehr als beim klassischen Training.",
+    text: "Brust und Rücken arbeiten gleichzeitig statt nacheinander - bei einer Übung, für die sonst zwei Geräte nötig wären.",
   },
   {
     step: "03",
@@ -21,7 +21,7 @@ const steps = [
   {
     step: "04",
     heading: "Voll aktiviert",
-    text: "20 Minuten EMS wirken so intensiv wie mehrere Stunden klassisches Krafttraining - einmal pro Woche reicht.",
+    text: "Am Ende ist der ganze Körper einmal durch - deshalb ist die Einheit kurz und deshalb liegt eine Woche dazwischen.",
   },
 ];
 

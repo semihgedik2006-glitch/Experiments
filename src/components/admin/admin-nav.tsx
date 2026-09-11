@@ -28,6 +28,7 @@ import {
   History,
   FileText,
   Images,
+  Quote,
 } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/social-icons";
 import type { SymbolTyp } from "@/components/admin/ui";
@@ -65,6 +66,9 @@ const groups: NavGroup[] = [
       // Nicht nurLeitung: Die Einwilligung holt der Standort ein, der die
       // Person kennt - und der muss das Bild auch wieder wegnehmen können.
       { href: "/admin/verwandlungen", label: "Vorher-Nachher", icon: Images },
+      // Wie Vorher-Nachher nicht nurLeitung: Die Zitate kommen von
+      // Menschen, die der Standort kennt.
+      { href: "/admin/kundenstimmen", label: "Kundenstimmen", icon: Quote },
     ],
   },
   {

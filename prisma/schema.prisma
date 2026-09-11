@@ -154,6 +154,7 @@ model StudioLocation {
   trainer       Trainer[]
   empfehlungen  Empfehlung[]
   verwandlungen Verwandlung[]
+  stimmen       Kundenstimme[]
 }
 
 /// Wer im Studio betreut.
@@ -867,4 +868,55 @@ model Kundenzugang {
   /// Für die Begrenzung je Adresse und fürs Aufräumen.
   @@index([email, createdAt])
   @@index([ablaufAm])
+}
+
+/// Eine Kundenstimme.
+///
+/// Sie ersetzt eine Liste erfundener Zitate im Quelltext. Das war als
+/// Platzhalter fürs Layout gedacht und wäre beim Livegang zu einem
+/// Problem geworden: Erfundene Bewertungen sind unzulässig (§ 5b Abs. 3
+/// UWG), und sie standen nicht irgendwo, sondern auf der Startseite.
+///
+/// Zwei Dinge sind deshalb wie beim Vorher-Nachher-Bereich gelöst:
+///
+/// AKTIV STEHT AUF FALSCH. Eine Stimme erscheint erst, wenn jemand sie
+/// bewusst freigibt.
+///
+/// EINE EINWILLIGUNG WIRD FESTGEHALTEN. Ein Zitat mit Namen ist eine
+/// personenbezogene Veröffentlichung - auch ohne Bild. Anders als dort
+/// ist sie hier aber keine Bedingung fürs Erscheinen: Wer ein Zitat
+/// schriftlich schickt, damit es auf die Website kommt, hat damit schon
+/// eingewilligt. Das Feld dient dem Nachweis, nicht der Sperre.
+model Kundenstimme {
+  id String @id @default(cuid())
+
+  /// Vorname und abgekürzter Nachname, so wie die Person es freigibt.
+  name String
+
+  /// Das Zitat. In den eigenen Worten der Person - nicht geglättet.
+  text String
+
+  /// "Rückengesundheit", "Abnehmen". Freiwillig.
+  ziel String?
+
+  /// Wie lange die Person schon trainiert, in Monaten. Freiwillig - und
+  /// bewusst eine Zahl und kein Text, damit daraus nicht "seit Jahren"
+  /// wird, wenn es acht Monate sind.
+  monate Int?
+
+  /// Der Standort, damit eine Studioleitung ihre eigenen Stimmen pflegt.
+  studio   StudioLocation? @relation(fields: [studioId], references: [id], onDelete: SetNull)
+  studioId String?
+
+  /// Wann die Person zugestimmt hat, dass das auf die Website darf.
+  einwilligungAm    DateTime?
+  einwilligungNotiz String?
+
+  aktiv     Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@index([studioId])
 }

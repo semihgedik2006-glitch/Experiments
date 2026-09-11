@@ -1,12 +1,27 @@
 import Link from "next/link";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/ui/section-header";
-import { testimonials } from "@/lib/testimonials-data";
+import { anfangsbuchstabe, stimmenHolen } from "@/lib/kundenstimmen";
 
-export function TestimonialsTeaser() {
-  const featured = testimonials.slice(0, 3);
+/**
+ * Die drei ersten Kundenstimmen auf der Startseite.
+ *
+ * Vorher kamen sie aus einer Liste erfundener Zitate im Quelltext. Die
+ * war als Platzhalter fürs Layout gemeint - stand aber auf der
+ * Startseite, mit Namen, Alter und fünf Sternen. Jetzt kommen sie aus
+ * dem Adminbereich, und wenn dort nichts freigegeben ist, fehlt der
+ * Abschnitt ganz.
+ *
+ * Die Sterne sind mit weggefallen. Sie waren das Unehrlichste an der
+ * alten Darstellung: fünf von fünf, sechsmal, ohne dass irgendwo eine
+ * Bewertung abgegeben worden wäre. Wer Sterne will, findet sie bei
+ * Google - dafür gibt es den Bewertungshinweis.
+ */
+export async function TestimonialsTeaser() {
+  const stimmen = await stimmenHolen(3);
+  if (stimmen.length === 0) return null;
 
   return (
     <section className="on-ink py-20 sm:py-24 md:py-32">
@@ -26,25 +41,34 @@ export function TestimonialsTeaser() {
           }
         />
 
-        <Stagger className="grid gap-6 md:grid-cols-3">
-          {featured.map((t) => (
-            <StaggerItem key={t.name}>
+        {/* Bei ein oder zwei Stimmen kein dreispaltiges Raster: Die
+            Karten stünden sonst links und rechts bliebe eine leere
+            Fläche, die aussieht, als fehle dort etwas. */}
+        <Stagger
+          className={`grid gap-6 ${
+            stimmen.length === 1
+              ? "max-w-xl"
+              : stimmen.length === 2
+                ? "sm:grid-cols-2"
+                : "md:grid-cols-3"
+          }`}
+        >
+          {stimmen.map((stimme) => (
+            <StaggerItem key={stimme.id}>
               <figure className="flex h-full flex-col card p-7">
-                <div className="flex gap-1 text-accent" role="img" aria-label={`${t.rating} von 5 Sternen`}>
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star key={i} size={14} fill="currentColor" />
-                  ))}
-                </div>
-                <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-foreground/90">
-                  &bdquo;{t.quote}&ldquo;
+                <blockquote className="flex-1 text-sm leading-relaxed text-foreground/90">
+                  &bdquo;{stimme.text}&ldquo;
                 </blockquote>
                 <figcaption className="mt-5 flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-lime/15 text-sm font-bold text-accent">
-                    {t.name.charAt(0)}
+                  <span
+                    aria-hidden
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-lime/15 text-sm font-bold text-accent"
+                  >
+                    {anfangsbuchstabe(stimme.name)}
                   </span>
                   <span className="text-sm">
-                    <span className="font-semibold">{t.name}</span>
-                    <span className="text-muted"> &middot; {t.goal}</span>
+                    <span className="font-semibold">{stimme.name}</span>
+                    {stimme.ziel && <span className="text-muted"> &middot; {stimme.ziel}</span>}
                   </span>
                 </figcaption>
               </figure>

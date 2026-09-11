@@ -73,7 +73,7 @@ async function main() {
       excerpt:
         "EMS steht für Elektro-Muskel-Stimulation. Wir erklären, wie das Training funktioniert und warum 20 Minuten pro Woche ausreichen.",
       content:
-        "EMS-Training kombiniert klassische Bewegungsübungen mit elektrischen Impulsen, die über eine spezielle Weste direkt auf die Muskulatur wirken. Dadurch werden bis zu 90% der Muskelfasern aktiviert - deutlich mehr als beim klassischen Training. Das Ergebnis: ein intensives Ganzkörpertraining in nur 20 Minuten, einmal pro Woche.",
+        "EMS-Training kombiniert klassische Bewegungsübungen mit elektrischen Impulsen, die über eine spezielle Weste direkt auf die Muskulatur wirken. Die Impulse erreichen dabei auch tiefer liegende Muskelschichten, die sich mit klassischen Übungen nur schwer gezielt ansteuern lassen. Deshalb dauert eine Einheit bei uns rund 20 Minuten und findet einmal pro Woche statt - wie stark sie wirkt, hängt von der Intensität ab, die dein Trainer mit dir zusammen einstellt.",
     },
     {
       slug: "ems-fuer-berufstaetige",
@@ -89,9 +89,9 @@ async function main() {
       themen: ["Rücken", "Gesundheit"],
       title: "EMS gegen Rückenschmerzen: Was steckt dahinter?",
       excerpt:
-        "Rund 80% der Deutschen kennen Rückenschmerzen. Warum EMS-Training gerade die tiefe Rumpfmuskulatur erreicht, die klassisches Training oft verfehlt.",
+        "Rückenschmerzen gehören zu den häufigsten Beschwerden überhaupt. Warum EMS-Training gerade die tiefe Rumpfmuskulatur erreicht, die klassisches Training oft verfehlt.",
       content:
-        "Wer viel sitzt, kennt das Ziehen im unteren Rücken. Die Ursache ist selten ein einzelnes Ereignis, sondern meist eine schwache tiefliegende Rumpfmuskulatur, die die Wirbelsäule nicht mehr ausreichend stützt.\nGenau hier liegt die Stärke von EMS: Die elektrischen Impulse erreichen auch die tiefen Muskelschichten, die mit klassischen Übungen nur schwer gezielt trainierbar sind. Studien der Deutschen Sporthochschule Köln zeigen, dass regelmäßiges EMS-Training Rückenbeschwerden deutlich reduzieren kann.\nWichtig ist die richtige Betreuung: Bei Körperformen wird jede Einheit persönlich begleitet, die Impulsstärke individuell dosiert und die Übungsauswahl an dein Beschwerdebild angepasst.\nUnser Tipp: Ergänze das wöchentliche Training mit kleinen Gewohnheiten im Alltag - regelmäßig aufstehen, Schulterkreisen am Schreibtisch, ein kurzer Spaziergang in der Mittagspause. Die Kombination macht den Unterschied.",
+        "Wer viel sitzt, kennt das Ziehen im unteren Rücken. Die Ursache ist selten ein einzelnes Ereignis, sondern meist eine schwache tiefliegende Rumpfmuskulatur, die die Wirbelsäule nicht mehr ausreichend stützt.\nGenau hier setzt EMS an: Die elektrischen Impulse erreichen auch die tiefen Muskelschichten, die mit klassischen Übungen nur schwer gezielt trainierbar sind. Ob das im Einzelfall hilft, hängt von der Ursache der Beschwerden ab - bei anhaltenden oder starken Schmerzen gehört die Abklärung zuerst zum Arzt, nicht ins Studio.\nWichtig ist die richtige Betreuung: Bei Körperformen wird jede Einheit persönlich begleitet, die Impulsstärke individuell dosiert und die Übungsauswahl an dein Beschwerdebild angepasst.\nUnser Tipp: Ergänze das wöchentliche Training mit kleinen Gewohnheiten im Alltag - regelmäßig aufstehen, Schulterkreisen am Schreibtisch, ein kurzer Spaziergang in der Mittagspause. Die Kombination macht den Unterschied.",
     },
     {
       slug: "abnehmen-mit-ems",
@@ -100,7 +100,7 @@ async function main() {
       excerpt:
         "Kann man mit 20 Minuten pro Woche wirklich abnehmen? Ja - aber anders, als die Werbung mancher Anbieter verspricht. Ein ehrlicher Blick.",
       content:
-        "Vorweg die ehrliche Antwort: EMS ist kein Wundermittel. Abnehmen funktioniert nur mit einem Kaloriendefizit - daran ändert auch die beste Technologie nichts.\nWas EMS aber besser kann als fast jedes andere Training: In kurzer Zeit viel Muskulatur aktivieren. Mehr Muskelmasse bedeutet einen höheren Grundumsatz - dein Körper verbrennt also auch in Ruhe mehr Kalorien. Genau dieser Effekt macht EMS zu einem starken Partner beim Abnehmen.\nDazu kommt der Nachbrenneffekt: Nach einer intensiven EMS-Einheit arbeitet dein Stoffwechsel noch Stunden auf erhöhtem Niveau.\nUnsere Empfehlung für nachhaltige Ergebnisse: wöchentliches EMS-Training für den Muskelerhalt, dazu eine eiweißreiche, alltagstaugliche Ernährung ohne Verbote - und Geduld. Ein halbes Kilo pro Woche ist realistisch und bleibt dauerhaft unten. Bei deinem Probetermin sprechen wir offen über deine Ziele und was in welchem Zeitraum erreichbar ist.",
+        "Vorweg die ehrliche Antwort: EMS ist kein Wundermittel. Abnehmen funktioniert nur mit einem Kaloriendefizit - daran ändert auch die beste Technologie nichts.\nWas EMS aber besser kann als fast jedes andere Training: In kurzer Zeit viel Muskulatur aktivieren. Mehr Muskelmasse bedeutet einen höheren Grundumsatz - dein Körper verbrennt also auch in Ruhe mehr Kalorien. Genau dieser Effekt macht EMS zu einem starken Partner beim Abnehmen.\nUnsere Empfehlung für Ergebnisse, die bleiben: wöchentliches EMS-Training für den Muskelerhalt, dazu eine eiweißreiche, alltagstaugliche Ernährung ohne Verbote - und Geduld. Wie schnell es geht, ist von Mensch zu Mensch verschieden und hängt vor allem daran, ob die Ernährung mitzieht. Bei deinem Probetermin sprechen wir offen über deine Ziele und was in welchem Zeitraum für dich erreichbar ist.",
     },
     {
       slug: "5-mythen-ueber-ems",
@@ -109,7 +109,7 @@ async function main() {
       excerpt:
         "Strom am Körper? Da halten sich hartnäckige Gerüchte. Wir räumen mit den fünf häufigsten Mythen auf.",
       content:
-        "Mythos 1: 'EMS ist gefährlich.' Falsch. Die Impulse sind niederfrequent und wirken nur auf die Skelettmuskulatur. In Physiotherapie und Reha wird die Methode seit Jahrzehnten eingesetzt. Wichtig ist professionelle Betreuung - bei uns Standard.\nMythos 2: 'Das ist nur was für Profisportler.' Im Gegenteil: Die meisten unserer Mitglieder sind Berufstätige zwischen 30 und 70, viele davon Einsteiger. Das Training wird an jedes Level angepasst.\nMythos 3: 'Man muss sich dabei nicht bewegen.' Doch. EMS verstärkt aktive Bewegungen - wer nur schlaff herumsteht, verschenkt den Großteil des Effekts. Deshalb führst du bei uns einfache Übungen aus, während die Impulse arbeiten.\nMythos 4: '20 Minuten können nicht reichen.' Können sie - weil bis zu 90% der Muskelfasern gleichzeitig arbeiten statt nacheinander. Die Intensität ersetzt die Dauer.\nMythos 5: 'EMS ersetzt jede Bewegung im Alltag.' Nein. EMS ist ein hocheffizientes Krafttraining, aber Spazierengehen, Radfahren und Treppensteigen bleiben wertvoll für Herz und Kreislauf. Die Kombination macht dich fit.",
+        "Mythos 1: 'EMS ist für jeden gefährlich.' So pauschal stimmt das nicht - entscheidend sind Betreuung und Vorgeschichte. Deshalb wird bei uns jede Einheit persönlich begleitet und die Intensität langsam aufgebaut. Es gibt aber echte Gegenanzeigen: unter anderem Herzschrittmacher, Schwangerschaft, Epilepsie, akute Entzündungen und fieberhafte Infekte. Sprich im Zweifel vorher mit deinem Arzt - und sag uns beim Probetermin, was bei dir vorliegt.\nMythos 2: 'Das ist nur was für Profisportler.' Im Gegenteil: Die meisten unserer Mitglieder sind Berufstätige zwischen 30 und 70, viele davon Einsteiger. Das Training wird an jedes Level angepasst.\nMythos 3: 'Man muss sich dabei nicht bewegen.' Doch. EMS verstärkt aktive Bewegungen - wer nur schlaff herumsteht, verschenkt den Großteil des Effekts. Deshalb führst du bei uns einfache Übungen aus, während die Impulse arbeiten.\nMythos 4: '20 Minuten können nicht reichen.' Für ein Krafttraining können sie reichen - weil bei EMS viele Muskelgruppen gleichzeitig arbeiten statt nacheinander. Die Intensität ersetzt die Dauer, nicht aber die Regelmäßigkeit.\nMythos 5: 'EMS ersetzt jede Bewegung im Alltag.' Nein. EMS ist ein hocheffizientes Krafttraining, aber Spazierengehen, Radfahren und Treppensteigen bleiben wertvoll für Herz und Kreislauf. Die Kombination macht dich fit.",
     },
   ];
 
@@ -127,7 +127,7 @@ async function main() {
     {
       question: "Wie oft muss ich trainieren?",
       answer:
-        "Ein EMS-Training pro Woche mit einer Dauer von rund 20 Minuten reicht für spürbare Ergebnisse - deutlich weniger Zeitaufwand als beim klassischen Fitnesstraining.",
+        "Einmal pro Woche, rund 20 Minuten. Darauf ist das Training ausgelegt: kurz, dafür intensiv und mit genug Abstand dazwischen, damit sich die Muskulatur erholen kann. Das ist deutlich weniger Zeitaufwand als klassisches Fitnesstraining.",
     },
     {
       question: "Ist EMS-Training für Anfänger geeignet?",
@@ -137,7 +137,7 @@ async function main() {
     {
       question: "Ist EMS-Training gelenkschonend?",
       answer:
-        "Ja, durch den Verzicht auf schwere Gewichte ist EMS-Training besonders schonend für Gelenke und Wirbelsäule und eignet sich auch bei Rückenbeschwerden.",
+        "Es kommt ohne schwere Gewichte aus - die Belastung für Gelenke und Wirbelsäule ist dadurch geringer als beim Hanteltraining. Ob es bei bestehenden Beschwerden für dich in Frage kommt, klärst du vorher bitte mit deinem Arzt; wir sind kein medizinischer Betrieb.",
     },
     {
       question: "Was sollte ich zum Training mitbringen?",
@@ -152,12 +152,12 @@ async function main() {
     {
       question: "Wie schnell sehe ich erste Ergebnisse?",
       answer:
-        "Die meisten Mitglieder spüren nach 4-6 Wochen deutlich mehr Kraft und Spannung im Körper. Sichtbare Veränderungen zeigen sich je nach Ausgangslage und Ernährung typischerweise nach 8-12 Wochen regelmäßigem Training.",
+        "Das ist von Mensch zu Mensch sehr unterschiedlich und hängt an Ausgangslage, Ernährung, Schlaf und vor allem an der Regelmäßigkeit. Eine seriöse Zahl können wir dir hier nicht nennen - was in deinem Fall realistisch ist, besprechen wir beim Probetermin offen.",
     },
     {
       question: "Ist EMS-Training sicher?",
       answer:
-        "Ja. EMS wird seit Jahrzehnten in Physiotherapie und Sport eingesetzt und ist gut erforscht. Bei uns trainierst du ausschließlich unter persönlicher Anleitung, mit modernen, geprüften Geräten und nach einem Gesundheitscheck beim ersten Termin.",
+        "Bei uns trainierst du ausschließlich unter persönlicher Anleitung, mit geprüften Geräten, und wir gehen beim ersten Termin gemeinsam durch, was bei dir zu beachten ist. Entscheidend ist die Betreuung - und dass du uns sagst, wenn etwas vorliegt. Die Fälle, in denen wir grundsätzlich nicht trainieren, stehen bei der Frage „Für wen ist EMS nicht geeignet?“.",
     },
     {
       question: "Bekomme ich Muskelkater?",

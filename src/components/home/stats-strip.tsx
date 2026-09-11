@@ -13,10 +13,16 @@ import {
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 
-const stats = [
-  { value: 90, suffix: "%", label: "der Muskelfasern gleichzeitig aktiviert" },
+// Hier stand als erste Zahl eine hochzählende "90 %" für die
+// aktivierten Muskelfasern. Die steht in jedem zweiten EMS-Prospekt,
+// aber nirgends eine Quelle dazu - und als hochzählende Ziffer trat sie
+// auf wie ein Messwert. Geblieben sind Zahlen, die beschreiben, wie hier
+// tatsächlich trainiert wird, plus die Zahl der Standorte. Die kommt von
+// außen und wird nicht hier hineingeschrieben: Kommt ein Studio dazu,
+// stimmte sie sonst ab diesem Tag nicht mehr.
+const feste = [
   { value: 20, suffix: " Min", label: "pro Trainingseinheit - mehr braucht es nicht" },
-  { value: 1, suffix: "x", label: "pro Woche für spürbare Ergebnisse" },
+  { value: 1, suffix: "x", label: "pro Woche, mit persönlicher Betreuung" },
 ];
 
 function Counter({ value, suffix }: { value: number; suffix: string }) {
@@ -47,7 +53,12 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
   );
 }
 
-export function StatsStrip() {
+export function StatsStrip({ studios }: { studios: number }) {
+  const stats = [
+    ...feste,
+    { value: studios, suffix: "", label: studios === 1 ? "Studio rund um Köln" : "Studios rund um Köln" },
+  ];
+
   const sectionRef = useRef<HTMLElement>(null);
   const wenigerBewegung = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });

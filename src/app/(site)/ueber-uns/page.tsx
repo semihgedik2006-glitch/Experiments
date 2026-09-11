@@ -8,6 +8,9 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { Zap, ShieldCheck, Target } from "lucide-react";
+import { TrainerBild } from "@/components/studio/trainer-bild";
+import { prisma } from "@/lib/prisma";
+import { legalConfig } from "@/lib/legal-config";
 
 export const metadata: Metadata = {
   // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
@@ -26,20 +29,89 @@ const values = [
   },
   {
     icon: ShieldCheck,
-    title: "Qualifiziert",
-    text: "Unser Team ist zertifiziert im Bereich EMS-Training und begleitet dich bei jeder Einheit.",
+    title: "Begleitet",
+    text: "Du trainierst nie allein: Ein Trainer bleibt die ganze Einheit dabei und stellt die Intensität mit dir zusammen ein.",
   },
   {
     icon: Zap,
-    title: "Effektiv",
-    text: "Wissenschaftlich fundierte Trainingsmethode für maximale Ergebnisse in minimaler Zeit.",
+    title: "Kurz",
+    text: "Eine Einheit pro Woche, rund 20 Minuten - ausgelegt auf einen Alltag, der ohnehin voll ist.",
   },
 ];
+
+type TeamMitglied = {
+  id: string;
+  name: string;
+  rolle: string | null;
+  text: string | null;
+  fotoUrl: string | null;
+  studioName: string | null;
+};
+
+/**
+ * Das Team für diese Seite.
+ *
+ * Zuerst der Inhaber - sein Name steht ohnehin im Impressum, er ist also
+ * keine Angabe, die noch jemand freigeben müsste. Danach die
+ * Trainerprofile aus dem Adminbereich, dieselben wie auf den
+ * Standortseiten: Zwei getrennte Pflegestellen für dieselben Menschen
+ * wären zwei Stellen, an denen jemand fehlt, der längst gegangen ist.
+ *
+ * Höchstens fünf Profile. Bei vierzehn Standorten wären es sonst
+ * irgendwann fünfzig Karten auf einer Seite, die "wer wir sind" heißt -
+ * wer genau wissen will, wer ihn erwartet, ist auf der Standortseite
+ * besser aufgehoben.
+ */
+async function teamHolen(): Promise<TeamMitglied[]> {
+  const inhaber: TeamMitglied = {
+    id: "inhaber",
+    name: legalConfig.owner,
+    rolle: "Inhaber & Geschäftsführer",
+    text: null,
+    fotoUrl: null,
+    studioName: null,
+  };
+
+  try {
+    const trainer = await prisma.trainer.findMany({
+      where: { aktiv: true },
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        rolle: true,
+        text: true,
+        fotoUrl: true,
+        studio: { select: { name: true } },
+      },
+    });
+
+    return [
+      inhaber,
+      ...trainer.map((t) => ({
+        id: t.id,
+        name: t.name,
+        rolle: t.rolle,
+        text: t.text,
+        fotoUrl: t.fotoUrl,
+        studioName: t.studio?.name ?? null,
+      })),
+    ];
+  } catch (error) {
+    // Fällt die Abfrage aus, bleibt der Inhaber stehen - besser als eine
+    // Seite, die wegen der Teamkarten gar nicht mehr lädt.
+    console.error("Trainerprofile konnten nicht geladen werden:", error);
+    return [inhaber];
+  }
+}
 
 export default async function UeberUnsPage() {
   // Im Adminbereich ausgeblendet: Die Seite bleibt bestehen, ist aber
   // nicht mehr erreichbar.
   if (!(await isVisible("ueber-uns"))) return notFound();
+
+  const team = await teamHolen();
 
   return (
     <>
@@ -64,9 +136,10 @@ export default async function UeberUnsPage() {
             EMS steht für Elektro-Muskel-Stimulation. Während du klassische
             Bewegungsübungen ausführst, aktivieren sanfte elektrische Impulse
             über eine spezielle Trainingsweste zusätzlich deine
-            Muskulatur - bis zu 90% der Muskelfasern gleichzeitig. Das
-            Ergebnis: ein intensives Ganzkörpertraining, das gelenkschonend
-            und zeiteffizient ist.
+            Muskulatur - viele Muskelgruppen gleichzeitig, auch tiefliegende
+            Schichten. Weil es ohne schwere Gewichte auskommt, ist die
+            Belastung für Gelenke und Wirbelsäule geringer als beim
+            Hanteltraining.
           </p>
 
           <Stagger className="mt-14 grid gap-6 md:grid-cols-3">
@@ -93,36 +166,31 @@ export default async function UeberUnsPage() {
             begleitet - vom ersten Probetraining bis zum hundertsten Termin.
           </p>
 
-          {/* Platzhalter-Team: Namen/Fotos vor Livegang durch echte ersetzen */}
-          <Stagger className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                initials: "MA",
-                name: "Marcel Almeida",
-                role: "Inhaber & Geschäftsführer",
-                text: "Führt das Studio in Hürth und brennt seit Jahren für gesundheitsorientiertes EMS-Training.",
-              },
-              {
-                initials: "T1",
-                name: "Dein/e Trainer/in",
-                role: "EMS-Coach (Platzhalter)",
-                text: "Zertifizierte EMS-Betreuung, Trainingsplanung und Motivation bei jeder Einheit.",
-              },
-              {
-                initials: "T2",
-                name: "Dein/e Trainer/in",
-                role: "EMS-Coach (Platzhalter)",
-                text: "Begleitet dich persönlich durchs Training und passt jede Übung an deine Tagesform an.",
-              },
-            ].map((member) => (
-              <StaggerItem key={member.role} className="h-full">
+          {/* Hier standen zwei Karten mit "Dein/e Trainer/in
+              (Platzhalter)" - auf der Seite, deren ganzes Argument die
+              persönliche Betreuung ist. Jetzt kommen die Profile aus dem
+              Adminbereich (dieselben wie auf den Standortseiten); ist dort
+              keines eingetragen, steht hier nur der Inhaber. Eine Karte
+              allein sieht besser aus als zwei erfundene daneben. */}
+          <Stagger
+            className={`mt-12 grid gap-6 ${
+              team.length > 2 ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2"
+            } ${team.length === 1 ? "max-w-sm" : ""}`}
+          >
+            {team.map((mitglied) => (
+              <StaggerItem key={mitglied.id} className="h-full">
                 <div className="h-full card p-6">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-lime/15 text-lg font-bold text-accent">
-                    {member.initials}
-                  </span>
-                  <h3 className="mt-4 text-lg font-semibold">{member.name}</h3>
-                  <p className="text-sm text-accent">{member.role}</p>
-                  <p className="mt-2 text-sm text-muted">{member.text}</p>
+                  <TrainerBild
+                    name={mitglied.name}
+                    fotoUrl={mitglied.fotoUrl}
+                    groesse="klein"
+                  />
+                  <h3 className="mt-4 text-lg font-semibold">{mitglied.name}</h3>
+                  {mitglied.rolle && <p className="text-sm text-accent">{mitglied.rolle}</p>}
+                  {mitglied.studioName && (
+                    <p className="text-xs text-muted">{mitglied.studioName}</p>
+                  )}
+                  {mitglied.text && <p className="mt-2 text-sm text-muted">{mitglied.text}</p>}
                 </div>
               </StaggerItem>
             ))}

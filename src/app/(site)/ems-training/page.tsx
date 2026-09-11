@@ -64,7 +64,7 @@ const audiences = [
 
 const comparison = [
   { label: "Zeitaufwand pro Woche", ems: "20 Minuten", gym: "3-5 Stunden inkl. Anfahrt" },
-  { label: "Aktivierte Muskelfasern", ems: "bis zu 90% gleichzeitig", gym: "je Übung einzelne Muskelgruppen" },
+  { label: "Muskelgruppen je Einheit", ems: "viele gleichzeitig, auch tiefliegende", gym: "je Übung einzelne Muskelgruppen" },
   { label: "Gelenkbelastung", ems: "minimal - ohne Zusatzgewichte", gym: "hoch bei schweren Gewichten" },
   { label: "Betreuung", ems: "immer persönlich durch einen Trainer", gym: "meist auf sich gestellt" },
   { label: "Einstiegshürde", ems: "niedrig - Plan wird angepasst", gym: "hoch - Technik muss sitzen" },
@@ -89,7 +89,7 @@ const processSteps = [
   },
   {
     step: "Das Training",
-    text: "Einfache Übungen wie Kniebeugen oder Ausfallschritte - die Impulse verstärken jede Bewegung um ein Vielfaches.",
+    text: "Einfache Übungen wie Kniebeugen oder Ausfallschritte - die Impulse kommen zu jeder Bewegung dazu.",
     duration: "20 Min",
   },
   {
@@ -125,15 +125,14 @@ export default function EmsTrainingPage() {
               Dein Gehirn steuert Muskeln über elektrische Impulse - EMS nutzt
               genau dieses Prinzip. Über Elektroden in der Trainingsweste
               werden sanfte Impulse direkt an die Muskulatur gesendet, während
-              du einfache Übungen ausführst. Der Effekt: Bis zu 90% deiner
-              Muskelfasern arbeiten gleichzeitig, auch die tiefliegenden
-              Schichten, die beim klassischen Training kaum erreicht werden.
+              du einfache Übungen ausführst. Der Effekt: Viele Muskelgruppen
+              arbeiten gleichzeitig, auch tiefliegende Schichten, die sich mit
+              klassischen Übungen nur schwer gezielt ansteuern lassen.
             </p>
             <p className="mt-4 text-muted">
-              Deshalb reicht eine 20-minütige Einheit pro Woche für Effekte,
-              für die du im Fitnessstudio ein Vielfaches an Zeit investieren
-              müsstest - wissenschaftlich untersucht unter anderem von der
-              Deutschen Sporthochschule Köln.
+              Darauf ist das Training ausgelegt: eine kurze, intensive Einheit
+              pro Woche statt mehrerer Abende - mit genug Abstand dazwischen,
+              damit sich die Muskulatur erholen kann.
             </p>
           </Reveal>
         </Container>
@@ -262,8 +261,8 @@ export default function EmsTrainingPage() {
                   Wann EMS nicht geeignet ist
                 </h2>
                 <p className="mt-2 text-sm text-muted">
-                  EMS-Training ist sicher und gut erforscht - in einigen
-                  Fällen verzichten wir aber grundsätzlich darauf:
+                  Entscheidend sind Betreuung und Vorgeschichte. In diesen
+                  Fällen verzichten wir grundsätzlich auf EMS-Training:
                 </p>
                 <ul className="mt-4 space-y-2">
                   {contraindications.map((item) => (

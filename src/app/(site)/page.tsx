@@ -64,7 +64,7 @@ export default async function Home() {
         anzahlStudios={studios.length}
         naechsterTermin={naechsterTermin}
       />
-      <StatsStrip />
+      <StatsStrip studios={studios.length} />
       <UspGrid />
       {/* Die Trenner stehen dort, wo zwei helle Abschnitte aneinander
           stoßen - genau die Stellen, an denen die Seite beim Scrollen

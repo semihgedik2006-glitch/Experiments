@@ -58,19 +58,19 @@ export const campaigns: Record<string, Campaign> = {
 
   rueckenschmerzen: {
     kicker: "Für alle mit Büro-Rücken",
-    headline: "Endlich wieder",
-    highlight: "schmerzfrei sitzen",
+    headline: "Etwas tun gegen den",
+    highlight: "Büro-Rücken",
     subline:
       "EMS erreicht die tiefe Rumpfmuskulatur, die beim klassischen Training kaum angesprochen wird - genau die Muskeln, die deinen Rücken stützen.",
     bullets: [
-      "Trainiert gezielt die tiefliegende Stützmuskulatur",
+      "Setzt gezielt an der tiefliegenden Stützmuskulatur an",
       "Ohne schwere Gewichte, dadurch gelenkschonend",
       "Kostenloses Probetraining, danach entscheidest du",
     ],
     formTitle: "Kostenlos ausprobieren",
-    metaTitle: "EMS gegen Rückenschmerzen - kostenloses Probetraining",
+    metaTitle: "EMS-Training für den Rücken - kostenloses Probetraining",
     metaDescription:
-      "Rückenschmerzen vom Bürojob? EMS-Training stärkt die tiefe Rumpfmuskulatur. Jetzt kostenlos und unverbindlich testen.",
+      "Rückenschmerzen vom Bürojob? EMS-Training setzt an der tiefen Rumpfmuskulatur an. Jetzt kostenlos und unverbindlich testen.",
   },
 
   abnehmen: {
@@ -78,7 +78,7 @@ export const campaigns: Record<string, Campaign> = {
     headline: "Abnehmen, ohne dass",
     highlight: "der Kalender platzt",
     subline:
-      "EMS aktiviert bis zu 90 Prozent der Muskelfasern gleichzeitig - auch die tiefliegenden. Mehr Muskulatur heißt mehr Grundumsatz, und der arbeitet auch dann, wenn du nicht trainierst.",
+      "EMS lässt viele Muskelgruppen gleichzeitig arbeiten - auch die tiefliegenden. Mehr Muskulatur heißt mehr Grundumsatz, und der arbeitet auch dann, wenn du nicht trainierst.",
     bullets: [
       "Eine Einheit pro Woche, 20 Minuten - mehr braucht es nicht",
       "Trainingsplan und Ernährungsberatung passend zu deinem Alltag",

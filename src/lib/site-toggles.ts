@@ -42,7 +42,7 @@ export const toggleDefinitions: {
     key: "erfolgsgeschichten",
     label: "Erfolgsgeschichten",
     description:
-      "Die Seite mit den Kundenstimmen und der Bereich dazu auf der Startseite. Solange dort Platzhalter stehen, besser ausblenden.",
+      "Die Seite mit den Kundenstimmen und den Vorher-Nachher-Bildern, dazu der Bereich auf der Startseite. Beide Bereiche erscheinen ohnehin nur, wenn unter „Kundenstimmen“ beziehungsweise „Vorher-Nachher“ etwas freigegeben ist.",
     href: "/erfolgsgeschichten",
     defaultVisible: true,
   },

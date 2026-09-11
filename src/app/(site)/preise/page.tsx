@@ -60,7 +60,12 @@ const timeComparison = [
   { label: "Anfahrt pro Woche", ems: "1x", gym: "2-4x" },
   { label: "Umziehen und Duschen", ems: "1x pro Woche", gym: "bei jedem Besuch" },
   { label: "Planung des Trainings", ems: "übernimmt dein Trainer", gym: "machst du selbst" },
-  { label: "Zeit bis zu ersten Effekten", ems: "4-6 Wochen", gym: "je nach Regelmäßigkeit" },
+  // Hier stand "Zeit bis zu ersten Effekten: 4-6 Wochen". Das ist keine
+  // Zeitangabe, sondern ein Versprechen - und nebenan stand beim
+  // Fitnessstudio ehrlicherweise "je nach Regelmäßigkeit", was für EMS
+  // genauso gilt. Die Zeile vergleicht jetzt, was sich vergleichen
+  // lässt: den Aufwand, nicht das Ergebnis.
+  { label: "Erholung zwischen zwei Einheiten", ems: "eine Woche eingeplant", gym: "planst du selbst" },
 ];
 
 export default async function PreisePage() {

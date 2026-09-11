@@ -60,7 +60,7 @@ export function HowItWorks() {
         <SectionHeader
           kicker="In drei Schritten"
           title="So einfach startest du mit EMS"
-          intro="Elektro-Muskel-Stimulation aktiviert bis zu 90% deiner Muskelfasern gleichzeitig - deutlich mehr als klassisches Training."
+          intro="Elektro-Muskel-Stimulation lässt viele Muskelgruppen gleichzeitig arbeiten - auch die tiefliegenden, die beim klassischen Training kaum drankommen."
           className="mb-16"
         />
 
