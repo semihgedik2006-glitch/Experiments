@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { verlangeStudioRecht } from "@/lib/admin-rechte";
+import { protokollieren } from "@/lib/protokoll";
 
 /**
  * Einen Eintrag von der Warteliste nehmen.
@@ -17,7 +18,7 @@ import { verlangeStudioRecht } from "@/lib/admin-rechte";
 export async function wartelisteEintragLoeschen(id: string) {
   const eintrag = await prisma.warteliste.findUnique({
     where: { id },
-    select: { studioId: true },
+    select: { studioId: true, name: true },
   });
   if (!eintrag) return;
 
@@ -25,4 +26,10 @@ export async function wartelisteEintragLoeschen(id: string) {
   await prisma.warteliste.delete({ where: { id } });
 
   revalidatePath("/admin/warteliste");
+  await protokollieren({
+    art: "GELOESCHT",
+    bereich: "Warteliste",
+    betreff: eintrag.name,
+    studioId: eintrag.studioId,
+  });
 }

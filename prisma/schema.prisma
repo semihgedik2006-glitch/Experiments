@@ -150,6 +150,7 @@ model StudioLocation {
   slots         AvailabilitySlot[]
   slotTemplates SlotTemplate[]
   trainer       Trainer[]
+  empfehlungen  Empfehlung[]
 }
 
 /// Wer im Studio betreut.
@@ -346,6 +347,20 @@ model Booking {
   /// dort niemand kennt.
   promotion   Promotion? @relation(fields: [promotionId], references: [id], onDelete: SetNull)
   promotionId String?
+
+  /// Der eingelöste Empfehlungscode - jemand hat diese Anfrage geworben.
+  /// Steht im selben Feld des Formulars wie der Aktionscode: Für den, der
+  /// ihn eingibt, ist es "der Code, den ich bekommen habe"; ihn zwei
+  /// Felder unterscheiden zu lassen wäre eine Hürde ohne Nutzen.
+  empfehlung   Empfehlung? @relation(fields: [empfehlungId], references: [id], onDelete: SetNull)
+  empfehlungId String?
+
+  /// Ob die Prämie für diese geworbene Anfrage abgerechnet wurde.
+  ///
+  /// Am Buchungsdatensatz und nicht am Empfehlungscode: Ein Code wirbt
+  /// mehrfach, und jede geworbene Person ist eine eigene Prämie. Am Code
+  /// ließe sich nur "schon mal etwas gezahlt" festhalten.
+  praemieGutgeschrieben Boolean @default(false)
 
   /// Woher die Anfrage kam. Drei Angaben, alle ohne Cookies und ohne
   /// einen Drittanbieter - sie stehen entweder in der aufgerufenen
@@ -647,4 +662,95 @@ model Antwortvorlage {
   updatedAt DateTime @updatedAt
 
   @@index([aktiv, sortOrder])
+}
+
+/// Wer wen geworben hat.
+///
+/// Bewusst kein Kundenkonto: Es gibt keines, und eines dafür zu bauen
+/// wäre der falsche Weg herum. Stattdessen legt das Studio je Mitglied
+/// einen Code an - der Werbende gibt ihn weiter, der Geworbene trägt ihn
+/// ins Anfrageformular ein, und damit ist die Zuordnung da.
+///
+/// Was die Website ausdrücklich NICHT tut: E-Mails im Namen des Werbenden
+/// verschicken. Eine "Empfiehl uns weiter"-Mail an eine Adresse, die der
+/// Empfänger nie hinterlassen hat, ist unerlaubte Werbung (§ 7 Abs. 2
+/// Nr. 2 UWG) - und zwar für uns, nicht für den Werbenden. Wer empfiehlt,
+/// gibt seinen Code selbst weiter.
+model Empfehlung {
+  id String @id @default(cuid())
+
+  /// Immer in Großbuchstaben gespeichert, wie beim Aktionscode: Wer
+  /// "lena-24" tippt, meint denselben Code wie "LENA-24".
+  code String @unique
+
+  /// Wer empfiehlt. Name genügt zur Zuordnung; Kontaktdaten sind
+  /// freiwillig und nur dafür da, die Prämie auch zustellen zu können.
+  name  String
+  email String?
+  phone String?
+
+  /// Der Standort des Werbenden - damit eine Studioleitung ihre eigenen
+  /// Empfehlungen sieht und nicht die aller vierzehn.
+  studio   StudioLocation? @relation(fields: [studioId], references: [id], onDelete: SetNull)
+  studioId String?
+
+  /// Was der Werbende bekommt, als Text: "eine Freieinheit", "20 €
+  /// Gutschrift". Wie beim Tarifpreis bewusst keine Zahl.
+  praemie String?
+
+  /// Interner Vermerk. Geht nie an den Geworbenen.
+  notiz String?
+
+  aktiv     Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  bookings Booking[]
+
+  @@index([studioId])
+}
+
+enum ProtokollArt {
+  ANGELEGT
+  GEAENDERT
+  GELOESCHT
+  /// Alles, was nach draußen geht - ein Newsletter etwa.
+  VERSENDET
+  /// Statuswechsel an einer Buchung: bestätigt, storniert.
+  STATUS
+}
+
+/// Wer hat wann was geändert.
+///
+/// Der Anlass: Seit es mehrere Zugänge gibt, ist "wer hat diese Buchung
+/// storniert?" eine Frage, die niemand beantworten kann. Bei vierzehn
+/// Standorten und einem Team je Standort wird daraus schnell ein Streit
+/// darüber, ob überhaupt jemand etwas geändert hat.
+///
+/// Was NICHT protokolliert wird: das Lesen. Wer eine Liste öffnet, ändert
+/// nichts - und ein Protokoll, in dem jeder Seitenaufruf steht, begräbt
+/// genau die Einträge, für die es gedacht ist. Aus demselben Grund stehen
+/// hier auch keine Inhalte, sondern nur, worum es ging.
+model Protokoll {
+  id String @id @default(cuid())
+
+  /// Wer. Als Adresse und nicht als Verknüpfung: Ein gelöschter Zugang
+  /// darf die Nachvollziehbarkeit nicht mitnehmen.
+  wer String
+
+  art     ProtokollArt
+  /// Womit: "Buchung", "Termin", "Studio", "Zugang", "Newsletter".
+  bereich String
+  /// Worum es ging, in Klartext: "Anfrage von Maria Schmidt".
+  betreff String
+  /// Was genau passiert ist, wenn der Betreff es nicht sagt.
+  detail  String?
+
+  /// Der betroffene Standort, falls es einen gibt.
+  studioId String?
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([studioId, createdAt])
 }

@@ -8,12 +8,13 @@ import {
 } from "@/lib/email";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { terminAngaben } from "@/lib/termin-angaben";
+import { PROTOKOLL_TAGE } from "@/lib/protokoll";
 
 /** Ab wann eine offene Anfrage als liegengeblieben gilt. */
 const NACHFASS_NACH_TAGEN = 3;
 
 /** Wie lange das Mail-Protokoll aufgehoben wird. */
-const PROTOKOLL_TAGE = 90;
+const MAIL_PROTOKOLL_TAGE = 90;
 
 /**
  * Der tägliche Lauf.
@@ -107,6 +108,7 @@ export async function GET(request: NextRequest) {
   const nachfass = await nachfassen();
   const bewertungen = await umBewertungBitten(morgen);
   const aufgeraeumt = await altesProtokollLoeschen();
+  const protokollAufgeraeumt = await altesAenderungsprotokollLoeschen();
 
   return NextResponse.json({
     ok: true,
@@ -117,6 +119,7 @@ export async function GET(request: NextRequest) {
     nachfass,
     bewertungen,
     protokollGeloescht: aufgeraeumt,
+    aenderungsprotokollGeloescht: protokollAufgeraeumt,
   });
 }
 
@@ -235,8 +238,25 @@ async function nachfassen() {
  * darüber hinaus ist eine Sammlung ohne Zweck.
  */
 async function altesProtokollLoeschen() {
-  const grenze = new Date(Date.now() - PROTOKOLL_TAGE * 24 * 60 * 60 * 1000);
+  const grenze = new Date(Date.now() - MAIL_PROTOKOLL_TAGE * 24 * 60 * 60 * 1000);
   const { count } = await prisma.mailLog.deleteMany({
+    where: { createdAt: { lt: grenze } },
+  });
+  return count;
+}
+
+/**
+ * Alte Einträge im Änderungsprotokoll wegräumen.
+ *
+ * Länger aufgehoben als das Mail-Protokoll: Bei "wer hat das storniert?"
+ * geht es oft um einen Vorgang, der erst Monate später auffällt - etwa
+ * wenn jemand im nächsten Quartal die Zahlen durchsieht. Unbegrenzt
+ * aufzuheben wäre trotzdem falsch: Es ist eine Aufzeichnung darüber, wer
+ * wann gearbeitet hat, und die gehört nicht auf ewig in eine Datenbank.
+ */
+async function altesAenderungsprotokollLoeschen() {
+  const grenze = new Date(Date.now() - PROTOKOLL_TAGE * 24 * 60 * 60 * 1000);
+  const { count } = await prisma.protokoll.deleteMany({
     where: { createdAt: { lt: grenze } },
   });
   return count;

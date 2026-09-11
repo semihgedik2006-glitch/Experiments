@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { verlangeLeitungAktion, verlangeStudioRecht } from "@/lib/admin-rechte";
 import { istGueltigerSlug, studioSlug } from "@/lib/slug";
+import { protokollieren } from "@/lib/protokoll";
 
 /**
  * Seiten, auf denen Studiodaten stehen.
@@ -134,13 +135,31 @@ export async function updateStudio(formData: FormData) {
     data: { ...data, ...(slug ? { slug } : {}) },
   });
   revalidateStudios();
+
+  await protokollieren({
+    art: "GEAENDERT",
+    bereich: "Studio",
+    betreff: data.name,
+    // Eine geänderte Adresse der Standortseite ist der Fall, der
+    // hinterher am ehesten Fragen aufwirft: Alte Verweise gehen damit ins
+    // Leere.
+    detail: slug ? `Adresse der Seite jetzt /studio/${slug}` : null,
+    studioId: id,
+  });
 }
 
 export async function deleteStudio(id: string) {
   await verlangeLeitungAktion();
 
-  await prisma.studioLocation.delete({ where: { id } });
+  const geloescht = await prisma.studioLocation.delete({ where: { id } });
   revalidateStudios();
+
+  await protokollieren({
+    art: "GELOESCHT",
+    bereich: "Studio",
+    betreff: geloescht.name,
+    detail: `${geloescht.street}, ${geloescht.postalCode} ${geloescht.city}`,
+  });
 }
 
 /** Ergebnis eines Sammel-Imports, wird der Seite als Rückmeldung angezeigt. */

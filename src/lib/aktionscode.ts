@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
+import { empfehlungNachschlagen, type GefundeneEmpfehlung } from "@/lib/empfehlung";
 
 /**
  * Aktionscodes aus Anzeigen, Flyern und Kooperationen.
@@ -32,8 +33,12 @@ export type GefundeneAktion = {
 };
 
 export type CodePruefung =
-  /** Kein Code angegeben oder ein gültiger - `aktion` ist dann gesetzt. */
-  | { ok: true; aktion: GefundeneAktion | null }
+  /**
+   * Kein Code angegeben oder ein gültiger. Genau eines von beiden ist
+   * dann gesetzt: ein Code ist entweder eine Aktion aus einer Anzeige
+   * oder eine Empfehlung von einem Mitglied, nie beides.
+   */
+  | { ok: true; aktion: GefundeneAktion | null; empfehlung: GefundeneEmpfehlung | null }
   | { ok: false; meldung: string };
 
 function alsDatum(datum: Date): string {
@@ -44,13 +49,23 @@ function alsDatum(datum: Date): string {
 export async function aktionscodePruefen(roh: string): Promise<CodePruefung> {
   const code = codeNormalisieren(roh);
   // Das Feld ist freiwillig. Kein Code heißt: keine Aktion, kein Fehler.
-  if (!code) return { ok: true, aktion: null };
+  if (!code) return { ok: true, aktion: null, empfehlung: null };
+
+  // Erst als Empfehlung nachschlagen, dann als Aktion. Beide Arten teilen
+  // sich dasselbe Feld im Formular und damit denselben Namensraum; ein
+  // Code kann nicht beides sein, weil er in beiden Tabellen eindeutig ist
+  // und das Studio ihn jeweils selbst vergibt.
+  const empfehlung = await empfehlungNachschlagen(code);
+  if (empfehlung) return { ok: true, aktion: null, empfehlung };
 
   const aktion = await prisma.promotion.findUnique({ where: { code } });
   if (!aktion) {
+    // "Code" und nicht "Aktionscode": An dieser Stelle steht noch nicht
+    // fest, was der Eingebende gemeint hat - ein Tippfehler kann beides
+    // gewesen sein.
     return {
       ok: false,
-      meldung: `Den Aktionscode „${code}“ kennen wir nicht. Prüf bitte die Schreibweise - oder lass das Feld einfach leer.`,
+      meldung: `Den Code „${code}“ kennen wir nicht. Prüf bitte die Schreibweise - oder lass das Feld einfach leer.`,
     };
   }
 
@@ -81,5 +96,6 @@ export async function aktionscodePruefen(roh: string): Promise<CodePruefung> {
   return {
     ok: true,
     aktion: { id: aktion.id, code: aktion.code, label: aktion.label, benefit: aktion.benefit },
+    empfehlung: null,
   };
 }

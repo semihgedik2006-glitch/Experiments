@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { verlangeLeitungAktion } from "@/lib/admin-rechte";
 import { toggleDefinitions } from "@/lib/site-toggles";
+import { protokollieren } from "@/lib/protokoll";
 
 /**
  * Sichtbarkeit der Bereiche speichern.
@@ -32,4 +33,21 @@ export async function saveToggles(formData: FormData) {
   revalidatePath("/", "layout");
   revalidatePath("/sitemap.xml");
   revalidatePath("/admin/sichtbarkeit");
+
+  // Festgehalten wird, WAS jetzt ausgeblendet ist - nicht, was sich
+  // geändert hat. Eine Liste der Unterschiede wäre genauer, aber die
+  // Frage hinterher lautet "warum war der Blog weg?", und darauf
+  // antwortet der Zustand.
+  const versteckt = toggleDefinitions
+    .filter(({ key }) => formData.get(key) !== "on")
+    .map(({ label }) => label);
+
+  await protokollieren({
+    art: "GEAENDERT",
+    bereich: "Inhalte",
+    betreff: "Sichtbarkeit der Bereiche",
+    detail: versteckt.length
+      ? `ausgeblendet: ${versteckt.join(", ")}`
+      : "alle Bereiche sichtbar",
+  });
 }

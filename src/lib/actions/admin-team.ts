@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { verlangeLeitungAktion } from "@/lib/admin-rechte";
 import type { ActionResult } from "@/lib/actions/newsletter";
+import { protokollieren } from "@/lib/protokoll";
 
 /**
  * Zugänge anlegen, ändern und entfernen - nur durch die Leitung.
@@ -74,6 +75,13 @@ export async function zugangAnlegen(
   });
 
   revalidatePath("/admin/team");
+  await protokollieren({
+    art: "ANGELEGT",
+    bereich: "Zugang",
+    betreff: email,
+    detail: istLeitung ? "als Leitung" : "als Studioleitung",
+    studioId: istLeitung ? null : studioId,
+  });
   return { ok: true, message: `Zugang für ${email} wurde angelegt.` };
 }
 
@@ -131,6 +139,20 @@ export async function zugangAendern(
   });
 
   revalidatePath("/admin/team");
+  await protokollieren({
+    art: "GEAENDERT",
+    bereich: "Zugang",
+    betreff: zugang.email,
+    // Dass ein Passwort gesetzt wurde, gehört ins Protokoll; welches,
+    // ausdrücklich nicht.
+    detail: [
+      istLeitung ? "Rolle: Leitung" : "Rolle: Studioleitung",
+      passwort ? "neues Passwort gesetzt" : null,
+    ]
+      .filter(Boolean)
+      .join(", "),
+    studioId: istLeitung ? null : studioId,
+  });
   return {
     ok: true,
     message: passwort ? "Zugang und Passwort wurden geändert." : "Zugang wurde geändert.",
@@ -151,4 +173,10 @@ export async function zugangEntfernen(id: string) {
 
   await prisma.adminUser.delete({ where: { id } });
   revalidatePath("/admin/team");
+  await protokollieren({
+    art: "GELOESCHT",
+    bereich: "Zugang",
+    betreff: zugang.email,
+    studioId: zugang.studioId,
+  });
 }

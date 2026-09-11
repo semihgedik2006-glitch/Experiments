@@ -390,10 +390,14 @@ export function BookingForm({
           Absenden benannt statt stillschweigend verworfen - sonst käme
           jemand mit einer Erwartung ins Studio, von der dort niemand
           weiß. */}
+      {/* Ein Feld für beide Arten von Code. Für den, der ihn eingibt, ist
+          es "der Code, den ich bekommen habe" - ihn zwischen zwei Feldern
+          wählen zu lassen wäre eine Hürde ohne Nutzen. */}
       <label className="block max-w-xs">
-        <span className="text-sm">Aktionscode</span>
+        <span className="text-sm">Aktions- oder Empfehlungscode</span>
         <span className="mt-0.5 block text-xs text-muted">
-          Nur, wenn du einen aus einer Anzeige oder von einem Flyer hast.
+          Nur, wenn du einen hast - aus einer Anzeige, von einem Flyer oder
+          von jemandem, der bei uns trainiert.
         </span>
         <input
           type="text"

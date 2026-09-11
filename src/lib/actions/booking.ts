@@ -181,6 +181,8 @@ export async function createBooking(
       erreichbarkeit,
       zuZweit,
       promotionId: codePruefung.aktion?.id ?? null,
+      // Entweder das eine oder das andere - ein Code ist nie beides.
+      empfehlungId: codePruefung.empfehlung?.id ?? null,
       herkunftSeite: herkunft.seite,
       herkunftKampagne: herkunft.kampagne,
       herkunftQuelle: herkunft.quelle,
@@ -211,7 +213,13 @@ export async function createBooking(
       // "Rücken stärken" stehen und nicht "ruecken".
       ziel: buchung.ziel ? zielText(buchung.ziel) : null,
       nachricht: buchung.message,
-      aktionsCode: codePruefung.aktion?.code ?? null,
+      // Der Code steht in der Mail ans Studio, damit der Rückruf nicht
+      // erst im Adminbereich nachsehen muss, warum jemand etwas erwartet.
+      aktionsCode:
+        codePruefung.aktion?.code ??
+        (codePruefung.empfehlung
+          ? `${codePruefung.empfehlung.code} (Empfehlung von ${codePruefung.empfehlung.werbender})`
+          : null),
       herkunft: [herkunft.kampagne, herkunft.quelle, herkunft.seite]
         .filter(Boolean)
         .join(" · ") || null,

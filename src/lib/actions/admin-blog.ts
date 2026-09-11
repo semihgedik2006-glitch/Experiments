@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { protokollieren } from "@/lib/protokoll";
 import { themenLesen } from "@/lib/blog-themen";
 import { verlangeLeitungAktion } from "@/lib/admin-rechte";
 import type { ActionResult } from "@/lib/actions/newsletter";
@@ -94,7 +95,14 @@ export async function updatePost(
 export async function deletePost(id: string) {
   await verlangeLeitungAktion();
 
-  await prisma.blogPost.delete({ where: { id } });
+  const geloescht = await prisma.blogPost.delete({ where: { id } });
   revalidatePath("/admin/blog");
   revalidatePath("/blog");
+
+  await protokollieren({
+    art: "GELOESCHT",
+    bereich: "Inhalte",
+    betreff: geloescht.title,
+    detail: geloescht.published ? "war veröffentlicht" : "war ein Entwurf",
+  });
 }

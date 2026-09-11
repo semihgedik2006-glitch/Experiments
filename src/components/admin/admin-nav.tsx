@@ -24,6 +24,8 @@ import {
   MailCheck,
   Hourglass,
   Euro,
+  Gift,
+  History,
   FileText,
 } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/social-icons";
@@ -49,6 +51,7 @@ const groups: NavGroup[] = [
       { href: "/admin/verfuegbarkeit", label: "Verfügbarkeit", icon: CalendarClock },
       { href: "/admin/warteliste", label: "Warteliste", icon: Hourglass },
       { href: "/admin/auswertung", label: "Auswertung", icon: BarChart3 },
+      { href: "/admin/protokoll", label: "Protokoll", icon: History },
     ],
   },
   {
@@ -66,6 +69,7 @@ const groups: NavGroup[] = [
       { href: "/admin/nachrichten", label: "Nachrichten", icon: Mail, nurLeitung: true },
       { href: "/admin/newsletter", label: "Newsletter", icon: Send, nurLeitung: true },
       { href: "/admin/aktionen", label: "Aktionscodes", icon: Ticket, nurLeitung: true },
+      { href: "/admin/empfehlungen", label: "Empfehlungen", icon: Gift },
       { href: "/admin/vorlagen", label: "Antwortvorlagen", icon: FileText, nurLeitung: true },
       { href: "/admin/instagram", label: "Instagram", icon: InstagramIcon, nurLeitung: true },
       { href: "/admin/mails", label: "E-Mail-Versand", icon: MailCheck, nurLeitung: true },

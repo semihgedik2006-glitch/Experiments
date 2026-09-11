@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { verlangeLeitungAktion } from "@/lib/admin-rechte";
 import { INSTAGRAM_ZUGANG, schluesselErneuern } from "@/lib/instagram";
 import type { ActionResult } from "@/lib/actions/newsletter";
+import { protokollieren } from "@/lib/protokoll";
 
 /**
  * Den Instagram-Zugang hinterlegen, prüfen oder entfernen.
@@ -83,4 +84,11 @@ export async function instagramTrennen() {
   await prisma.externerZugang.deleteMany({ where: { id: INSTAGRAM_ZUGANG } });
   revalidatePath("/admin/instagram");
   revalidatePath("/");
+
+  await protokollieren({
+    art: "GELOESCHT",
+    bereich: "Inhalte",
+    betreff: "Instagram-Verbindung",
+    detail: "Die Wand verschwindet damit von der Startseite",
+  });
 }

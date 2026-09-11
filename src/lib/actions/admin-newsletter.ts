@@ -13,6 +13,7 @@ import {
   newsletterText,
 } from "@/lib/newsletter";
 import type { ActionResult } from "@/lib/actions/newsletter";
+import { protokollieren } from "@/lib/protokoll";
 
 /**
  * Newsletter schreiben und verschicken.
@@ -216,6 +217,13 @@ export async function newsletterVersenden(id: string): Promise<ActionResult> {
   // lang auf einen Ladebalken zu starren.
   after(async () => {
     await abschnittVersenden(id, admin.email);
+  });
+
+  await protokollieren({
+    art: "VERSENDET",
+    bereich: "Newsletter",
+    betreff: ausgabe.betreff,
+    detail: `Versand gestartet, ${offen.length > 0 ? "offene Adressen werden abgearbeitet" : ""}`.trim(),
   });
 
   return {

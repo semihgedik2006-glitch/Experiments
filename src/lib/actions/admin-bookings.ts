@@ -8,6 +8,8 @@ import { sendBookingConfirmedEmail } from "@/lib/email";
 import { neuerVerwaltungsSchluessel, terminAngaben } from "@/lib/termin-angaben";
 import { wartelisteBenachrichtigen } from "@/lib/warteliste";
 import type { BookingStatus } from "@/generated/prisma/enums";
+import { protokollieren } from "@/lib/protokoll";
+import { STATUS_LABEL } from "@/lib/buchung-status";
 
 export async function updateBookingStatus(id: string, status: BookingStatus) {
   // Der Standort steht am Datensatz selbst, nicht im Formular - sonst
@@ -33,6 +35,16 @@ export async function updateBookingStatus(id: string, status: BookingStatus) {
   });
   revalidatePath("/admin/bookings");
   revalidatePath("/admin");
+
+  // Der Fall, für den es das Protokoll überhaupt gibt: "Wer hat diese
+  // Buchung storniert?" war bisher nicht zu beantworten.
+  await protokollieren({
+    art: "STATUS",
+    bereich: "Buchung",
+    betreff: `Anfrage von ${booking.name}`,
+    detail: `auf „${STATUS_LABEL[status]}“ gesetzt`,
+    studioId: booking.studioId,
+  });
 
   // Wird eine Buchung storniert, wird ihr Platz frei - und der Nächste auf
   // der Warteliste bekommt Bescheid. Nach der Antwort, damit das Stornieren

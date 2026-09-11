@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { verlangeStudioRecht } from "@/lib/admin-rechte";
+import { protokollieren } from "@/lib/protokoll";
 import { syncSlotsForTemplate, deleteUnbookedFutureSlotsForTemplate } from "@/lib/slot-templates";
 import type { ActionResult } from "@/lib/actions/newsletter";
 
@@ -39,13 +40,33 @@ export async function deleteSlot(id: string) {
   // Der Standort kommt aus dem Datensatz selbst, nicht von außen.
   const slot = await prisma.availabilitySlot.findUnique({
     where: { id },
-    select: { studioId: true },
+    // Datum und Zeit werden für das Protokoll gebraucht: Nach dem
+    // Löschen lässt sich nicht mehr nachsehen, welcher Termin es war.
+    select: {
+      studioId: true,
+      date: true,
+      startTime: true,
+      _count: { select: { bookings: true } },
+    },
   });
   await verlangeStudioRecht(slot?.studioId);
 
   await prisma.availabilitySlot.delete({ where: { id } });
   revalidatePath("/admin/verfuegbarkeit");
   revalidatePath("/probetermin");
+
+  if (slot) {
+    await protokollieren({
+      art: "GELOESCHT",
+      bereich: "Termin",
+      betreff: `${slot.date.toLocaleDateString("de-DE")} um ${slot.startTime} Uhr`,
+      detail:
+        slot._count.bookings > 0
+          ? `mit ${slot._count.bookings} ${slot._count.bookings === 1 ? "Buchung" : "Buchungen"}`
+          : null,
+      studioId: slot.studioId,
+    });
+  }
 }
 
 const weekdayNames = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
@@ -88,8 +109,16 @@ export async function deleteSlotTemplate(id: string) {
   await verlangeStudioRecht(template?.studioId);
 
   await deleteUnbookedFutureSlotsForTemplate(id);
-  await prisma.slotTemplate.delete({ where: { id } });
+  const geloescht = await prisma.slotTemplate.delete({ where: { id } });
 
   revalidatePath("/admin/verfuegbarkeit");
   revalidatePath("/probetermin");
+
+  await protokollieren({
+    art: "GELOESCHT",
+    bereich: "Termin",
+    betreff: `Wiederkehrend: ${weekdayNames[geloescht.weekday]} ${geloescht.startTime} Uhr`,
+    detail: "samt der künftigen unbelegten Termine dieser Reihe",
+    studioId: geloescht.studioId,
+  });
 }
