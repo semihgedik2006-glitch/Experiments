@@ -1,12 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { MapPin, Phone, Mail, Clock, LocateFixed, CalendarCheck } from "lucide-react";
+import { MapPin, Phone, Clock, LocateFixed, CalendarCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { Reveal } from "@/components/ui/reveal";
-import { MapEmbed } from "@/components/map-embed";
-import { studioMapUrl } from "@/lib/studio-map";
 import {
   allStudiosLocatable,
   anyStudioLocatable,
@@ -24,6 +21,12 @@ export type StudioEntry = {
   postalCode: string;
   city: string;
   phone: string;
+  /**
+   * Bleibt im Typ, wird auf der Karte aber nicht mehr angezeigt: Neben
+   * Telefonnummer und Öffnungszeiten war sie die vierte Zeile und nahm
+   * Platz, ohne eine Frage zu beantworten. Auf der Standortseite steht
+   * sie weiterhin.
+   */
   email: string;
   mapEmbedUrl: string;
   openingHours: string;
@@ -159,94 +162,114 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
         </Container>
       )}
 
-      {ordered.map((studio, index) => (
-        <section
-          key={studio.id}
-          // Sprungziel für den Lageplan oben. scroll-mt hält die Überschrift
-          // frei von der stehenden Kopfzeile - sonst landet der Sprung
-          // dahinter und man sieht die Mitte des Abschnitts.
-          id={`studio-${studio.id}`}
-          className={`scroll-mt-20 py-24 ${index > 0 ? "border-t border-border" : ""} ${index % 2 === 1 ? "bg-surface" : ""}`}
-        >
-          <Container className="grid gap-10 md:grid-cols-2">
-            <Reveal className="overflow-hidden rounded-2xl border border-border">
-              <MapEmbed
-                src={studioMapUrl(studio)}
-                title={`${studio.name} auf Google Maps`}
-                className="h-96 w-full"
-              />
-            </Reveal>
+      {/* ------------------------------------------------------------------
+          Ein Raster statt vierzehn Bildschirmseiten.
 
-            <Reveal delay={0.15} className="card p-8">
-              <h2 className="flex flex-wrap items-center gap-3 text-xl font-semibold">
-                {studio.name}
-                {studio.id === nearestId && (
-                  <span className="rounded-full bg-lime px-2.5 py-0.5 text-[11px] font-semibold text-on-lime">
-                    Am nächsten
-                  </span>
-                )}
-              </h2>
+          Vorher bekam jeder Standort einen eigenen Abschnitt über die
+          volle Breite: links eine Karte, rechts die Adresse, 580 Pixel
+          hoch. Bei vierzehn Studios ergab das eine Seite von fast 10.000
+          Pixeln - und weil die Karte erst nach einem Klick lädt, stand
+          darin vierzehnmal derselbe Hinweistext über die Verbindung zu
+          Google. Wer den zum dritten Mal liest, hat aufgehört zu lesen.
 
-              <ul className="mt-6 space-y-5 text-sm">
-                <li className="flex items-start gap-3">
-                  <MapPin size={18} className="mt-0.5 shrink-0 text-accent" />
-                  <span>
-                    {studio.street}
-                    <br />
-                    {studio.postalCode} {studio.city}
-                    {distances[studio.id] !== undefined && (
-                      <span className="mt-1 block text-muted">
-                        rund {Math.round(distances[studio.id])} km Luftlinie von dir
+          Die Einzelkarte ist deshalb weg. Sie steht ohnehin auf der Seite
+          des jeweiligen Studios, einen Klick entfernt und dort in voller
+          Größe - und den Überblick über alle vierzehn gibt der Lageplan
+          oben auf dieser Seite, der schon interaktiv ist.
+
+          Geblieben ist alles, wonach hier gesucht wird: Name, Adresse,
+          Entfernung, Telefon, Öffnungszeiten und die freien Termine.
+          ------------------------------------------------------------------ */}
+      <section className="py-16 sm:py-20">
+        <Container>
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {ordered.map((studio) => (
+              <li
+                key={studio.id}
+                // Sprungziel für den Lageplan oben. scroll-mt hält die
+                // Karte frei von der stehenden Kopfzeile.
+                id={`studio-${studio.id}`}
+                className="scroll-mt-24"
+              >
+                <div
+                  className={`karte-hebt flex h-full flex-col rounded-2xl border bg-surface-raised p-6 ${
+                    studio.id === nearestId ? "border-lime" : "border-border"
+                  }`}
+                >
+                  <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+                    {studio.name}
+                    {studio.id === nearestId && (
+                      <span className="rounded-full bg-lime px-2.5 py-0.5 text-[11px] font-semibold text-on-lime">
+                        Am nächsten
                       </span>
                     )}
-                  </span>
-                </li>
-                {studio.phone && (
-                  <li className="flex items-start gap-3">
-                    <Phone size={18} className="mt-0.5 shrink-0 text-accent" />
-                    <a href={`tel:${studio.phone}`} className="hover:underline">
-                      {studio.phone}
-                    </a>
-                  </li>
-                )}
-                {studio.email && (
-                  <li className="flex items-start gap-3">
-                    <Mail size={18} className="mt-0.5 shrink-0 text-accent" />
-                    <a href={`mailto:${studio.email}`} className="hover:underline">
-                      {studio.email}
-                    </a>
-                  </li>
-                )}
-                <li className="flex items-start gap-3">
-                  <Clock size={18} className="mt-0.5 shrink-0 text-accent" />
-                  <span className="whitespace-pre-line">{studio.openingHours}</span>
-                </li>
-                {/* Die Zahl, die auf dieser Seite tatsächlich gesucht
-                    wird: Kann ich da diese Woche überhaupt hin? Sie stand
-                    bisher erst zwei Klicks weiter auf der Standortseite. */}
-                {studio.freieTermine !== null && (
-                  <li className="flex items-start gap-3">
-                    <CalendarCheck size={18} className="mt-0.5 shrink-0 text-accent" />
-                    <span>
-                      <strong className="font-semibold">{studio.freieTermine}</strong>{" "}
-                      {studio.freieTermine === 1 ? "freier Termin" : "freie Termine"} in den
-                      nächsten 7 Tagen
-                    </span>
-                  </li>
-                )}
-              </ul>
+                  </h2>
 
-              {/* Zur Standortseite statt zur allgemeinen Terminseite: Dort
-                  steht der Ort im Titel, die Anfahrt und nur die freien
-                  Zeiten dieses Studios - und die Anfrage kommt ohne weitere
-                  Auswahl beim richtigen Standort an. */}
-              <Button href={`/studio/${studio.slug}`} className="mt-8 w-full">
-                Studio {studio.city} ansehen
-              </Button>
-            </Reveal>
-          </Container>
-        </section>
-      ))}
+                  <ul className="mt-4 flex-1 space-y-3 text-sm">
+                    <li className="flex items-start gap-2.5">
+                      <MapPin size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
+                      <span>
+                        {studio.street}
+                        <br />
+                        {studio.postalCode} {studio.city}
+                        {distances[studio.id] !== undefined && (
+                          <span className="mt-0.5 block text-muted">
+                            rund {Math.round(distances[studio.id])} km Luftlinie von dir
+                          </span>
+                        )}
+                      </span>
+                    </li>
+
+                    {studio.phone && (
+                      <li className="flex items-start gap-2.5">
+                        <Phone size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
+                        <a href={`tel:${studio.phone}`} className="hover:underline">
+                          {studio.phone}
+                        </a>
+                      </li>
+                    )}
+
+                    <li className="flex items-start gap-2.5">
+                      <Clock size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
+                      <span className="whitespace-pre-line text-muted">
+                        {studio.openingHours}
+                      </span>
+                    </li>
+
+                    {/* Die Zahl, die auf dieser Seite tatsächlich gesucht
+                        wird: Kann ich da diese Woche überhaupt hin? */}
+                    {studio.freieTermine !== null && (
+                      <li className="flex items-start gap-2.5">
+                        <CalendarCheck size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
+                        <span>
+                          <strong className="font-semibold">{studio.freieTermine}</strong>{" "}
+                          {studio.freieTermine === 1 ? "freier Termin" : "freie Termine"} in
+                          den nächsten 7 Tagen
+                        </span>
+                      </li>
+                    )}
+                  </ul>
+
+                  {/* Zur Standortseite statt zur allgemeinen Terminseite:
+                      Dort steht der Ort im Titel, die Anfahrt, die Karte
+                      und nur die freien Zeiten dieses Studios - und die
+                      Anfrage kommt ohne weitere Auswahl beim richtigen
+                      Standort an. */}
+                  {/* Nicht "Studio {city} ansehen": Sechs der vierzehn
+                      Standorte liegen in Köln, damit stünde sechsmal
+                      derselbe Knopf im Raster und man wüsste nicht, wohin
+                      welcher führt. Der Name steht in der Überschrift
+                      darüber - der Knopf muss nur sagen, was dahinter
+                      kommt. */}
+                  <Button href={`/studio/${studio.slug}`} className="mt-6 w-full">
+                    Details &amp; Anfahrt
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
     </>
   );
 }

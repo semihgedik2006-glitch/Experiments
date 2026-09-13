@@ -2,12 +2,14 @@ import type { MetadataRoute } from "next";
 import { getPublishedPosts, getStudios } from "@/lib/data";
 import { siteConfig } from "@/lib/site-config";
 import { getToggles } from "@/lib/site-toggles";
+import { erfolgeVorhanden } from "@/lib/kundenstimmen";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, toggles, studios] = await Promise.all([
+  const [posts, toggles, studios, erfolge] = await Promise.all([
     getPublishedPosts(),
     getToggles(),
     getStudios(),
+    erfolgeVorhanden(),
   ]);
 
   // Ausgeblendete Bereiche gehören nicht in die Sitemap - sonst meldet die
@@ -17,7 +19,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/ems-training",
     ...(toggles.studio ? ["/studio"] : []),
     ...(toggles.preise ? ["/preise"] : []),
-    ...(toggles.erfolgsgeschichten ? ["/erfolgsgeschichten"] : []),
+    // Nur wenn die Seite auch Inhalt hat - sonst meldet die Sitemap
+    // Google eine Adresse, die mit 404 antwortet.
+    ...(toggles.erfolgsgeschichten && erfolge ? ["/erfolgsgeschichten"] : []),
     ...(toggles["ueber-uns"] ? ["/ueber-uns"] : []),
     "/probetermin",
     // Der Einstieg in den eigenen Terminbereich. Nur das Formular - die

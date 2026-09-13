@@ -27,7 +27,10 @@ import { darfErscheinen, EINWILLIGUNG_FORMEN, GRENZEN } from "@/lib/verwandlung"
 
 function erneuern() {
   revalidatePath("/admin/verwandlungen");
-  revalidatePath("/erfolgsgeschichten");
+  // Wie bei den Kundenstimmen der ganze Rahmen: Das erste freigegebene
+  // Bildpaar lässt "Erfolge" im Menü wieder auftauchen, und das Menü
+  // steht im Layout.
+  revalidatePath("/", "layout");
 }
 
 function feld(formData: FormData, name: keyof typeof GRENZEN): string {

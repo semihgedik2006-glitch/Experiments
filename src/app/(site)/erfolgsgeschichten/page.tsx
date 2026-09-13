@@ -6,7 +6,7 @@ import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
-import { anfangsbuchstabe, stimmenHolen } from "@/lib/kundenstimmen";
+import { anfangsbuchstabe, erfolgeVorhanden, stimmenHolen } from "@/lib/kundenstimmen";
 import { VerwandlungenWand } from "@/components/verwandlungen-wand";
 
 export const metadata: Metadata = {
@@ -22,6 +22,12 @@ export default async function ErfolgsgeschichtenPage() {
   // Im Adminbereich ausgeblendet: Die Seite bleibt bestehen, ist aber
   // nicht mehr erreichbar.
   if (!(await isVisible("erfolgsgeschichten"))) return notFound();
+
+  // Und: nicht erreichbar, solange es nichts zu zeigen gibt. Die Seite
+  // kündigt in ihrem Kopf an, was Mitglieder sagen - ohne eine einzige
+  // Stimme wäre das ein Versprechen an leere Fläche. Sobald die erste
+  // echte Stimme freigegeben ist, ist sie von selbst wieder da.
+  if (!(await erfolgeVorhanden())) return notFound();
 
   const stimmen = await stimmenHolen();
 

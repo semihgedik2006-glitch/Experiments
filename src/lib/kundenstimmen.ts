@@ -38,3 +38,33 @@ export async function stimmenHolen(grenze?: number): Promise<Stimme[]> {
 export function anfangsbuchstabe(name: string): string {
   return name.trim().charAt(0).toLocaleUpperCase("de") || "?";
 }
+
+/**
+ * Hat die Seite "Erfolgsgeschichten" überhaupt etwas zu zeigen?
+ *
+ * Der Anlass: Nachdem die erfundenen Zitate entfernt waren, bestand die
+ * Seite nur noch aus ihrer eigenen Überschrift - "Das sagen sie über ihr
+ * Training bei Körperformen", und darunter nichts. Sie stand trotzdem im
+ * Menü. Eine Seite, die im Kopf Inhalt ankündigt und keinen hat, ist
+ * schlechter als keine Seite.
+ *
+ * Deshalb entscheidet der Inhalt: Solange weder eine freigegebene
+ * Kundenstimme noch ein freigegebenes Bildpaar vorliegt, verschwindet
+ * der Eintrag aus dem Menü und die Adresse antwortet mit 404. Sobald das
+ * Studio die erste echte Stimme einträgt, ist die Seite von selbst
+ * wieder da - niemand muss dafür einen Schalter umlegen.
+ */
+export async function erfolgeVorhanden(): Promise<boolean> {
+  try {
+    const [stimmen, bilder] = await Promise.all([
+      prisma.kundenstimme.count({ where: { aktiv: true } }),
+      prisma.verwandlung.count({ where: { aktiv: true } }),
+    ]);
+    return stimmen + bilder > 0;
+  } catch (error) {
+    // Im Zweifel sichtbar lassen: Ein Ausfall der Abfrage soll keine
+    // Seite aus dem Menü nehmen, die eigentlich Inhalt hat.
+    console.error("Erfolgsgeschichten konnten nicht geprüft werden:", error);
+    return true;
+  }
+}

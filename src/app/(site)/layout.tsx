@@ -4,6 +4,7 @@ import { CursorGlow } from "@/components/cursor-glow";
 import { Lesefortschritt } from "@/components/ui/lesefortschritt";
 import { mainNav } from "@/lib/site-config";
 import { getToggles } from "@/lib/site-toggles";
+import { erfolgeVorhanden } from "@/lib/kundenstimmen";
 import { getStudios } from "@/lib/data";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -12,8 +13,14 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   // Ausgeblendete Bereiche verschwinden aus dem Menü - oben wie unten.
   // Einträge ohne eigenen Schalter (Startseite, EMS-Training, Kontakt)
   // bleiben immer sichtbar.
+  // Die Erfolgsseite hängt zusätzlich am Inhalt: Ohne freigegebene
+  // Kundenstimme und ohne Bildpaar besteht sie nur aus ihrer eigenen
+  // Ankündigung. Siehe erfolgeVorhanden().
+  const zeigeErfolge = toggles.erfolgsgeschichten && (await erfolgeVorhanden());
+
   const nav = mainNav.filter((item) => {
     const key = item.href.replace(/^\//, "");
+    if (key === "erfolgsgeschichten") return zeigeErfolge;
     return !(key in toggles) || toggles[key as keyof typeof toggles];
   });
 

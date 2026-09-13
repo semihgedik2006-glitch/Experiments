@@ -17,9 +17,12 @@ import { protokollieren } from "@/lib/protokoll";
 
 function erneuern() {
   revalidatePath("/admin/kundenstimmen");
-  revalidatePath("/erfolgsgeschichten");
-  // Die drei ersten Stimmen stehen auch auf der Startseite.
-  revalidatePath("/");
+  // Nicht nur die beiden Seiten, sondern der ganze Rahmen: Die erste
+  // freigegebene Stimme lässt "Erfolge" im Menü wieder auftauchen (siehe
+  // erfolgeVorhanden), und das Menü steht im Layout - also auf jeder
+  // Seite. Ohne "layout" stünde der Eintrag auf der Startseite wieder da
+  // und auf allen anderen Seiten weiterhin nicht.
+  revalidatePath("/", "layout");
 }
 
 const GRENZEN = { name: 60, text: 600, ziel: 60, einwilligungNotiz: 200 } as const;

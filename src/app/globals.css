@@ -332,9 +332,12 @@ h3,
     hsl(calc(var(--thumb-hue) + 18) 34% 76%)
   );
 }
-.post-thumb-letter {
-  color: hsl(var(--thumb-hue) 45% 30%);
-  opacity: 0.25;
+/* Der Impuls im Kartenkopf. Kein Text, sondern das Markenzeichen -
+   deshalb darf er zurückhaltend bleiben; er soll die Fläche füllen und
+   nicht mit dem Titel darunter konkurrieren. */
+.post-thumb-impuls {
+  stroke: hsl(var(--thumb-hue) 45% 30%);
+  opacity: 0.28;
 }
 
 .dark .post-thumb,
@@ -345,10 +348,10 @@ h3,
     hsl(calc(var(--thumb-hue) + 18) 24% 13%)
   );
 }
-.dark .post-thumb-letter,
-.on-ink .post-thumb-letter {
-  color: hsl(var(--thumb-hue) 45% 72%);
-  opacity: 0.22;
+.dark .post-thumb-impuls,
+.on-ink .post-thumb-impuls {
+  stroke: hsl(var(--thumb-hue) 45% 72%);
+  opacity: 0.3;
 }
 
 /* Ersatz für ein fehlendes Trainerfoto: Anfangsbuchstaben auf einer
