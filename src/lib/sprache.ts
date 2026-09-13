@@ -62,6 +62,15 @@ type Woerterbuch = {
   codePlatzhalter: string;
   absenden: string;
   absendenLaeuft: string;
+  /**
+   * Die drei Sätze unter dem Absendeknopf.
+   *
+   * Sie stehen anderswo auf der Seite längst - nur nicht dort, wo
+   * entschieden wird. Wer den Knopf vor sich hat, hat genau drei Fragen
+   * offen: Kostet das was, binde ich mich, was passiert als Nächstes.
+   * Alle drei sind Zusagen über uns, keine Behauptungen über Wirkung.
+   */
+  zusagen: readonly string[];
   gesendet: string;
   /* --- Standortwahl -------------------------------------------------- */
   studioWaehlen: string;
@@ -123,6 +132,11 @@ const de: Woerterbuch = {
   codePlatzhalter: "z.B. SOMMER26",
   absenden: "Probetermin anfragen",
   absendenLaeuft: "Wird gesendet...",
+  zusagen: [
+    "Kostenlos und unverbindlich",
+    "Keine Mitgliedschaft, keine Kündigungsfrist",
+    "Wir melden uns zur Bestätigung",
+  ],
   gesendet: "Anfrage gesendet!",
 
   studioWaehlen: "In welchem Studio?",
@@ -206,6 +220,11 @@ const en: Woerterbuch = {
   codePlatzhalter: "e.g. SOMMER26",
   absenden: "Request a trial session",
   absendenLaeuft: "Sending...",
+  zusagen: [
+    "Free, no strings attached",
+    "No membership, no notice period",
+    "We call you back to confirm",
+  ],
   gesendet: "Request sent!",
 
   studioWaehlen: "Which studio?",

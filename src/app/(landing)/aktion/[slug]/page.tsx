@@ -6,6 +6,7 @@ import { ImpulsMotiv } from "@/components/ui/impuls-motiv";
 import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { TrustBar } from "@/components/trust-bar";
+import { BeweisLeiste } from "@/components/beweis-leiste";
 import { getStudios, getSlotsMitBelegung } from "@/lib/data";
 import { getCampaign, getCampaignSlugs } from "@/lib/campaigns";
 import { tageJeStudio } from "@/lib/termin-tage";
@@ -85,6 +86,13 @@ export default async function CampaignPage({ params }: Props) {
               </li>
             ))}
           </ul>
+
+          {/* Die Aufzählung darüber sagt, was das Training bringt. Hier
+              steht, ob und wann man überhaupt hinkommt - die Frage, die
+              zwischen "klingt gut" und "ich trag mich ein" steht. Diese
+              Seite kostet Geld pro Klick; sie ist die letzte, auf der
+              eine Antwort darauf fehlen sollte. */}
+          <BeweisLeiste className="hero-anim mt-10 max-w-xl" />
         </Container>
       </section>
 

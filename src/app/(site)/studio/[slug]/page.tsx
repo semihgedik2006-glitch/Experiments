@@ -20,6 +20,7 @@ import { MapEmbed } from "@/components/map-embed";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { StandortJsonLd } from "@/components/structured-data";
 import { WhatsappKnopf } from "@/components/whatsapp-knopf";
+import { BeweisLeiste } from "@/components/beweis-leiste";
 
 /**
  * Eine eigene Seite je Standort.
@@ -157,7 +158,7 @@ export default async function StudioDetailSeite({
         }
         intro={
           studio.intro?.trim() ||
-          `Dein Körperformen-Studio in ${studio.city}: 20 Minuten Training pro Woche, immer zu zweit mit einem Trainer. Der erste Termin ist kostenlos und unverbindlich.`
+          `Dein Körperformen-Studio in ${studio.city}: 20 Minuten Training pro Woche, dabei steht die ganze Zeit ein Trainer neben dir. Der erste Termin ist kostenlos und unverbindlich.`
         }
       >
         <div className="mt-8 flex flex-wrap gap-3">
@@ -178,6 +179,12 @@ export default async function StudioDetailSeite({
             />
           )}
         </div>
+
+        {/* Was HIER frei ist, nicht irgendwo. Diese vierzehn Seiten sind
+            die Anlaufstelle für die örtliche Suche ("EMS Hürth") - und
+            die einzige Frage, die dabei offen bleibt, ist die nach einem
+            Termin in erreichbarer Nähe. */}
+        <BeweisLeiste studioId={studio.id} className="mt-8 max-w-xl" />
       </PageHeader>
 
       {/* Karte und Eckdaten */}

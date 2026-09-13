@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { BookingFlow } from "@/components/booking/booking-flow";
+import { BeweisLeiste } from "@/components/beweis-leiste";
 import { LottieBox } from "@/components/lottie-box";
 import { TrustBar } from "@/components/trust-bar";
 import { getStudios, getSlotsMitBelegung } from "@/lib/data";
@@ -41,6 +42,11 @@ export default async function ProbeterminPage() {
 
       <section className="py-16 sm:py-20 md:py-24">
         <Container className="max-w-2xl">
+          {/* Über dem Formular und nicht darunter: Wer hier ankommt, hat
+              sich schon entschieden hinzusehen - jetzt zählt, dass diese
+              Woche tatsächlich etwas frei ist. */}
+          <BeweisLeiste className="mb-10" />
+
           <Reveal>
             <BookingFlow studios={studios} slotsByStudio={slotsByStudio} />
           </Reveal>

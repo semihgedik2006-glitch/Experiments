@@ -2,7 +2,7 @@
 
 import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { CheckCircle2 } from "lucide-react";
+import { Check, CheckCircle2 } from "lucide-react";
 import { createBooking } from "@/lib/actions/booking";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
 import { ZIELE } from "@/lib/ziel";
@@ -447,6 +447,20 @@ export function BookingForm({
       >
         {pending ? t.absendenLaeuft : t.absenden}
       </button>
+
+      {/* Die drei Fragen, die jemand unmittelbar vor dem Klick noch hat.
+          Sie standen bisher weiter unten auf der Seite - hinter einer
+          Animation, also unterhalb des Punktes, an dem entschieden wird.
+          Dieses Formular steht auf vier Seiten; der Zusatz wirkt damit
+          überall, auch auf den Kampagnen- und Standortseiten. */}
+      <ul className="flex flex-wrap justify-center gap-x-5 gap-y-1.5 text-xs text-muted">
+        {t.zusagen.map((zusage) => (
+          <li key={zusage} className="flex items-center gap-1.5">
+            <Check size={12} className="shrink-0 text-accent" aria-hidden />
+            {zusage}
+          </li>
+        ))}
+      </ul>
     </form>
   );
 }
