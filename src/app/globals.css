@@ -323,6 +323,65 @@ h3,
   display: block;
 }
 
+/* ---------------------------------------------------------------------------
+   Lesbare Zeilenlänge.
+
+   Gemessen auf einem 1360 Pixel breiten Bildschirm: Die Antworten in den
+   häufigen Fragen liefen über 158 Zeichen je Zeile, der Fließtext eines
+   Blogbeitrags über 147, die Hinweise unter den Formularfeldern über
+   184. Lesbar sind 45 bis 85 - darüber findet das Auge beim Zeilenwechsel
+   den Anfang der nächsten Zeile nicht mehr zuverlässig und springt in
+   dieselbe Zeile zurück.
+
+   Die Breiten standen nirgends falsch, sie standen nur nirgends: Ein
+   Absatz ohne Begrenzung nimmt, was sein Behälter hergibt, und der ist
+   auf einer breiten Seite eben breit.
+
+   68ch statt einer Pixelzahl, damit die Grenze bei größerer Schrift
+   mitwächst - wer die Schrift im Browser hochstellt, bekommt sonst
+   wieder zu lange Zeilen.
+   --------------------------------------------------------------------------- */
+.lesebreite {
+  max-width: 68ch;
+}
+
+/* ---------------------------------------------------------------------------
+   Tastfläche vergrößern, ohne das Aussehen zu ändern.
+
+   Gemessen auf einem 390 Pixel breiten Gerät: Der Menüknopf war 22 x 22
+   Pixel, die runden Symbolknöpfe (Suche, Thema, die drei sozialen Netze
+   im Fuß) 36 x 36, die Rechtslinks im Fußbereich 16 Pixel hoch. WCAG
+   2.5.8 verlangt mindestens 24 x 24, als brauchbar gilt 44 x 44 - so
+   groß ist eine Daumenkuppe.
+
+   Die sichtbaren Kreise zu vergrößern hätte die Kopfzeile umgebaut.
+   Stattdessen legt sich hier eine unsichtbare Fläche von mindestens 44
+   Pixeln mittig über das Element. Das Aussehen bleibt Pixel für Pixel
+   gleich, nur der Daumen trifft.
+
+   Voraussetzung: Das Element braucht position: relative - sonst richtet
+   sich die Fläche am nächsten positionierten Vorfahren aus.
+
+   Was die Fläche nicht kann: Zwei Schaltflächen direkt untereinander
+   können sich nicht beide vergrößern - sie würden sich überlappen, und
+   der Browser gibt den Treffer dem Element, das später im Dokument
+   steht. In der Fußzeilen-Navigation bringt sie deshalb nichts; dort
+   sorgt echte Polsterung für die Höhe. Alleinstehende Schaltflächen
+   (Menü, Suche, Thema, die runden Symbole) gewinnen den vollen Betrag.
+   --------------------------------------------------------------------------- */
+.tastflaeche {
+  position: relative;
+}
+.tastflaeche::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+}
+
 /* Kartenkopf für Blogbeiträge ohne Titelbild. Der Farbton kommt als
    --thumb-hue aus dem Beitrag, alles Weitere entscheidet die Ansicht. */
 .post-thumb {

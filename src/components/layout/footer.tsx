@@ -36,7 +36,7 @@ export async function Footer({
                 target="_blank"
                 rel="noreferrer"
                 aria-label={label}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-border transition-colors hover:border-lime hover:text-accent"
+                className="tastflaeche flex h-9 w-9 items-center justify-center rounded-full border border-border transition-colors hover:border-lime hover:text-accent"
               >
                 <Icon size={16} />
               </a>
@@ -46,10 +46,23 @@ export async function Footer({
 
         <div>
           <p className="text-sm font-semibold">Navigation</p>
-          <ul className="mt-4 space-y-2">
+          {/* space-y-0 statt space-y-2: Der Abstand steckt jetzt in den
+              Verweisen selbst (py-1.5), nicht zwischen ihnen - jeder ist
+              dadurch 32 statt 17 Pixel hoch antippbar, optisch ändert
+              sich nichts.
+              Gemessen, nicht vermutet: 32 und nicht 44. Untereinander
+              stehende Verweise können sich nicht gegenseitig überlappen -
+              die unsichtbare Fläche aus .tastflaeche endet dort, wo der
+              nächste Verweis beginnt. 44 gäbe es nur mit echtem Abstand,
+              und der zöge die Fußzeile deutlich in die Länge. 32 liegt
+              über dem Mindestmaß von 24 aus WCAG 2.5.8. */}
+          <ul className="mt-3 space-y-0">
             {nav.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="text-sm text-muted hover:text-foreground">
+                <Link
+                  href={item.href}
+                  className="tastflaeche block py-1.5 text-sm text-muted hover:text-foreground"
+                >
                   {item.label}
                 </Link>
               </li>
@@ -60,7 +73,7 @@ export async function Footer({
             <li className="pt-2">
               <Link
                 href="/meine-termine"
-                className="text-sm text-muted hover:text-foreground"
+                className="tastflaeche block py-1.5 text-sm text-muted hover:text-foreground"
               >
                 Meine Termine
               </Link>
@@ -87,7 +100,7 @@ export async function Footer({
               <Phone size={15} className="mt-0.5 shrink-0 text-accent" />
               <a
                 href={`tel:${(studio?.phone ?? siteConfig.contact.phone).replace(/\s/g, "")}`}
-                className="hover:text-foreground"
+                className="tastflaeche -my-1 py-1 hover:text-foreground"
               >
                 {studio?.phone || siteConfig.contact.phone}
               </a>
@@ -96,7 +109,7 @@ export async function Footer({
               <Mail size={15} className="mt-0.5 shrink-0 text-accent" />
               <a
                 href={`mailto:${studio?.email || siteConfig.contact.email}`}
-                className="hover:text-foreground"
+                className="tastflaeche -my-1 py-1 hover:text-foreground"
               >
                 {studio?.email || siteConfig.contact.email}
               </a>
@@ -110,7 +123,7 @@ export async function Footer({
           </ul>
 
           {studios.length > 1 && (
-            <Link href="/studio" className="mt-4 inline-block text-sm text-accent hover:underline">
+            <Link href="/studio" className="tastflaeche mt-4 inline-block text-sm text-accent hover:underline">
               + {studios.length - 1} weitere{studios.length - 1 === 1 ? "r" : ""} Standort
               {studios.length - 1 === 1 ? "" : "e"}
             </Link>
@@ -133,14 +146,19 @@ export async function Footer({
           <p>
             © {new Date().getFullYear()} {siteConfig.name}. Alle Rechte vorbehalten.
           </p>
-          <nav aria-label="Rechtliches" className="flex gap-5">
-            <Link href="/impressum" className="hover:text-foreground">
+          {/* -my-2 gleicht das py-2 wieder aus: Die Zeile bleibt optisch
+              genauso hoch wie vorher, die drei Verweise sind aber 16
+              statt 32 Pixel hoch antippbar. Sie stehen in einem <nav>,
+              sind also Navigation und nicht Teil eines Satzes - für die
+              gilt das Mindestmaß aus WCAG 2.5.8. */}
+          <nav aria-label="Rechtliches" className="-my-2 flex gap-5">
+            <Link href="/impressum" className="tastflaeche py-2 hover:text-foreground">
               Impressum
             </Link>
-            <Link href="/datenschutz" className="hover:text-foreground">
+            <Link href="/datenschutz" className="tastflaeche py-2 hover:text-foreground">
               Datenschutz
             </Link>
-            <Link href="/agb" className="hover:text-foreground">
+            <Link href="/agb" className="tastflaeche py-2 hover:text-foreground">
               AGB
             </Link>
           </nav>

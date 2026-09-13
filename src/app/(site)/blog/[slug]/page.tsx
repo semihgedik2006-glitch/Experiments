@@ -96,7 +96,7 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         )}
 
-        <div className="prose prose-invert mt-10 max-w-none space-y-5 text-[15px] leading-7 text-foreground/90">
+        <div className="prose prose-invert lesebreite mt-10 max-w-none space-y-5 text-[15px] leading-7 text-foreground/90">
           {post.content.split("\n").filter(Boolean).map((paragraph, i) => (
             <p key={i}>{paragraph}</p>
           ))}

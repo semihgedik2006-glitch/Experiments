@@ -269,7 +269,15 @@ export function KalenderWoche({
 
   return (
     <>
-      <div className="admin-panel hidden overflow-x-auto p-0 md:block">
+      {/* Anwählbar per Tastatur: Die Tabelle ist breiter als der Kasten und
+          muss seitlich geschoben werden. Ohne tabIndex erreicht man die
+          rechten Spalten nur mit der Maus. */}
+      <div
+        tabIndex={0}
+        role="region"
+        aria-label="Belegung je Standort und Tag"
+        className="admin-panel hidden overflow-x-auto p-0 md:block"
+      >
         <table className="w-full text-sm">
           <caption className="sr-only">
             Belegte Plätze je Standort und Tag. Die Zahlen bedeuten belegte von
@@ -439,7 +447,12 @@ export function KalenderMonat({
   for (let i = 0; i < tage.length; i += 7) wochen.push(tage.slice(i, i + 7));
 
   return (
-    <div className="admin-panel overflow-x-auto p-0">
+    <div
+      tabIndex={0}
+      role="region"
+      aria-label="Monatsübersicht"
+      className="admin-panel overflow-x-auto p-0"
+    >
       <table className="w-full table-fixed text-sm">
         <caption className="sr-only">
           Der Monat {monat.toLocaleDateString("de-DE", { month: "long", year: "numeric" })}. Je

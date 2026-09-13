@@ -182,7 +182,11 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
             href="https://www.openstreetmap.org/copyright"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline underline-offset-2 hover:text-foreground"
+            // -my-1 py-1: Der Verweis war 18 Pixel hoch und blieb damit
+            // unter dem Mindestmaß von 24 aus WCAG 2.5.8. Das negative
+            // Außenmaß nimmt die Polsterung optisch wieder zurück - die
+            // Zeile unter der Karte bleibt genauso schmal wie vorher.
+            className="-my-1 py-1 underline underline-offset-2 hover:text-foreground"
           >
             Lizenz
           </a>

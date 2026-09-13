@@ -173,7 +173,7 @@ export function Faq({ items }: { items: FaqEntry[] }) {
                         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         className="overflow-hidden"
                       >
-                        <p className="pb-5 text-sm text-muted">{item.answer}</p>
+                        <p className="lesebreite pb-5 text-sm text-muted">{item.answer}</p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -200,14 +200,14 @@ export function Faq({ items }: { items: FaqEntry[] }) {
             <div className="mt-5 flex flex-wrap justify-center gap-3">
               <a
                 href="/kontakt"
-                className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime transition-opacity hover:opacity-90"
+                className="rounded-full bg-lime px-5 py-2.5 text-sm font-semibold text-on-lime transition-opacity hover:opacity-90"
               >
                 Frage stellen
               </a>
               <button
                 type="button"
                 onClick={() => setSuche("")}
-                className="rounded-full border border-border px-5 py-2 text-sm font-semibold transition-colors hover:border-lime"
+                className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold transition-colors hover:border-lime"
               >
                 Alle Fragen zeigen
               </button>

@@ -152,7 +152,18 @@ export default function EmsTrainingPage() {
             </p>
           </Reveal>
 
-          <Reveal className="overflow-x-auto">
+          {/* tabIndex am scrollbaren Kasten: Die Tabelle ist breiter als ein
+              Handy-Bildschirm und muss seitlich geschoben werden. Mit der
+              Maus geht das per Wischen - mit der Tastatur nur, wenn der
+              Kasten selbst anwählbar ist. Ohne das kam man an die dritte
+              Spalte ohne Maus nicht heran. */}
+          <Reveal>
+            <div
+              tabIndex={0}
+              role="region"
+              aria-label="Vergleich EMS und klassisches Studio"
+              className="overflow-x-auto rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
             <table className="w-full min-w-[560px] border-collapse text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
@@ -181,6 +192,7 @@ export default function EmsTrainingPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </Reveal>
         </Container>
       </section>

@@ -96,7 +96,7 @@ export default async function BlogPage({
                   <Link
                     href="/blog"
                     aria-current={gewaehlt ? undefined : "page"}
-                    className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                    className={`rounded-full border px-4 py-2.5 text-sm transition-colors ${
                       gewaehlt
                         ? "border-border hover:border-lime"
                         : "border-lime bg-lime text-on-lime"
@@ -111,7 +111,7 @@ export default async function BlogPage({
                         key={thema.name}
                         href={`/blog?thema=${encodeURIComponent(thema.name)}`}
                         aria-current={aktiv ? "page" : undefined}
-                        className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                        className={`rounded-full border px-4 py-2.5 text-sm transition-colors ${
                           aktiv
                             ? "border-lime bg-lime text-on-lime"
                             : "border-border hover:border-lime"
@@ -141,7 +141,7 @@ export default async function BlogPage({
                   </p>
                   <Link
                     href="/blog"
-                    className="mt-4 inline-block rounded-full border border-border px-5 py-2 text-sm font-semibold transition-colors hover:border-lime"
+                    className="mt-4 inline-block rounded-full border border-border px-5 py-2.5 text-sm font-semibold transition-colors hover:border-lime"
                   >
                     Alle Beiträge zeigen
                   </Link>

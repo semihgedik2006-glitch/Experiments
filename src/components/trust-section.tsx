@@ -72,7 +72,7 @@ export async function TrustSection() {
           </div>
         )}
 
-        <p className="mt-12 text-center text-sm text-muted">
+        <p className="lesebreite mx-auto mt-12 text-center text-sm text-muted">
           Fragen zum Kleingedruckten?{" "}
           <Link href="/agb" className="text-accent underline underline-offset-2">
             Unsere AGB

@@ -148,7 +148,7 @@ export function BookingForm({
         {days.length > 0 ? (
           <>
             <div>
-              <p className="mb-3 text-xs text-muted">
+              <p className="lesebreite mb-3 text-xs text-muted">
                 {sprache === "de"
                   ? "Such dir einen Tag aus - oder lass die Auswahl leer und schreib unten, wann du kannst."
                   : "Pick a day - or leave it empty and tell us below when you can make it."}
@@ -162,7 +162,7 @@ export function BookingForm({
                       setSelectedDay(selectedDay === day.dateKey ? "" : day.dateKey);
                       setSelectedSlotId(null);
                     }}
-                    className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                    className={`rounded-full border px-4 py-2.5 text-sm transition-colors ${
                       selectedDay === day.dateKey
                         ? "border-lime bg-lime text-on-lime"
                         : "border-border hover:border-lime"
@@ -176,7 +176,7 @@ export function BookingForm({
 
             {activeDay && (
               <div>
-                <p className="mb-3 text-xs text-muted">{t.uhrzeitAm(activeDay.dateLabel)}</p>
+                <p className="lesebreite mb-3 text-xs text-muted">{t.uhrzeitAm(activeDay.dateLabel)}</p>
                 <div className="flex flex-wrap gap-2">
                   {activeDay.slots.map((slot) => {
                     // Belegte Zeiten verschwinden nicht mehr, sondern sind
@@ -191,7 +191,7 @@ export function BookingForm({
                         type="button"
                         onClick={() => setSelectedSlotId(gewaehlt ? null : slot.id)}
                         aria-pressed={gewaehlt}
-                        className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                        className={`rounded-full border px-4 py-2.5 text-sm transition-colors ${
                           gewaehlt
                             ? "border-lime bg-lime text-on-lime"
                             : reicht
@@ -351,7 +351,7 @@ export function BookingForm({
                   onChange={aendern("ziel")}
                   className="peer sr-only"
                 />
-                <span className="block rounded-full border border-border px-4 py-2 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-lime">
+                <span className="block rounded-full border border-border px-4 py-2.5 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-lime">
                   {zielLabel(sprache, option.wert)}
                 </span>
               </label>
@@ -373,7 +373,7 @@ export function BookingForm({
         <legend className="text-sm font-semibold">
           {days.length > 0 ? t.wannErreichbarNummeriert : t.wannErreichbar}
         </legend>
-        <p className="mt-1.5 text-xs text-muted">
+        <p className="lesebreite mt-1.5 text-xs text-muted">
           {sprache === "de"
             ? "Wir rufen dich zur Bestätigung an. Sag uns, wann es dir passt - dann landen wir nicht dreimal auf der Mailbox."
             : "We call you to confirm. Tell us when that works, so we do not end up on your voicemail three times."}
@@ -390,7 +390,7 @@ export function BookingForm({
                 onChange={aendern("erreichbarkeit")}
                 className="peer sr-only"
               />
-              <span className="block rounded-full border border-border px-4 py-2 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-lime">
+              <span className="block rounded-full border border-border px-4 py-2.5 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-lime">
                 {erreichbarkeitLabel(sprache, option.wert)}
                 {/* Die Spanne kommt aus dem Wörterbuch und nicht aus den
                     Daten: Im Deutschen steht dort "8 - 12 Uhr", im

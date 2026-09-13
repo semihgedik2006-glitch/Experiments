@@ -173,7 +173,7 @@ export default async function PreisePage() {
           </Stagger>
 
           <Reveal delay={0.1} className="mt-12 card p-8">
-            <p className="text-sm leading-relaxed text-muted">
+            <p className="lesebreite text-sm leading-relaxed text-muted">
               <strong className="text-foreground">Was wir dir zusichern:</strong> Beim
               Probetermin bekommst du ein konkretes Angebot mit allen Zahlen schriftlich -
               ohne Kleingedrucktes, ohne versteckte Zusatzkosten und ohne
