@@ -12,6 +12,7 @@ import {
 } from "motion/react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
+import { MehrDazu, Herkunft } from "@/components/ui/mehr-dazu";
 import type { Kennzahl } from "@/lib/beweise";
 
 // Hier stand als erste Zahl eine hochzählende "90 %" für die
@@ -102,14 +103,18 @@ export function StatsStrip({ zahlen }: { zahlen: Kennzahl[] }) {
         }}
       />
       <Container className="relative">
-        <Reveal className="mx-auto max-w-xl text-center">
+        <Reveal className="mx-auto max-w-2xl text-center">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
             Warum EMS
           </span>
-          <p className="mt-4 text-lg leading-relaxed text-muted">
-            Keine Zahlen aus Prospekten - das hier steht gerade so in unserem
-            Terminkalender.
-          </p>
+          {/* Hier stand ein Satz darüber, woher die Zahlen kommen. Das ist
+              eine Auskunft über die Website, keine Ansage an den, der sie
+              liest - sie steht jetzt im Aufklapper unter den Zahlen. */}
+          <h2 className="mt-4 font-display text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+            Ein Termin die Woche.
+            <br className="hidden sm:block" />{" "}
+            <span className="text-accent">Den Plan macht dein Trainer.</span>
+          </h2>
         </Reveal>
 
         {/* Trennlinien nur ab sm: untereinander wirken sie wie abgehackte
@@ -119,17 +124,53 @@ export function StatsStrip({ zahlen }: { zahlen: Kennzahl[] }) {
             leere Spalte - und die sieht aus wie ein Fehler. */}
         <Reveal
           delay={0.1}
-          className={`mt-14 grid gap-12 text-center sm:gap-0 sm:divide-x sm:divide-border ${
+          className={`mt-12 grid gap-12 text-center sm:gap-0 sm:divide-x sm:divide-border ${
             zahlen.length >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"
           }`}
         >
           {zahlen.map((zahl) => (
             <div key={zahl.label} className="sm:px-6">
-              <Counter value={Number(zahl.wert)} suffix={zahl.einheit ?? ""} />
+              {zahl.statisch ? (
+                <span className="font-display text-5xl font-black text-accent md:text-6xl">
+                  {zahl.wert}
+                  {zahl.einheit && (
+                    <span className="text-2xl md:text-3xl">{zahl.einheit}</span>
+                  )}
+                </span>
+              ) : (
+                <Counter value={Number(zahl.wert)} suffix={zahl.einheit ?? ""} />
+              )}
               <p className="mx-auto mt-3 max-w-[230px] text-sm text-muted">{zahl.label}</p>
             </div>
           ))}
         </Reveal>
+
+        {/* Kein Reveal um diesen Block: Die Einblendung hängt daran, dass
+            jemand hierher scrollt. Wer direkt hier landet - über einen
+            Sprungverweis oder weil der Browser die Position wiederhergestellt
+            hat -, sah einen halb durchsichtigen Kasten. Ein Bedienelement
+            darf nicht davon abhängen, wie man auf die Seite gekommen ist. */}
+        <div className="mt-12 flex justify-center">
+          <MehrDazu titel="Woher diese Zahlen kommen" ton="dunkel" zentriert>
+            <dl className="space-y-3">
+              <Herkunft begriff="20 Minuten pro Woche">
+                Die Dauer einer Einheit. Im Kalender ist ein Termin mit 30 Minuten
+                angelegt &ndash; darin enthalten sind Ankommen, Anlegen der Weste
+                und die Nachbesprechung.
+              </Herkunft>
+              <Herkunft begriff="Studios">
+                Die Standorte, die im Adminbereich geführt werden. Kommt einer
+                dazu, steht er hier am selben Tag.
+              </Herkunft>
+              <Herkunft begriff="Freie Termine">
+                Die Summe der freien Plätze aller Standorte in den kommenden
+                sieben Tagen &ndash; angelegte Plätze abzüglich der bereits
+                vergebenen. Ist nichts frei, steht hier stattdessen die Spanne
+                der Trainingszeiten.
+              </Herkunft>
+            </dl>
+          </MehrDazu>
+        </div>
       </Container>
     </section>
   );

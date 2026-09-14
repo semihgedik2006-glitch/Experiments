@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
+import { MehrDazu } from "@/components/ui/mehr-dazu";
 import { FaqSection } from "@/components/faq-section";
 import { DirekterKontakt } from "@/components/direkter-kontakt";
 import { TarifVergleich, type TarifAnzeige } from "@/components/preise/tarif-vergleich";
@@ -154,7 +155,11 @@ export default async function PreisePage() {
           <SectionHeader
             kicker="Transparenz"
             title="Warum hier keine Preisliste steht"
-            intro="Eine ehrliche Antwort: Weil eine Zahl ohne Zusammenhang wenig aussagt. Wer einmal pro Woche trainiert, zahlt nicht dasselbe wie jemand mit zwei Einheiten und Ernährungsberatung."
+            // Vorher: "Eine ehrliche Antwort: Weil eine Zahl ohne
+            // Zusammenhang wenig aussagt." Wer einen Satz mit "ehrlich
+            // gesagt" beginnt, lenkt von der Aussage ab. Die vier Karten
+            // darunter beantworten die Frage bereits.
+            intro="Vier Dinge entscheiden über den Beitrag."
             className="mb-14"
           />
 
@@ -172,13 +177,38 @@ export default async function PreisePage() {
             ))}
           </Stagger>
 
+          {/* Aus einem Absatz wurden drei Zusagen. Derselbe Inhalt, aber
+              lesbar, ohne ihn zu lesen - und was dahinter steckt, steht
+              eine Ebene tiefer für die, die es wissen wollen. */}
           <Reveal delay={0.1} className="mt-12 card p-8">
-            <p className="lesebreite text-sm leading-relaxed text-muted">
-              <strong className="text-foreground">Was wir dir zusichern:</strong> Beim
-              Probetermin bekommst du ein konkretes Angebot mit allen Zahlen schriftlich -
-              ohne Kleingedrucktes, ohne versteckte Zusatzkosten und ohne
-              Entscheidungsdruck an Ort und Stelle. Du nimmst es mit und überlegst in Ruhe.
-            </p>
+            <p className="text-sm font-semibold">Das Angebot bekommst du schriftlich</p>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+              {[
+                "Alle Zahlen auf Papier",
+                "Keine versteckten Zusatzkosten",
+                "Keine Entscheidung vor Ort",
+              ].map((zusage) => (
+                <li key={zusage} className="flex items-start gap-2.5 text-sm">
+                  <Check size={16} className="mt-0.5 shrink-0 text-accent" />
+                  {zusage}
+                </li>
+              ))}
+            </ul>
+            {/* Bewusst nichts Neues: Der Aufklapper sagt dasselbe wie der
+                Absatz, der vorher hier stand - nur ausführlicher. Eine
+                zusätzliche Zusage an dieser Stelle wäre eine Zusage, die
+                das Studio nie gegeben hat. */}
+            <MehrDazu titel="Was heißt das genau?" className="mt-5">
+              <p>
+                Am Ende des Probetermins bekommst du dein Angebot schriftlich mit &ndash;
+                mit allen Zahlen, ohne Kleingedrucktes und ohne Posten, über die vorher
+                nicht gesprochen wurde.
+              </p>
+              <p>
+                Entschieden wird nicht an Ort und Stelle. Du nimmst das Angebot mit und
+                überlegst in Ruhe.
+              </p>
+            </MehrDazu>
           </Reveal>
         </Container>
       </section>

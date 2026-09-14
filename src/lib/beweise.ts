@@ -138,43 +138,59 @@ export async function beweiseHolen(): Promise<Beweise> {
 }
 
 /**
- * Die Zahlen für das Band auf der Startseite.
+ * Die drei Zahlen für das Band auf der Startseite.
  *
- * Gibt nur zurück, was tatsächlich vorliegt. Bleiben weniger als drei
- * übrig, entscheidet der Aufrufer, ob sich der Abschnitt noch lohnt -
- * zwei Zahlen sind eine Aussage, eine einzelne ist eine Behauptung.
+ * Drei und nicht "so viele wie gerade da sind": Zwei Zahlen nebeneinander
+ * sehen aus, als wäre die dritte ausgefallen. Deshalb steht hinter jeder
+ * Stelle eine Reihe von Kandidaten, und genommen wird der erste, der
+ * tatsächlich vorliegt - erst die stärkste Angabe, dann die nächstbeste.
+ * Erfunden wird dabei nichts: Jeder Kandidat ist entweder eine Abfrage
+ * oder das Angebot selbst.
  */
-export type Kennzahl = { wert: string; einheit?: string; label: string };
+export type Kennzahl = {
+  wert: string;
+  einheit?: string;
+  label: string;
+  /** Nicht hochzählen - für Werte, die keine Menge sind (z.B. "7-21"). */
+  statisch?: boolean;
+};
 
 export function kennzahlen(b: Beweise): Kennzahl[] {
-  const liste: Kennzahl[] = [];
-
-  // Die einzige Zahl hier, die nicht aus einer Abfrage kommt - sie ist
-  // auch keine Messung, sondern das Angebot selbst: einmal pro Woche.
-  liste.push({
-    wert: "1",
-    einheit: "x",
-    label: "pro Woche, 20 Minuten, immer persönlich betreut",
-  });
+  // Keine Abfrage, sondern das Angebot selbst - und die Zahl, wegen der
+  // die meisten überhaupt hier sind.
+  const liste: Kennzahl[] = [
+    { wert: "20", label: "Minuten Training pro Woche" },
+  ];
 
   if (b.standorte > 0) {
-    liste.push({
-      wert: String(b.standorte),
-      label:
-        b.orte > 1
-          ? `Studios in ${b.orte} Orten rund um Köln`
-          : "Studios rund um Köln",
-    });
+    liste.push({ wert: String(b.standorte), label: "Studios rund um Köln" });
   }
 
+  // Die dritte Stelle: die lebendigste Angabe zuerst.
   if (b.freieTermine7Tage) {
     liste.push({
       wert: String(b.freieTermine7Tage),
       label: "freie Termine in den nächsten sieben Tagen",
     });
+  } else if (b.frueheste && b.spaeteste) {
+    liste.push({
+      wert: `${ohneNull(b.frueheste)}–${ohneNull(b.spaeteste)}`,
+      einheit: " Uhr",
+      label: "Trainingszeiten an den Standorten",
+      statisch: true,
+    });
+  } else if (b.orte > 1) {
+    liste.push({ wert: String(b.orte), label: "Orte rund um Köln" });
   }
 
-  return liste;
+  return liste.slice(0, 3);
+}
+
+/** "07:00" zu "7" - im Band steht die Uhrzeit, nicht der Fahrplan. */
+function ohneNull(zeit: string): string {
+  const [stunden, minuten] = zeit.split(":");
+  const h = String(Number(stunden));
+  return minuten === "00" ? h : `${h}:${minuten}`;
 }
 
 /**

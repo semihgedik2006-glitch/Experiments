@@ -114,7 +114,11 @@ export default function EmsTrainingPage() {
       <PageHeader
         kicker="EMS verstehen"
         title={<>EMS-Training <span className="text-accent">erklärt</span></>}
-        intro="Elektro-Muskel-Stimulation klingt nach Science-Fiction, ist aber seit Jahrzehnten in Physiotherapie und Leistungssport bewährt. Hier erfährst du, wie es funktioniert, wie eine Einheit abläuft und ob es zu dir passt."
+        // Der zweite Satz war ein Inhaltsverzeichnis in Prosa ("Hier
+        // erfährst du, wie es funktioniert, wie eine Einheit abläuft und
+        // ob es zu dir passt") - genau das steht in den Überschriften
+        // darunter, nur kürzer.
+        intro="Seit Jahrzehnten in Physiotherapie und Leistungssport im Einsatz - und seit einigen Jahren als Training für alle, die wenig Zeit haben."
       />
 
       <section className="py-20 sm:py-24 md:py-32">

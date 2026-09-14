@@ -34,7 +34,12 @@ export async function TrustSection() {
         <SectionHeader
           kicker="Ohne Kleingedrucktes"
           title="Worauf du dich verlassen kannst"
-          intro="Wir arbeiten mit Menschen, die schon einmal enttäuscht wurden - von Verträgen, die sich nicht kündigen ließen, oder von Studios, in denen niemand hinsah. Deshalb schreiben wir hier auf, was bei uns gilt."
+          // Hier stand ein Absatz darüber, warum dieser Abschnitt
+          // existiert ("Wir arbeiten mit Menschen, die schon einmal
+          // enttäuscht wurden ... deshalb schreiben wir hier auf ..."). Was
+          // gilt, steht in den vier Karten darunter - der Absatz davor hat
+          // es nur angekündigt.
+          intro="Vier Zusagen, die ohne Sternchen auskommen."
           className="mb-16"
         />
 
@@ -72,16 +77,22 @@ export async function TrustSection() {
           </div>
         )}
 
-        <p className="lesebreite mx-auto mt-12 text-center text-sm text-muted">
-          Fragen zum Kleingedruckten?{" "}
-          <Link href="/agb" className="text-accent underline underline-offset-2">
-            Unsere AGB
-          </Link>{" "}
-          und die{" "}
-          <Link href="/datenschutz" className="text-accent underline underline-offset-2">
+        {/* Zwei Verweise statt eines Satzes darum herum. Wer das
+            Kleingedruckte lesen will, sucht den Weg dorthin - keine
+            Einladung, ihn zu suchen. */}
+        <p className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+          <Link
+            href="/agb"
+            className="tastflaeche text-accent underline underline-offset-4 hover:text-foreground"
+          >
+            AGB
+          </Link>
+          <Link
+            href="/datenschutz"
+            className="tastflaeche text-accent underline underline-offset-4 hover:text-foreground"
+          >
             Datenschutzerklärung
-          </Link>{" "}
-          kannst du jederzeit nachlesen.
+          </Link>
         </p>
       </Container>
     </section>
