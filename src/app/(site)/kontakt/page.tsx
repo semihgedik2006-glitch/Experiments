@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { ContactForm } from "@/components/contact-form";
+import { LottieBox } from "@/components/lottie-box";
 import { getStudios } from "@/lib/data";
 import { isVisible } from "@/lib/site-toggles";
 import { siteConfig } from "@/lib/site-config";
@@ -85,7 +86,19 @@ export default async function KontaktPage() {
               wir auch gern zurück.
             </p>
 
-            <div className="mt-8 space-y-3">
+            {/* Die Datei lag seit Beginn im Projekt und wurde nirgends
+                verwendet - ausgerechnet die, die "contact" heißt. Sie steht
+                hier neben den Kontaktwegen und nicht über dem Formular:
+                Oben wäre sie das größte Element der Seite und bestimmte
+                damit die gemessene Ladezeit. Geladen wird sie ohnehin erst,
+                wenn sie ins Bild kommt und der Browser Luft hat. */}
+            <LottieBox
+              src="/lottie/contact.json"
+              ratio="800 / 600"
+              className="mt-8 w-full max-w-[260px]"
+            />
+
+            <div className="mt-4 space-y-3">
               {wege.map((weg) => (
                 <a
                   key={weg.label}

@@ -1062,6 +1062,130 @@ summary::-webkit-details-marker {
   background-color: var(--surface);
 }
 
+/* ---------------------------------------------------------------------------
+   Die Illustrationen einzelner Momente (impuls-szene.tsx).
+
+   Dieselben Bewegungen wie beim Motiv der Startseite, nur langsamer: Ein
+   Bild, das neben einem Formular steht, wird angesehen und nicht
+   überflogen - dort wirkt dasselbe Tempo hektisch.
+--------------------------------------------------------------------------- */
+.szene-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: szene-drehen 48s linear infinite;
+}
+@keyframes szene-drehen {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.szene-punkt,
+.szene-welle {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.szene-punkt {
+  animation: figur-leuchten 6.5s ease-in-out infinite;
+  animation-delay: var(--takt, 0s);
+}
+.szene-welle {
+  opacity: 0;
+  animation: szene-ausbreiten 6.5s ease-out infinite;
+  animation-delay: var(--takt, 0s);
+}
+@keyframes szene-ausbreiten {
+  0% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  30%,
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+/* Das Ziel des Impulses. Anders als .szene-punkt geht die Deckkraft nie
+   unter 0.75 - der Punkt markiert eine Stelle und darf nicht verschwinden,
+   nur weil man gerade im falschen Moment hinsieht. */
+.szene-ziel {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: szene-atmen 6.5s ease-in-out infinite;
+}
+@keyframes szene-atmen {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+/* Der Impuls läuft in den Umschlag: ein Strichmuster, das durchwandert. */
+.szene-impuls {
+  stroke-dasharray: 26 120;
+  animation: szene-laufen 5.5s ease-in-out infinite;
+}
+@keyframes szene-laufen {
+  0% {
+    stroke-dashoffset: 146;
+    opacity: 0;
+  }
+  12%,
+  62% {
+    opacity: 1;
+  }
+  75%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+/* Der Haken wird gezeichnet. 84 ist die ungefähre Pfadlänge. */
+.szene-haken {
+  stroke-dasharray: 84;
+  stroke-dashoffset: 84;
+  animation: szene-zeichnen 6.5s ease-out infinite;
+}
+@keyframes szene-zeichnen {
+  0% {
+    stroke-dashoffset: 84;
+  }
+  18%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Ohne Bewegung bleibt ein fertiges, ruhiges Bild stehen - nicht ein
+     halb gezeichneter Haken. */
+  .szene-ring,
+  .szene-punkt,
+  .szene-ziel,
+  .szene-impuls {
+    animation: none;
+  }
+  .szene-welle {
+    animation: none;
+    opacity: 0;
+  }
+  .szene-impuls {
+    stroke-dasharray: none;
+    opacity: 1;
+  }
+  .szene-haken {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

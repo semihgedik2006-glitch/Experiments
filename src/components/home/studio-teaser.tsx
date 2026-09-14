@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { MapEmbed } from "@/components/map-embed";
 import { ImpulsStreu } from "@/components/ui/impuls-streu";
+import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import { studioMapUrl } from "@/lib/studio-map";
 import { getStudios } from "@/lib/data";
 
@@ -77,18 +78,29 @@ export async function StudioTeaser() {
     <section className="relative overflow-hidden py-20 sm:py-24 md:py-32">
       <ImpulsStreu anordnung="rand" />
       <Container className="relative">
-        <Reveal className="mb-14 max-w-2xl">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-            Standorte
-          </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            {studios.length} Studios in deiner Nähe
-          </h2>
-          <p className="mt-4 text-muted">
-            Modern ausgestattet, zentral gelegen - such dir den Standort aus,
-            der am besten in deinen Alltag passt.
-          </p>
-        </Reveal>
+        {/* Das Bild steht neben der Überschrift und nicht darüber: Rechts
+            war bisher leer, und die Zahl "14 Studios" ist genau das, was
+            das Netz aus Knoten zeigt. Bewusst kein Lageplan - die echte
+            Karte steht auf der Standortseite, und ein Sinnbild soll nicht
+            so tun, als wären es die richtigen Koordinaten. */}
+        <div className="mb-14 grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+          <Reveal className="max-w-2xl">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              Standorte
+            </span>
+            <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+              {studios.length} Studios in deiner Nähe
+            </h2>
+            <p className="mt-4 text-muted">
+              Modern ausgestattet, zentral gelegen - such dir den Standort aus,
+              der am besten in deinen Alltag passt.
+            </p>
+          </Reveal>
+          <ImpulsSzene
+            name="netz"
+            className="mx-auto hidden w-full max-w-[220px] md:block"
+          />
+        </div>
 
         <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {gezeigt.map((studio) => (

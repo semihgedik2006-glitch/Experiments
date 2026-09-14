@@ -4,6 +4,7 @@ import { CalendarClock, KeyRound, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
 import { ZugangAnfordern } from "@/components/termin/zugang-anfordern";
+import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import { GUELTIG_MINUTEN } from "@/lib/kundenbereich";
 
 export const metadata: Metadata = {
@@ -40,7 +41,17 @@ export default function MeineTerminePage() {
       />
 
       <Container className="pb-24">
-        <ZugangAnfordern />
+        {/* Diese Seite trägt bewusst kein Motiv im Kopf (ohneMotiv oben) -
+            sie bestand dadurch aus einem Eingabefeld auf leerer Fläche.
+            Das Bild steht neben dem Feld und erzählt genau das, was gleich
+            passiert: Der Impuls läuft in einen Umschlag. */}
+        <div className="grid items-center gap-8 md:grid-cols-[1fr_auto]">
+          <ZugangAnfordern />
+          <ImpulsSzene
+            name="postfach"
+            className="mx-auto hidden w-full max-w-[240px] md:block"
+          />
+        </div>
 
         <div className="mt-16 grid max-w-4xl gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-border bg-surface p-5">

@@ -2,7 +2,8 @@
 
 import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Check, CheckCircle2 } from "lucide-react";
+import { Check } from "lucide-react";
+import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import { createBooking } from "@/lib/actions/booking";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
 import { ZIELE } from "@/lib/ziel";
@@ -114,15 +115,13 @@ export function BookingForm({
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="rounded-2xl border border-lime bg-surface p-10 text-center"
       >
-        <motion.div
-          initial={{ scale: 0, rotate: -30 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 18, delay: 0.15 }}
-          className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-lime/15 text-accent"
-        >
-          <CheckCircle2 size={30} />
-        </motion.div>
-        <h3 className="mt-5 text-xl font-semibold text-accent">{t.gesendet}</h3>
+        {/* Vorher stand hier ein Symbol in einem Kreis, 56 Pixel groß.
+            Das ist der Moment, auf den die ganze Seite hinarbeitet - der
+            einzige, an dem jemand etwas abgeschickt hat und kurz wartet,
+            ob es geklappt hat. Dafür ist ein Bild angemessen, das den
+            Haken zeichnet, statt ihn hinzustellen. */}
+        <ImpulsSzene name="bestaetigt" className="mx-auto w-full max-w-[180px]" />
+        <h3 className="mt-2 text-xl font-semibold text-accent">{t.gesendet}</h3>
         <p className="mt-3 text-muted">{state.message}</p>
       </motion.div>
     );
