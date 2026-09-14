@@ -26,7 +26,15 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
   // Nur zeigen, wenn die Studio-Seite sichtbar ist und es etwas zu wählen
   // gibt - bei einem einzigen Standort führt der Knopf ins Leere.
-  const studios = toggles.studio ? await getStudios() : [];
+  //
+  // Der try/catch ist nicht kosmetisch: Ein Layout liegt über jeder Seite,
+  // und error.tsx fängt ausdrücklich nicht das Layout neben sich ab.
+  // Wirft diese eine Abfrage, ist damit die komplette Seite weg - statt
+  // nur des Knopfes, für den die Zahl gebraucht wird. Nachgestellt, indem
+  // die Datenbank angehalten wurde: Vorher lieferten /blog, die Seite mit
+  // den eigenen Terminen und alle vierzehn Standortseiten eine weiße
+  // Seite ohne ein Wort Text.
+  const studios = toggles.studio ? await getStudios().catch(() => []) : [];
   const studioLabel = studios.length > 1 ? `${studios.length} Studios` : undefined;
 
   return (

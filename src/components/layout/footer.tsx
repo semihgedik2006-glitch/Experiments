@@ -19,7 +19,12 @@ export async function Footer({
   nav: { label: string; href: string }[];
   showNewsletter: boolean;
 }) {
-  const studios = await getStudios();
+  // Wie im Layout: Die Fußzeile steht auf jeder Seite. Wirft diese
+  // Abfrage, ist nicht die Fußzeile weg, sondern die ganze Seite - und
+  // zwar auch die schöne Fehlerseite, denn error.tsx fängt das Layout
+  // neben sich nicht ab. Ohne Standorte bleiben die Angaben aus
+  // site-config stehen; das ist weniger, aber es steht.
+  const studios = await getStudios().catch(() => []);
   const studio = studios[0];
 
   return (
