@@ -29,6 +29,7 @@ import {
   FileText,
   Images,
   Quote,
+  Globe,
 } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/social-icons";
 import type { SymbolTyp } from "@/components/admin/ui";
@@ -90,6 +91,7 @@ const groups: NavGroup[] = [
       { href: "/admin/trainer", label: "Trainer", icon: UserRound },
       { href: "/admin/sichtbarkeit", label: "Sichtbarkeit", icon: Eye, nurLeitung: true },
       { href: "/admin/sicherung", label: "Datensicherung", icon: DatabaseBackup, nurLeitung: true },
+      { href: "/admin/adresse", label: "Adresse & Auffindbarkeit", icon: Globe, nurLeitung: true },
       { href: "/admin/team", label: "Zugänge", icon: Users, nurLeitung: true },
       // Ohne nurLeitung: Das eigene Passwort ändert jeder selbst.
       { href: "/admin/konto", label: "Mein Zugang", icon: UserCog },

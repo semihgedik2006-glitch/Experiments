@@ -1,3 +1,5 @@
+import { basisadresseErmitteln } from "@/lib/basisadresse";
+
 /**
  * Basisadresse der Website.
  *
@@ -10,31 +12,19 @@
  * Zentrale umleitet, würde jede Seite Google dorthin schicken - unsere
  * Inhalte würden also der Zentrale zugerechnet.
  *
- * Deshalb ist die Adresse umschaltbar:
- *   1. NEXT_PUBLIC_SITE_URL, falls gesetzt - das ist der Schalter. In Vercel
- *      unter Settings -> Environment Variables eintragen: solange die eigene
- *      Domain noch nicht auf das Projekt zeigt, die *.vercel.app-Adresse;
- *      zur Veröffentlichung dann die richtige Domain.
- *   2. Sonst die Produktionsadresse, die Vercel selbst kennt.
- *   3. Sonst die vorgesehene Domain - der Zustand nach der Umstellung.
+ * Ermittlung, Prüfung und Begründung stehen in @/lib/basisadresse - dort
+ * steht auch, warum ein falsch eingetragener Wert die Seite nicht mehr
+ * umwirft und warum VERCEL_URL nicht mehr verwendet wird.
+ * Im Adminbereich unter „Adresse & Auffindbarkeit“ ist jederzeit zu
+ * sehen, welche Adresse gerade gilt und woher sie kommt.
  */
-function resolveSiteUrl(): string {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (explicit) return explicit.replace(/\/+$/, "");
-
-  const fromVercel =
-    process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
-  if (fromVercel) return `https://${fromVercel.replace(/\/+$/, "")}`;
-
-  return "https://www.ems-training.koeln";
-}
 
 export const siteConfig = {
   name: "Körperformen",
   tagline: "Der Vorreiter für gesundheitsorientiertes EMS Training",
   description:
     "Körperformen ist dein EMS-Studio für effektives Training in nur 20 Minuten pro Woche. Abnehmen, Muskeln aufbauen und Rückenschmerzen lindern - ohne Zeitaufwand im klassischen Fitnessstudio.",
-  url: resolveSiteUrl(),
+  url: basisadresseErmitteln().url,
   keywords: [
     "EMS",
     "EMS Training",
