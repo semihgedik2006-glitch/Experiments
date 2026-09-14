@@ -46,7 +46,9 @@ export default async function StudioPage() {
         }
         intro={
           studios.length > 1
-            ? "Wähle den Standort in deiner Nähe - alle Studios mit Adresse, Öffnungszeiten und Anfahrt."
+            // Was auf einer Standortkarte steht, muss man nicht aufzählen -
+            // Adresse, Öffnungszeiten und Anfahrt stehen ja sichtbar drauf.
+            ? "Alle Standorte auf einen Blick - such dir den aus, der in deinen Tag passt."
             : `Zentral in ${studios[0].city} gelegen - erreichbar aus Köln, Brühl und der gesamten Region.`
         }
       />

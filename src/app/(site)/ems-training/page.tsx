@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ABLAUF_EINHEIT, GEGENANZEIGEN } from "@/lib/ablauf";
 import {
   Zap,
   Clock,
@@ -71,42 +72,6 @@ const comparison = [
   { label: "Tiefenmuskulatur", ems: "wird direkt mitstimuliert", gym: "nur über spezielle Übungen" },
 ];
 
-const processSteps = [
-  {
-    step: "Check-in & Gesundheitscheck",
-    text: "Beim ersten Besuch klären wir deine Ziele und deinen Gesundheitszustand - damit das Training sicher zu dir passt.",
-    duration: "5 Min",
-  },
-  {
-    step: "Funktionswäsche & Weste anlegen",
-    text: "Du bekommst Funktionsunterwäsche von uns. Die Trainerin legt dir die EMS-Weste an und verbindet sie mit dem Impulsgerät.",
-    duration: "5 Min",
-  },
-  {
-    step: "Impulse einstellen",
-    text: "Jede Muskelgruppe wird einzeln angesteuert und individuell dosiert - du bestimmst mit, was sich gut anfühlt.",
-    duration: "3 Min",
-  },
-  {
-    step: "Das Training",
-    text: "Einfache Übungen wie Kniebeugen oder Ausfallschritte - die Impulse kommen zu jeder Bewegung dazu.",
-    duration: "20 Min",
-  },
-  {
-    step: "Cool-down & Feedback",
-    text: "Lockeres Ausklingen mit Entspannungsimpulsen, danach kurzes Feedback und Planung der nächsten Einheit.",
-    duration: "5 Min",
-  },
-];
-
-const contraindications = [
-  "Herzschrittmacher oder andere elektronische Implantate",
-  "Schwangerschaft",
-  "Akute Erkrankungen, Fieber oder Infekte",
-  "Epilepsie",
-  "Schwere neurologische Erkrankungen",
-  "Akute Thrombose",
-];
 
 export default function EmsTrainingPage() {
   return (
@@ -247,7 +212,7 @@ export default function EmsTrainingPage() {
           </Reveal>
 
           <div className="relative ml-3 border-l-2 border-border pl-8 md:ml-6">
-            {processSteps.map((item, index) => (
+            {ABLAUF_EINHEIT.map((item, index) => (
               <Reveal key={item.step} delay={index * 0.08} className="relative pb-10 last:pb-0">
                 <span className="absolute -left-[41px] flex h-6 w-6 items-center justify-center rounded-full border-2 border-lime bg-background text-[10px] font-bold text-accent md:-left-[41px]">
                   {index + 1}
@@ -281,7 +246,7 @@ export default function EmsTrainingPage() {
                   Fällen verzichten wir grundsätzlich auf EMS-Training:
                 </p>
                 <ul className="mt-4 space-y-2">
-                  {contraindications.map((item) => (
+                  {GEGENANZEIGEN.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-muted">
                       <XCircle size={15} className="mt-0.5 shrink-0 text-amber-500/70" />
                       {item}

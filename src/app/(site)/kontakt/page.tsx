@@ -71,7 +71,9 @@ export default async function KontaktPage() {
             Kontakt <span className="text-accent-strong">aufnehmen</span>
           </>
         }
-        intro="Fragen zu EMS-Training, unseren Preisen oder deinem Probetermin? Wir freuen uns auf deine Nachricht - und melden uns in der Regel am selben Werktag."
+        // "Wir freuen uns auf deine Nachricht" streicht sich selbst - der
+        // Halbsatz danach ist die eigentliche Auskunft und bleibt.
+        intro="Wir melden uns in der Regel am selben Werktag."
       />
 
       <section className="py-20 sm:py-24">
@@ -120,8 +122,7 @@ export default async function KontaktPage() {
                   : "Oder direkt ans Studio"}
               </h2>
               <p className="mt-3 text-muted">
-                Jeder Standort hat eine eigene Nummer. Wer schon weiß, wo er
-                trainieren möchte, ist dort am schnellsten richtig.
+                Jeder Standort hat eine eigene Nummer.
               </p>
             </Reveal>
 

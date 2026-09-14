@@ -7,6 +7,8 @@ import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
+import { MehrDazu } from "@/components/ui/mehr-dazu";
+import Link from "next/link";
 import { Zap, ShieldCheck, Target } from "lucide-react";
 import { TrainerBild } from "@/components/studio/trainer-bild";
 import { prisma } from "@/lib/prisma";
@@ -118,7 +120,9 @@ export default async function UeberUnsPage() {
       <PageHeader
         kicker="Wer wir sind"
         title={<>Über <span className="text-accent">Körperformen</span></>}
-        intro="Wir glauben, dass effektives Training nicht viel Zeit kosten muss. Mit EMS-Training bringen wir dich in nur 20 Minuten pro Woche deinem Ziel näher - egal ob Abnehmen, Muskelaufbau oder ein gesünderer Rücken."
+        // "Wir glauben, dass ..." - so fängt kein Satz an, der etwas sagt.
+        // Was folgte, war ohnehin die Aussage: 20 Minuten pro Woche.
+        intro="20 Minuten pro Woche, persönlich betreut - ob Abnehmen, Muskelaufbau oder ein gesünderer Rücken."
       >
         <p className="mt-6 max-w-2xl font-semibold text-accent">
           Körperformen - der Vorreiter für gesundheitsorientiertes EMS Training.
@@ -132,15 +136,36 @@ export default async function UeberUnsPage() {
         <ImpulsStreu anordnung="diagonal" />
         <Container className="relative">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Was ist EMS-Training?</h2>
+          {/* Der Absatz stand hier in voller Länge. Er ist richtig, aber
+              er beantwortet eine Frage, die auf dieser Seite niemand
+              stellt - wer sie stellt, ist auf /ems-training. Zwei Sätze
+              bleiben, der Rest steht eine Ebene tiefer. */}
           <p className="mt-4 max-w-2xl text-muted">
-            EMS steht für Elektro-Muskel-Stimulation. Während du klassische
-            Bewegungsübungen ausführst, aktivieren sanfte elektrische Impulse
-            über eine spezielle Trainingsweste zusätzlich deine
-            Muskulatur - viele Muskelgruppen gleichzeitig, auch tiefliegende
-            Schichten. Weil es ohne schwere Gewichte auskommt, ist die
-            Belastung für Gelenke und Wirbelsäule geringer als beim
-            Hanteltraining.
+            EMS steht für Elektro-Muskel-Stimulation: Sanfte Impulse aus einer
+            Trainingsweste aktivieren deine Muskulatur, während du einfache
+            Übungen machst.
           </p>
+          <MehrDazu titel="Wie das genau funktioniert" className="mt-4">
+            <p>
+              Die Impulse kommen zu deiner eigenen Bewegung dazu und erreichen
+              viele Muskelgruppen gleichzeitig &ndash; auch tiefliegende Schichten,
+              die sich mit klassischen Übungen nur schwer gezielt ansteuern lassen.
+            </p>
+            <p>
+              Weil das Training ohne schwere Gewichte auskommt, ist die Belastung
+              für Gelenke und Wirbelsäule geringer als beim Hanteltraining.
+            </p>
+            <p>
+              <Link
+                href="/ems-training"
+                className="text-accent underline underline-offset-4 hover:text-foreground"
+              >
+                Ausführlich auf der EMS-Seite
+              </Link>{" "}
+              &ndash; mit Ablauf einer Einheit und den Fällen, in denen wir auf EMS
+              verzichten.
+            </p>
+          </MehrDazu>
 
           <Stagger className="mt-14 grid gap-6 md:grid-cols-3">
             {values.map(({ icon: Icon, title, text }) => (
@@ -162,8 +187,7 @@ export default async function UeberUnsPage() {
         <Container>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Dein Team vor Ort</h2>
           <p className="mt-4 max-w-2xl text-muted">
-            Bei uns trainierst du nie anonym: Jede Einheit wird persönlich
-            begleitet - vom ersten Probetraining bis zum hundertsten Termin.
+            Jede Einheit wird persönlich begleitet &ndash; vom Probetraining an.
           </p>
 
           {/* Hier standen zwei Karten mit "Dein/e Trainer/in

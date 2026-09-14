@@ -72,7 +72,9 @@ export default async function BlogPage({
             Wissen rund um <span className="text-accent-strong">EMS</span>
           </>
         }
-        intro="Trainingstipps, Hintergründe und ehrliche Antworten auf die Fragen, die uns im Studio am häufigsten gestellt werden."
+        // "ehrliche Antworten" muss man nicht ankündigen - entweder der
+        // Beitrag ist es, oder die Ankündigung macht es nicht besser.
+        intro="Die Fragen, die uns im Studio am häufigsten gestellt werden."
       />
 
       <section className="relative overflow-hidden py-16 sm:py-20 md:py-24">
