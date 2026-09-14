@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { MehrDazu } from "@/components/ui/mehr-dazu";
+import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import Link from "next/link";
 import { Zap, ShieldCheck, Target } from "lucide-react";
 import { TrainerBild } from "@/components/studio/trainer-bild";
@@ -185,10 +186,18 @@ export default async function UeberUnsPage() {
 
       <section className="on-ink py-20 sm:py-24 md:py-32">
         <Container>
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Dein Team vor Ort</h2>
-          <p className="mt-4 max-w-2xl text-muted">
-            Jede Einheit wird persönlich begleitet &ndash; vom Probetraining an.
-          </p>
+          {/* Zwei Formen, von denen eine sich zur anderen neigt - keine
+              Gesichter, keine Finger. Was man nicht zeichnet, kann auch
+              nicht falsch aussehen. */}
+          <div className="grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Dein Team vor Ort</h2>
+              <p className="mt-4 max-w-2xl text-muted">
+                Jede Einheit wird persönlich begleitet &ndash; vom Probetraining an.
+              </p>
+            </div>
+            <ImpulsSzene name="zuZweit" className="mx-auto hidden w-full max-w-[220px] md:block" />
+          </div>
 
           {/* Hier standen zwei Karten mit "Dein/e Trainer/in
               (Platzhalter)" - auf der Seite, deren ganzes Argument die

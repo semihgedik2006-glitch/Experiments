@@ -9,6 +9,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { MehrDazu } from "@/components/ui/mehr-dazu";
+import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import { FaqSection } from "@/components/faq-section";
 import { DirekterKontakt } from "@/components/direkter-kontakt";
 import { TarifVergleich, type TarifAnzeige } from "@/components/preise/tarif-vergleich";
@@ -217,12 +218,16 @@ export default async function PreisePage() {
 
       <section className="on-ink py-20 sm:py-24 md:py-32">
         <Container>
-          <SectionHeader
-            kicker="Zum Vergleich"
-            title="Was dich EMS an Zeit kostet"
-            intro="Geld ist das eine - Zeit das andere. Genau hier liegt der Unterschied zum klassischen Fitnessstudio."
-            className="mb-14"
-          />
+          {/* Sieben Balken, einer davon ist die Einheit - das ist genau
+              die Aussage des Abschnitts, nur als Bild. */}
+          <div className="mb-14 grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+            <SectionHeader
+              kicker="Zum Vergleich"
+              title="Was dich EMS an Zeit kostet"
+              intro="Geld ist das eine - Zeit das andere. Genau hier liegt der Unterschied zum klassischen Fitnessstudio."
+            />
+            <ImpulsSzene name="woche" className="mx-auto hidden w-full max-w-[220px] md:block" />
+          </div>
 
           {/* Auf schmalen Bildschirmen gestapelt: eine Tabelle mit drei Spalten
               wäre dort entweder unlesbar klein oder seitlich abgeschnitten. */}

@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { ContactForm } from "@/components/contact-form";
 import { LottieBox } from "@/components/lottie-box";
+import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import { getStudios } from "@/lib/data";
 import { isVisible } from "@/lib/site-toggles";
 import { siteConfig } from "@/lib/site-config";
@@ -127,17 +128,26 @@ export default async function KontaktPage() {
       {/* Die Standorte als Raster statt als endlose Spalte. */}
       {studios.length > 0 && (
         <section className="border-t border-border bg-surface py-20 sm:py-24">
-          <Container>
-            <Reveal className="max-w-2xl">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                {studios.length > 1
-                  ? `Oder direkt an eines der ${studios.length} Studios`
-                  : "Oder direkt ans Studio"}
-              </h2>
-              <p className="mt-3 text-muted">
-                Jeder Standort hat eine eigene Nummer.
-              </p>
-            </Reveal>
+          {/* relative: Die Standort-Illustration liegt absolut in dieser
+              Fläche. Ohne das richtete sie sich am nächsten positionierten
+              Vorfahren aus - irgendwo weiter oben auf der Seite. */}
+          <Container className="relative">
+            {/* Erst absolut gesetzt - da lag die Nadel hinter der
+                Kopfzeile, die beim Scrollen stehen bleibt. Im Raster steht
+                sie da, wo sie hingehört. */}
+            <div className="grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+              <Reveal className="max-w-2xl">
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  {studios.length > 1
+                    ? `Oder direkt an eines der ${studios.length} Studios`
+                    : "Oder direkt ans Studio"}
+                </h2>
+                <p className="mt-3 text-muted">
+                  Jeder Standort hat eine eigene Nummer.
+                </p>
+              </Reveal>
+              <ImpulsSzene name="standort" className="mx-auto hidden w-full max-w-[190px] md:block" />
+            </div>
 
             <Stagger className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {studios.map((studio) => {

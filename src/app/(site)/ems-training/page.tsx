@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ABLAUF_EINHEIT, GEGENANZEIGEN } from "@/lib/ablauf";
+import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import {
   Zap,
   Clock,
@@ -87,7 +88,7 @@ export default function EmsTrainingPage() {
       />
 
       <section className="py-20 sm:py-24 md:py-32">
-        <Container>
+        <Container className="grid gap-10 md:grid-cols-[1fr_auto] md:items-center">
           <Reveal className="max-w-2xl">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">So funktioniert es</h2>
             <p className="mt-4 text-muted">
@@ -104,6 +105,10 @@ export default function EmsTrainingPage() {
               damit sich die Muskulatur erholen kann.
             </p>
           </Reveal>
+          {/* Das Impulsgerät neben der Erklärung, wie es arbeitet. Erst ab
+              mittlerer Breite: Auf dem Handy stünde es zwischen zwei
+              Absätzen und risse den Text auseinander. */}
+          <ImpulsSzene name="geraet" className="mx-auto hidden w-full max-w-[240px] md:block" />
         </Container>
       </section>
 
@@ -175,13 +180,21 @@ export default function EmsTrainingPage() {
       <section className="relative overflow-hidden py-20 sm:py-24 md:py-32">
         <ImpulsStreu anordnung="rand" />
         <Container className="relative">
-          <Reveal className="mb-12 max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Für wen ist EMS geeignet?</h2>
-            <p className="mt-4 text-muted">
-              Kurz: für fast alle, die effizient stärker, straffer oder
-              schmerzfreier werden wollen.
-            </p>
-          </Reveal>
+          {/* Die Wirbelsäule mit der tiefen Muskulatur daneben: Von den
+              sechs Gruppen darunter ist "Rücken-Geplagte" die, mit der die
+              meisten kommen.
+              Erst absolut gesetzt - da schnitten die Karten darunter sie
+              mittendurch. Im Raster kann das nicht passieren. */}
+          <div className="mb-12 grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+            <Reveal className="max-w-2xl">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Für wen ist EMS geeignet?</h2>
+              <p className="mt-4 text-muted">
+                Kurz: für fast alle, die effizient stärker, straffer oder
+                schmerzfreier werden wollen.
+              </p>
+            </Reveal>
+            <ImpulsSzene name="ruecken" className="mx-auto hidden w-full max-w-[200px] md:block" />
+          </div>
 
           <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {audiences.map(({ icon: Icon, title, text }) => (

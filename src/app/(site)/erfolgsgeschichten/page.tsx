@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { PageHeader } from "@/components/ui/page-header";
+import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { anfangsbuchstabe, erfolgeVorhanden, stimmenHolen } from "@/lib/kundenstimmen";
@@ -100,6 +101,7 @@ export default async function ErfolgsgeschichtenPage() {
       <section className="on-ink py-20 sm:py-24 md:py-32">
         <Container className="flex flex-col items-center text-center">
           <Reveal>
+            <ImpulsSzene name="fortschritt" className="mx-auto mb-6 w-full max-w-[180px]" />
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
               Schreib deine eigene Geschichte
             </h2>

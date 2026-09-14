@@ -1163,13 +1163,111 @@ summary::-webkit-details-marker {
   }
 }
 
+/* Derselbe Haken im Kalenderblatt, nur kürzer (Pfadlänge rund 20). Er
+   setzt später ein als der Kreis darunter - erst der Tag, dann die
+   Bestätigung. */
+.szene-haken-klein {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: szene-zeichnen-klein 6.5s ease-out infinite;
+}
+@keyframes szene-zeichnen-klein {
+  0%,
+  14% {
+    stroke-dashoffset: 20;
+  }
+  30%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Die sechs Tage ohne Training: Sie glimmen nur, der siebte ist der
+   Auftritt. Deshalb bleiben sie oberhalb von 0.25 - blinkende Striche
+   neben dem Hauptbalken würden vom Hauptbalken ablenken. */
+.szene-tag {
+  animation: szene-glimmen 6.5s ease-in-out infinite;
+  animation-delay: var(--takt, 0s);
+}
+@keyframes szene-glimmen {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* Der Trainingstag wächst einmal je Durchlauf von unten hoch. */
+.szene-balken {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: szene-wachsen 6.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+@keyframes szene-wachsen {
+  0% {
+    transform: scaleY(0.12);
+  }
+  22%,
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+/* Die drei Stufen beim Fortschritt - nacheinander, damit man sieht, dass
+   es eine Entwicklung ist und kein Diagramm. */
+.szene-stufe {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: szene-wachsen 6.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  animation-delay: var(--takt, 0s);
+}
+
+/* Die Linie über den Balken zeichnet sich, sobald die Balken stehen.
+   Pfadlänge rund 93. */
+.szene-linie {
+  stroke-dasharray: 93;
+  stroke-dashoffset: 93;
+  animation: szene-linie-ziehen 6.5s ease-out infinite;
+}
+@keyframes szene-linie-ziehen {
+  0%,
+  22% {
+    stroke-dashoffset: 93;
+  }
+  46%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Die Kartennadel wippt. Sehr wenig - eine Nadel, die hüpft, wirkt
+   zappelig; eine, die sich gar nicht rührt, wirkt aufgeklebt. */
+.szene-nadel {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: szene-wippen 6.5s ease-in-out infinite;
+}
+@keyframes szene-wippen {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-1.5deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* Ohne Bewegung bleibt ein fertiges, ruhiges Bild stehen - nicht ein
      halb gezeichneter Haken. */
   .szene-ring,
   .szene-punkt,
   .szene-ziel,
-  .szene-impuls {
+  .szene-tag,
+  .szene-impuls,
+  .szene-nadel {
     animation: none;
   }
   .szene-welle {
@@ -1180,9 +1278,19 @@ summary::-webkit-details-marker {
     stroke-dasharray: none;
     opacity: 1;
   }
-  .szene-haken {
+  /* Fertig gezeichnet, nicht halb: Ein Haken, der zur Hälfte dasteht,
+     sieht nach Fehler aus - und die Balken müssen ihre volle Höhe haben,
+     sonst stimmt die Aussage des Bildes nicht mehr. */
+  .szene-haken,
+  .szene-haken-klein,
+  .szene-linie {
     animation: none;
     stroke-dashoffset: 0;
+  }
+  .szene-balken,
+  .szene-stufe {
+    animation: none;
+    transform: none;
   }
 }
 
