@@ -1,7 +1,7 @@
 import { AlertTriangle, CheckCircle2, Mail, XCircle } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { verlangeLeitung } from "@/lib/admin-rechte";
-import { TEAM_EMAIL, versandAbsender, versandBereit } from "@/lib/email";
+import { TEAM_EMAIL, versandAbsender, versandBereit, versandNurTestadresse } from "@/lib/email";
 import { AdminPage, AdminSection, EmptyState, Panel, StatusBadge } from "@/components/admin/ui";
 import type { MailArt } from "@/generated/prisma/enums";
 
@@ -118,6 +118,7 @@ export default async function AdminMailsPage() {
   await verlangeLeitung();
 
   const bereit = versandBereit();
+  const nurTestadresse = versandNurTestadresse();
 
   const [eintraege, gescheitert, gesamt] = await Promise.all([
     prisma.mailLog.findMany({
@@ -137,11 +138,39 @@ export default async function AdminMailsPage() {
           Website nichts, und das darf man nicht erst unten im Protokoll
           entdecken. */}
       {bereit ? (
-        <div className="rounded-xl border border-lime/50 bg-lime/10 p-4 sm:p-5">
+        <div
+          className={`rounded-xl border p-4 sm:p-5 ${
+            nurTestadresse
+              ? "border-amber-500/50 bg-amber-500/10"
+              : "border-lime/50 bg-lime/10"
+          }`}
+        >
           <p className="flex items-center gap-2 font-semibold">
-            <CheckCircle2 size={17} className="text-accent" aria-hidden />
-            Der Versand ist eingerichtet
+            {nurTestadresse ? (
+              <AlertTriangle size={17} className="shrink-0 text-amber-600" aria-hidden />
+            ) : (
+              <CheckCircle2 size={17} className="shrink-0 text-accent" aria-hidden />
+            )}
+            {nurTestadresse
+              ? "Der Schlüssel ist da - der Absender fehlt noch"
+              : "Der Versand ist eingerichtet"}
           </p>
+
+          {/* Die unangenehmste Art von Fehler: Alles sieht eingerichtet
+              aus, und trotzdem bekommt kein einziger Kunde etwas. Über die
+              Testadresse von Resend gehen Mails nur an das eigene Konto,
+              alles andere weist der Anbieter ab. Ohne diesen Hinweis
+              stünde hier grün "eingerichtet". */}
+          {nurTestadresse && (
+            <p className="lesebreite mt-2 rounded-lg bg-background/60 p-3 text-sm">
+              Es läuft noch über die Testadresse von Resend. Darüber nimmt der
+              Anbieter <strong className="text-foreground">nur Mails an euer eigenes
+              Konto</strong> an &ndash; an Kunden geht nichts raus. Sobald eure Domain
+              bei Resend bestätigt ist, tragt in Vercel{" "}
+              <span className="font-mono">BOOKING_EMAIL_FROM</span> ein, zum Beispiel{" "}
+              <span className="font-mono">Körperformen &lt;termine@eure-domain.de&gt;</span>.
+            </p>
+          )}
           <p className="mt-2 text-sm text-muted">
             Absender: <strong className="text-foreground">{versandAbsender()}</strong>
             <br />

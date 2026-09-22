@@ -26,6 +26,22 @@ export function versandAbsender(): string {
 }
 
 /**
+ * Läuft der Versand noch über die Testadresse von Resend?
+ *
+ * Ohne BOOKING_EMAIL_FROM greift der Notnagel onboarding@resend.dev. Der
+ * Schlüssel ist dann hinterlegt, der Versand gilt als eingerichtet - und
+ * trotzdem kommt bei keinem einzigen Kunden etwas an: Über diese Adresse
+ * nimmt Resend nur Mails an das eigene Konto an, alles andere weist es
+ * ab.
+ *
+ * Das ist die unangenehmste Art von Fehler, weil alles funktioniert
+ * aussieht. Deshalb wird er im Adminbereich benannt.
+ */
+export function versandNurTestadresse(): boolean {
+  return resend !== null && FROM.includes("resend.dev");
+}
+
+/**
  * Ein Versand, eine Stelle.
  *
  * Vorher rief jede Funktion resend selbst auf, und wenn nichts ankam, gab
