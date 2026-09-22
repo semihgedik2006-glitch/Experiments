@@ -1,10 +1,20 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { notizSpeichern, updateBookingStatus } from "@/lib/actions/admin-bookings";
 import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
-import { CalendarCheck, Download, PhoneCall, SearchX, Ticket, Users } from "lucide-react";
+import {
+  CalendarCheck,
+  Download,
+  MailCheck,
+  MailWarning,
+  PhoneCall,
+  SearchX,
+  Ticket,
+  Users,
+} from "lucide-react";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { zielText } from "@/lib/ziel";
 import { AdminPage, EmptyState, StatusBadge, adminInput } from "@/components/admin/ui";
@@ -101,6 +111,15 @@ export default async function AdminBookingsPage({
           : "Keine offene Anfrage."
       }
     >
+      {/* Gemessen, nicht vermutet: Bei dreizehn von vierzehn Standorten
+          stand keine E-Mail-Adresse in den Studiodaten. Die Anfragen gehen
+          dann alle an die Sammeladresse - der Standort selbst erfährt
+          nichts davon. Das fiel nirgends auf, weil ein leeres Feld eben
+          leer aussieht und nicht falsch.
+          Der Hinweis steht hier und nicht in der Studioverwaltung: Hier
+          sitzt der, den es betrifft. */}
+      <OhneMailHinweis studios={studios} istLeitung={admin.istLeitung} />
+
       <div className="space-y-3">
         <SearchBox platzhalter="Name, E-Mail, Telefon oder Nachricht" klasse="max-w-md" />
 
@@ -157,6 +176,30 @@ export default async function AdminBookingsPage({
                   )}
                   {studios.length > 1 && booking.studio && (
                     <span className="text-muted"> &middot; {booking.studio.name}</span>
+                  )}
+                </p>
+                {/* Ob die Mail ans Studio rausging.
+                    Der Merker wurde beim Absenden gesetzt, stand aber
+                    nirgends - man konnte also nicht sehen, ob jemand im
+                    Studio davon weiß oder ob diese Anfrage nur hier liegt.
+                    Genau das ist der Unterschied zwischen "zwei Wege" und
+                    "ein Weg und ein toter Merker in der Datenbank". */}
+                <p className="mt-1.5 flex items-center gap-1.5 text-xs">
+                  {booking.studioBenachrichtigtAm ? (
+                    <>
+                      <MailCheck size={13} className="shrink-0 text-accent" aria-hidden />
+                      <span className="text-muted">
+                        Studio per Mail benachrichtigt am{" "}
+                        {formatDate(booking.studioBenachrichtigtAm)}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <MailWarning size={13} className="shrink-0 text-amber-600" aria-hidden />
+                      <span className="text-muted">
+                        Keine Mail ans Studio rausgegangen &ndash; diese Anfrage steht nur hier.
+                      </span>
+                    </>
                   )}
                 </p>
                 {/* Zu zweit ist eine Angabe über Plätze, nicht über
@@ -344,5 +387,50 @@ export default async function AdminBookingsPage({
         </div>
       )}
     </AdminPage>
+  );
+}
+
+
+/**
+ * Warnung, wenn Standorte keine eigene E-Mail-Adresse haben.
+ *
+ * Ohne Adresse geht die Benachrichtigung an die Sammeladresse - oder,
+ * wenn auch die fehlt, gar nicht raus. Beides ist zulässig, aber beides
+ * soll man wissen und nicht erst merken, wenn ein Interessent sich
+ * beschwert, dass niemand zurückgerufen hat.
+ */
+function OhneMailHinweis({
+  studios,
+  istLeitung,
+}: {
+  studios: { id: string; name: string; email: string | null }[];
+  istLeitung: boolean;
+}) {
+  const ohne = studios.filter((s) => !s.email?.trim());
+  if (ohne.length === 0) return null;
+
+  return (
+    <div className="mb-4 rounded-xl border border-amber-500/50 bg-amber-500/10 p-4">
+      <p className="flex items-center gap-2 text-sm font-semibold">
+        <MailWarning size={16} className="shrink-0 text-amber-600" aria-hidden />
+        {ohne.length === 1
+          ? "Ein Standort hat keine eigene E-Mail-Adresse"
+          : `${ohne.length} Standorte haben keine eigene E-Mail-Adresse`}
+      </p>
+      <p className="lesebreite mt-2 text-sm text-muted">
+        Neue Anfragen für {ohne.length === 1 ? "diesen Standort" : "diese Standorte"} gehen
+        an die Sammeladresse statt ans Studio. Wer dort arbeitet, erfährt von der
+        Anfrage nur über diese Seite.
+      </p>
+      <p className="mt-2 text-xs text-muted">{ohne.map((s) => s.name).join(" · ")}</p>
+      {istLeitung && (
+        <Link
+          href="/admin/studios"
+          className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-accent underline underline-offset-4"
+        >
+          Adressen in der Studioverwaltung eintragen
+        </Link>
+      )}
+    </div>
   );
 }

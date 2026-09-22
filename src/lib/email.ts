@@ -372,11 +372,42 @@ ${siteConfig.url}/admin/bookings?status=PENDING`,
  */
 export async function sendNachfassInternEmail(
   an: string,
-  offen: { name: string; phone: string; erreichbarkeit: string; tage: number }[],
+  offen: {
+    name: string;
+    phone: string;
+    email: string;
+    erreichbarkeit: string;
+    terminZeile: string;
+    studioName: string | null;
+    ziel: string | null;
+    tage: number;
+  }[],
 ) {
+  /*
+   * Vorher standen hier nur Name, Telefon, Erreichbarkeit und die Zahl der
+   * Tage. Wer die Mail bekam, konnte anrufen - mehr nicht. Für eine
+   * schriftliche Antwort, für "worum ging es nochmal" oder für einen
+   * Terminvorschlag musste er doch wieder in den Adminbereich.
+   *
+   * Jetzt steht alles in der Mail, was der Interessent angegeben hat. Der
+   * Adminbereich ist dafür da, den Vorgang abzuschließen - nicht dafür,
+   * die Telefonnummer nachzuschlagen.
+   */
   const liste = offen
-    .map((a) => `- ${a.name}, ${a.phone} (erreichbar: ${a.erreichbarkeit}) - seit ${a.tage} Tagen offen`)
-    .join("\n");
+    .map((a) =>
+      [
+        `• ${a.name} - seit ${a.tage} ${a.tage === 1 ? "Tag" : "Tagen"} offen`,
+        `  Telefon:    ${a.phone}`,
+        `  E-Mail:     ${a.email}`,
+        `  Erreichbar: ${a.erreichbarkeit}`,
+        `  Termin:     ${a.terminZeile}`,
+        a.studioName ? `  Studio:     ${a.studioName}` : null,
+        a.ziel ? `  Ziel:       ${a.ziel}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    )
+    .join("\n\n");
 
   return verschicken("NACHFASS_INTERN", {
     to: an,
@@ -384,11 +415,12 @@ export async function sendNachfassInternEmail(
       offen.length === 1
         ? "Eine Probetermin-Anfrage wartet noch auf Antwort"
         : `${offen.length} Probetermin-Anfragen warten noch auf Antwort`,
-    text: `Diese Anfragen sind noch offen:
+    text: `Diese Anfragen sind noch offen. Alle Angaben stehen hier -
+für den Anruf oder die Antwort per Mail musst du nirgendwo nachsehen.
 
 ${liste}
 
-Im Adminbereich bearbeiten:
+Im Adminbereich abschließen:
 ${siteConfig.url}/admin/bookings?status=PENDING`,
   });
 }

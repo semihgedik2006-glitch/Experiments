@@ -7,12 +7,19 @@ import {
   TEAM_EMAIL,
 } from "@/lib/email";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
+import { zielText } from "@/lib/ziel";
+import { formatDate } from "@/lib/format";
 import { terminAngaben } from "@/lib/termin-angaben";
 import { PROTOKOLL_TAGE } from "@/lib/protokoll";
 import { alteZugaengeLoeschen } from "@/lib/kundenbereich";
 
-/** Ab wann eine offene Anfrage als liegengeblieben gilt. */
-const NACHFASS_NACH_TAGEN = 3;
+/**
+ * Ab wann eine offene Anfrage als liegengeblieben gilt.
+ *
+ * Stand auf 3, auf Wunsch auf 2 gesenkt: Wer eine Anfrage abschickt und
+ * zwei Tage nichts hört, hat in der Zwischenzeit meist woanders gefragt.
+ */
+const NACHFASS_NACH_TAGEN = 2;
 
 /** Wie lange das Mail-Protokoll aufgehoben wird. */
 const MAIL_PROTOKOLL_TAGE = 90;
@@ -179,7 +186,7 @@ async function umBewertungBitten(morgen: Date) {
 /**
  * Anfragen, die zu lange offen liegen.
  *
- * Eine Anfrage, auf die drei Tage niemand geantwortet hat, ist praktisch
+ * Eine Anfrage, auf die zwei Tage niemand geantwortet hat, ist praktisch
  * verloren - in der Zwischenzeit hat der Interessent woanders angefragt.
  * Diese Erinnerung geht deshalb an das Studio, nicht an den Gast: Ihm zu
  * schreiben, dass wir uns nicht gemeldet haben, macht die Sache nicht
@@ -196,11 +203,16 @@ async function nachfassen() {
       status: "PENDING",
       createdAt: { lt: grenze },
       // Nur einmal erinnern. Ohne diesen Merker stünde dieselbe Anfrage
-      // jeden Tag erneut in der Mail, und nach drei Tagen liest sie
+      // jeden Tag erneut in der Mail, und nach ein paar Tagen liest sie
       // niemand mehr.
       nachfassGesendetAm: null,
     },
-    include: { studio: { select: { id: true, name: true, email: true } } },
+    // slot und ziel kommen mit: Sie stehen jetzt in der Erinnerungsmail,
+    // damit niemand für den Rückruf den Adminbereich öffnen muss.
+    include: {
+      studio: { select: { id: true, name: true, email: true } },
+      slot: { select: { date: true, startTime: true } },
+    },
     orderBy: [{ createdAt: "asc" }, { id: "asc" }],
   });
 
@@ -221,7 +233,15 @@ async function nachfassen() {
       anfragen.map((a) => ({
         name: a.name,
         phone: a.phone,
+        email: a.email,
         erreichbarkeit: erreichbarkeitText(a.erreichbarkeit),
+        terminZeile: a.slot
+          ? `${formatDate(a.slot.date)} um ${a.slot.startTime} Uhr`
+          : "kein fester Termin - individuell abzustimmen",
+        studioName: a.studio?.name ?? null,
+        // Als Beschriftung, nicht als gespeicherter Wert: In der Mail soll
+        // "Rücken stärken" stehen und nicht "ruecken".
+        ziel: a.ziel ? zielText(a.ziel) : null,
         tage: Math.floor((Date.now() - a.createdAt.getTime()) / (24 * 60 * 60 * 1000)),
       })),
     );
