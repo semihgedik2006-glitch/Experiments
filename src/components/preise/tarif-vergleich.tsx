@@ -60,7 +60,7 @@ export function TarifVergleich({
           {tarife.map((tarif) => (
             <StaggerItem key={tarif.id} className="h-full">
               <div
-                className={`karte-hebt flex h-full flex-col rounded-2xl border bg-surface-raised p-7 ${
+                className={`karte-hebt karte-glanz flex h-full flex-col rounded-2xl border bg-surface-raised p-7 ${
                   tarif.empfohlen ? "border-lime" : "border-border"
                 }`}
               >

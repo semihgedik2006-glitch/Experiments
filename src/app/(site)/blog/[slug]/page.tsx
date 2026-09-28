@@ -113,7 +113,7 @@ export default async function BlogPostPage({ params }: Props) {
                 <Link
                   key={anderer.id}
                   href={`/blog/${anderer.slug}`}
-                  className="karte-hebt flex h-full flex-col rounded-xl border border-border bg-surface p-4"
+                  className="karte-hebt karte-glanz flex h-full flex-col rounded-xl border border-border bg-surface p-4"
                 >
                   <span className="text-sm font-semibold">{anderer.title}</span>
                   <span className="mt-2 line-clamp-3 flex-1 text-xs text-muted">

@@ -232,7 +232,7 @@ export function BookingForm({
             )}
           </>
         ) : (
-          <p className="text-sm text-muted">
+          <p className="lesebreite text-sm text-muted">
             {studioName && sprache === "de"
               ? `Für ${studioName} sind aktuell keine festen Termine hinterlegt`
               : studioName

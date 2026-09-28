@@ -105,7 +105,7 @@ export async function StudioTeaser() {
         <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {gezeigt.map((studio) => (
             <StaggerItem key={studio.id} className="h-full">
-              <div className="flex h-full flex-col card p-6">
+              <div className="karte-hebt karte-glanz flex h-full flex-col card p-6">
                 <h3 className="text-lg font-semibold">{studio.name}</h3>
                 <ul className="mt-4 flex-1 space-y-3 text-sm text-muted">
                   <li className="flex items-start gap-2.5">
@@ -119,7 +119,7 @@ export async function StudioTeaser() {
                     </li>
                   )}
                 </ul>
-                <Button href="/studio" variant="secondary" className="mt-6 w-full">
+                <Button href="/studio" variant="secondary" className="karte-knopf mt-6 w-full">
                   Details &amp; Anfahrt
                 </Button>
               </div>

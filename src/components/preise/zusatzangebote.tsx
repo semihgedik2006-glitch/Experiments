@@ -50,8 +50,8 @@ export function Zusatzangebote({
             const Symbol = symbolFuer(angebot.symbol);
             return (
               <StaggerItem key={angebot.id} className="h-full">
-                <div className="karte-hebt flex h-full flex-col rounded-2xl border border-border bg-surface-raised p-6">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/12 text-accent">
+                <div className="karte-hebt karte-glanz flex h-full flex-col rounded-2xl border border-border bg-surface-raised p-6">
+                  <span className="karte-symbol flex h-11 w-11 items-center justify-center rounded-full bg-lime/12 text-accent">
                     <Symbol size={20} aria-hidden />
                   </span>
                   <h3 className="mt-5 font-semibold">{angebot.name}</h3>

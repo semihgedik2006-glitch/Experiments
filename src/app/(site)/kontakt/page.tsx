@@ -104,7 +104,7 @@ export default async function KontaktPage() {
                 <a
                   key={weg.label}
                   href={weg.href}
-                  className="karte-hebt card flex items-center gap-4 p-4"
+                  className="karte-hebt karte-glanz card flex items-center gap-4 p-4"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lime/12 text-accent">
                     <weg.icon size={18} aria-hidden />
@@ -182,7 +182,7 @@ export default async function KontaktPage() {
                     {studioSeiteSichtbar && studio.slug ? (
                       <Link
                         href={`/studio/${studio.slug}`}
-                        className="karte-hebt card block h-full p-5"
+                        className="karte-hebt karte-glanz card block h-full p-5"
                       >
                         {inhalt}
                       </Link>

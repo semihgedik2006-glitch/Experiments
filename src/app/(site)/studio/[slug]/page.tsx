@@ -319,7 +319,7 @@ export default async function StudioDetailSeite({
                 <Link
                   key={nachbar.id}
                   href={`/studio/${nachbar.slug}`}
-                  className="karte-hebt card block p-6"
+                  className="karte-hebt karte-glanz card block p-6"
                 >
                   <span className="flex items-center gap-2 font-semibold">
                     <MapPin size={15} className="shrink-0 text-accent" aria-hidden />

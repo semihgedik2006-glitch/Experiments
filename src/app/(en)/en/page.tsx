@@ -155,7 +155,7 @@ export default async function EnglishPage() {
             {schritte.map((schritt, i) => (
               <li
                 key={schritt.titel}
-                className="karte-hebt rounded-2xl border border-border bg-surface-raised p-6"
+                className="karte-hebt karte-glanz rounded-2xl border border-border bg-surface-raised p-6"
               >
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-lime/12 text-sm font-bold text-accent">
                   {i + 1}

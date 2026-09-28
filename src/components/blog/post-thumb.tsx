@@ -113,6 +113,7 @@ export function PostThumb({
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
+          pathLength={1}
           className="post-thumb-impuls"
         />
       </svg>

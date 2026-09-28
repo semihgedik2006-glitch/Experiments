@@ -158,7 +158,7 @@ export default async function BlogPage({
                     <StaggerItem key={post.id} className="h-full">
                       <Link
                         href={`/blog/${post.slug}`}
-                        className="karte-hebt group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface"
+                        className="karte-hebt karte-glanz group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface"
                       >
                         <PostThumb slug={post.slug} title={post.title} coverImage={post.coverImage} />
                         <div className="flex flex-1 flex-col p-6">
@@ -180,7 +180,7 @@ export default async function BlogPage({
                             </span>
                           )}
                           <span className="mt-4 inline-flex items-center gap-1 text-sm text-accent">
-                            Weiterlesen <ArrowRight size={14} />
+                            Weiterlesen <ArrowRight size={14} className="karte-pfeil" aria-hidden />
                           </span>
                         </div>
                       </Link>

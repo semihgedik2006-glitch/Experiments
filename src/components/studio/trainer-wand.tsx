@@ -51,7 +51,7 @@ export function TrainerWand({
         <Stagger className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {trainer.map((person) => (
             <StaggerItem key={person.id} className="h-full">
-              <article className="karte-hebt flex h-full flex-col items-center rounded-2xl border border-border bg-surface-raised p-6 text-center">
+              <article className="karte-hebt karte-glanz flex h-full flex-col items-center rounded-2xl border border-border bg-surface-raised p-6 text-center">
                 <TrainerBild name={person.name} fotoUrl={person.fotoUrl} />
                 <h3 className="mt-4 font-semibold">{person.name}</h3>
                 {person.rolle && (

@@ -192,7 +192,7 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
                 className="scroll-mt-24"
               >
                 <div
-                  className={`karte-hebt flex h-full flex-col rounded-2xl border bg-surface-raised p-6 ${
+                  className={`karte-hebt karte-glanz flex h-full flex-col rounded-2xl border bg-surface-raised p-6 ${
                     studio.id === nearestId ? "border-lime" : "border-border"
                   }`}
                 >

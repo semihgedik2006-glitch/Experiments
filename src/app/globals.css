@@ -1823,20 +1823,11 @@ summary::-webkit-details-marker {
     scale: 0 1;
     transition: scale 0.45s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
+    /* Über einem Blogbild, das sonst die Linie verdecken würde. */
+    z-index: 1;
   }
   .karte-glanz:hover::before {
     scale: 1 1;
-  }
-  .karte-symbol {
-    transition:
-      background-color 0.3s ease,
-      color 0.3s ease,
-      box-shadow 0.3s ease;
-  }
-  .karte-glanz:hover .karte-symbol {
-    background-color: var(--color-lime);
-    color: var(--color-on-lime);
-    box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-lime) 18%, transparent);
   }
 
   .aufruf-orb {
@@ -1874,6 +1865,50 @@ summary::-webkit-details-marker {
     filter: drop-shadow(0 0 5px var(--ink-lime));
   }
 }
+/* Was sich IN der Karte beim Darüberfahren ändert, steht bewusst außerhalb
+   von @layer: Symbol und Knopf tragen eigene Farbklassen (bg-lime/10,
+   border-border), und die gewinnen als Utilities gegen jede Schicht - die
+   Füllung des Symbols kam deshalb im ersten Anlauf gar nicht an. */
+.karte-symbol,
+.karte-knopf,
+.karte-pfeil {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease,
+    translate 0.25s ease;
+}
+.karte-glanz:hover .karte-symbol {
+  background-color: var(--color-lime);
+  color: var(--color-on-lime);
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-lime) 18%, transparent);
+}
+.karte-glanz:hover .karte-knopf {
+  border-color: var(--color-lime);
+  background-color: color-mix(in oklab, var(--color-lime) 14%, transparent);
+}
+.karte-glanz:hover .karte-pfeil {
+  translate: 4px 0;
+}
+/* Das Blogbild: Die Impulslinie zeichnet sich beim Darüberfahren neu. */
+.post-thumb-impuls {
+  stroke-dasharray: 1;
+  transition: opacity 0.3s ease;
+}
+.group:hover .post-thumb-impuls {
+  opacity: 0.6;
+  animation: blog-linie 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+@keyframes blog-linie {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 /* Der Glanz liegt mit z-index -1 ZWISCHEN Knopffläche und Schrift: Durch
    isolation: isolate malt der Knopf seine eigene Fläche zuerst, dann den
    Glanz, dann den Text. */
@@ -1891,8 +1926,17 @@ summary::-webkit-details-marker {
   .aufruf-orb {
     animation: none;
   }
-  .karte-glanz::before {
+  .karte-glanz::before,
+  .karte-symbol,
+  .karte-knopf,
+  .karte-pfeil {
     transition: none;
+  }
+  .group:hover .post-thumb-impuls {
+    animation: none;
+  }
+  .karte-glanz:hover .karte-pfeil {
+    translate: none;
   }
 }
 

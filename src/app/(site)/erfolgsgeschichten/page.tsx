@@ -59,7 +59,7 @@ export default async function ErfolgsgeschichtenPage() {
             >
               {stimmen.map((stimme) => (
                 <StaggerItem key={stimme.id}>
-                  <figure className="karte-hebt flex h-full flex-col rounded-2xl border border-border bg-surface p-7">
+                  <figure className="karte-hebt karte-glanz flex h-full flex-col rounded-2xl border border-border bg-surface p-7">
                     <blockquote className="flex-1 text-sm leading-relaxed text-foreground/90">
                       &bdquo;{stimme.text}&ldquo;
                     </blockquote>
