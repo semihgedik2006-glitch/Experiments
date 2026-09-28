@@ -4,6 +4,7 @@ import { startTransition, useActionState, useEffect, useRef, useState } from "re
 import { motion } from "motion/react";
 import { Check } from "lucide-react";
 import { ImpulsSzene } from "@/components/ui/impuls-szene";
+import { gebuchtMerken } from "@/lib/einladung";
 import { createBooking } from "@/lib/actions/booking";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
 import { ZIELE } from "@/lib/ziel";
@@ -104,6 +105,12 @@ export function BookingForm({
     daten.set("sprache", sprache);
     startTransition(() => formAction(daten));
   }
+
+  // Wer hier angefragt hat, bekommt in diesem Besuch keine Einladung
+  // mehr - weder beim Gehen noch in der Mitte einer Seite.
+  useEffect(() => {
+    if (state.ok) gebuchtMerken();
+  }, [state.ok]);
 
   const activeDay = days.find((d) => d.dateKey === selectedDay);
 

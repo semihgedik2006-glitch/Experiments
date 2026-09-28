@@ -89,6 +89,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <ProbeterminEinladung
         naechsterTermin={einladungTermin}
         freieDieseWoche={beweise.freieTermine7Tage}
+        studios={studios.map((s) => ({ id: s.id, name: s.name }))}
       />
     </>
   );

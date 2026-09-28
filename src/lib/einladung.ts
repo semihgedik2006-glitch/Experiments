@@ -1,52 +1,54 @@
 /**
- * Wann die Einladung zum Probetraining erscheinen darf - und wann nicht.
+ * Wann die Einladungen zum Probetraining erscheinen dürfen.
  *
- * Getrennt vom Aussehen, weil hier entschieden wird, ob das Ding nervt.
- * Ein Pop-up, das zum falschen Zeitpunkt kommt, ist auch dann lästig,
- * wenn es hübsch ist; eines, das sich an Regeln hält, fällt kaum auf.
+ * Zwei Einladungen:
+ *
+ * - AUSSTIEG: der große Kasten, wenn jemand im Begriff ist zu gehen.
+ * - MITTE: eine kleine Karte, die unten hereinfährt, sobald jemand die
+ *   Hälfte einer Seite gelesen hat - mit einer Anmeldung direkt darin.
  *
  * DIE REGELN, UND WARUM:
  *
- * 1. Niemals sofort. Wer eben erst angekommen ist, hat noch nichts
- *    gesehen, wovon man ihn abhalten könnte. Erst nach ein paar Sekunden
- *    UND ein Stück gelesener Seite.
+ * 1. Bei jedem Besuch - aber je Besuch nur einmal. Früher galt ein
+ *    "Nein" dreißig Tage lang; auf Wunsch erscheinen beide jetzt bei
+ *    jedem neuen Besuch wieder. Innerhalb eines Besuchs aber nur einmal:
+ *    Wer durch fünf Seiten klickt, sieht sie nicht fünfmal. Gemerkt wird
+ *    das in sessionStorage, das der Browser beim Schließen des Tabs
+ *    selbst vergisst.
  *
- * 2. Nur einmal. Wer es weggeklickt hat, hat geantwortet. Diese Antwort
- *    gilt einen Monat - nicht bis zum nächsten Seitenaufruf.
+ * 2. Niemals sofort. Wer eben erst angekommen ist, hat nichts gesehen,
+ *    wovon man ihn abhalten könnte.
  *
- * 3. Nie dort, wo es unsinnig wäre. Auf der Buchungsseite selbst, auf
- *    der persönlichen Terminseite eines Gastes und im eigenen
- *    Terminbereich hat sich die Frage erledigt.
+ * 3. Nie dort, wo es unsinnig wäre - auf der Buchungsseite, der
+ *    persönlichen Terminseite, im eigenen Terminbereich, auf den
+ *    Kampagnenseiten und im Rechtlichen.
  *
- * 4. Nie bei jemandem, der schon gebucht hat. Wer aus der
- *    Bestätigungsmail kommt, hat den Termin bereits.
+ * 4. Nie bei jemandem, der in diesem Besuch schon angefragt hat.
  *
- * 5. Nie bei "Bewegung reduzieren". Eine Fläche, die von selbst
- *    aufspringt, ist genau das, wovon diese Einstellung befreien soll.
+ * "Bewegung reduzieren" blendet die Einladungen NICHT mehr aus - diese
+ * Einstellung betrifft Bewegung, nicht Inhalt. Sie erscheinen dann
+ * einfach ohne Animation (siehe globals.css).
  *
- * Alles davon steht im Browser des Besuchers und nirgendwo sonst: kein
- * Zähler auf dem Server, keine Kennung, nichts, was jemanden
- * wiedererkennbar macht.
+ * Nichts davon verlässt den Browser: kein Zähler auf dem Server, keine
+ * Kennung, nichts, was jemanden wiedererkennbar macht.
  */
 
-/** Woher wir uns die Antwort merken. */
-export const EINLADUNG_SCHLUESSEL = "probetermin-einladung";
+export type Einladung = "ausstieg" | "mitte";
 
-/** Wie lange Ruhe ist, nachdem jemand weggeklickt hat. */
-export const RUHE_TAGE = 30;
+const SCHLUESSEL: Record<Einladung, string> = {
+  ausstieg: "einladung-ausstieg",
+  mitte: "einladung-mitte",
+};
 
-/** Wie lange jemand mindestens auf der Seite sein muss. */
-export const MINDEST_SEKUNDEN = 20;
+/** Gesetzt, sobald in diesem Besuch eine Anfrage abgeschickt wurde. */
+const GEBUCHT = "einladung-gebucht";
 
-/** Wie viel der Seite er mindestens gesehen haben muss (Anteil). */
-export const MINDEST_ANTEIL = 0.25;
+/** Wie lange jemand mindestens auf der Seite sein muss (Ausstieg). */
+export const MINDEST_SEKUNDEN = 8;
 
-/**
- * Seiten, auf denen die Einladung nichts zu suchen hat.
- *
- * Als Anfang des Pfades geprüft, damit /termin/abc123 genauso erfasst
- * ist wie /termin.
- */
+/** Ab welchem Anteil gelesener Seite die Karte in der Mitte kommt. */
+export const MITTE_ANTEIL = 0.5;
+
 export const AUSGENOMMEN = [
   "/probetermin",
   "/termin",
@@ -62,38 +64,34 @@ export function seiteAusgenommen(pfad: string): boolean {
   return AUSGENOMMEN.some((p) => pfad === p || pfad.startsWith(`${p}/`));
 }
 
-/**
- * Darf die Einladung diesem Besucher überhaupt gezeigt werden?
- *
- * Läuft nur im Browser. Wirft nie: In einem privaten Fenster oder bei
- * gesperrten Seitendaten wirft schon der Zugriff auf localStorage, und
- * daran darf keine Seite hängen bleiben.
- */
-export function darfErscheinen(pfad: string): boolean {
-  if (seiteAusgenommen(pfad)) return false;
-
+/** sessionStorage ohne Absturz - im privaten Fenster kann schon der Zugriff werfen. */
+function lesen(schluessel: string): string | null {
   try {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
-
-    const gemerkt = window.localStorage.getItem(EINLADUNG_SCHLUESSEL);
-    if (!gemerkt) return true;
-
-    const bis = Number(gemerkt);
-    if (!Number.isFinite(bis)) return true;
-    return Date.now() > bis;
+    return window.sessionStorage.getItem(schluessel);
   } catch {
-    // Kein Zugriff auf die Seitendaten heißt: Wir können uns ein "nein"
-    // nicht merken. Dann fragen wir lieber gar nicht erst.
-    return false;
+    return null;
+  }
+}
+function schreiben(schluessel: string): void {
+  try {
+    window.sessionStorage.setItem(schluessel, "1");
+  } catch {
+    // Dann kann es in diesem Besuch ein zweites Mal kommen - nicht schlimm.
   }
 }
 
-/** Die Antwort merken - egal ob weggeklickt oder gebucht. */
-export function antwortMerken(): void {
-  try {
-    const bis = Date.now() + RUHE_TAGE * 24 * 60 * 60 * 1000;
-    window.localStorage.setItem(EINLADUNG_SCHLUESSEL, String(bis));
-  } catch {
-    // Nicht schlimm: Dann erscheint sie beim nächsten Besuch noch einmal.
-  }
+export function darfErscheinen(welche: Einladung, pfad: string): boolean {
+  if (seiteAusgenommen(pfad)) return false;
+  if (lesen(GEBUCHT)) return false;
+  return !lesen(SCHLUESSEL[welche]);
+}
+
+/** Diese Einladung ist für diesen Besuch erledigt - gezeigt, weggeklickt oder genutzt. */
+export function erledigt(welche: Einladung): void {
+  schreiben(SCHLUESSEL[welche]);
+}
+
+/** Es wurde angefragt - beide Einladungen schweigen für den Rest des Besuchs. */
+export function gebuchtMerken(): void {
+  schreiben(GEBUCHT);
 }
