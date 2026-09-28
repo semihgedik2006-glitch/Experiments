@@ -80,7 +80,7 @@ export function Header({
           <ThemeToggle />
           <Link
             href="/probetermin"
-            className="whitespace-nowrap rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime transition-transform hover:scale-105 active:scale-95"
+            className="knopf-glanz whitespace-nowrap rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime transition-transform hover:scale-105 active:scale-95"
           >
             Probetermin buchen
           </Link>

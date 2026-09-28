@@ -449,7 +449,7 @@ export function BookingForm({
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-lime px-7 py-3 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-50"
+        className="knopf-glanz w-full rounded-full bg-lime px-7 py-3 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-50"
       >
         {pending ? t.absendenLaeuft : t.absenden}
       </button>

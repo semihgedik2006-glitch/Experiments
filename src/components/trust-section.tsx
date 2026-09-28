@@ -48,8 +48,8 @@ export async function TrustSection() {
             const Icon = icons[point.icon];
             return (
               <StaggerItem key={point.title}>
-                <div className="h-full card p-7">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent">
+                <div className="karte-hebt karte-glanz h-full card p-7">
+                  <div className="karte-symbol flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent">
                     <Icon size={20} />
                   </div>
                   <h3 className="mt-6 text-lg font-semibold tracking-tight">{point.title}</h3>

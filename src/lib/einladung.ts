@@ -43,8 +43,72 @@ const SCHLUESSEL: Record<Einladung, string> = {
 /** Gesetzt, sobald in diesem Besuch eine Anfrage abgeschickt wurde. */
 const GEBUCHT = "einladung-gebucht";
 
-/** Wie lange jemand mindestens auf der Seite sein muss (Ausstieg). */
-export const MINDEST_SEKUNDEN = 8;
+/*
+ * WANN IST JEMAND "BEREIT"? - Interesse statt Stoppuhr.
+ *
+ * Vorher galt: acht Sekunden auf der aktuellen Seite. Das war an zwei
+ * Stellen falsch. Die Uhr begann bei jedem Seitenwechsel von vorn - wer
+ * eine Minute lang durch vier Seiten gelesen hatte, galt auf der fünften
+ * wieder als eben erst angekommen. Und sie lief auch in einem Tab im
+ * Hintergrund weiter, den niemand ansah.
+ *
+ * Jetzt reicht EINES davon:
+ *   - 10 Sekunden AKTIVE Zeit im ganzen Besuch - gezählt nur, solange der
+ *     Tab sichtbar ist und sich in den letzten 15 Sekunden etwas getan
+ *     hat (Scrollen, Maus, Tastatur, Finger). Über Seitenwechsel hinweg.
+ *   - oder die zweite angesehene Seite: Wer weiterklickt, interessiert
+ *     sich.
+ *   - oder ein Drittel der aktuellen Seite gelesen.
+ */
+export const AKTIVE_SEKUNDEN = 10;
+export const LESE_ANTEIL = 1 / 3;
+/** Ohne Regung so lange, dann zählt die Zeit nicht mehr als aktiv. */
+export const RUHE_NACH_SEKUNDEN = 15;
+
+const AKTIV_ZEIT = "einladung-aktiv-ms";
+const SEITEN = "einladung-seiten";
+
+export function aktiveZeitLesen(): number {
+  const wert = Number(lesen(AKTIV_ZEIT));
+  return Number.isFinite(wert) ? wert : 0;
+}
+export function aktiveZeitAddieren(ms: number): number {
+  const neu = aktiveZeitLesen() + ms;
+  try {
+    window.sessionStorage.setItem(AKTIV_ZEIT, String(Math.round(neu)));
+  } catch {
+    // Ohne Speicher zählt eben nur diese Seite.
+  }
+  return neu;
+}
+/** Diese Seite als angesehen zählen; gibt die Zahl der Seiten im Besuch zurück. */
+export function seiteZaehlen(pfad: string): number {
+  try {
+    const bisher: string[] = JSON.parse(window.sessionStorage.getItem(SEITEN) ?? "[]");
+    if (!bisher.includes(pfad)) bisher.push(pfad);
+    window.sessionStorage.setItem(SEITEN, JSON.stringify(bisher.slice(-20)));
+    return bisher.length;
+  } catch {
+    return 1;
+  }
+}
+
+/**
+ * Tippt gerade jemand in ein Formular - oder hat er eins angefangen?
+ *
+ * Dann kommt keine Einladung dazwischen. Wer im Kontaktformular halb
+ * fertig ist und die Maus kurz nach oben bewegt, will nicht gehen - und
+ * ein Kasten über seinem halben Text wäre das Gegenteil einer Einladung.
+ */
+export function formularInArbeit(): boolean {
+  const aktiv = document.activeElement;
+  if (aktiv instanceof HTMLInputElement || aktiv instanceof HTMLTextAreaElement || aktiv instanceof HTMLSelectElement) {
+    return true;
+  }
+  return [...document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+    "main input:not([type=hidden]):not([type=radio]):not([type=checkbox]), main textarea",
+  )].some((feld) => feld.name !== "website" && feld.value.trim().length > 0);
+}
 
 /** Ab welchem Anteil gelesener Seite die Karte in der Mitte kommt. */
 export const MITTE_ANTEIL = 0.5;

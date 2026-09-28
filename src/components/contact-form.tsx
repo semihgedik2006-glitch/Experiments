@@ -128,7 +128,7 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-lime px-7 py-3 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-50 sm:w-auto"
+        className="knopf-glanz w-full rounded-full bg-lime px-7 py-3 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-50 sm:w-auto"
       >
         {pending ? "Wird gesendet..." : "Nachricht senden"}
       </button>

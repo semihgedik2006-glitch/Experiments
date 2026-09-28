@@ -167,8 +167,8 @@ export default async function PreisePage() {
           <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {priceFactors.map(({ icon: Icon, title, text }) => (
               <StaggerItem key={title}>
-                <div className="h-full card p-7">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent">
+                <div className="karte-hebt karte-glanz h-full card p-7">
+                  <div className="karte-symbol flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent">
                     <Icon size={20} />
                   </div>
                   <h3 className="mt-6 text-lg font-semibold tracking-tight">{title}</h3>

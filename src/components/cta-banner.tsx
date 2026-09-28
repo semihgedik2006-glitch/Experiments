@@ -1,4 +1,4 @@
-import { CalendarClock, Check } from "lucide-react";
+import { ArrowRight, CalendarClock, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
@@ -49,11 +49,17 @@ export async function CtaBanner() {
         <ImpulsMotiv className="absolute -left-24 top-1/2 w-[360px] -translate-y-1/2 opacity-40" />
         <ImpulsMotiv className="absolute -right-24 top-1/2 w-[360px] -translate-y-1/2 opacity-40" />
       </div>
+      {/* Leuchtball und Impulslinie aus der Einladung, hier leiser: Der
+          Ball atmet hinter dem Knopf, die Linie läuft blass quer durch. */}
+      <div aria-hidden className="aufruf-orb" />
+      <svg className="aufruf-impuls" viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden>
+        <path d="M0 44 H520 l18-30 22 60 18-30 H1200" />
+      </svg>
 
       <Container className="relative">
         <Reveal className="flex flex-col items-center text-center">
           <h2 className="max-w-2xl text-balance text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Bereit für deine erste Einheit?
+            Bereit für deine <span className="einladung-leuchten text-accent">erste Einheit?</span>
           </h2>
 
           {naechster ? (
@@ -71,8 +77,9 @@ export async function CtaBanner() {
             </p>
           )}
 
-          <Button href="/probetermin" className="mt-7">
+          <Button href="/probetermin" className="knopf-glanz-dauer group mt-7 px-8 py-3.5">
             Kostenlosen Probetermin buchen
+            <ArrowRight size={16} aria-hidden className="transition-transform group-hover:translate-x-1" />
           </Button>
 
           {/* Die drei Sätze, die jemand vor dem Klick beantwortet haben

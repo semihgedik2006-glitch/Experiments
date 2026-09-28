@@ -9,11 +9,17 @@ import { createBooking } from "@/lib/actions/booking";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
 import type { ActionResult } from "@/lib/actions/newsletter";
 import {
+  AKTIVE_SEKUNDEN,
+  aktiveZeitAddieren,
+  aktiveZeitLesen,
   darfErscheinen,
   erledigt,
+  formularInArbeit,
   gebuchtMerken,
-  MINDEST_SEKUNDEN,
+  LESE_ANTEIL,
   MITTE_ANTEIL,
+  RUHE_NACH_SEKUNDEN,
+  seiteZaehlen,
 } from "@/lib/einladung";
 
 /**
@@ -91,6 +97,10 @@ function AusstiegEinladung({
 
   const zeigen = useCallback(() => {
     if (fertig.current || !bereit.current) return;
+    // Wer gerade tippt oder ein Formular angefangen hat, will nicht
+    // gehen - dann kommt nichts dazwischen. Nicht als erledigt vermerken:
+    // Später, mit leerem Formular, darf die Einladung noch kommen.
+    if (formularInArbeit()) return;
     fertig.current = true;
     erledigt("ausstieg");
     setOffen(true);
@@ -98,15 +108,47 @@ function AusstiegEinladung({
     dialog.current?.showModal();
   }, [onOffen]);
 
-  /* Reifezeit: ein paar Sekunden auf der Seite. */
+  /*
+   * Bereit ist, wer Interesse gezeigt hat - Regeln in lib/einladung.ts.
+   * Die aktive Zeit zählt über den ganzen Besuch, aber nur, solange der
+   * Tab sichtbar ist und sich jemand regt.
+   */
   useEffect(() => {
     fertig.current = false;
     bereit.current = false;
     if (!darfErscheinen("ausstieg", pfad)) return;
-    const uhr = window.setTimeout(() => {
+
+    if (seiteZaehlen(pfad) >= 2 || aktiveZeitLesen() >= AKTIVE_SEKUNDEN * 1000) {
       bereit.current = true;
-    }, MINDEST_SEKUNDEN * 1000);
-    return () => window.clearTimeout(uhr);
+      return;
+    }
+
+    let letzteRegung = Date.now();
+    const regung = () => {
+      letzteRegung = Date.now();
+    };
+    const beimScrollen = () => {
+      regung();
+      const hoehe = document.documentElement.scrollHeight - window.innerHeight;
+      if (hoehe > 0 && window.scrollY / hoehe >= LESE_ANTEIL) bereit.current = true;
+    };
+
+    // Jede Sekunde nachsehen, ob sie zählt: sichtbar und nicht eingeschlafen.
+    const takt = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      if (Date.now() - letzteRegung > RUHE_NACH_SEKUNDEN * 1000) return;
+      if (aktiveZeitAddieren(1000) >= AKTIVE_SEKUNDEN * 1000) bereit.current = true;
+    }, 1000);
+
+    const ereignisse = ["mousemove", "keydown", "touchstart", "pointerdown"] as const;
+    ereignisse.forEach((e) => window.addEventListener(e, regung, { passive: true }));
+    window.addEventListener("scroll", beimScrollen, { passive: true });
+
+    return () => {
+      window.clearInterval(takt);
+      ereignisse.forEach((e) => window.removeEventListener(e, regung));
+      window.removeEventListener("scroll", beimScrollen);
+    };
   }, [pfad]);
 
   /* Am Rechner: Maus verlässt das Fenster nach oben. */

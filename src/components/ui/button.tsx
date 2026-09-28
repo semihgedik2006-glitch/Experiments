@@ -9,7 +9,7 @@ const MotionLink = motion.create(Link);
 type Variant = "primary" | "secondary" | "ghost";
 
 const variantClasses: Record<Variant, string> = {
-  primary: "bg-lime text-on-lime",
+  primary: "knopf-glanz bg-lime text-on-lime",
   secondary: "border border-border text-foreground hover:border-lime hover:text-accent",
   ghost: "text-foreground hover:text-accent",
 };

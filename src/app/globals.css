@@ -1758,6 +1758,144 @@ summary::-webkit-details-marker {
   }
 }
 
+/* ==========================================================================
+   AUFFRISCHUNG: Was die Einladung vorgemacht hat, auf die ganze Seite.
+
+   Die Einladung wirkte lebendiger als die Seite dahinter - ein leuchtender
+   Knopf, ein Glanz, der darüber läuft, eine Impulslinie. Drei Dinge davon
+   gehen jetzt auf die ganze Seite, jeweils in der ruhigeren Fassung:
+
+   1. Der Hauptknopf leuchtet leicht und bekommt beim Darüberfahren EINEN
+      Glanz (in der Einladung läuft er in Schleife - auf jeder Seite
+      zehnmal wäre das Unruhe).
+   2. Die Vorteilskarten: Beim Darüberfahren zieht sich oben eine
+      Lime-Linie auf, und das Symbol füllt sich.
+   3. Der Aufruf am Seitenende bekommt Leuchtball und Impulslinie - dort
+      darf der Glanz auch in Schleife laufen, es ist die eine Stelle, an
+      der entschieden wird.
+
+   Alles in @layer components, damit Klassen wie mt-7 oder w-full weiter
+   gewinnen.
+   ========================================================================== */
+@layer components {
+  .knopf-glanz {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    box-shadow: 0 10px 26px -14px color-mix(in oklab, var(--color-lime) 90%, transparent);
+    transition: box-shadow 0.25s ease;
+  }
+  .knopf-glanz::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.5) 50%, transparent 65%);
+    translate: -110% 0;
+    pointer-events: none;
+  }
+  .knopf-glanz:hover {
+    box-shadow: 0 14px 32px -12px var(--color-lime);
+  }
+  .knopf-glanz:hover::before {
+    animation: knopf-glanz-lauf 0.8s ease-out;
+  }
+  .knopf-glanz:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+  .knopf-glanz-dauer::before {
+    animation: einladung-glanz 3.4s 1.4s ease-in-out infinite;
+  }
+
+  .karte-glanz {
+    position: relative;
+  }
+  .karte-glanz::before {
+    content: "";
+    position: absolute;
+    left: 1.5rem;
+    right: 1.5rem;
+    top: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, var(--color-lime), transparent);
+    scale: 0 1;
+    transition: scale 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+  .karte-glanz:hover::before {
+    scale: 1 1;
+  }
+  .karte-symbol {
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  .karte-glanz:hover .karte-symbol {
+    background-color: var(--color-lime);
+    color: var(--color-on-lime);
+    box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-lime) 18%, transparent);
+  }
+
+  .aufruf-orb {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(620px, 90vw);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 999px;
+    background: radial-gradient(circle, color-mix(in oklab, var(--ink-lime) 22%, transparent), transparent 62%);
+    pointer-events: none;
+    animation: einladung-orb-atmen 5s ease-in-out infinite;
+  }
+  .aufruf-impuls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    /* Im Leerraum über der Überschrift - mittig lief sie durch den Text. */
+    top: 1.25rem;
+    width: 100%;
+    height: 80px;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+  }
+  .aufruf-impuls path {
+    fill: none;
+    stroke: var(--ink-lime);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.3;
+    filter: drop-shadow(0 0 5px var(--ink-lime));
+  }
+}
+/* Der Glanz liegt mit z-index -1 ZWISCHEN Knopffläche und Schrift: Durch
+   isolation: isolate malt der Knopf seine eigene Fläche zuerst, dann den
+   Glanz, dann den Text. */
+@keyframes knopf-glanz-lauf {
+  from {
+    translate: -110% 0;
+  }
+  to {
+    translate: 110% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .knopf-glanz:hover::before,
+  .knopf-glanz-dauer::before,
+  .aufruf-orb {
+    animation: none;
+  }
+  .karte-glanz::before {
+    transition: none;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
