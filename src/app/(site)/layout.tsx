@@ -5,7 +5,10 @@ import { Lesefortschritt } from "@/components/ui/lesefortschritt";
 import { mainNav } from "@/lib/site-config";
 import { getToggles } from "@/lib/site-toggles";
 import { erfolgeVorhanden } from "@/lib/kundenstimmen";
-import { getStudios } from "@/lib/data";
+import { getStudios, getUpcomingSlots } from "@/lib/data";
+import { beweiseHolen } from "@/lib/beweise";
+import { formatDateShort } from "@/lib/format";
+import { ProbeterminEinladung } from "@/components/probetermin-einladung";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const toggles = await getToggles();
@@ -37,6 +40,31 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const studios = toggles.studio ? await getStudios().catch(() => []) : [];
   const studioLabel = studios.length > 1 ? `${studios.length} Studios` : undefined;
 
+  /*
+   * Die Daten für die Einladung zum Probetraining.
+   *
+   * Sie liegen im Layout und nicht in der Einladung selbst: Die ist eine
+   * Komponente im Browser und käme an die Datenbank gar nicht heran.
+   *
+   * Beide Abfragen fangen ab. Eine Einladung ist Beiwerk - dass die
+   * gesamte Website ausfällt, weil eine Zusatzangabe darin nicht zu holen
+   * war, wäre ein schlechter Tausch. Ohne Termin erscheint sie trotzdem,
+   * nur ohne die Zeile mit dem Datum.
+   */
+  const [naechsteSlots, beweise] = await Promise.all([
+    toggles.studio ? getUpcomingSlots().catch(() => []) : Promise.resolve([]),
+    beweiseHolen(),
+  ]);
+  const naechster = naechsteSlots[0];
+  const einladungTermin = naechster
+    ? [
+        `${formatDateShort(naechster.date)} um ${naechster.startTime} Uhr`,
+        studios.find((s) => s.id === naechster.studioId)?.name,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : null;
+
   return (
     <>
       <a
@@ -55,6 +83,13 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         {children}
       </main>
       <Footer nav={nav} showNewsletter={toggles.newsletter} />
+
+      {/* Wann sie erscheinen darf, entscheidet sie selbst - die Regeln
+          stehen in lib/einladung.ts. Hier steht sie nur bereit. */}
+      <ProbeterminEinladung
+        naechsterTermin={einladungTermin}
+        freieDieseWoche={beweise.freieTermine7Tage}
+      />
     </>
   );
 }
