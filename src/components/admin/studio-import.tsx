@@ -4,8 +4,8 @@ import { useActionState } from "react";
 import { Upload, CheckCircle2, AlertTriangle } from "lucide-react";
 import { importStudios, type ImportResult } from "@/lib/actions/admin-studios";
 
-const beispiel = `Körperformen Hürth; Krankenhausstr. 111; 50354; Hürth; +49 2233 9667181; info@koerperformen.com; 50.8800; 6.8817
-Körperformen Köln; Hohe Str. 100; 50667; Köln; +49 221 1234567; koeln@koerperformen.com; 50.9375; 6.9603`;
+const beispiel = `Körperformen Hürth; Krankenhausstr. 111; 50354; Hürth; +49 2233 9667181; huerth@kformen.com; 50.8800; 6.8817
+Körperformen Köln; Hohe Str. 100; 50667; Köln; +49 221 1234567; koeln@kformen.com; 50.9375; 6.9603`;
 
 /**
  * Sammel-Import für viele Standorte auf einmal.

@@ -56,7 +56,7 @@ export function ZugangFormular({
               name="email"
               required
               autoComplete="off"
-              placeholder="name@koerperformen.com"
+              placeholder="name@kformen.com"
               className={`${adminInput} mt-1`}
             />
           </label>

@@ -7,7 +7,7 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@koerperformen.com";
+  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@kformen.com";
   const adminPassword = process.env.ADMIN_PASSWORD ?? "aendern-Sie-mich123";
 
   const existingAdmin = await prisma.adminUser.findUnique({ where: { email: adminEmail } });
@@ -28,7 +28,7 @@ async function main() {
         postalCode: "50354",
         city: "Hürth",
         phone: "+49 2233 9667181",
-        email: "info@koerperformen.com",
+        email: "huerth@kformen.com",
         mapEmbedUrl:
           "https://www.google.com/maps?q=Krankenhausstr.+111,+50354+H%C3%BCrth&output=embed",
         openingHours:

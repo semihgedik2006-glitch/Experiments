@@ -39,7 +39,7 @@ export const siteConfig = {
   ],
   contact: {
     phone: "+49 2233 9667181",
-    email: "info@koerperformen.com",
+    email: "huerth@kformen.com",
   },
   social: {
     instagram: "https://instagram.com/koerperformen_huerth",
