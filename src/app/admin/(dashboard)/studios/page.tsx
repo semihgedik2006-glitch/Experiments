@@ -8,6 +8,7 @@ import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { AdminPage, EmptyState, StatusBadge, adminInput } from "@/components/admin/ui";
 import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
+import { siteConfig } from "@/lib/site-config";
 
 const inputClass = adminInput;
 
@@ -43,7 +44,7 @@ function StudioFields({
       {defaults && (
         <label className="block sm:col-span-2">
           <span className="text-xs text-muted">
-            Adresse der Standortseite &ndash; koerperformen.de/studio/
+            Adresse der Standortseite &ndash; {new URL(siteConfig.url).host}/studio/
             <strong>{defaults.slug}</strong>
           </span>
           <input
