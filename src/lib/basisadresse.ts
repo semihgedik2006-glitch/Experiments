@@ -10,7 +10,7 @@
  *
  * 1. Sie prüft den eingetragenen Wert, statt ihm zu glauben. Vorher ging
  *    er ungeprüft in `new URL(...)` im Wurzel-Layout - ein Tippfehler in
- *    der Umgebungsvariable ("ems-training.koeln" ohne https://) hätte
+ *    der Umgebungsvariable ("koerperformen-koeln.de" ohne https://) hätte
  *    damit nicht eine Seite kaputtgemacht, sondern alle: Der Aufruf
  *    wirft, und das Layout liegt über jeder einzelnen Seite. Jetzt wird
  *    ein unbrauchbarer Wert verworfen, die Seite läuft mit der
@@ -25,7 +25,7 @@
  */
 
 /** Die Adresse, unter der die Seite am Ende stehen soll. */
-export const VORGESEHENE_ADRESSE = "https://www.ems-training.koeln";
+export const VORGESEHENE_ADRESSE = "https://www.koerperformen-koeln.de";
 
 export type Herkunft = "eingetragen" | "vercel" | "vorgesehen";
 

@@ -7,8 +7,8 @@ import { VORGESEHENE_ADRESSE } from "@/lib/basisadresse";
 /**
  * Die eigene Adresse einmal wirklich aufrufen.
  *
- * Der Anlass ist konkret: ems-training.koeln leitet derzeit auf die
- * Körperformen-Zentrale weiter. Trägt jemand diese Adresse als
+ * Der Anlass ist konkret: ems-training.koeln, die zuerst vorgesehene
+ * Domain, leitete auf die Körperformen-Zentrale weiter. Trägt jemand so eine Adresse als
  * Basisadresse ein, sieht im Adminbereich alles richtig aus - jede
  * kanonische Angabe der Website zeigt dann aber auf eine Seite, die
  * woanders hin weiterleitet. Google folgt der Weiterleitung und schreibt

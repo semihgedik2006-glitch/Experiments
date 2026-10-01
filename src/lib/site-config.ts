@@ -8,9 +8,10 @@ import { basisadresseErmitteln } from "@/lib/basisadresse";
  * und anderen Diensten: "Das hier ist das Original."
  *
  * Genau deshalb darf sie nicht auf eine Adresse zeigen, die woanders hin
- * weiterleitet. Solange ems-training.koeln noch auf die Körperformen-
- * Zentrale umleitet, würde jede Seite Google dorthin schicken - unsere
- * Inhalte würden also der Zentrale zugerechnet.
+ * weiterleitet. So war es bei ems-training.koeln, der zuerst vorgesehenen
+ * Domain: Sie leitete auf die Körperformen-Zentrale um, jede Seite hätte
+ * Google dorthin geschickt - unsere Inhalte wären der Zentrale
+ * zugerechnet worden. Die Seite läuft deshalb unter koerperformen-koeln.de.
  *
  * Ermittlung, Prüfung und Begründung stehen in @/lib/basisadresse - dort
  * steht auch, warum ein falsch eingetragener Wert die Seite nicht mehr

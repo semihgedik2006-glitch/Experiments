@@ -18,8 +18,8 @@ import {
  *
  * Steht dort eine Adresse, die woanders hin weiterleitet, schreibt die
  * Seite ihre eigenen Inhalte dem Ziel der Weiterleitung zu. Genau das
- * droht hier: ems-training.koeln leitet derzeit auf die
- * Körperformen-Zentrale weiter.
+ * drohte hier: ems-training.koeln, die zuerst vorgesehene Domain, leitete
+ * auf die Körperformen-Zentrale weiter.
  *
  * Von innen ist davon nichts zu sehen - die Seite sieht in jedem Fall
  * richtig aus. Deshalb diese Seite: Sie sagt, welche Adresse gilt, woher
