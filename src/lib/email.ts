@@ -67,6 +67,15 @@ async function verschicken(
      * Newsletter - siehe sendNewsletterEmail.
      */
     headers?: Record<string, string>;
+    /**
+     * Wohin ein Klick auf "Antworten" geht.
+     *
+     * Der Absender ist eine Versandadresse, in die niemand hineinschaut.
+     * Antwortet ein Kunde auf seine Bestätigung ("Ich komme 10 Minuten
+     * später"), soll das beim Studio landen - und antwortet das Studio auf
+     * eine Anfrage-Mail, beim Kunden. Ohne Angabe: die Sammeladresse.
+     */
+    replyTo?: string | null;
   },
 ): Promise<boolean> {
   const protokoll = async (ok: boolean, fehler?: string) => {
@@ -95,7 +104,13 @@ async function verschicken(
   }
 
   try {
-    const antwort = await resend.emails.send({ from: FROM, ...nachricht });
+    const { replyTo, ...rest } = nachricht;
+    const antwortAn = replyTo?.trim() || TEAM_EMAIL;
+    const antwort = await resend.emails.send({
+      from: FROM,
+      ...rest,
+      ...(antwortAn ? { replyTo: antwortAn } : {}),
+    });
     // Resend meldet Fehler nicht immer als Ausnahme, sondern im Ergebnis.
     // Ohne diese Prüfung stünde im Protokoll "verschickt", obwohl der
     // Anbieter abgelehnt hat.
@@ -128,6 +143,8 @@ export type TerminAngaben = {
   datum: Date | null;
   /** Schlüssel für den persönlichen Link zum Absagen oder Verschieben. */
   manageToken: string | null;
+  /** Adresse des Studios - dorthin gehen Antworten des Kunden. */
+  antwortAn?: string | null;
 };
 
 /** Der persönliche Link, über den der Gast selbst absagen kann. */
@@ -208,6 +225,7 @@ export async function sendBookingConfirmedEmail(angaben: TerminAngaben) {
 
   return verschicken("BESTAETIGUNG", {
     to: angaben.email,
+    replyTo: angaben.antwortAn,
     subject: "Dein Probetermin bei Körperformen ist bestätigt",
     text: `Hallo ${angaben.name},
 
@@ -232,6 +250,7 @@ Dein Körperformen-Team`,
 export async function sendReminderEmail(angaben: TerminAngaben) {
   return verschicken("ERINNERUNG", {
     to: angaben.email,
+    replyTo: angaben.antwortAn,
     subject: `Erinnerung: ${angaben.dateLabel ? `dein Probetermin am ${angaben.dateLabel}` : "dein Probetermin"}`,
     text: `Hallo ${angaben.name},
 
@@ -252,6 +271,7 @@ export async function sendCancelledByGuestEmail(angaben: TerminAngaben) {
 
   return verschicken("ABSAGE_GAST", {
     to: angaben.email,
+    replyTo: angaben.antwortAn,
     subject: "Dein Probetermin wurde abgesagt",
     text: `Hallo ${angaben.name},
 
@@ -272,6 +292,7 @@ export async function sendMovedByGuestEmail(angaben: TerminAngaben) {
 
   return verschicken("VERSCHOBEN_GAST", {
     to: angaben.email,
+    replyTo: angaben.antwortAn,
     subject: "Dein Probetermin wurde verschoben",
     text: `Hallo ${angaben.name},
 
@@ -312,6 +333,8 @@ export type AnfrageAngaben = {
   nachricht: string | null;
   aktionsCode: string | null;
   herkunft: string | null;
+  /** Adresse des Studios - dorthin gehen Antworten des Kunden. */
+  antwortAn?: string | null;
 };
 
 /**
@@ -325,6 +348,7 @@ export type AnfrageAngaben = {
 export async function sendAnfrageEingangEmail(angaben: AnfrageAngaben) {
   return verschicken("ANFRAGE_EINGANG", {
     to: angaben.email,
+    replyTo: angaben.antwortAn,
     subject: "Deine Anfrage ist angekommen",
     text: `Hallo ${angaben.name},
 
@@ -370,10 +394,13 @@ export async function sendAnfrageInternEmail(an: string, angaben: AnfrageAngaben
 
   return verschicken("ANFRAGE_INTERN", {
     to: an,
+    replyTo: angaben.email,
     subject: `Neue Probetermin-Anfrage: ${angaben.name}${angaben.studioName ? ` (${angaben.studioName})` : ""}`,
     text: `Es ist eine neue Anfrage eingegangen.
 
 ${zeilen.join("\n")}${angaben.nachricht ? `\n\nNachricht:\n${angaben.nachricht}` : ""}
+
+Wer auf diese Mail antwortet, schreibt direkt an ${angaben.name}.
 
 Im Adminbereich bearbeiten:
 ${siteConfig.url}/admin/bookings?status=PENDING`,
@@ -427,6 +454,7 @@ export async function sendNachfassInternEmail(
 
   return verschicken("NACHFASS_INTERN", {
     to: an,
+    replyTo: offen.length === 1 ? offen[0].email : null,
     subject:
       offen.length === 1
         ? "Eine Probetermin-Anfrage wartet noch auf Antwort"
@@ -454,6 +482,7 @@ export async function sendKontaktInternEmail(
 ) {
   return verschicken("KONTAKT_INTERN", {
     to: an,
+    replyTo: nachricht.email,
     subject: `Neue Nachricht über das Kontaktformular: ${nachricht.subject}`,
     text: `Name:    ${nachricht.name}
 E-Mail:  ${nachricht.email}${nachricht.phone ? `\nTelefon: ${nachricht.phone}` : ""}
@@ -487,6 +516,7 @@ export async function sendBewertungEmail(
 ) {
   return verschicken("BEWERTUNG", {
     to: angaben.email,
+    replyTo: angaben.antwortAn,
     subject: "Wie war dein Probetraining?",
     text: `Hallo ${angaben.name},
 
@@ -521,9 +551,11 @@ export async function sendWartelisteFreiEmail(angaben: {
   studioName: string | null;
   studioAdresse: string | null;
   link: string;
+  antwortAn?: string | null;
 }) {
   return verschicken("WARTELISTE_FREI", {
     to: angaben.email,
+    replyTo: angaben.antwortAn,
     subject: `Ein Platz ist frei: ${angaben.terminZeile}`,
     text: `Hallo ${angaben.name},
 
@@ -610,6 +642,7 @@ export async function sendWartelisteInternEmail(
 
   return verschicken("WARTELISTE_INTERN", {
     to: an,
+    replyTo: angaben.email,
     subject: `Warteliste: ${angaben.name} für ${angaben.terminZeile}`,
     text: `Jemand hat sich auf eine belegte Zeit gesetzt.
 

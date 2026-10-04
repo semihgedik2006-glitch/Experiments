@@ -7,7 +7,7 @@ import type { TerminAngaben } from "@/lib/email";
  * E-Mails brauchen. An einer Stelle, damit Bestätigung, Erinnerung und
  * Absage denselben Termin gleich beschreiben.
  */
-type Ort = { name: string; street: string; postalCode: string; city: string };
+type Ort = { name: string; street: string; postalCode: string; city: string; email?: string | null };
 
 export type BuchungMitTermin = {
   id: string;
@@ -46,6 +46,9 @@ export function terminAngaben(buchung: BuchungMitTermin): TerminAngaben {
     studioAdresse: ort ? `${ort.street}, ${ort.postalCode} ${ort.city}` : null,
     datum: slot?.date ?? null,
     manageToken: buchung.manageToken,
+    // Fehlt sie (Studio ohne eigene Adresse, oder die Abfrage hat sie
+    // nicht mitgeladen), greift beim Versand die Sammeladresse.
+    antwortAn: ort?.email?.trim() || null,
   };
 }
 

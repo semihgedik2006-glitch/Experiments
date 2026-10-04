@@ -214,6 +214,7 @@ export async function createBooking(
       phone: buchung.phone,
       erreichbarkeit: erreichbarkeitText(buchung.erreichbarkeit),
       studioName: buchung.studio?.name ?? null,
+      antwortAn: buchung.studio?.email ?? null,
       terminZeile: buchung.slot
         ? `${formatDate(buchung.slot.date)} um ${buchung.slot.startTime} Uhr`
         : "kein fester Termin - individuell abzustimmen",

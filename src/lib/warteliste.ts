@@ -65,6 +65,7 @@ export async function wartelisteBenachrichtigen(slotId: string | null | undefine
         studioAdresse: slot.studio
           ? `${slot.studio.street}, ${slot.studio.postalCode} ${slot.studio.city}`
           : null,
+        antwortAn: slot.studio?.email ?? null,
         link: slot.studio
           ? `${siteConfig.url}/studio/${slot.studio.slug}#termin`
           : `${siteConfig.url}/probetermin`,
