@@ -78,7 +78,7 @@ export default async function AdminAdressePage() {
   const herkunftText: Record<typeof adresse.herkunft, string> = {
     eingetragen: "aus der Umgebungsvariable NEXT_PUBLIC_SITE_URL",
     vercel: "von Vercel (die Produktionsadresse des Projekts)",
-    vorgesehen: "aus dem Quelltext - als Notnagel, weil nichts anderes gesetzt ist",
+    vorgesehen: "aus dem Quelltext - weil NEXT_PUBLIC_SITE_URL nicht gesetzt ist (eine andere Domain, die Vercel nennt, wird nicht übernommen: sie könnte nur eine Weiterleitung sein)",
   };
 
   return (

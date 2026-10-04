@@ -107,7 +107,19 @@ function vercelAdresse(env: NodeJS.ProcessEnv): Basisadresse | null {
   const geprueft = adressePruefen(
     produktion.includes("://") ? produktion : `https://${produktion}`,
   );
-  return geprueft.ok ? { url: geprueft.url, herkunft: "vercel" } : null;
+  if (!geprueft.ok) return null;
+
+  // Vercel nennt hier eine der eigenen Domains des Projekts - welche, legt
+  // Vercel fest, nicht wir. Sobald ems-training.koeln als reine
+  // Weiterleitung eingetragen war, stand genau die hier, und jede Seite
+  // nannte Google eine Adresse als Original, die woanders hin umleitet.
+  // Deshalb nur zwei Fälle: die vercel.app-Adresse (solange es noch keine
+  // eigene Domain gibt) oder die vorgesehene Domain selbst. Jede andere
+  // Domain ist womöglich nur eine Weiterleitung.
+  const host = new URL(geprueft.url).hostname;
+  const vorgesehen = new URL(VORGESEHENE_ADRESSE).hostname;
+  if (!host.endsWith(".vercel.app") && host !== vorgesehen) return null;
+  return { url: geprueft.url, herkunft: "vercel" };
 }
 
 /**
