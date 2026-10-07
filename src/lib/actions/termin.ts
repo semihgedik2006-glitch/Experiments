@@ -78,7 +78,9 @@ export async function terminAbsagen(
 
   revalidatePath("/admin/bookings");
   revalidatePath("/admin");
-  revalidatePath("/probetermin");
+  // Der Platz ist wieder frei - auf allen öffentlichen Seiten, nicht nur
+  // auf der Buchungsseite.
+  revalidatePath("/", "layout");
 
   return { ok: true, message: "Dein Termin ist abgesagt. Wir haben dir eine Bestätigung geschickt." };
 }
@@ -172,7 +174,9 @@ export async function terminVerschieben(
 
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/verfuegbarkeit");
-  revalidatePath("/probetermin");
+  // Der Platz ist wieder frei - auf allen öffentlichen Seiten, nicht nur
+  // auf der Buchungsseite.
+  revalidatePath("/", "layout");
 
   return { ok: true, message: "Dein Termin wurde verschoben. Die Bestätigung ist unterwegs." };
 }

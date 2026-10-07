@@ -44,6 +44,20 @@ async function ladeStudio(slug: string) {
   return prisma.studioLocation.findUnique({ where: { slug } });
 }
 
+/**
+ * Alle Standortseiten beim Veröffentlichen fertig erzeugen.
+ *
+ * Vorher entstand jede erst beim Aufruf - nach einer Pause dauerte das auf
+ * der Live-Seite drei bis fünf Sekunden. Ausgerechnet auf den Seiten, auf
+ * denen Leute aus der Google-Suche nach "EMS Hürth" landen. Ein neues
+ * Studio, das erst später angelegt wird, entsteht weiter beim ersten
+ * Aufruf (dynamicParams bleibt an).
+ */
+export async function generateStaticParams() {
+  const studios = await prisma.studioLocation.findMany({ select: { slug: true } });
+  return studios.map(({ slug }) => ({ slug }));
+}
+
 export async function generateMetadata({
   params,
 }: {

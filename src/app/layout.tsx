@@ -28,6 +28,23 @@ const archivo = Archivo({
   display: "swap",
 });
 
+/**
+ * Spätestens alle fünf Minuten frisch.
+ *
+ * Die öffentlichen Seiten werden einmal erzeugt und dann als fertige
+ * Fassung ausgeliefert - schnell, aber mit dem Stand von damals. Darauf
+ * stehen freie Termine ("Nächster freier Termin: Mi., 30.09. um 18:17").
+ * Ohne Frist blieb diese Angabe stehen, bis jemand im Adminbereich etwas
+ * änderte oder neu veröffentlicht wurde: ein längst belegter Termin, oder
+ * einer, der schon vorbei ist, wurde weiter als frei angezeigt.
+ *
+ * Jetzt wird jede Seite beim ersten Aufruf nach Ablauf der fünf Minuten im
+ * Hintergrund neu erzeugt; der Besucher bekommt trotzdem sofort eine
+ * Antwort. Eine Anfrage, Absage oder Verschiebung frischt zusätzlich sofort
+ * auf (lib/actions/booking.ts, termin.ts).
+ */
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {

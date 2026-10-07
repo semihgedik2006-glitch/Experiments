@@ -253,6 +253,10 @@ export async function createBooking(
 
   revalidatePath("/admin/bookings");
   revalidatePath("/admin");
+  // Ein belegter Platz ändert, was öffentlich als frei angezeigt wird:
+  // Startseite, Buchungsseite, Standortseite, Einladung. Ohne das bliebe
+  // er dort bis zu fünf Minuten frei (siehe app/layout.tsx).
+  if (buchung.slot) revalidatePath("/", "layout");
 
   return { ok: true, message: t.danke };
 }
