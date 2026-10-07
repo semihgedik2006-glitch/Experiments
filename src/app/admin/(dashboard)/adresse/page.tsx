@@ -177,9 +177,9 @@ export default async function AdminAdressePage() {
             <ol className="space-y-5">
               <Schritt nummer={1} titel="Domain auf das Projekt zeigen lassen" erledigt={eigeneDomain}>
                 <p>
-                  {VORGESEHENE_ADRESSE.replace("https://", "")} leitet derzeit auf die
-                  Körperformen-Zentrale weiter. Solange das so ist, ist diese Website nur
-                  unter ihrer Vercel-Adresse erreichbar.
+                  Solange {VORGESEHENE_ADRESSE.replace("https://", "")} nicht auf dieses
+                  Projekt zeigt, ist diese Website nur unter ihrer Vercel-Adresse
+                  erreichbar.
                 </p>
                 <p>
                   In Vercel unter <strong className="text-foreground">Settings › Domains</strong> die

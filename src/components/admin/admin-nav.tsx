@@ -30,6 +30,7 @@ import {
   Images,
   Quote,
   Globe,
+  ClipboardCheck,
 } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/social-icons";
 import type { SymbolTyp } from "@/components/admin/ui";
@@ -45,7 +46,13 @@ type NavItem = {
 type NavGroup = { title: string | null; items: NavItem[] };
 
 const groups: NavGroup[] = [
-  { title: null, items: [{ href: "/admin", label: "Übersicht", icon: LayoutDashboard }] },
+  {
+    title: null,
+    items: [
+      { href: "/admin", label: "Übersicht", icon: LayoutDashboard },
+      { href: "/admin/startklar", label: "Startklar", icon: ClipboardCheck, nurLeitung: true },
+    ],
+  },
   {
     title: "Termine",
     items: [

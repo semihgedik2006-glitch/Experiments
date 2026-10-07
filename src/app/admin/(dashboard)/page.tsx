@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { CalendarCheck, CalendarClock } from "lucide-react";
+import { AlertTriangle, ArrowRight, CalendarCheck, CalendarClock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AdminPage, AdminSection, EmptyState, Panel, StatusBadge } from "@/components/admin/ui";
 import { TrendKarte } from "@/components/admin/trend";
 import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
+import { startklarOffen } from "@/lib/startklar";
 
 export default async function AdminDashboardPage() {
   const admin = await verlangeAdmin();
@@ -17,6 +18,10 @@ export default async function AdminDashboardPage() {
   // Der Standort steht direkt an der Anfrage - auch bei Anfragen ohne
   // feste Zeit.
   const buchungBereich = nurStudio ? { studioId: nurStudio } : {};
+
+  // Nur für die Leitung: Eine Studioleitung kann Vercel-Einstellungen
+  // ohnehin nicht ändern.
+  const startklarFehlt = admin.istLeitung ? await startklarOffen() : 0;
 
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
@@ -91,6 +96,21 @@ export default async function AdminDashboardPage() {
       title="Übersicht"
       description={admin.studioName ? `Alle Zahlen gelten für ${admin.studioName}.` : undefined}
     >
+      {startklarFehlt > 0 && (
+        <Link
+          href="/admin/startklar"
+          className="mb-6 flex items-center gap-3 rounded-xl border border-amber-500/50 bg-amber-500/10 p-4 text-sm transition-colors hover:border-amber-500"
+        >
+          <AlertTriangle size={17} className="shrink-0 text-amber-600" aria-hidden />
+          <span className="flex-1">
+            {/* Ohne Zahl: Die schnelle Prüfung hier lässt Domain und
+                Postfächer aus und käme auf eine andere Zahl als die Seite. */}
+            <strong className="font-semibold">Vor dem Start ist noch etwas offen.</strong>{" "}
+            <span className="text-muted">Was genau und wie es geht, steht unter Startklar.</span>
+          </span>
+          <ArrowRight size={16} className="shrink-0 text-accent" aria-hidden />
+        </Link>
+      )}
       <AdminSection
         title="Wartet auf dich"
         description={
