@@ -1940,6 +1940,135 @@ summary::-webkit-details-marker {
   }
 }
 
+/* ==========================================================================
+   DIE VOLLE WOCHE (Startseite, "Das kennst du")
+
+   Ablauf beim ersten Hinsehen: Drei Studio-Blöcke fallen in die Woche,
+   stoßen an Termine und werden rot umrandet, dann verblassen sie. Danach
+   setzt sich ein einziger schmaler Lime-Block in eine Lücke, und das
+   Schild "20 Min" erscheint. Ohne JavaScript und bei "Bewegung
+   reduzieren" steht nur das Endbild da.
+
+   kal-bereit hält jede Animation auf ihrem ersten Bild an (fill-mode
+   both), kal-laeuft lässt sie los.
+   ========================================================================== */
+.kal-karte {
+  background-color: var(--ink);
+  border: 1px solid var(--ink-border);
+  box-shadow: 0 30px 70px -40px rgb(0 0 0 / 0.6), 0 0 80px -50px var(--ink-lime);
+}
+.kal-tag {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--ink-foreground, #f4f4ef);
+  opacity: 0.85;
+}
+.kal-zeit {
+  font-size: 10px;
+  fill: var(--ink-foreground, #f4f4ef);
+  opacity: 0.55;
+}
+.kal-linie {
+  stroke: var(--ink-foreground, #f4f4ef);
+  stroke-opacity: 0.08;
+}
+.kal-belegt {
+  fill: rgb(255 255 255 / 0.11);
+}
+.kal-studio rect {
+  fill: rgb(251 146 60 / 0.16);
+  stroke: #fb923c;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+.kal-studio text {
+  font-size: 10px;
+  font-weight: 600;
+  fill: #fdba74;
+}
+/* Endbild: verblasst - "passt nicht". */
+.kal-studio {
+  opacity: 0.32;
+}
+.kal-ems-block {
+  fill: var(--ink-lime);
+  filter: drop-shadow(0 0 6px var(--ink-lime));
+}
+.kal-ems-linie {
+  fill: none;
+  stroke: var(--ink-lime);
+  stroke-width: 1.5;
+  stroke-opacity: 0.7;
+}
+.kal-ems-schild rect {
+  fill: var(--ink-lime);
+}
+.kal-ems-schild text {
+  font-size: 12px;
+  font-weight: 700;
+  fill: #0d0f0a;
+}
+
+.kal-bereit .kal-studio,
+.kal-laeuft .kal-studio {
+  animation: kal-studio 2.6s var(--v, 0s) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.kal-bereit .kal-studio rect,
+.kal-laeuft .kal-studio rect {
+  animation: kal-stoss 2.6s var(--v, 0s) ease both;
+}
+.kal-bereit .kal-ems-block,
+.kal-laeuft .kal-ems-block {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kal-ems 0.7s 2.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.kal-bereit .kal-ems-linie,
+.kal-laeuft .kal-ems-linie {
+  stroke-dasharray: 120;
+  animation: kal-linie 0.6s 3.4s ease-out both;
+}
+.kal-bereit .kal-ems-schild,
+.kal-laeuft .kal-ems-schild {
+  animation: kal-schild 0.5s 3.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.kal-bereit * {
+  animation-play-state: paused !important;
+}
+
+@keyframes kal-studio {
+  0% { opacity: 0; transform: translateY(-14px); }
+  18% { opacity: 1; transform: translateY(0); }
+  30% { transform: translateX(-2px); }
+  36% { transform: translateX(2px); }
+  42% { transform: translateX(0); }
+  70% { opacity: 1; }
+  100% { opacity: 0.32; }
+}
+@keyframes kal-stoss {
+  0%, 24% { stroke: #fb923c; }
+  32%, 70% { stroke: #ef4444; fill: rgb(239 68 68 / 0.22); }
+  100% { stroke: #fb923c; }
+}
+@keyframes kal-ems {
+  0% { opacity: 0; transform: scale(0.4); }
+  60% { opacity: 1; transform: scale(1.25); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes kal-linie {
+  from { stroke-dashoffset: 120; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes kal-schild {
+  from { opacity: 0; transform: translateY(6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kal-bereit *,
+  .kal-laeuft * {
+    animation: none !important;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
