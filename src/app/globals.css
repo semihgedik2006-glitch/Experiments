@@ -1941,35 +1941,46 @@ summary::-webkit-details-marker {
 }
 
 /* ==========================================================================
-   DIE VOLLE WOCHE (Startseite, "Das kennst du")
+   DIE VOLLE WOCHE (Startseite, "Das kennst du" - components/home/zeit-problem)
 
-   Ablauf beim ersten Hinsehen: Drei Studio-Blöcke fallen in die Woche,
-   stoßen an Termine und werden rot umrandet, dann verblassen sie. Danach
-   setzt sich ein einziger schmaler Lime-Block in eine Lücke, und das
-   Schild "20 Min" erscheint. Ohne JavaScript und bei "Bewegung
-   reduzieren" steht nur das Endbild da.
+   Ein Takt für den ganzen Abschnitt. Jedes Element bekommt seinen Einsatz
+   als --ab (Sekunden ab Start). Der Grundzustand ist das ENDBILD: Ohne
+   JavaScript und bei "Bewegung reduzieren" ist sofort alles da.
 
-   kal-bereit hält jede Animation auf ihrem ersten Bild an (fill-mode
-   both), kal-laeuft lässt sie los.
+   .zp-bereit  hält jede Animation auf ihrem ersten Bild an,
+   .zp-laeuft  lässt sie los.
+
+   Bewegt werden nur opacity und transform - die rechnet die Grafikkarte.
+   Die Kurve cubic-bezier(0.16, 1, 0.3, 1) startet zügig und läuft weich
+   aus; dieselbe wie bei der Einladung und den Reveals der Seite.
    ========================================================================== */
+.zp {
+  --weich: cubic-bezier(0.16, 1, 0.3, 1);
+  --federnd: cubic-bezier(0.34, 1.45, 0.64, 1);
+}
+.zp-schein {
+  background: radial-gradient(circle, color-mix(in oklab, var(--color-lime) 16%, transparent), transparent 65%);
+}
 .kal-karte {
   background-color: var(--ink);
   border: 1px solid var(--ink-border);
-  box-shadow: 0 30px 70px -40px rgb(0 0 0 / 0.6), 0 0 80px -50px var(--ink-lime);
+  box-shadow:
+    0 30px 70px -40px rgb(0 0 0 / 0.6),
+    0 0 80px -50px var(--ink-lime);
 }
 .kal-tag {
   font-size: 11px;
   font-weight: 600;
-  fill: var(--ink-foreground, #f4f4ef);
+  fill: var(--ink-foreground);
   opacity: 0.85;
 }
 .kal-zeit {
   font-size: 10px;
-  fill: var(--ink-foreground, #f4f4ef);
+  fill: var(--ink-foreground);
   opacity: 0.55;
 }
 .kal-linie {
-  stroke: var(--ink-foreground, #f4f4ef);
+  stroke: var(--ink-foreground);
   stroke-opacity: 0.08;
 }
 .kal-belegt {
@@ -2008,63 +2019,176 @@ summary::-webkit-details-marker {
   font-weight: 700;
   fill: #0d0f0a;
 }
+/* Endbild unten: 4,5 Std. durchgestrichen. */
+.zp-alt-zahl::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 52%;
+  height: 2px;
+  border-radius: 2px;
+  background: #ef4444;
+  transform-origin: left;
+}
 
-.kal-bereit .kal-studio,
-.kal-laeuft .kal-studio {
-  animation: kal-studio 2.6s var(--v, 0s) cubic-bezier(0.16, 1, 0.3, 1) both;
+/* ---------- Der Ablauf ---------- */
+.zp-bereit .zp-auf,
+.zp-laeuft .zp-auf {
+  animation: zp-auf 0.9s var(--ab, 0s) var(--weich) both;
 }
-.kal-bereit .kal-studio rect,
-.kal-laeuft .kal-studio rect {
-  animation: kal-stoss 2.6s var(--v, 0s) ease both;
+.zp-bereit .zp-karte,
+.zp-laeuft .zp-karte {
+  animation: zp-karte 1.1s var(--ab, 0s) var(--weich) both;
 }
-.kal-bereit .kal-ems-block,
-.kal-laeuft .kal-ems-block {
+.zp-bereit .kal-belegt,
+.zp-laeuft .kal-belegt {
+  transform-box: fill-box;
+  transform-origin: top;
+  animation: zp-fuellen 0.7s var(--ab, 0s) var(--weich) both;
+}
+.zp-bereit .kal-studio,
+.zp-laeuft .kal-studio {
+  animation: zp-studio 2.4s var(--ab, 0s) both;
+}
+.zp-bereit .kal-studio rect,
+.zp-laeuft .kal-studio rect {
+  animation: zp-stoss 2.4s var(--ab, 0s) ease both;
+}
+.zp-bereit .kal-ems-block,
+.zp-laeuft .kal-ems-block {
   transform-box: fill-box;
   transform-origin: center;
-  animation: kal-ems 0.7s 2.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation:
+    zp-ems 0.9s 3.7s var(--federnd) both,
+    zp-atmen 2.8s 4.8s ease-in-out infinite;
 }
-.kal-bereit .kal-ems-linie,
-.kal-laeuft .kal-ems-linie {
+.zp-bereit .kal-ems-linie,
+.zp-laeuft .kal-ems-linie {
   stroke-dasharray: 120;
-  animation: kal-linie 0.6s 3.4s ease-out both;
+  animation: zp-linie 0.7s 4.2s var(--weich) both;
 }
-.kal-bereit .kal-ems-schild,
-.kal-laeuft .kal-ems-schild {
-  animation: kal-schild 0.5s 3.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+.zp-bereit .kal-ems-schild,
+.zp-laeuft .kal-ems-schild {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: zp-schild 0.7s 4.6s var(--federnd) both;
 }
-.kal-bereit * {
+.zp-bereit .zp-alt,
+.zp-laeuft .zp-alt {
+  animation: zp-auf 0.8s 2.2s var(--weich) both;
+}
+.zp-bereit .zp-alt-zahl::after,
+.zp-laeuft .zp-alt-zahl::after {
+  animation: zp-strich 0.5s 3.4s var(--weich) both;
+}
+.zp-bereit .zp-neu,
+.zp-laeuft .zp-neu {
+  animation: zp-auf 0.8s 4.8s var(--federnd) both;
+}
+.zp-bereit *,
+.zp-bereit *::after {
   animation-play-state: paused !important;
 }
 
-@keyframes kal-studio {
-  0% { opacity: 0; transform: translateY(-14px); }
-  18% { opacity: 1; transform: translateY(0); }
-  30% { transform: translateX(-2px); }
-  36% { transform: translateX(2px); }
-  42% { transform: translateX(0); }
-  70% { opacity: 1; }
-  100% { opacity: 0.32; }
+@keyframes zp-auf {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
 }
-@keyframes kal-stoss {
-  0%, 24% { stroke: #fb923c; }
-  32%, 70% { stroke: #ef4444; fill: rgb(239 68 68 / 0.22); }
-  100% { stroke: #fb923c; }
+@keyframes zp-karte {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
 }
-@keyframes kal-ems {
-  0% { opacity: 0; transform: scale(0.4); }
-  60% { opacity: 1; transform: scale(1.25); }
-  100% { opacity: 1; transform: scale(1); }
+@keyframes zp-fuellen {
+  from {
+    opacity: 0;
+    transform: scaleY(0.2);
+  }
 }
-@keyframes kal-linie {
-  from { stroke-dashoffset: 120; }
-  to { stroke-dashoffset: 0; }
+/* Fällt hinein, federt kurz nach, stößt an (kleines Zucken), verblasst. */
+@keyframes zp-studio {
+  0% {
+    opacity: 0;
+    transform: translateY(-22px);
+    animation-timing-function: var(--federnd);
+  }
+  22% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateX(-2.5px);
+  }
+  36% {
+    transform: translateX(2px);
+  }
+  42% {
+    transform: translateX(0);
+  }
+  72% {
+    opacity: 1;
+    animation-timing-function: var(--weich);
+  }
+  100% {
+    opacity: 0.32;
+  }
 }
-@keyframes kal-schild {
-  from { opacity: 0; transform: translateY(6px); }
+@keyframes zp-stoss {
+  0%,
+  24% {
+    stroke: #fb923c;
+  }
+  32%,
+  68% {
+    stroke: #ef4444;
+    fill: rgb(239 68 68 / 0.24);
+  }
+  100% {
+    stroke: #fb923c;
+  }
+}
+@keyframes zp-ems {
+  from {
+    opacity: 0;
+    transform: scaleX(0.1) scaleY(2.4);
+  }
+}
+/* Danach atmet der Block - leise, damit er nicht nervt. */
+@keyframes zp-atmen {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px var(--ink-lime));
+  }
+  50% {
+    filter: drop-shadow(0 0 11px var(--ink-lime));
+  }
+}
+@keyframes zp-linie {
+  from {
+    stroke-dashoffset: 120;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes zp-schild {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+@keyframes zp-strich {
+  from {
+    transform: scaleX(0);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .kal-bereit *,
-  .kal-laeuft * {
+  .zp *,
+  .zp *::after {
     animation: none !important;
   }
 }

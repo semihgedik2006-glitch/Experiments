@@ -1,3 +1,4 @@
+import { ZeitProblem } from "@/components/home/zeit-problem";
 import { Hero } from "@/components/home/hero";
 import { StatsStrip } from "@/components/home/stats-strip";
 import { UspGrid } from "@/components/home/usp-grid";
@@ -81,6 +82,7 @@ export default async function Home() {
       {/* Weniger als zwei Zahlen sind keine Aussage, sondern eine
           Behauptung - dann entfällt das Band lieber ganz. */}
       {zahlen.length >= 2 && <StatsStrip zahlen={zahlen} />}
+      <ZeitProblem />
       <UspGrid standorte={studios.length} zeitspanne={zeitspanne} />
       {/* Die Trenner stehen dort, wo zwei helle Abschnitte aneinander
           stoßen - genau die Stellen, an denen die Seite beim Scrollen
