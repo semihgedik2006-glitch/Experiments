@@ -2076,15 +2076,15 @@ summary::-webkit-details-marker {
 }
 .zp-bereit .zp-alt,
 .zp-laeuft .zp-alt {
-  animation: zp-auf 0.8s 2.2s var(--weich) both;
+  animation: zp-auf 0.8s calc(var(--aufloesung, 3.4s) - 1.2s) var(--weich) both;
 }
 .zp-bereit .zp-alt-zahl::after,
 .zp-laeuft .zp-alt-zahl::after {
-  animation: zp-strich 0.5s 3.4s var(--weich) both;
+  animation: zp-strich 0.5s var(--aufloesung, 3.4s) var(--weich) both;
 }
 .zp-bereit .zp-neu,
 .zp-laeuft .zp-neu {
-  animation: zp-auf 0.8s 4.8s var(--federnd) both;
+  animation: zp-auf 0.8s calc(var(--aufloesung, 3.4s) + 1.4s) var(--federnd) both;
 }
 .zp-bereit *,
 .zp-bereit *::after {
@@ -2186,6 +2186,244 @@ summary::-webkit-details-marker {
     transform: scaleX(0);
   }
 }
+/* ---------- Probleme auf den Unterseiten (components/problem/unterseiten) ----------
+   Gleicher Rahmen, gleicher Takt wie "Die volle Woche". Grundzustand ist
+   jeweils das Endbild. */
+
+/* EMS-Training: Regler je Muskelgruppe */
+.zr-name {
+  font-size: 10.5px;
+  fill: var(--ink-foreground);
+  opacity: 0.8;
+}
+.zr-spur {
+  fill: rgb(255 255 255 / 0.1);
+}
+.zr-fuellung {
+  fill: var(--ink-lime);
+}
+.zr-knopf {
+  fill: var(--ink-lime);
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 5px color-mix(in oklab, var(--ink-lime) 60%, transparent));
+}
+.zp-bereit .zr-fuellung,
+.zp-laeuft .zr-fuellung {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: zr-fuellen 0.9s var(--ab, 0s) var(--federnd) both;
+}
+.zp-bereit .zr-knopf,
+.zp-laeuft .zr-knopf {
+  animation: zr-knopf 0.9s var(--ab, 0s) var(--federnd) both;
+}
+/* Vorher: alle auf demselben Wert, grau - "einheitlich". */
+@keyframes zr-fuellen {
+  from {
+    transform: scaleX(var(--von, 1));
+    fill: rgb(255 255 255 / 0.45);
+  }
+}
+@keyframes zr-knopf {
+  from {
+    transform: translateX(var(--dx, 0));
+    fill: #d9dbd2;
+  }
+}
+
+/* Studios: Karte */
+.nh-ring {
+  fill: none;
+  stroke: var(--ink-lime);
+  stroke-opacity: 0.2;
+  stroke-width: 1.2;
+  stroke-dasharray: 3 6;
+}
+.nh-studio {
+  fill: rgb(255 255 255 / 0.75);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.nh-naechstes {
+  fill: var(--ink-lime);
+  transform: scale(1.5);
+  filter: drop-shadow(0 0 6px var(--ink-lime));
+}
+.nh-linie {
+  stroke: var(--ink-lime);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.nh-du-punkt {
+  fill: var(--ink-foreground);
+  stroke: var(--ink-lime);
+  stroke-width: 3;
+}
+.nh-du-text {
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--ink-foreground);
+}
+.nh-schild rect {
+  fill: var(--ink-lime);
+}
+.nh-schild text {
+  font-size: 11px;
+  font-weight: 700;
+  fill: #0d0f0a;
+}
+.zp-bereit .nh-studio,
+.zp-laeuft .nh-studio {
+  animation: zp-pop 0.5s var(--ab, 0s) var(--federnd) both;
+}
+.zp-bereit .nh-naechstes,
+.zp-laeuft .nh-naechstes {
+  animation:
+    zp-pop 0.5s var(--ab, 0s) var(--federnd) both,
+    nh-gewinner 0.7s 2.8s var(--federnd) both;
+}
+.zp-bereit .nh-ring,
+.zp-laeuft .nh-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nh-ring 1s var(--ab, 0s) var(--weich) both;
+}
+.zp-bereit .nh-du,
+.zp-laeuft .nh-du {
+  animation: zp-pop 0.6s 1.3s var(--federnd) both;
+}
+.zp-bereit .nh-linie,
+.zp-laeuft .nh-linie {
+  stroke-dasharray: 400;
+  animation: zp-zeichnen 0.8s 2.3s var(--weich) both;
+}
+.zp-bereit .nh-schild,
+.zp-laeuft .nh-schild {
+  animation: zp-pop 0.6s 3.1s var(--federnd) both;
+}
+@keyframes zp-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+@keyframes nh-gewinner {
+  from {
+    transform: scale(1);
+    fill: rgb(255 255 255 / 0.75);
+    filter: none;
+  }
+}
+@keyframes nh-ring {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+@keyframes zp-zeichnen {
+  from {
+    stroke-dashoffset: 400;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Preise: zwei Wege */
+.pr-zeile {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  fill: var(--ink-foreground);
+  opacity: 0.6;
+}
+.pr-schritt rect {
+  fill: rgb(255 255 255 / 0.06);
+  stroke-width: 1.5;
+}
+.pr-titel {
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--ink-foreground);
+}
+.pr-unter {
+  font-size: 9.5px;
+  fill: var(--ink-foreground);
+  opacity: 0.65;
+}
+.pr-alt rect {
+  stroke: #fb923c;
+  stroke-opacity: 0.7;
+}
+.pr-frage rect {
+  stroke: #ef4444;
+  stroke-dasharray: 4 3;
+  fill: rgb(239 68 68 / 0.12);
+}
+.pr-neu rect {
+  stroke: var(--ink-lime);
+}
+.pr-fertig rect {
+  fill: var(--ink-lime);
+  stroke: var(--ink-lime);
+  filter: drop-shadow(0 0 8px color-mix(in oklab, var(--ink-lime) 55%, transparent));
+}
+.pr-fertig .pr-titel,
+.pr-fertig .pr-unter {
+  fill: #0d0f0a;
+}
+.pr-pfeil {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pr-pfeil-alt {
+  stroke: #fb923c;
+  stroke-opacity: 0.7;
+}
+.pr-pfeil-neu {
+  stroke: var(--ink-lime);
+}
+/* Endbild: Der klassische Weg tritt zurück. */
+.pr-reihe-alt {
+  opacity: 0.5;
+}
+.zp-bereit .pr-schritt,
+.zp-laeuft .pr-schritt {
+  animation: zp-auf 0.7s var(--ab, 0s) var(--weich) both;
+}
+.zp-bereit .pr-fertig,
+.zp-laeuft .pr-fertig {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: zp-pop 0.7s var(--ab, 0s) var(--federnd) both;
+}
+.zp-bereit .pr-pfeil,
+.zp-laeuft .pr-pfeil {
+  stroke-dasharray: 40;
+  animation: pr-pfeil 0.4s var(--ab, 0s) var(--weich) both;
+}
+.zp-bereit .pr-reihe-alt,
+.zp-laeuft .pr-reihe-alt {
+  animation: pr-zurueck 0.8s 2s var(--weich) both;
+}
+@keyframes pr-pfeil {
+  from {
+    stroke-dashoffset: 40;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes pr-zurueck {
+  from {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .zp *,
   .zp *::after {

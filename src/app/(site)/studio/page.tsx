@@ -8,6 +8,7 @@ import { StudioList } from "@/components/studio/studio-list";
 import { StandortUebersicht } from "@/components/studio/standort-uebersicht";
 import { Container } from "@/components/ui/container";
 import { notFound } from "next/navigation";
+import { StudioProblem } from "@/components/problem/unterseiten";
 
 export const metadata: Metadata = {
   // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
@@ -70,6 +71,14 @@ export default async function StudioPage() {
       )}
 
       <StudioList studios={mitTerminen} />
+
+      <StudioProblem
+        studios={studios.flatMap((s) =>
+          s.latitude != null && s.longitude != null
+            ? [{ name: s.name.replace(/^Körperformen\s+/, ""), lat: s.latitude, lng: s.longitude }]
+            : [],
+        )}
+      />
     </>
   );
 }

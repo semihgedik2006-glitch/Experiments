@@ -1,11 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { Check, X } from "lucide-react";
-import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
-import { MehrDazu } from "@/components/ui/mehr-dazu";
+import { ProblemAbschnitt, Legende, ab } from "@/components/problem/problem-abschnitt";
 
 /**
  * Das Problem, das wir lösen: Zeit.
@@ -55,46 +50,6 @@ const STUDIO: [tag: number, von: number][] = [
 
 /** Der eine Termin bei uns: 20 Minuten Training. */
 const EMS = { tag: 3, von: 17.5, dauer: 20 / 60 };
-
-/** Kurzschreibweise für den Einsatz im Takt (Sekunden ab Start). */
-const ab = (s: number) => ({ "--ab": `${s}s` }) as React.CSSProperties;
-
-/**
- * "fertig": Endbild (kein JS, oder "Bewegung reduzieren").
- * "bereit": alles steht auf dem ersten Bild und wartet.
- * "laeuft": der Abschnitt ist im Blick, der Ablauf spielt einmal.
- */
-type Zustand = "fertig" | "bereit" | "laeuft";
-
-function useAblauf<T extends Element>() {
-  const ref = useRef<T>(null);
-  const [zustand, setZustand] = useState<Zustand>("fertig");
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const el = ref.current;
-    if (!el) return;
-    // Liegt der Abschnitt beim Laden schon mitten im Bild (Sprung per
-    // Anker, Zurück-Taste), nicht erst ausblenden und neu abspielen.
-    const box = el.getBoundingClientRect();
-    if (box.top < window.innerHeight * 0.5 && box.bottom > 0) return;
-
-    setZustand("bereit");
-    const beobachter = new IntersectionObserver(
-      ([eintrag]) => {
-        if (eintrag.isIntersecting) {
-          setZustand("laeuft");
-          beobachter.disconnect();
-        }
-      },
-      { threshold: 0.3 },
-    );
-    beobachter.observe(el);
-    return () => beobachter.disconnect();
-  }, []);
-
-  return { ref, zustand };
-}
 
 function Kalender() {
   return (
@@ -170,110 +125,49 @@ function Kalender() {
 }
 
 export function ZeitProblem() {
-  const { ref, zustand } = useAblauf<HTMLElement>();
-  const wenigerBewegung = useReducedMotion();
-
-  // Die Karte zieht beim Scrollen etwas langsamer mit als der Text - eine
-  // leichte Tiefe, kein Effekt. Bei "Bewegung reduzieren" steht sie still.
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const karteY = useTransform(scrollYProgress, [0, 1], wenigerBewegung ? [0, 0] : [36, -36]);
-
   return (
-    <section
-      ref={ref}
-      className={`zp relative overflow-hidden border-b border-border bg-surface py-20 sm:py-24 md:py-32 ${
-        zustand === "fertig" ? "" : `zp-${zustand}`
-      }`}
+    <ProblemAbschnitt
+      kicker="Das kennst du"
+      titel="Dreimal die Woche ins Studio? Dein Kalender sagt nein."
+      klassisch={
+        <>
+          drei Einheiten, dazu Weg und Umziehen – gut{" "}
+          <strong className="font-semibold text-foreground">4,5 Stunden</strong> pro Woche.
+        </>
+      }
+      beiUns={
+        <>
+          ein fester Termin, 20 Minuten Training, dein Trainer stellt alles ein. Mit Weg{" "}
+          <strong className="font-semibold text-foreground">unter einer Stunde</strong>.
+        </>
+      }
+      rechnung={{
+        titel: "So ist gerechnet",
+        inhalt: (
+          <>
+            <p>
+              Klassisch: 3 × (60 Min. Training + 20 Min. Weg + 10 Min. Umziehen) = 270 Min.
+              Bei uns: 1 × (20 Min. Training + 20 Min. Weg + 10 Min. Umziehen) = 50 Min.
+            </p>
+            <p className="mt-2">
+              Eine Beispielrechnung – dein Weg hängt davon ab, wo du wohnst und arbeitest.
+              Mit 14 Studios rund um Köln ist er meistens kurz.
+            </p>
+          </>
+        ),
+      }}
+      knopf={{ href: "/probetermin", text: "Freien Termin finden" }}
+      kartenTitel="Deine Woche"
+      legende={
+        <>
+          <Legende farbe="termin">Termine</Legende>
+          <Legende farbe="alt">Studio</Legende>
+        </>
+      }
+      alt={{ label: "Klassisch", wert: "4,5 Std." }}
+      neu={{ label: "Bei uns", wert: "unter 1 Std." }}
     >
-      {/* Ein weicher Lime-Schein hinter der Karte. */}
-      <div aria-hidden className="zp-schein pointer-events-none absolute right-[-10%] top-1/2 h-[560px] w-[560px] -translate-y-1/2 rounded-full" />
-
-      <Container className="relative">
-        <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
-          <div>
-            <span className="zp-auf block text-xs font-semibold uppercase tracking-[0.2em] text-accent" style={ab(0)}>
-              Das kennst du
-            </span>
-            <h2
-              className="zp-auf mt-4 text-balance text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl"
-              style={ab(0.08)}
-            >
-              Dreimal die Woche ins Studio? Dein Kalender sagt nein.
-            </h2>
-
-            <ul className="mt-8 space-y-5">
-              <li className="zp-auf flex gap-4" style={ab(0.2)}>
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/12 text-orange-600 dark:text-orange-400">
-                  <X size={16} aria-hidden />
-                </span>
-                <p className="lesebreite text-muted">
-                  <strong className="font-semibold text-foreground">Klassisch:</strong> drei
-                  Einheiten, dazu Weg und Umziehen – gut{" "}
-                  <strong className="font-semibold text-foreground">4,5 Stunden</strong> pro
-                  Woche.
-                </p>
-              </li>
-              <li className="zp-auf flex gap-4" style={ab(0.3)}>
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-lime text-on-lime">
-                  <Check size={16} aria-hidden />
-                </span>
-                <p className="lesebreite text-muted">
-                  <strong className="font-semibold text-foreground">Bei uns:</strong> ein fester
-                  Termin, 20 Minuten Training, dein Trainer stellt alles ein. Mit Weg{" "}
-                  <strong className="font-semibold text-foreground">unter einer Stunde</strong>.
-                </p>
-              </li>
-            </ul>
-
-            <div className="zp-auf" style={ab(0.4)}>
-              <MehrDazu titel="So ist gerechnet" className="mt-6">
-                <p>
-                  Klassisch: 3 × (60 Min. Training + 20 Min. Weg + 10 Min. Umziehen) = 270 Min.
-                  Bei uns: 1 × (20 Min. Training + 20 Min. Weg + 10 Min. Umziehen) = 50 Min.
-                </p>
-                <p className="mt-2">
-                  Eine Beispielrechnung – dein Weg hängt davon ab, wo du wohnst und arbeitest.
-                  Mit 14 Studios rund um Köln ist er meistens kurz.
-                </p>
-              </MehrDazu>
-            </div>
-
-            <div className="zp-auf mt-8" style={ab(0.5)}>
-              <Button href="/probetermin">Freien Termin finden</Button>
-            </div>
-          </div>
-
-          {/* Dunkle Karte wie die Einladung: Lime leuchtet nur auf Dunkel. */}
-          <motion.div style={{ y: karteY }}>
-            <div className="on-ink kal-karte zp-karte relative rounded-3xl p-5 sm:p-7" style={ab(0.15)}>
-              <p className="mb-3 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-                <span>Deine Woche</span>
-                <span className="flex items-center gap-3 normal-case tracking-normal">
-                  <span className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-sm bg-white/15" aria-hidden /> Termine
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-sm border border-orange-400 bg-orange-400/20" aria-hidden /> Studio
-                  </span>
-                </span>
-              </p>
-
-              <Kalender />
-
-              {/* Die Rechnung in einer Zeile - wird zum Schluss aufgelöst. */}
-              <div className="mt-4 flex items-center justify-between gap-4 border-t border-white/10 pt-4 text-sm">
-                <span className="zp-alt text-muted">
-                  Klassisch <span className="zp-alt-zahl relative font-semibold text-foreground">4,5 Std.</span>
-                </span>
-                <span className="zp-neu flex items-center gap-2 font-semibold">
-                  <span className="text-muted font-normal">Bei uns</span>
-                  <span className="rounded-full bg-lime px-3 py-1 text-on-lime">unter 1 Std.</span>
-                </span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </Container>
-    </section>
+      <Kalender />
+    </ProblemAbschnitt>
   );
 }

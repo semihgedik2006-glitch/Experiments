@@ -1,3 +1,4 @@
+import { EmsProblem } from "@/components/problem/unterseiten";
 import type { Metadata } from "next";
 import { ABLAUF_EINHEIT, GEGENANZEIGEN } from "@/lib/ablauf";
 import { ImpulsSzene } from "@/components/ui/impuls-szene";
@@ -112,6 +113,7 @@ export default function EmsTrainingPage() {
         </Container>
       </section>
 
+      <EmsProblem />
       <ActivationSequence />
 
       <section className="on-ink py-20 sm:py-24 md:py-32">

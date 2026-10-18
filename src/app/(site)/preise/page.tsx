@@ -1,3 +1,4 @@
+import { PreisProblem } from "@/components/problem/unterseiten";
 import type { Metadata } from "next";
 import { isVisible } from "@/lib/site-toggles";
 import { notFound } from "next/navigation";
@@ -118,6 +119,7 @@ export default async function PreisePage() {
           Preisseite öffnet, sucht eine Zahl. Alles Erklärende darunter
           bleibt trotzdem stehen - es beantwortet die nächste Frage. */}
       <TarifVergleich tarife={mitTarifen} hinweis={preisHinweis} />
+      <PreisProblem />
 
       <section className="py-20 sm:py-24 md:py-32">
         <Container>
