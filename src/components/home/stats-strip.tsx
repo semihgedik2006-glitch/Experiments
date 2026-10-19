@@ -162,11 +162,11 @@ export function StatsStrip({ zahlen }: { zahlen: Kennzahl[] }) {
                 Die Standorte, die im Adminbereich geführt werden. Kommt einer
                 dazu, steht er hier am selben Tag.
               </Herkunft>
-              <Herkunft begriff="Freie Termine">
-                Die Summe der freien Plätze aller Standorte in den kommenden
-                sieben Tagen &ndash; angelegte Plätze abzüglich der bereits
-                vergebenen. Ist nichts frei, steht hier stattdessen die Spanne
-                der Trainingszeiten.
+              <Herkunft begriff="220 Minuten mehr Zeit">
+                Eine Beispielrechnung: Klassisch dreimal Studio pro Woche, je 60
+                Minuten Training, 20 Minuten Weg und 10 Minuten Umziehen &ndash; zusammen
+                270 Minuten. Bei uns einmal 20 Minuten Training mit denselben 30 Minuten
+                drumherum &ndash; 50 Minuten. Die Differenz sind 220 Minuten pro Woche.
               </Herkunft>
             </dl>
           </MehrDazu>

@@ -155,6 +155,9 @@ export type Kennzahl = {
   statisch?: boolean;
 };
 
+/** 270 Min. (3 x Studio mit Weg und Umziehen) minus 50 Min. (1 x bei uns). */
+export const ZEITGEWINN_MINUTEN = 220;
+
 export function kennzahlen(b: Beweise): Kennzahl[] {
   // Keine Abfrage, sondern das Angebot selbst - und die Zahl, wegen der
   // die meisten überhaupt hier sind.
@@ -166,31 +169,21 @@ export function kennzahlen(b: Beweise): Kennzahl[] {
     liste.push({ wert: String(b.standorte), label: "Studios rund um Köln" });
   }
 
-  // Die dritte Stelle: die lebendigste Angabe zuerst.
-  if (b.freieTermine7Tage) {
-    liste.push({
-      wert: String(b.freieTermine7Tage),
-      label: "freie Termine in den nächsten sieben Tagen",
-    });
-  } else if (b.frueheste && b.spaeteste) {
-    liste.push({
-      wert: `${ohneNull(b.frueheste)}–${ohneNull(b.spaeteste)}`,
-      einheit: " Uhr",
-      label: "Trainingszeiten an den Standorten",
-      statisch: true,
-    });
-  } else if (b.orte > 1) {
-    liste.push({ wert: String(b.orte), label: "Orte rund um Köln" });
-  }
+  // Die dritte Stelle: die gewonnene Zeit. Vorher stand hier, je nach
+  // Datenlage, die Zahl freier Termine, die Spanne der Trainingszeiten
+  // oder "8 Orte rund um Köln" - Letzteres sagt niemandem etwas, der
+  // ohnehin in Köln sucht. Die Zeit dagegen ist der Grund, warum jemand
+  // hier ist. Gerechnet wie im Abschnitt "Das kennst du":
+  // 3 x (60 + 20 Weg + 10 Umziehen) = 270 Min. gegen 1 x (20 + 20 + 10)
+  // = 50 Min. - die Differenz, 220 Minuten pro Woche. Die freien Termine
+  // stehen weiter im ersten Bildschirm und im Aufruf am Seitenende.
+  liste.push({
+    wert: String(ZEITGEWINN_MINUTEN),
+    einheit: " Min.",
+    label: "mehr Zeit für deine Liebsten – jede Woche",
+  });
 
   return liste.slice(0, 3);
-}
-
-/** "07:00" zu "7" - im Band steht die Uhrzeit, nicht der Fahrplan. */
-function ohneNull(zeit: string): string {
-  const [stunden, minuten] = zeit.split(":");
-  const h = String(Number(stunden));
-  return minuten === "00" ? h : `${h}:${minuten}`;
 }
 
 /**

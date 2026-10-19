@@ -86,9 +86,17 @@ export function UspGrid({
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="karte-hebt karte-glanz h-full card p-7"
               >
-                <div className="karte-symbol flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent">
+                {/* Das Symbol springt kurz nach der Karte federnd auf - eine
+                    kleine zweite Bewegung, die die Karte lebendig macht. */}
+                <motion.div
+                  initial={{ scale: 0.4, rotate: -18, opacity: 0 }}
+                  whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
+                  viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+                  transition={{ type: "spring", stiffness: 260, damping: 14, delay: 0.25 }}
+                  className="karte-symbol flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent"
+                >
                   <Icon size={20} />
-                </div>
+                </motion.div>
                 <h3 className="mt-6 text-lg font-semibold tracking-tight">{title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted">{text}</p>
               </motion.div>
