@@ -19,17 +19,19 @@ import { Container } from "@/components/ui/container";
  *
  * Diese Fassung spricht genau diesen Menschen an:
  *
- *   "Du gibst jeden Tag alles. Gib dir 20 Minuten zurück."
+ *   "Du bist für alle da. Bleib es auch."
  *
- * Kein Wirkungsversprechen, keine Zahl, die niemand belegen kann - nur
- * das Gefühl, für alle da zu sein außer für sich selbst, und ein
- * überschaubarer Ausweg. Dazu ein Foto statt einer Zeichnung: ein Trainer,
+ * Für Kinder, Enkel, Partner, Kollegen da sein - und dafür selbst in Form
+ * bleiben wollen. Bewusst positiv: Ein Satz wie "Wer nicht trainiert,
+ * lässt seine Familie im Stich" wäre Angstmache, wirkt aufdringlich und
+ * ist wettbewerbsrechtlich heikel. Kein Wirkungsversprechen, keine Zahl,
+ * die niemand belegen kann. Dazu ein Foto statt einer Zeichnung: ein Trainer,
  * der neben jemandem kniet und hinsieht. Das ist das Versprechen der
  * ganzen Seite ("persönlich betreut") als Bild.
  *
- * Kleine Geschichte am Rand: ein Foto "18:40 - noch im Büro" und darunter
- * "19:00 - deine 20 Minuten". Abend, Feierabend, Training - ohne einen
- * Satz Erklärung.
+ * Kleine Geschichte am Rand: "18:40 noch im Büro" -> "19:00 Deine 20
+ * Minuten" -> "19:40 wieder bei deinen Liebsten". Ein Abend in drei
+ * Schritten, ohne einen Satz Erklärung.
  *
  * EHRLICH BLEIBEN: Beide Fotos sind lizenzfreie Symbolbilder (Pexels,
  * siehe public/bilder/start/QUELLEN.md), nicht Körperformen. Deshalb
@@ -139,15 +141,17 @@ export function Hero({
               {anzahlStudios > 1 ? `${anzahlStudios} Studios rund um Köln` : standorte}
             </span>
 
-            <h1 className="font-display mt-6 text-[2.55rem] font-black leading-[1.04] tracking-tight sm:text-[3.4rem] xl:text-[3.9rem]">
-              <StaggeredLine text="Du gibst jeden Tag alles." startDelay={0.25} />
+            <h1 className="font-display mt-6 text-[2.9rem] font-black leading-[1.02] tracking-tight sm:text-[4rem] xl:text-[4.8rem]">
+              {/* Geschütztes Leerzeichen: "da." darf nie allein in einer Zeile
+                  stehen - als einzelnes Wort fiel die Überschrift auseinander. */}
+              <StaggeredLine text={"Du bist für alle\u00a0da."} startDelay={0.25} />
               <br />
-              <StaggeredLine text="Gib dir 20 Minuten zurück." className="text-accent" startDelay={0.5} />
+              <StaggeredLine text="Bleib es auch." className="text-accent" startDelay={0.55} />
             </h1>
 
             <p className="hero-anim mt-6 max-w-lg text-lg leading-relaxed text-foreground/80" style={verz(0.75)}>
-              EMS-Training mit deinem persönlichen Trainer – einmal pro Woche, 20 Minuten, ganz
-              in deiner Nähe.
+              Für die Menschen, die dich brauchen – und für dich: 20 Minuten EMS-Training pro
+              Woche, mit deinem persönlichen Trainer, ganz in deiner Nähe.
             </p>
 
             <div className="hero-anim mt-8 flex flex-col gap-3 sm:flex-row sm:items-center" style={verz(0.88)}>
@@ -234,6 +238,25 @@ export function Hero({
           </span>
           Deine 20 Minuten
         </div>
+        <div className="hero-linie hero-anim h-px w-12" style={verz(1.75)} />
+        <div className="hero-anim flex items-center gap-3" style={verz(1.9)}>
+          <div className="hero-familie h-[74px] w-[64px] overflow-hidden rounded-xl border border-lime/50 shadow-2xl">
+            <Image
+              src="/bilder/start/familie-umarmung.jpg"
+              alt=""
+              width={128}
+              height={148}
+              sizes="64px"
+              className="h-full w-full object-cover object-[50%_35%]"
+            />
+          </div>
+          <p className="text-sm leading-tight text-foreground/80">
+            <span className="block font-semibold tabular-nums text-foreground">19:40</span>
+            wieder bei
+            <br />
+            deinen Liebsten
+          </p>
+        </div>
       </motion.div>
 
       <span className="absolute bottom-3 right-4 text-[10px] uppercase tracking-[0.18em] text-white/75">
@@ -241,7 +264,7 @@ export function Hero({
       </span>
 
       {/* Scroll-Hinweis - verschwindet, sobald jemand zu scrollen beginnt. */}
-      <motion.div aria-hidden style={{ opacity: cueOpacity }} className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 sm:block">
+      <motion.div aria-hidden style={{ opacity: cueOpacity }} className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 sm:block lg:hidden">
         <div className="hero-anim flex flex-col items-center gap-1 text-foreground/60" style={verz(1.8)}>
           <span className="text-[10px] uppercase tracking-[0.25em]">Scroll</span>
           <motion.span

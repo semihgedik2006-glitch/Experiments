@@ -7,3 +7,4 @@ da sind, einfach diese Dateien ersetzen (gleicher Dateiname).
 
 - trainer-und-trainierende.jpg - https://www.pexels.com/photo/6551076/ (horizontal gespiegelt)
 - spaet-im-buero.jpg    - https://www.pexels.com/photo/12903240/
+- familie-umarmung.jpg - https://www.pexels.com/photo/4473314/

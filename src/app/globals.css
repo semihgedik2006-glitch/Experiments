@@ -1974,6 +1974,9 @@ summary::-webkit-details-marker {
 .hero-buero img {
   filter: saturate(0.55) brightness(0.85);
 }
+.hero-familie img {
+  filter: saturate(1.05);
+}
 .hero-linie {
   background: linear-gradient(to right, rgb(255 255 255 / 0.35), var(--ink-lime));
 }
