@@ -35,10 +35,13 @@ import { Container } from "@/components/ui/container";
  * Minuten" -> "19:40 wieder bei deinen Liebsten". Ein Abend in drei
  * Schritten, ohne einen Satz Erklärung.
  *
- * EHRLICH BLEIBEN: Beide Fotos sind lizenzfreie Symbolbilder (Pexels,
- * siehe public/bilder/start/QUELLEN.md), nicht Körperformen. Deshalb
- * steht unten rechts klein "Symbolfoto". Sobald eigene Fotos da sind,
- * die Dateien mit gleichem Namen ersetzen und den Vermerk entfernen.
+ * DAS FOTO ist ein echtes Körperformen-Foto (Studio, Logo, EMS-Gerät,
+ * Anzug). Es kam gespiegelt an - das Logo an der Wand stand
+ * spiegelverkehrt - und ist zurückgedreht. Weil der Kunde links im Bild
+ * steht, liegt es nicht mehr vollflächig hinter dem Text, sondern als
+ * gerahmte Karte rechts daneben: So verdeckt die Überschrift niemanden.
+ * Die zwei Mini-Fotos der Abend-Geschichte bleiben Symbolbilder von
+ * Pexels (siehe public/bilder/start/QUELLEN.md).
  *
  * Ladezeit: Die Eingangsanimation läuft weiter über CSS (.hero-anim in
  * globals.css), nicht über Motion - sonst stünde der Text bis zur
@@ -111,39 +114,72 @@ export function Hero({
   const cueOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="on-ink hero-foto relative isolate flex min-h-[92vh] items-end overflow-hidden lg:items-center"
-    >
-      {/* Das Foto, langsam heranzoomend. */}
-      <motion.div style={{ y: bildY }} className="absolute inset-0 -z-20">
-        <div className="hero-foto-bild absolute inset-0">
-          <Image
-            src="/bilder/start/trainerin-begleitet-kniebeuge.jpg"
-            alt="Eine Trainerin begleitet eine Frau bei einer Kniebeuge."
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-[58%_center] lg:object-[62%_center]"
-          />
-        </div>
-      </motion.div>
-      {/* Der Schleier: links dunkel für den Text, rechts frei für das Bild.
-          Auf dem Handy von unten, weil der Text dort unten steht. */}
-      <div aria-hidden className="hero-foto-schleier absolute inset-0 -z-10" />
+    <section ref={sectionRef} className="on-ink hero-foto relative isolate overflow-hidden">
+      {/* Ein weicher Lime-Schein hinter dem Foto - der einzige Farbfleck. */}
+      <div aria-hidden className="hero-schein pointer-events-none absolute -z-10" />
 
-      <motion.div style={{ opacity: inhaltOpacity }} className="w-full">
-        <Container className="relative pb-16 pt-40 sm:pb-20 lg:py-28">
-          <motion.div style={{ y: textY }} className="min-w-0 max-w-xl">
+      <motion.div style={{ opacity: inhaltOpacity }}>
+        <Container className="grid items-center gap-10 pb-16 pt-8 sm:pb-20 lg:min-h-[88vh] lg:grid-cols-[1fr_1.12fr] lg:gap-14 lg:py-20">
+          {/* ---------- Das Foto: auf dem Handy zuerst, am Computer rechts ---------- */}
+          <motion.div style={{ y: bildY }} className="relative lg:order-2">
+            <div className="hero-anim hero-rahmen relative overflow-hidden rounded-[1.75rem]" style={verz(0.1)}>
+              <div className="hero-foto-bild relative aspect-[16/11] lg:aspect-[4/3]">
+                <Image
+                  src="/bilder/start/studio-high-five.jpg"
+                  alt="Ein Körperformen-Trainer gibt einem Kunden im EMS-Anzug ein High Five, daneben das EMS-Gerät."
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 55vw, 100vw"
+                  className="object-cover object-[60%_center]"
+                />
+              </div>
+            </div>
+
+            {/* Die kleine Geschichte: Feierabend, Training, zuhause. Hängt
+                unten am Foto; nur ab lg, auf dem Handy wäre kein Platz. */}
+            <motion.div
+              style={{ y: geschichteY }}
+              className="absolute -bottom-7 left-1/2 hidden -translate-x-1/2 items-center gap-3 lg:flex"
+              aria-hidden
+            >
+              <div className="hero-anim hero-geschichte flex items-center gap-2.5 rounded-2xl py-2 pl-2 pr-4" style={verz(1.15)}>
+                <div className="hero-buero h-11 w-11 overflow-hidden rounded-xl">
+                  <Image src="/bilder/start/spaet-im-buero.jpg" alt="" width={88} height={88} sizes="44px" className="h-full w-full object-cover object-[50%_25%]" />
+                </div>
+                <p className="whitespace-nowrap text-xs leading-tight text-foreground/80">
+                  <span className="block font-semibold tabular-nums text-foreground">18:40</span>
+                  noch im Büro
+                </p>
+              </div>
+              <div className="hero-linie hero-anim h-px w-6" style={verz(1.35)} />
+              <div className="hero-anim hero-chip flex items-center gap-2 whitespace-nowrap rounded-full bg-lime py-2 pl-2 pr-4 text-sm font-semibold text-on-lime" style={verz(1.5)}>
+                <span className="rounded-full bg-black/15 px-2 py-1 text-[11px] tabular-nums">19:00</span>
+                Deine 20 Minuten
+              </div>
+              <div className="hero-linie hero-anim h-px w-6" style={verz(1.65)} />
+              <div className="hero-anim hero-geschichte flex items-center gap-2.5 rounded-2xl py-2 pl-2 pr-4" style={verz(1.8)}>
+                <div className="hero-familie h-11 w-11 overflow-hidden rounded-xl">
+                  <Image src="/bilder/start/familie-umarmung.jpg" alt="" width={88} height={88} sizes="44px" className="h-full w-full object-cover object-[50%_35%]" />
+                </div>
+                <p className="whitespace-nowrap text-xs leading-tight text-foreground/80">
+                  <span className="block font-semibold tabular-nums text-foreground">19:40</span>
+                  bei deinen Liebsten
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* ---------- Die Aussage ---------- */}
+          <motion.div style={{ y: textY }} className="min-w-0 lg:order-1">
             <span
-              className="hero-anim inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/30 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-foreground/85 backdrop-blur-sm"
+              className="hero-anim inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-foreground/85"
               style={verz(0.15)}
             >
               <MapPin size={13} className="text-accent" aria-hidden />
               {anzahlStudios > 1 ? `${anzahlStudios} Studios rund um Köln` : standorte}
             </span>
 
-            <h1 className="font-display mt-6 text-[2.9rem] font-black leading-[1.02] tracking-tight sm:text-[4rem] xl:text-[4.8rem]">
+            <h1 className="font-display mt-6 text-[2.9rem] font-black leading-[1.02] tracking-tight sm:text-[4rem] xl:text-[4.6rem]">
               {/* Geschütztes Leerzeichen: "da." darf nie allein in einer Zeile
                   stehen - als einzelnes Wort fiel die Überschrift auseinander. */}
               <StaggeredLine text={"Du bist für alle\u00a0da."} startDelay={0.25} />
@@ -161,7 +197,7 @@ export function Hero({
                 Kostenloses Probetraining
                 <ArrowRight size={16} aria-hidden />
               </Button>
-              <Button href="/ems-training" variant="secondary" className="border-white/25 bg-black/20 backdrop-blur-sm">
+              <Button href="/ems-training" variant="secondary" className="border-white/25">
                 Wie EMS funktioniert
               </Button>
             </div>
@@ -171,7 +207,7 @@ export function Hero({
             {naechsterTermin && (
               <Link
                 href={naechsterTermin.href}
-                className="hero-anim group mt-7 inline-flex max-w-full items-center gap-4 rounded-2xl border border-lime/40 bg-black/35 px-5 py-4 backdrop-blur-md transition-colors hover:border-lime"
+                className="hero-anim group mt-7 inline-flex max-w-full items-center gap-4 rounded-2xl border border-lime/40 bg-lime/5 px-5 py-4 transition-colors hover:border-lime"
                 style={verz(1)}
               >
                 <span aria-hidden className="relative flex h-2.5 w-2.5 shrink-0">
@@ -199,74 +235,15 @@ export function Hero({
             )}
 
             <p className="hero-anim mt-6 text-xs text-foreground/70" style={verz(1.1)}>
-              Unverbindlich &middot; Ohne Vertragsbindung &middot; Persönlich betreut
+              Kostenlos &middot; Unverbindlich &middot; Persönlich betreut
             </p>
           </motion.div>
-
         </Container>
       </motion.div>
 
-      {/* Die kleine Geschichte: Feierabend, dann Training. Unten rechts,
-          über Boden und Beinen - nicht über den Gesichtern im Foto. Nur ab
-          lg; auf dem Handy wäre dafür kein Platz neben dem Text. */}
-      <motion.div
-        style={{ y: geschichteY, opacity: inhaltOpacity }}
-        className="absolute bottom-[9%] right-[4%] hidden items-center gap-4 lg:flex"
-        aria-hidden
-      >
-        <div className="hero-anim flex items-center gap-3" style={verz(1.15)}>
-          <div className="hero-buero h-[74px] w-[64px] overflow-hidden rounded-xl border border-white/15 shadow-2xl">
-            <Image
-              src="/bilder/start/spaet-im-buero.jpg"
-              alt=""
-              width={128}
-              height={148}
-              sizes="64px"
-              className="h-full w-full object-cover object-[50%_25%]"
-            />
-          </div>
-          <p className="text-sm leading-tight text-foreground/80">
-            <span className="block font-semibold tabular-nums text-foreground">18:40</span>
-            noch im Büro
-          </p>
-        </div>
-        <div className="hero-linie hero-anim h-px w-12" style={verz(1.4)} />
-        <div
-          className="hero-anim hero-chip flex items-center gap-3 rounded-full bg-lime py-2.5 pl-3 pr-5 font-semibold text-on-lime"
-          style={verz(1.55)}
-        >
-          <span className="flex h-8 w-12 items-center justify-center rounded-full bg-black/15 text-xs tabular-nums">
-            19:00
-          </span>
-          Deine 20 Minuten
-        </div>
-        <div className="hero-linie hero-anim h-px w-12" style={verz(1.75)} />
-        <div className="hero-anim flex items-center gap-3" style={verz(1.9)}>
-          <div className="hero-familie h-[74px] w-[64px] overflow-hidden rounded-xl border border-lime/50 shadow-2xl">
-            <Image
-              src="/bilder/start/familie-umarmung.jpg"
-              alt=""
-              width={128}
-              height={148}
-              sizes="64px"
-              className="h-full w-full object-cover object-[50%_35%]"
-            />
-          </div>
-          <p className="text-sm leading-tight text-foreground/80">
-            <span className="block font-semibold tabular-nums text-foreground">19:40</span>
-            wieder bei
-            <br />
-            deinen Liebsten
-          </p>
-        </div>
-      </motion.div>
-
-      <span className="absolute bottom-3 right-4 text-[10px] uppercase tracking-[0.18em] text-white/75">
-        Symbolfoto
-      </span>
-
-      {/* Scroll-Hinweis - verschwindet, sobald jemand zu scrollen beginnt. */}
-      <motion.div aria-hidden style={{ opacity: cueOpacity }} className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 sm:block lg:hidden">
+      {/* Scroll-Hinweis - nur auf mittleren Breiten; am Computer liegt dort
+          die kleine Geschichte, auf dem Handy wäre er im Weg. */}
+      <motion.div aria-hidden style={{ opacity: cueOpacity }} className="absolute bottom-5 left-1/2 hidden -translate-x-1/2 sm:block lg:hidden">
         <div className="hero-anim flex flex-col items-center gap-1 text-foreground/60" style={verz(1.8)}>
           <span className="text-[10px] uppercase tracking-[0.25em]">Scroll</span>
           <motion.span

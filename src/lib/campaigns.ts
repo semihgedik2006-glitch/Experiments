@@ -44,7 +44,7 @@ export const campaigns: Record<string, Campaign> = {
     headline: "20 Minuten, die",
     highlight: "alles verändern",
     subline:
-      "Probier EMS-Training kostenlos aus - mit persönlicher Betreuung, ohne Vertrag und ohne Verpflichtung. Danach entscheidest du in Ruhe.",
+      "Probier EMS-Training kostenlos aus - mit persönlicher Betreuung. Danach zeigt dir dein Trainer, welche Mitgliedschaft zu deinem Ziel passt.",
     bullets: [
       "Nur 20 Minuten pro Woche statt stundenlang im Fitnessstudio",
       "Immer persönlich betreut - kein Training auf eigene Faust",
@@ -116,7 +116,7 @@ export const campaigns: Record<string, Campaign> = {
     bullets: [
       "Beginnt auf deinem Level, nicht auf einem Standardprogramm",
       "Gelenkschonend, auch nach längerer Pause",
-      "Kein Abo beim Probetraining - du testest erst einmal nur",
+      "Erst kostenlos testen, dann die passende Mitgliedschaft wählen",
     ],
     formTitle: "Kostenlos wieder einsteigen",
     metaTitle: "Wiedereinstieg ins Training mit EMS - kostenlos testen",

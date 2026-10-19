@@ -283,7 +283,7 @@ function Probe() {
     <svg
       viewBox="0 0 360 250"
       role="img"
-      aria-label="Zwei Abläufe. Klassisch: Vertrag, Monatsbeitrag, erst dann die Frage, ob es passt. Bei uns: kostenloses Probetraining, dann die Frage, ob es passt, dann entscheiden."
+      aria-label="Zwei Abläufe. Klassisch: Vertrag, Monatsbeitrag, erst dann die Frage, ob es passt. Bei uns: kostenloses Probetraining, dann die Frage, ob es passt, dann mit dem eigenen Plan loslegen."
       className="w-full"
     >
       <text x={6} y={22} className="pr-zeile zp-auf" style={ab(0.35)}>
@@ -304,7 +304,7 @@ function Probe() {
       <Pfeil x={108} y={187} einsatz={2.7} art="neu" />
       <Schritt x={132} y={158} titel="Passt es?" unter="du weißt es" art="neu" ab={2.8} />
       <Pfeil x={234} y={187} einsatz={3.1} art="neu" />
-      <Schritt x={258} y={158} titel="Entscheiden" unter="ohne Druck" art="fertig" ab={3.2} />
+      <Schritt x={258} y={158} titel="Loslegen" unter="mit deinem Plan" art="fertig" ab={3.2} />
     </svg>
   );
 }
@@ -318,7 +318,7 @@ export function PreisProblem() {
       beiUns={
         <>
           zuerst ein <strong className="font-semibold text-foreground">kostenloses Probetraining</strong>{" "}
-          mit Trainer. Unverbindlich, ohne Mitgliedschaft – entscheiden kannst du danach.
+          mit Trainer. Danach zeigt dir dein Trainer, welche Mitgliedschaft zu deinem Ziel passt.
         </>
       }
       knopf={{ href: "/probetermin", text: "Kostenlos ausprobieren" }}

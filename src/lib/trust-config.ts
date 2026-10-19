@@ -55,8 +55,8 @@ export const trustPoints = [
   },
   {
     icon: "shield" as const,
-    title: "Kein Abo beim Probetraining",
-    text: "Das Probetraining ist kostenlos und endet mit dem Termin. Es entsteht keine Mitgliedschaft und keine Kündigungsfrist.",
+    title: "Erst testen, dann entscheiden",
+    text: "Das Probetraining ist kostenlos. Danach zeigt dir dein Trainer, welche Mitgliedschaft zu deinem Ziel passt.",
   },
   {
     icon: "file" as const,

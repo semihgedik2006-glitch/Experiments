@@ -98,7 +98,8 @@ für dich gar nicht stimmt.
 
 Am einfachsten klären wir das beim kostenlosen Probetraining: Du lernst
 das Studio kennen, wir schauen uns gemeinsam an, was zu dir passt, und du
-bekommst ein Angebot, das dazu gehört. Unverbindlich und ohne Vertrag.
+bekommst ein Angebot, das dazu gehört. Das Probetraining selbst ist
+kostenlos und unverbindlich.
 
 Sag einfach Bescheid, wann es dir passt - oder ruf uns kurz an.
 

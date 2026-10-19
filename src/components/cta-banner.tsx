@@ -90,7 +90,7 @@ export async function CtaBanner() {
           <ul className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted">
             {[
               "0 € und unverbindlich",
-              "Keine Mitgliedschaft, keine Kündigungsfrist",
+              "Danach die Mitgliedschaft, die zu dir passt",
               beweise.freieTermine7Tage
                 ? `${beweise.freieTermine7Tage} freie Termine in den nächsten 7 Tagen`
                 : "Ausrüstung stellen wir",

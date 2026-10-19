@@ -41,7 +41,7 @@ export async function GET() {
 - Ganzkörper-EMS-Training: Während einfacher Übungen ohne Gewichte kommen elektrische Impulse über eine Trainingsweste dazu.
 - Eine Einheit dauert 20 Minuten, empfohlen ist ein Termin pro Woche.
 - Bei jeder Einheit ist ein Trainer persönlich dabei und stellt die Intensität mit dir ein.
-- Kostenloses Probetraining ohne Mitgliedschaft, buchbar online: ${basis}/probetermin
+- Kostenloses, unverbindliches Probetraining, buchbar online: ${basis}/probetermin. Danach Mitgliedschaft passend zum Ziel.
 - Preise und Tarife: ${basis}/preise
 - Wann EMS nicht geeignet ist (z. B. Herzschrittmacher, Schwangerschaft): ${basis}/ems-training
 

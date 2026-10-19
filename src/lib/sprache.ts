@@ -134,7 +134,7 @@ const de: Woerterbuch = {
   absendenLaeuft: "Wird gesendet...",
   zusagen: [
     "Kostenlos und unverbindlich",
-    "Keine Mitgliedschaft, keine Kündigungsfrist",
+    "Danach die Mitgliedschaft, die zu dir passt",
     "Wir melden uns zur Bestätigung",
   ],
   gesendet: "Anfrage gesendet!",

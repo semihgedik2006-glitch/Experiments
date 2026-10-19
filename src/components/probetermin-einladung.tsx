@@ -453,7 +453,7 @@ function MitteEinladung({
             {!pending && <ArrowRight size={16} className="einladung-pfeil relative" aria-hidden />}
           </button>
           <p className="mt-2 text-center text-[11px] text-muted">
-            Unverbindlich &middot; keine Mitgliedschaft &middot;{" "}
+            Kostenlos &middot; unverbindlich &middot;{" "}
             <Link href="/datenschutz" className="underline underline-offset-2 hover:text-foreground">
               Datenschutz
             </Link>
