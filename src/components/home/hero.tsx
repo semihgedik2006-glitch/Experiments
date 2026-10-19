@@ -25,9 +25,11 @@ import { Container } from "@/components/ui/container";
  * bleiben wollen. Bewusst positiv: Ein Satz wie "Wer nicht trainiert,
  * lässt seine Familie im Stich" wäre Angstmache, wirkt aufdringlich und
  * ist wettbewerbsrechtlich heikel. Kein Wirkungsversprechen, keine Zahl,
- * die niemand belegen kann. Dazu ein Foto statt einer Zeichnung: ein Trainer,
- * der neben jemandem kniet und hinsieht. Das ist das Versprechen der
- * ganzen Seite ("persönlich betreut") als Bild.
+ * die niemand belegen kann. Dazu ein Foto statt einer Zeichnung: eine
+ * Trainerin, die neben jemandem steht und hinsieht - bei einer Kniebeuge
+ * ohne Gewichte. Das ist das Versprechen der ganzen Seite ("persönlich
+ * betreut") als Bild. Ein früheres Foto zeigte Hanteln und ein Zuggerät;
+ * beides gibt es in den Studios nicht, das hätte in die Irre geführt.
  *
  * Kleine Geschichte am Rand: "18:40 noch im Büro" -> "19:00 Deine 20
  * Minuten" -> "19:40 wieder bei deinen Liebsten". Ein Abend in drei
@@ -117,12 +119,12 @@ export function Hero({
       <motion.div style={{ y: bildY }} className="absolute inset-0 -z-20">
         <div className="hero-foto-bild absolute inset-0">
           <Image
-            src="/bilder/start/trainer-und-trainierende.jpg"
-            alt="Ein Trainer kniet neben einer Frau und begleitet sie bei einer Übung."
+            src="/bilder/start/trainerin-begleitet-kniebeuge.jpg"
+            alt="Eine Trainerin begleitet eine Frau bei einer Kniebeuge."
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[82%_center] lg:object-[62%_center]"
+            className="object-cover object-[58%_center] lg:object-[62%_center]"
           />
         </div>
       </motion.div>
