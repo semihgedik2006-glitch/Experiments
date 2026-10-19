@@ -53,13 +53,17 @@ export const siteConfig = {
   },
 };
 
+// Geordnet nach dem Weg durch die Seite (lib/weg.ts): verstehen, erleben,
+// entscheiden, dabeibleiben. "Home" steht nicht mehr darin - dafür ist das
+// Logo da, und der Platz geht an "Erster Besuch". Im Handymenü steht die
+// Startseite trotzdem, siehe header.tsx.
 export const mainNav = [
-  { label: "Home", href: "/" },
   { label: "EMS-Training", href: "/ems-training" },
+  { label: "Erster Besuch", href: "/erster-besuch" },
   { label: "Studio", href: "/studio" },
   { label: "Preise", href: "/preise" },
   { label: "Erfolge", href: "/erfolgsgeschichten" },
+  { label: "Wissen", href: "/blog" },
   { label: "Über uns", href: "/ueber-uns" },
-  { label: "Blog", href: "/blog" },
   { label: "Kontakt", href: "/kontakt" },
 ];

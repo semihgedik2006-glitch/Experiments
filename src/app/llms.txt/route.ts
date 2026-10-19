@@ -53,12 +53,14 @@ ${standorte || "- Siehe " + basis + "/studio"}
 
 - [Startseite](${basis}/)
 - [EMS-Training erklärt](${basis}/ems-training)
+- [Ablauf des Probetrainings, Minute für Minute](${basis}/erster-besuch)
 - [Alle Studios](${basis}/studio)
 - [Preise](${basis}/preise)
 - [Probetraining buchen](${basis}/probetermin)
 - [Häufige Fragen](${basis}/#faq)
 - [Kontakt](${basis}/kontakt)
-- [Blog](${basis}/blog)
+- [Wissen / Blog](${basis}/blog)
+- [Socials](${basis}/socials)
 
 ## Kontakt
 

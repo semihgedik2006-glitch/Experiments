@@ -2501,3 +2501,57 @@ body {
   background: var(--color-lime);
   color: var(--color-on-lime);
 }
+
+/* ==========================================================================
+   DER WEG (components/weg-leiste.tsx) UND DIE NEUEN SEITEN
+   /erster-besuch und /socials
+   ========================================================================== */
+/* Die aktuelle Station pulsiert leise - "hier bist du". */
+.weg-hier {
+  box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-lime) 55%, transparent);
+  animation: weg-puls 2.4s ease-out infinite;
+}
+@keyframes weg-puls {
+  70% {
+    box-shadow: 0 0 0 12px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* Socials: jede Karte trägt die Farbe ihres Kanals, aber nur im Symbol
+   und als Schein beim Darüberfahren - die Seite bleibt Körperformen. */
+.kanal-instagram {
+  --kanal: linear-gradient(135deg, #f58529, #dd2a7b 50%, #8134af);
+  --kanal-schein: #dd2a7b;
+}
+.kanal-tiktok {
+  --kanal: linear-gradient(135deg, #111, #25f4ee 160%);
+  --kanal-schein: #25f4ee;
+}
+.kanal-facebook {
+  --kanal: linear-gradient(135deg, #1877f2, #0b5ad1);
+  --kanal-schein: #1877f2;
+}
+.kanal-symbol {
+  background: var(--kanal);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.kanal:hover .kanal-symbol {
+  transform: rotate(-6deg) scale(1.08);
+}
+.kanal-schein {
+  background: radial-gradient(closest-side, var(--kanal-schein), transparent);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.kanal:hover .kanal-schein {
+  opacity: 0.18;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weg-hier {
+    animation: none;
+  }
+}

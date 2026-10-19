@@ -4,25 +4,10 @@ import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { Container } from "@/components/ui/container";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { SectionHeader } from "@/components/ui/section-header";
-
-const steps = [
-  {
-    step: "01",
-    title: "Kostenloses Probetraining",
-    text: "Du lernst das Studio, dein Trainer-Team und die EMS-Technologie in einer unverbindlichen Einheit kennen.",
-  },
-  {
-    step: "02",
-    title: "Individueller Trainingsplan",
-    text: "Gemeinsam legen wir deine Ziele fest - Abnehmen, Muskelaufbau oder Rückengesundheit.",
-  },
-  {
-    step: "03",
-    title: "20 Minuten, einmal pro Woche",
-    text: "Ein kurzes, intensives Training reicht für spürbare Ergebnisse - ganz ohne großen Zeitaufwand.",
-  },
-];
+import { STATIONEN } from "@/lib/weg";
 
 export function HowItWorks() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -35,10 +20,9 @@ export function HowItWorks() {
   /**
    * Die Linie zwischen den drei Schritten zeichnet sich beim Scrollen.
    *
-   * Sie ist der Grund, warum "drei Schritte" hier auch als drei Schritte zu
-   * lesen ist: Vorher standen drei Absätze nebeneinander, und nur die
-   * Nummern sagten, dass sie aufeinander folgen. Eine Linie, die von 01
-   * nach 03 wächst, sagt es ohne Worte.
+   * Sie ist der Grund, warum die Stationen hier auch als Weg zu lesen
+   * sind: Nebeneinander sagen nur die Nummern, dass sie aufeinander
+   * folgen. Eine Linie, die von 01 nach 04 wächst, sagt es ohne Worte.
    *
    * Der Bereich von 0,32 bis 0,62 ist bewusst eng: Die Linie soll fertig
    * sein, wenn der Abschnitt in der Mitte des Bildschirms steht - nicht
@@ -58,9 +42,9 @@ export function HowItWorks() {
       />
       <Container>
         <SectionHeader
-          kicker="In drei Schritten"
-          title="So einfach startest du mit EMS"
-          intro="Elektro-Muskel-Stimulation lässt viele Muskelgruppen gleichzeitig arbeiten - auch die tiefliegenden, die beim klassischen Training kaum drankommen."
+          kicker="Dein Weg"
+          title="In vier Stationen zu deinem Training"
+          intro="Erst verstehen, dann erleben, dann entscheiden. Jede Station beantwortet eine Frage."
           className="mb-16"
         />
 
@@ -70,7 +54,7 @@ export function HowItWorks() {
               waagerechte Linie zwischen ihnen sinnlos. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute left-[8%] right-[8%] top-[26px] hidden h-px bg-border md:block"
+            className="pointer-events-none absolute left-0 right-[12%] top-[26px] hidden h-px bg-border md:block"
           >
             <motion.div
               className="h-full origin-left bg-lime"
@@ -78,20 +62,25 @@ export function HowItWorks() {
             />
           </div>
 
-          <Stagger className="relative grid gap-10 md:grid-cols-3">
-            {steps.map(({ step, title, text }) => (
-              <StaggerItem key={step}>
-                {/* Die Nummer bekommt einen eigenen Grund, damit die Linie
-                    hinter ihr durchläuft und nicht durch sie hindurch. */}
-                <motion.span
-                  whileHover={{ scale: 1.04 }}
-                  transition={{ duration: 0.25 }}
-                  className="inline-block bg-surface pr-4 text-5xl font-black leading-none text-accent-strong"
-                >
-                  {step}
-                </motion.span>
-                <h3 className="mt-4 text-xl font-semibold">{title}</h3>
-                <p className="mt-2 text-sm text-muted">{text}</p>
+          <Stagger className="relative grid gap-10 sm:grid-cols-2 md:grid-cols-4 md:gap-8">
+            {STATIONEN.map((station, i) => (
+              <StaggerItem key={station.schluessel}>
+                <Link href={station.href} className="group block">
+                  {/* Die Nummer bekommt einen eigenen Grund, damit die Linie
+                      hinter ihr durchläuft und nicht durch sie hindurch. */}
+                  <motion.span
+                    whileHover={{ scale: 1.04 }}
+                    transition={{ duration: 0.25 }}
+                    className="inline-block bg-surface pr-4 text-5xl font-black leading-none text-accent-strong"
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </motion.span>
+                  <h3 className="mt-4 text-xl font-semibold">{station.name}</h3>
+                  <p className="mt-2 text-sm text-muted">{station.frage}</p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent">
+                    Ansehen <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" aria-hidden />
+                  </span>
+                </Link>
               </StaggerItem>
             ))}
           </Stagger>

@@ -9,6 +9,7 @@ import { CommentReplyToggle } from "@/components/comment-reply-toggle";
 import { getPostBySlug, getApprovedComments, getPublishedPosts } from "@/lib/data";
 import { verwandteBeitraege } from "@/lib/blog-themen";
 import { formatDate } from "@/lib/format";
+import { lesezeit } from "@/lib/lesezeit";
 import { PostThumb } from "@/components/blog/post-thumb";
 import { ArticleJsonLd } from "@/components/structured-data";
 import { getToggles } from "@/lib/site-toggles";
@@ -66,6 +67,8 @@ export default async function BlogPostPage({ params }: Props) {
       <Container className="max-w-2xl">
         <span className="text-sm text-muted">
           {post.publishedAt ? formatDate(post.publishedAt) : ""}
+          {" · "}
+          {lesezeit(post.content)} Min. Lesezeit
         </span>
         <h1 className="mt-3 text-3xl font-black tracking-tight md:text-4xl">{post.title}</h1>
 

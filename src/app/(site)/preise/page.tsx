@@ -1,3 +1,4 @@
+import { WegLeiste } from "@/components/weg-leiste";
 import { PreisProblem } from "@/components/problem/unterseiten";
 import type { Metadata } from "next";
 import { isVisible } from "@/lib/site-toggles";
@@ -277,6 +278,8 @@ export default async function PreisePage() {
       <DirekterKontakt />
 
       <FaqSection />
+
+      <WegLeiste aktuell="entscheiden" />
     </>
   );
 }

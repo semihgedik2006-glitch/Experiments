@@ -72,6 +72,14 @@ export async function Footer({
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                href="/socials"
+                className="tastflaeche block py-1.5 text-sm text-muted hover:text-foreground"
+              >
+                Socials
+              </Link>
+            </li>
             {/* Getrennt von der Hauptnavigation und bewusst hier unten:
                 Diese Seite sucht nur, wer schon einen Termin hat - im
                 Kopfbereich stünde sie jedem im Weg, der noch keinen hat. */}

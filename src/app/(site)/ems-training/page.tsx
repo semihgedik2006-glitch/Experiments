@@ -1,3 +1,4 @@
+import { WegLeiste } from "@/components/weg-leiste";
 import { EmsProblem } from "@/components/problem/unterseiten";
 import type { Metadata } from "next";
 import { ABLAUF_EINHEIT, GEGENANZEIGEN } from "@/lib/ablauf";
@@ -299,6 +300,8 @@ export default function EmsTrainingPage() {
       </section>
 
       <FaqSection />
+
+      <WegLeiste aktuell="verstehen" />
     </>
   );
 }

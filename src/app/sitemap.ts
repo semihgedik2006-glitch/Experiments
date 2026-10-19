@@ -17,6 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
     "",
     "/ems-training",
+    "/erster-besuch",
     ...(toggles.studio ? ["/studio"] : []),
     ...(toggles.preise ? ["/preise"] : []),
     // Nur wenn die Seite auch Inhalt hat - sonst meldet die Sitemap
@@ -30,6 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // nur über den Fußbereich zu finden wäre.
     "/meine-termine",
     ...(toggles.blog ? ["/blog"] : []),
+    "/socials",
     "/kontakt",
     "/agb",
     "/impressum",

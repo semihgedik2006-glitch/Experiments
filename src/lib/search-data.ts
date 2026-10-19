@@ -30,10 +30,22 @@ export const staticSearchEntries = [
     keywords: ["termin", "buchen", "kostenlos", "probetraining"],
   },
   {
-    title: "Blog",
+    title: "Wissen (Blog)",
     description: "Trainingstipps, EMS-Wissen und Neuigkeiten aus dem Studio.",
     href: "/blog",
-    keywords: ["artikel", "news", "tipps"],
+    keywords: ["artikel", "news", "tipps", "blog", "wissen"],
+  },
+  {
+    title: "Dein erster Besuch",
+    description: "So läuft das kostenlose Probetraining ab - Minute für Minute.",
+    href: "/erster-besuch",
+    keywords: ["ablauf", "probetraining", "erstes mal", "mitbringen", "handtuch", "anzug"],
+  },
+  {
+    title: "Socials",
+    description: "Körperformen auf Instagram, TikTok und Facebook.",
+    href: "/socials",
+    keywords: ["instagram", "tiktok", "facebook", "social media", "folgen"],
   },
   {
     title: "Kontakt",

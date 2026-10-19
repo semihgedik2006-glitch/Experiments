@@ -1,3 +1,4 @@
+import { WegLeiste } from "@/components/weg-leiste";
 import type { Metadata } from "next";
 import { isVisible } from "@/lib/site-toggles";
 import { PageHeader } from "@/components/ui/page-header";
@@ -79,6 +80,8 @@ export default async function StudioPage() {
             : [],
         )}
       />
+
+      <WegLeiste aktuell="entscheiden" />
     </>
   );
 }

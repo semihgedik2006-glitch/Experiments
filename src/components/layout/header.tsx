@@ -143,7 +143,9 @@ export function Header({
             className="overflow-hidden border-t border-border lg:hidden"
           >
             <nav aria-label="Navigation für kleine Bildschirme" className="flex flex-col gap-4 px-6 py-4">
-              {nav.map((item) => (
+              {/* Oben steht das Logo als Weg zur Startseite - im Handymenü
+                  sucht man sie trotzdem als Eintrag. */}
+              {[{ label: "Startseite", href: "/" }, ...nav].map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

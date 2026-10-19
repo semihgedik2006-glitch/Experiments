@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { isVisible } from "@/lib/site-toggles";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Newspaper, SearchX } from "lucide-react";
+import { ArrowRight, Clock, Newspaper, SearchX } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
@@ -12,12 +12,14 @@ import { PostThumb } from "@/components/blog/post-thumb";
 import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { alleThemen, themaSchluessel } from "@/lib/blog-themen";
 import { param, type SuchParams } from "@/lib/admin-list";
+import { lesezeit } from "@/lib/lesezeit";
+import { WegLeiste } from "@/components/weg-leiste";
 
 export const metadata: Metadata = {
   // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
   // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
   alternates: { canonical: "/blog" },
-  title: "Blog",
+  title: "Wissen",
   description: "Trainingstipps, EMS-Wissen und Neuigkeiten von Körperformen.",
 };
 
@@ -59,6 +61,13 @@ export default async function BlogPage({
 
   // Die Schreibweise aus den Daten, nicht die aus der Adresse - in der
   // Überschrift soll "Rücken" stehen, auch wenn "rücken" getippt wurde.
+  // Der neueste Beitrag steht ungefiltert groß oben - eine Übersicht mit
+  // einem klaren Einstieg liest sich wie ein Magazin, ein Raster aus
+  // gleich großen Karten wie ein Archiv. Erst ab drei Beiträgen: Bei
+  // zweien wäre der zweite allein darunter.
+  const titel = !gewaehlt && gefiltert.length >= 3 ? gefiltert[0] : null;
+  const raster = titel ? gefiltert.slice(1) : gefiltert;
+
   const angezeigtesThema =
     themen.find((thema) => themaSchluessel(thema.name) === themaSchluessel(gewaehlt))?.name ??
     gewaehlt;
@@ -66,7 +75,7 @@ export default async function BlogPage({
   return (
     <>
       <PageHeader
-        kicker="Blog"
+        kicker="Wissen"
         title={
           <>
             Wissen rund um <span className="text-accent-strong">EMS</span>
@@ -149,12 +158,41 @@ export default async function BlogPage({
                   </Link>
                 </div>
               ) : (
+                <>
+                {titel && (
+                  <Link
+                    href={`/blog/${titel.slug}`}
+                    className={`karte-hebt karte-glanz group grid overflow-hidden rounded-3xl border border-border bg-surface md:grid-cols-[1.2fr_1fr] ${
+                      themen.length >= AB_HIER_FILTER ? "mt-10" : ""
+                    }`}
+                  >
+                    <PostThumb
+                      slug={titel.slug}
+                      title={titel.title}
+                      coverImage={titel.coverImage}
+                      className="h-56 md:h-full md:min-h-80"
+                    />
+                    <div className="flex flex-col justify-center p-7 sm:p-10">
+                      <span className="flex items-center gap-3 text-xs text-muted">
+                        <span className="rounded-full bg-lime px-2.5 py-0.5 font-semibold text-on-lime">Neu</span>
+                        <span className="inline-flex items-center gap-1">
+                          <Clock size={12} aria-hidden /> {lesezeit(titel.content)} Min. Lesezeit
+                        </span>
+                      </span>
+                      <h2 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">{titel.title}</h2>
+                      <p className="mt-3 text-muted">{titel.excerpt}</p>
+                      <span className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-accent">
+                        Jetzt lesen <ArrowRight size={14} className="karte-pfeil" aria-hidden />
+                      </span>
+                    </div>
+                  </Link>
+                )}
                 <Stagger
                   className={`grid gap-6 md:grid-cols-2 lg:grid-cols-3 ${
-                    themen.length >= AB_HIER_FILTER ? "mt-10" : ""
+                    themen.length >= AB_HIER_FILTER || titel ? "mt-10" : ""
                   }`}
                 >
-                  {gefiltert.map((post) => (
+                  {raster.map((post) => (
                     <StaggerItem key={post.id} className="h-full">
                       <Link
                         href={`/blog/${post.slug}`}
@@ -162,8 +200,11 @@ export default async function BlogPage({
                       >
                         <PostThumb slug={post.slug} title={post.title} coverImage={post.coverImage} />
                         <div className="flex flex-1 flex-col p-6">
-                          <span className="text-xs text-muted">
+                          <span className="flex items-center gap-3 text-xs text-muted">
                             {post.publishedAt ? formatDate(post.publishedAt) : ""}
+                            <span className="inline-flex items-center gap-1">
+                              <Clock size={12} aria-hidden /> {lesezeit(post.content)} Min.
+                            </span>
                           </span>
                           <h2 className="mt-3 text-lg font-semibold">{post.title}</h2>
                           <p className="mt-2 flex-1 text-sm text-muted">{post.excerpt}</p>
@@ -187,11 +228,14 @@ export default async function BlogPage({
                     </StaggerItem>
                   ))}
                 </Stagger>
+                </>
               )}
             </>
           )}
         </Container>
       </section>
+
+      <WegLeiste aktuell="dabeibleiben" />
     </>
   );
 }
