@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site-config";
 import { isVisible } from "@/lib/site-toggles";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
@@ -126,7 +127,7 @@ export default async function UeberUnsPage() {
         intro="20 Minuten pro Woche, persönlich betreut - ob Abnehmen, Muskelaufbau oder ein gesünderer Rücken."
       >
         <p className="mt-6 max-w-2xl font-semibold text-accent">
-          Körperformen - der Vorreiter für gesundheitsorientiertes EMS Training.
+          {siteConfig.claim}.
         </p>
       </PageHeader>
 

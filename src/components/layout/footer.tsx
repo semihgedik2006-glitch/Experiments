@@ -33,7 +33,7 @@ export async function Footer({
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-4">
         <div>
           <Logo className="h-8 w-auto" />
-          <p className="mt-3 max-w-xs text-sm text-muted">{siteConfig.tagline}</p>
+          <p className="mt-3 max-w-xs text-sm text-muted">{siteConfig.claim}</p>
           <div className="mt-5 flex gap-3">
             {socials.map(({ href, label, Icon }) => (
               <a

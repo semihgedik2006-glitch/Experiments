@@ -22,7 +22,12 @@ import { basisadresseErmitteln } from "@/lib/basisadresse";
 
 export const siteConfig = {
   name: "Körperformen",
-  tagline: "Der Vorreiter für gesundheitsorientiertes EMS Training",
+  // Steht im Seitentitel ("Körperformen - EMS-Training in Köln und
+  // Umgebung"). Vorher "Der Vorreiter für gesundheitsorientiertes EMS
+  // Training" - eine Behauptung, die sich nicht belegen lässt.
+  tagline: "EMS-Training in Köln und Umgebung",
+  /** Unter dem Logo im Fußbereich und auf "Über uns". */
+  claim: "Der größte Körperformen-Partner in Köln und Umgebung",
   description:
     // Das steht in Google unter dem Suchergebnis. Vorher: "Abnehmen,
     // Muskeln aufbauen und Rückenschmerzen lindern" - ein Gesundheits-
