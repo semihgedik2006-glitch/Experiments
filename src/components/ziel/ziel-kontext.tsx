@@ -29,13 +29,34 @@ type ZielKontext = {
 
 const Kontext = createContext<ZielKontext>({ ziel: null, waehlen: () => {}, wechsel: 0 });
 
-export function ZielProvider({ children }: { children: ReactNode }) {
-  const [ziel, setZiel] = useState<ZielWert | null>(null);
+export function ZielProvider({
+  children,
+  fest,
+}: {
+  children: ReactNode;
+  /**
+   * Auf einer Zielseite (/ziel/ruecken) steht das Ziel schon fest. Es gilt
+   * dann ab dem ersten Bild - auch auf dem Server - und wird sofort
+   * gemerkt, damit das Formular weiter unten es schon angekreuzt hat.
+   */
+  fest?: ZielWert;
+}) {
+  const [ziel, setZiel] = useState<ZielWert | null>(() => {
+    if (fest && typeof window !== "undefined") {
+      try {
+        sessionStorage.setItem(ZIEL_SPEICHER, fest);
+      } catch {
+        // siehe unten
+      }
+    }
+    return fest ?? null;
+  });
   const [wechsel, setWechsel] = useState(0);
 
   // Erst nach dem Aufbau im Browser lesen - auf dem Server gibt es keinen
   // Speicher, und ein anderes erstes Bild verwürfe React.
   useEffect(() => {
+    if (fest) return;
     try {
       const gemerkt = sessionStorage.getItem(ZIEL_SPEICHER);
       // eslint-disable-next-line react-hooks/set-state-in-effect -- einmaliges Übernehmen aus dem Browser
@@ -43,7 +64,7 @@ export function ZielProvider({ children }: { children: ReactNode }) {
     } catch {
       // Privater Modus oder gesperrter Speicher: dann eben ohne Erinnerung.
     }
-  }, []);
+  }, [fest]);
 
   const waehlen = useCallback((neu: ZielWert) => {
     setZiel(neu);

@@ -69,6 +69,11 @@ export type ZielInhalt = {
   reihenfolge: AbschnittKey[];
   /** Stichworte, nach denen Fragen und Blogartikel nach vorne rücken. */
   stichworte: string[];
+  /**
+   * Die eigene Seite unter /ziel/<wert> - für Google ("EMS Rücken Köln")
+   * und als Ziel für Werbeanzeigen zu genau diesem Thema.
+   */
+  seite: { titel: string; beschreibung: string };
   /** Knopf in der Auswahl. */
   kurz: string;
   /** Ein Satz, der nach der Auswahl im ersten Bildschirm steht. */
@@ -86,6 +91,11 @@ export type ZielInhalt = {
 export const ZIEL_INHALTE: readonly ZielInhalt[] = [
   {
     wert: "ruecken",
+    seite: {
+      titel: "EMS-Training für einen starken Rücken in Köln",
+      beschreibung:
+        "Rücken stärken mit EMS-Training: 20 Minuten pro Woche, persönlicher Trainer, Schwerpunkt auf Rücken und Rumpf. 14 Studios in Köln und Umgebung - Probetraining kostenlos.",
+    },
     titel: ["Ein Rücken, der deinen", "Tag mitmacht."],
     knopf: "Probetraining für deinen Rücken",
     reihenfolge: ["zielwelt", "individuell", "vorteile", "studio", "erfolge", "blog", "vertrauen", "netzwerk", "faq"],
@@ -107,6 +117,11 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
   },
   {
     wert: "straffen",
+    seite: {
+      titel: "EMS-Training zum Straffen und Formen in Köln",
+      beschreibung:
+        "Straffen und formen mit EMS-Training: Dein Trainer stellt Bauch, Po, Beine und Arme gezielt ein. 20 Minuten pro Woche in 14 Studios in Köln und Umgebung.",
+    },
     titel: ["Mehr Form. Mehr Spannung.", "Mehr du."],
     knopf: "Probetraining für mehr Form",
     reihenfolge: ["zielwelt", "individuell", "erfolge", "vorteile", "zeit", "studio", "blog", "vertrauen", "netzwerk", "faq"],
@@ -128,6 +143,11 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
   },
   {
     wert: "abnehmen",
+    seite: {
+      titel: "Abnehmen mit EMS-Training in Köln",
+      beschreibung:
+        "Abnehmen mit EMS-Training: ein fester Termin pro Woche, ein Trainer, der mit dir dranbleibt, auf Wunsch Ernährungsberatung. 14 Studios in Köln und Umgebung.",
+    },
     titel: ["Dranbleiben war noch", "nie so einfach."],
     knopf: "Probetraining zum Abnehmen",
     reihenfolge: ["zielwelt", "zeit", "individuell", "erfolge", "vorteile", "blog", "studio", "vertrauen", "netzwerk", "faq"],
@@ -149,6 +169,11 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
   },
   {
     wert: "muskelaufbau",
+    seite: {
+      titel: "Muskelaufbau mit EMS-Training in Köln",
+      beschreibung:
+        "Muskeln aufbauen mit EMS-Training: jede Muskelgruppe einzeln eingestellt, saubere Ausführung mit Trainer, 20 Minuten pro Woche. 14 Studios in Köln und Umgebung.",
+    },
     titel: ["Stärker werden,", "Woche für Woche."],
     knopf: "Probetraining für mehr Kraft",
     reihenfolge: ["zielwelt", "individuell", "vorteile", "erfolge", "studio", "blog", "vertrauen", "netzwerk", "faq"],
@@ -170,6 +195,11 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
   },
   {
     wert: "fitness",
+    seite: {
+      titel: "Fitter im Alltag mit EMS-Training in Köln",
+      beschreibung:
+        "Fitter im Alltag mit EMS-Training: 20 Minuten pro Woche, ganzer Körper, dein Trainer plant alles. 14 Studios in Köln und Umgebung - jetzt kostenlos testen.",
+    },
     titel: ["Treppen, Einkäufe, Kinder –", "wieder leicht."],
     knopf: "Probetraining für mehr Fitness",
     reihenfolge: ["zielwelt", "zeit", "vorteile", "individuell", "studio", "netzwerk", "erfolge", "blog", "vertrauen", "faq"],

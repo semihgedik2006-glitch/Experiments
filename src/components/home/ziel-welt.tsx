@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 import { Container } from "@/components/ui/container";
@@ -24,7 +25,7 @@ import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 
 const weich = [0.16, 1, 0.3, 1] as const;
 
-export function ZielWelt() {
+export function ZielWelt({ auswahl = true }: { auswahl?: boolean }) {
   const { ziel, waehlen } = useZiel();
   const inhalt = zielInhalt(ziel) ?? ZIEL_INHALTE[0];
   const wenigerBewegung = useReducedMotion();
@@ -37,43 +38,48 @@ export function ZielWelt() {
             Erkennst du dich wieder?
           </h2>
           <p className="mt-4 text-lg text-muted">
-            Wähl dein Ziel – und sieh, wie dein Training dafür aussieht.
+            {auswahl
+              ? "Wähl dein Ziel – und sieh, wie dein Training dafür aussieht."
+              : `So sieht dein Training für „${inhalt.kurz}“ aus.`}
           </p>
         </Reveal>
 
-        <div role="tablist" aria-label="Dein Ziel" className="mt-10 flex flex-wrap gap-2">
-          {ZIEL_INHALTE.map((z) => {
-            const aktiv = z.wert === inhalt.wert;
-            return (
-              <button
-                key={z.wert}
-                type="button"
-                role="tab"
-                id={`ziel-tab-${z.wert}`}
-                aria-selected={aktiv}
-                aria-controls="ziel-panel"
-                onClick={() => waehlen(z.wert)}
-                className={`relative isolate rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
-                  aktiv ? "border-lime text-on-lime" : "border-border text-muted hover:border-lime/60 hover:text-foreground"
-                }`}
-              >
-                {aktiv && (
-                  <motion.span
-                    layoutId="ziel-welt-pille"
-                    transition={wenigerBewegung ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 34 }}
-                    className="absolute inset-0 -z-10 rounded-full bg-lime"
-                  />
-                )}
-                {z.kurz}
-              </button>
-            );
-          })}
-        </div>
+        {/* Auf einer Zielseite steht das Ziel fest - dort keine Auswahl. */}
+        {auswahl && (
+          <div role="tablist" aria-label="Dein Ziel" className="mt-10 flex flex-wrap gap-2">
+            {ZIEL_INHALTE.map((z) => {
+              const aktiv = z.wert === inhalt.wert;
+              return (
+                <button
+                  key={z.wert}
+                  type="button"
+                  role="tab"
+                  id={`ziel-tab-${z.wert}`}
+                  aria-selected={aktiv}
+                  aria-controls="ziel-panel"
+                  onClick={() => waehlen(z.wert)}
+                  className={`relative isolate rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                    aktiv ? "border-lime text-on-lime" : "border-border text-muted hover:border-lime/60 hover:text-foreground"
+                  }`}
+                >
+                  {aktiv && (
+                    <motion.span
+                      layoutId="ziel-welt-pille"
+                      transition={wenigerBewegung ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 34 }}
+                      className="absolute inset-0 -z-10 rounded-full bg-lime"
+                    />
+                  )}
+                  {z.kurz}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         <div
           id="ziel-panel"
-          role="tabpanel"
-          aria-labelledby={`ziel-tab-${inhalt.wert}`}
+          role={auswahl ? "tabpanel" : undefined}
+          aria-labelledby={auswahl ? `ziel-tab-${inhalt.wert}` : undefined}
           className="mt-10 grid items-start gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16"
         >
           <AnimatePresence mode="wait" initial={false}>
@@ -113,10 +119,20 @@ export function ZielWelt() {
 
               <p className="mt-8 max-w-xl text-sm text-muted">{inhalt.hinweis}</p>
 
-              <Button href={probeterminHref(inhalt.wert)} className="mt-8">
-                {inhalt.knopf}
-                <ArrowRight size={16} aria-hidden />
-              </Button>
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+                <Button href={auswahl ? probeterminHref(inhalt.wert) : "#termin"}>
+                  {inhalt.knopf}
+                  <ArrowRight size={16} aria-hidden />
+                </Button>
+                {auswahl && (
+                  <Link
+                    href={`/ziel/${inhalt.wert}`}
+                    className="text-sm font-semibold text-accent underline-offset-4 hover:underline"
+                  >
+                    Alles zu „{inhalt.kurz}“
+                  </Link>
+                )}
+              </div>
             </motion.div>
           </AnimatePresence>
 

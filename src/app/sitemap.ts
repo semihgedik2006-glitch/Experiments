@@ -3,6 +3,7 @@ import { getPublishedPosts, getStudios } from "@/lib/data";
 import { siteConfig } from "@/lib/site-config";
 import { getToggles } from "@/lib/site-toggles";
 import { erfolgeVorhanden } from "@/lib/kundenstimmen";
+import { ZIEL_INHALTE } from "@/lib/ziel-inhalte";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, toggles, studios, erfolge] = await Promise.all([
@@ -76,5 +77,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...studioRoutes, ...postRoutes];
+  // Die Zielseiten (/ziel/ruecken, ...): Auf sie zielen Suchen wie "EMS
+  // Rücken Köln" - deshalb wie die Standortseiten ausdrücklich gemeldet.
+  const zielRoutes = ZIEL_INHALTE.map((ziel) => ({
+    url: `${siteConfig.url}/ziel/${ziel.wert}`,
+    lastModified: new Date(),
+    priority: 0.8,
+  }));
+
+  return [...staticRoutes, ...zielRoutes, ...studioRoutes, ...postRoutes];
 }
