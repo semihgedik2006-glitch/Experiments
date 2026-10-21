@@ -27,8 +27,48 @@ export const ZONEN = [
   "Beine",
 ] as const;
 
+/** Die Abschnitte der Startseite, die sich je Ziel umsortieren lassen. */
+export type AbschnittKey =
+  | "zielwelt"
+  | "individuell"
+  | "zeit"
+  | "vorteile"
+  | "netzwerk"
+  | "studio"
+  | "erfolge"
+  | "vertrauen"
+  | "blog"
+  | "instagram"
+  | "faq";
+
+/** Ohne gewähltes Ziel: die Reihenfolge, wie sie immer war. */
+export const STANDARD_REIHENFOLGE: AbschnittKey[] = [
+  "zielwelt",
+  "individuell",
+  "zeit",
+  "vorteile",
+  "netzwerk",
+  "studio",
+  "erfolge",
+  "vertrauen",
+  "blog",
+  "instagram",
+  "faq",
+];
+
 export type ZielInhalt = {
   wert: ZielWert;
+  /** Die Überschrift im ersten Bildschirm, zweizeilig (zweite Zeile in Lime). */
+  titel: [string, string];
+  /** Beschriftung der Knöpfe zum Probetermin. */
+  knopf: string;
+  /**
+   * Was für dieses Ziel zuerst zählt. Abschnitte, die hier fehlen, entfallen
+   * für dieses Ziel - so wird die Seite für jeden kürzer.
+   */
+  reihenfolge: AbschnittKey[];
+  /** Stichworte, nach denen Fragen und Blogartikel nach vorne rücken. */
+  stichworte: string[];
   /** Knopf in der Auswahl. */
   kurz: string;
   /** Ein Satz, der nach der Auswahl im ersten Bildschirm steht. */
@@ -46,6 +86,10 @@ export type ZielInhalt = {
 export const ZIEL_INHALTE: readonly ZielInhalt[] = [
   {
     wert: "ruecken",
+    titel: ["Ein Rücken, der deinen", "Tag mitmacht."],
+    knopf: "Probetraining für deinen Rücken",
+    reihenfolge: ["zielwelt", "individuell", "vorteile", "studio", "erfolge", "blog", "vertrauen", "netzwerk", "faq"],
+    stichworte: ["rücken", "gelenk", "beschwerden", "sicher", "geeignet"],
     kurz: "Rücken stärken",
     antwort: "Dein Trainer legt den Schwerpunkt auf Rücken und Rumpf – mit einer Intensität, die zu deinem Rücken passt.",
     erkennst: [
@@ -63,6 +107,10 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
   },
   {
     wert: "straffen",
+    titel: ["Mehr Form. Mehr Spannung.", "Mehr du."],
+    knopf: "Probetraining für mehr Form",
+    reihenfolge: ["zielwelt", "individuell", "erfolge", "vorteile", "zeit", "studio", "blog", "vertrauen", "netzwerk", "faq"],
+    stichworte: ["ergebnis", "straff", "muskel", "form"],
     kurz: "Straffen und formen",
     antwort: "Dein Trainer setzt die Intensität dort höher, wo du mehr Spannung und Form willst – Bauch, Po, Beine oder Arme.",
     erkennst: [
@@ -80,6 +128,10 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
   },
   {
     wert: "abnehmen",
+    titel: ["Dranbleiben war noch", "nie so einfach."],
+    knopf: "Probetraining zum Abnehmen",
+    reihenfolge: ["zielwelt", "zeit", "individuell", "erfolge", "vorteile", "blog", "studio", "vertrauen", "netzwerk", "faq"],
+    stichworte: ["abnehm", "ernährung", "ergebnis", "kosten"],
     kurz: "Abnehmen",
     antwort: "Ein fester Termin, ein Trainer, der dich erwartet – und auf Wunsch Ernährungsberatung dazu.",
     erkennst: [
@@ -97,6 +149,10 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
   },
   {
     wert: "muskelaufbau",
+    titel: ["Stärker werden,", "Woche für Woche."],
+    knopf: "Probetraining für mehr Kraft",
+    reihenfolge: ["zielwelt", "individuell", "vorteile", "erfolge", "studio", "blog", "vertrauen", "netzwerk", "faq"],
+    stichworte: ["muskel", "oft", "ergebnis", "anfänger"],
     kurz: "Muskeln aufbauen",
     antwort: "Dein Trainer stellt jede Muskelgruppe einzeln ein und steigert die Intensität mit dir – Woche für Woche.",
     erkennst: [
@@ -114,6 +170,10 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
   },
   {
     wert: "fitness",
+    titel: ["Treppen, Einkäufe, Kinder –", "wieder leicht."],
+    knopf: "Probetraining für mehr Fitness",
+    reihenfolge: ["zielwelt", "zeit", "vorteile", "individuell", "studio", "netzwerk", "erfolge", "blog", "vertrauen", "faq"],
+    stichworte: ["oft", "anfänger", "zeit", "berufstätig", "mitbringen"],
     kurz: "Fitter im Alltag",
     antwort: "Einmal pro Woche 20 Minuten, alles eingestellt von deinem Trainer – damit du dich im Alltag wieder leichter fühlst.",
     erkennst: [
@@ -133,4 +193,24 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
 
 export function zielInhalt(wert: string | null | undefined): ZielInhalt | undefined {
   return ZIEL_INHALTE.find((z) => z.wert === wert);
+}
+
+/**
+ * Wie gut passt ein Text zu einem Ziel? Zählt die Stichworte, die darin
+ * vorkommen. Groß- und Kleinschreibung egal; "abnehm" findet "Abnehmen"
+ * und "abnehmen-mit-ems".
+ */
+export function passung(text: string, ziel: ZielInhalt | undefined): number {
+  if (!ziel) return 0;
+  const klein = text.toLowerCase();
+  return ziel.stichworte.filter((wort) => klein.includes(wort)).length;
+}
+
+/** Stabil nach Passung sortieren - Gleichstand behält die alte Reihenfolge. */
+export function nachZiel<T>(liste: T[], text: (eintrag: T) => string, ziel: ZielInhalt | undefined): T[] {
+  if (!ziel) return liste;
+  return liste
+    .map((eintrag, i) => ({ eintrag, i, p: passung(text(eintrag), ziel) }))
+    .sort((a, b) => b.p - a.p || a.i - b.i)
+    .map((x) => x.eintrag);
 }

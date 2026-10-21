@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { probeterminHref, useZiel } from "@/components/ziel/ziel-kontext";
 import { ZIEL_INHALTE, zielInhalt } from "@/lib/ziel-inhalte";
+import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 
 /**
  * Der erste Bildschirm.
@@ -119,8 +120,10 @@ export function Hero({
 
       <motion.div style={{ opacity: inhaltOpacity }}>
         <Container className="grid items-center gap-10 pb-16 pt-8 sm:pb-20 lg:min-h-[88vh] lg:grid-cols-[1fr_1.12fr] lg:gap-14 lg:py-20">
-          {/* ---------- Das Foto: auf dem Handy zuerst, am Computer rechts ---------- */}
-          <motion.div style={{ y: bildY }} className="relative lg:order-2">
+          {/* ---------- Das Foto: am Computer rechts, auf dem Handy unter dem
+              Text - dort stand es zuerst und schob die Zielfrage aus dem
+              ersten Bildschirm. ---------- */}
+          <motion.div style={{ y: bildY }} className="relative order-2">
             <div className="hero-anim hero-rahmen relative overflow-hidden rounded-[1.75rem]" style={verz(0.1)}>
               <div className="hero-foto-bild relative aspect-[16/11] lg:aspect-[4/3]">
                 <Image
@@ -132,6 +135,7 @@ export function Hero({
                   className="object-cover object-[60%_center]"
                 />
               </div>
+              <ZielKarte />
             </div>
 
             {/* Die kleine Geschichte: Feierabend, Training, zuhause. Hängt
@@ -169,7 +173,7 @@ export function Hero({
           </motion.div>
 
           {/* ---------- Die Aussage ---------- */}
-          <motion.div style={{ y: textY }} className="min-w-0 lg:order-1">
+          <motion.div style={{ y: textY }} className="order-1 min-w-0">
             <span
               className="hero-anim inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/85"
               style={verz(0.15)}
@@ -178,13 +182,7 @@ export function Hero({
               {anzahlStudios > 1 ? `${anzahlStudios} Studios in Köln und Umgebung` : standorte}
             </span>
 
-            <h1 className="font-display mt-6 text-[2.4rem] font-black leading-[1.04] tracking-tight sm:text-[3.2rem] xl:text-[3.7rem]">
-              {/* Geschütztes Leerzeichen: "wohl" bzw. "Körper." dürfen nie
-                  allein in einer Zeile stehen. */}
-              <StaggeredLine text={"Fühl dich wieder\u00a0wohl"} startDelay={0.25} />
-              <br />
-              <StaggeredLine text={"in\u00a0deinem\u00a0Körper."} className="text-accent" startDelay={0.5} />
-            </h1>
+            <Ueberschrift />
 
             <p className="hero-anim mt-6 max-w-lg text-lg leading-relaxed text-foreground/80" style={verz(0.7)}>
               EMS-Training mit deinem persönlichen Trainer: 20 Minuten pro Woche, abgestimmt auf
@@ -303,12 +301,12 @@ function ZielWahl() {
             >
               <p className="max-w-lg text-[15px] leading-relaxed text-foreground/80">{inhalt.antwort}</p>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Button href={probeterminHref(inhalt.wert)} className="knopf-glanz-dauer px-7 py-3.5">
-                  Kostenloses Probetraining
+                <Button href={probeterminHref(inhalt.wert)} className="knopf-glanz-dauer whitespace-nowrap px-7 py-3.5">
+                  {inhalt.knopf}
                   <ArrowRight size={16} aria-hidden />
                 </Button>
                 <a href="#dein-ziel" className="text-sm font-semibold text-accent underline-offset-4 hover:underline">
-                  So trainierst du für „{inhalt.kurz}“
+                  So trainierst du dafür
                 </a>
               </div>
             </motion.div>
@@ -333,5 +331,63 @@ function ZielWahl() {
         </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+/**
+ * Die Überschrift - ohne Ziel die allgemeine, mit Ziel die des Ziels.
+ *
+ * Beim Wechsel wird sie neu aufgebaut, damit die Wörter wieder aus ihrer
+ * Zeile steigen (CSS-Animation, siehe .hero-anim-word). Beim ersten Laden
+ * mit kurzer Verzögerung, beim Wechsel sofort.
+ */
+const ALLGEMEIN: [string, string] = ["Fühl dich wieder\u00a0wohl", "in\u00a0deinem\u00a0Körper."];
+
+function Ueberschrift() {
+  const { ziel, wechsel } = useZiel();
+  const inhalt = zielInhalt(ziel);
+  // Geschütztes Leerzeichen vor dem letzten Wort: Es darf nie allein in
+  // einer Zeile stehen.
+  const [eins, zwei] = (inhalt?.titel ?? ALLGEMEIN).map((zeile) => zeile.replace(/ (\S+)$/, "\u00a0$1"));
+  const start = wechsel > 0 ? 0 : 0.25;
+  return (
+    <h1
+      key={inhalt?.wert ?? "allgemein"}
+      className="font-display mt-6 text-[2.4rem] font-black leading-[1.04] tracking-tight sm:text-[3.2rem] xl:text-[3.7rem]"
+    >
+      <StaggeredLine text={eins} startDelay={start} />
+      <br />
+      <StaggeredLine text={zwei} className="text-accent" startDelay={start + 0.25} />
+    </h1>
+  );
+}
+
+/** Kleine Karte oben links auf dem Foto: das Motiv zum gewählten Ziel. */
+function ZielKarte() {
+  const { ziel } = useZiel();
+  const inhalt = zielInhalt(ziel);
+  const wenigerBewegung = useReducedMotion();
+  return (
+    <AnimatePresence mode="wait">
+      {inhalt && (
+        <motion.div
+          key={inhalt.wert}
+          aria-hidden
+          initial={wenigerBewegung ? false : { opacity: 0, scale: 0.85, y: -8 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={wenigerBewegung ? undefined : { opacity: 0, scale: 0.9 }}
+          transition={{ type: "spring", stiffness: 320, damping: 26 }}
+          className="hero-geschichte absolute left-3 top-3 flex items-center gap-3 rounded-2xl py-2 pl-2 pr-4 sm:left-4 sm:top-4"
+        >
+          <div className="h-14 w-14 rounded-xl bg-black/50 p-1.5 sm:h-16 sm:w-16">
+            <ZielMotiv ziel={inhalt.wert} className="h-full w-full" />
+          </div>
+          <p className="text-xs leading-tight text-foreground/80">
+            <span className="block text-[10px] uppercase tracking-widest text-muted">Dein Fokus</span>
+            <span className="mt-0.5 block text-sm font-semibold text-foreground">{inhalt.kurz}</span>
+          </p>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

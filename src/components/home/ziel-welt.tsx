@@ -6,7 +6,8 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { probeterminHref, useZiel } from "@/components/ziel/ziel-kontext";
-import { ZIEL_INHALTE, ZONEN, zielInhalt } from "@/lib/ziel-inhalte";
+import { ZIEL_INHALTE, ZONEN, zielInhalt, type ZielWert } from "@/lib/ziel-inhalte";
+import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 
 /**
  * "Erkennst du dich wieder?" - der Abschnitt, der zum gewählten Ziel spricht.
@@ -113,13 +114,13 @@ export function ZielWelt() {
               <p className="mt-8 max-w-xl text-sm text-muted">{inhalt.hinweis}</p>
 
               <Button href={probeterminHref(inhalt.wert)} className="mt-8">
-                Probetraining für „{inhalt.kurz}“
+                {inhalt.knopf}
                 <ArrowRight size={16} aria-hidden />
               </Button>
             </motion.div>
           </AnimatePresence>
 
-          <Schwerpunkt profil={inhalt.profil} titel={inhalt.kurz} />
+          <Schwerpunkt ziel={inhalt.wert} profil={inhalt.profil} titel={inhalt.kurz} />
         </div>
       </Container>
     </section>
@@ -131,7 +132,7 @@ export function ZielWelt() {
  * gleichzeitig auf den neuen Schwerpunkt - leicht versetzt von oben nach
  * unten, damit das Auge der Bewegung folgen kann.
  */
-function Schwerpunkt({ profil, titel }: { profil: number[]; titel: string }) {
+function Schwerpunkt({ ziel, profil, titel }: { ziel: ZielWert; profil: number[]; titel: string }) {
   const wenigerBewegung = useReducedMotion();
   const staerkste = new Set(
     [...profil]
@@ -143,6 +144,18 @@ function Schwerpunkt({ profil, titel }: { profil: number[]; titel: string }) {
 
   return (
     <div className="on-ink kal-karte relative rounded-3xl p-6 sm:p-8 lg:sticky lg:top-24">
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={ziel}
+          initial={wenigerBewegung ? false : { opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={wenigerBewegung ? undefined : { opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+          className="mx-auto mb-6 h-36 w-36 sm:h-44 sm:w-44"
+        >
+          <ZielMotiv ziel={ziel} className="h-full w-full" />
+        </motion.div>
+      </AnimatePresence>
       <div className="flex items-baseline justify-between gap-4">
         <p className="text-sm font-semibold text-foreground">Dein Schwerpunkt</p>
         <AnimatePresence mode="wait" initial={false}>

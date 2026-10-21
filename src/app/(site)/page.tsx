@@ -6,6 +6,7 @@ import { ZielWelt } from "@/components/home/ziel-welt";
 import { Individuell } from "@/components/home/individuell";
 import { Netzwerk } from "@/components/home/netzwerk";
 import { ZielProvider } from "@/components/ziel/ziel-kontext";
+import { ZielAbschnitte, ZielLeiste } from "@/components/ziel/ziel-abschnitte";
 import { siteConfig } from "@/lib/site-config";
 import { StudioTeaser } from "@/components/home/studio-teaser";
 import { TestimonialsTeaser } from "@/components/home/testimonials-teaser";
@@ -86,41 +87,37 @@ export default async function Home() {
       {/* Weniger als zwei Zahlen sind keine Aussage, sondern eine
           Behauptung - dann entfällt das Band lieber ganz. */}
       {zahlen.length >= 2 && <StatsStrip zahlen={zahlen} />}
-      {/* Der Weg über das Ziel: Wer oben eines gewählt hat, landet hier
-          bei genau diesem Ziel, danach folgt, wie daraus ein eigener
-          Plan wird. */}
-      <ZielWelt />
-      <Individuell />
-      <ZeitProblem />
-      <UspGrid standorte={studios.length} zeitspanne={zeitspanne} />
-      {studios.length > 0 && (
-        <Netzwerk gesamt={siteConfig.netzwerk.studiosGesamt} eigene={studios.length} />
-      )}
-      {/* Die Trenner stehen dort, wo zwei helle Abschnitte aneinander
-          stoßen - genau die Stellen, an denen die Seite beim Scrollen
-          bisher stillstand. Nicht überall: Wo ohnehin ein dunkles Band
-          oder eine Flächenfarbe wechselt, ist der Schnitt schon sichtbar,
-          und eine Linie obendrauf wäre eine Verzierung zu viel.
-
-          Drei verschiedene Varianten, damit die Linien nicht wie dreimal
-          dasselbe Bauteil wirken und nicht im Gleichschritt blinken. */}
-      {/* "In vier Stationen" (HowItWorks) ist hier entfallen: Den Weg
-          führt jetzt die Zielauswahl, und die Seite war ohnehin lang. */}
-      {toggles.studio && <StudioTeaser />}
-      {toggles.erfolgsgeschichten && <TestimonialsTeaser />}
-      <TrustSection />
-      {toggles.blog && (
-        <>
-          <ImpulsTrenner variante="b" className="mx-auto max-w-6xl px-6" />
-          <BlogTeaser />
-        </>
-      )}
-      {/* Instagram steht zwischen Blog und Fragen: Bis hierher hat die
-          Seite erklärt und belegt - sechs Bilder aus dem Studio zeigen
-          danach, wie es dort tatsächlich aussieht. */}
-      <InstagramWand beitraege={instagram} />
-      <ImpulsTrenner variante="c" className="mx-auto max-w-6xl px-6" />
-      <FaqSection />
+      {/* Ab hier richtet sich die Seite nach dem Ziel: Wer oben eines
+          gewählt hat, sieht die Abschnitte in der Reihenfolge, die dazu
+          passt - und nur die, die dafür zählen (siehe ZIEL_INHALTE).
+          "In vier Stationen" (HowItWorks) ist entfallen: Den Weg führt
+          jetzt die Zielauswahl. */}
+      <ZielAbschnitte
+        abschnitte={{
+          zielwelt: <ZielWelt />,
+          individuell: <Individuell />,
+          zeit: <ZeitProblem />,
+          vorteile: <UspGrid standorte={studios.length} zeitspanne={zeitspanne} />,
+          netzwerk:
+            studios.length > 0 ? (
+              <Netzwerk gesamt={siteConfig.netzwerk.studiosGesamt} eigene={studios.length} />
+            ) : null,
+          studio: toggles.studio ? <StudioTeaser /> : null,
+          erfolge: toggles.erfolgsgeschichten ? <TestimonialsTeaser /> : null,
+          vertrauen: <TrustSection />,
+          blog: toggles.blog ? <BlogTeaser /> : null,
+          // Instagram zeigt, wie es im Studio aussieht - ohne gewähltes
+          // Ziel zwischen Blog und Fragen.
+          instagram: <InstagramWand beitraege={instagram} />,
+          faq: (
+            <>
+              <ImpulsTrenner variante="c" className="mx-auto max-w-6xl px-6" />
+              <FaqSection />
+            </>
+          ),
+        }}
+      />
+      <ZielLeiste />
       <CtaBanner />
     </ZielProvider>
   );
