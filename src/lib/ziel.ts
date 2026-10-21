@@ -38,9 +38,10 @@ export type Ziel = {
 };
 
 export const ZIELE: readonly Ziel[] = [
+  { wert: "ruecken", label: "Rücken stärken" },
+  { wert: "straffen", label: "Straffen und formen" },
   { wert: "abnehmen", label: "Abnehmen" },
   { wert: "muskelaufbau", label: "Muskeln aufbauen" },
-  { wert: "ruecken", label: "Rücken stärken" },
   { wert: "fitness", label: "Einfach fitter werden" },
   { wert: "unsicher", label: "Weiß ich noch nicht" },
 ] as const;

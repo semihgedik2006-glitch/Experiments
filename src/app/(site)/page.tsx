@@ -2,7 +2,11 @@ import { ZeitProblem } from "@/components/home/zeit-problem";
 import { Hero } from "@/components/home/hero";
 import { StatsStrip } from "@/components/home/stats-strip";
 import { UspGrid } from "@/components/home/usp-grid";
-import { HowItWorks } from "@/components/home/how-it-works";
+import { ZielWelt } from "@/components/home/ziel-welt";
+import { Individuell } from "@/components/home/individuell";
+import { Netzwerk } from "@/components/home/netzwerk";
+import { ZielProvider } from "@/components/ziel/ziel-kontext";
+import { siteConfig } from "@/lib/site-config";
 import { StudioTeaser } from "@/components/home/studio-teaser";
 import { TestimonialsTeaser } from "@/components/home/testimonials-teaser";
 import { TrustSection } from "@/components/trust-section";
@@ -29,7 +33,7 @@ export default async function Home() {
   const studios = await getStudios();
   const standorte =
     studios.length > 1
-      ? `${studios.length} EMS-Studios rund um Köln`
+      ? `${studios.length} EMS-Studios in Köln und Umgebung`
       : studios.length === 1
         ? `EMS-Studio in ${studios[0].city}`
         : "EMS-Training in Köln und Umgebung";
@@ -70,7 +74,7 @@ export default async function Home() {
     : null;
 
   return (
-    <>
+    <ZielProvider>
       <StudioJsonLd />
       <WebsiteJsonLd />
       <FaqJsonLd />
@@ -82,8 +86,16 @@ export default async function Home() {
       {/* Weniger als zwei Zahlen sind keine Aussage, sondern eine
           Behauptung - dann entfällt das Band lieber ganz. */}
       {zahlen.length >= 2 && <StatsStrip zahlen={zahlen} />}
+      {/* Der Weg über das Ziel: Wer oben eines gewählt hat, landet hier
+          bei genau diesem Ziel, danach folgt, wie daraus ein eigener
+          Plan wird. */}
+      <ZielWelt />
+      <Individuell />
       <ZeitProblem />
       <UspGrid standorte={studios.length} zeitspanne={zeitspanne} />
+      {studios.length > 0 && (
+        <Netzwerk gesamt={siteConfig.netzwerk.studiosGesamt} eigene={studios.length} />
+      )}
       {/* Die Trenner stehen dort, wo zwei helle Abschnitte aneinander
           stoßen - genau die Stellen, an denen die Seite beim Scrollen
           bisher stillstand. Nicht überall: Wo ohnehin ein dunkles Band
@@ -92,8 +104,8 @@ export default async function Home() {
 
           Drei verschiedene Varianten, damit die Linien nicht wie dreimal
           dasselbe Bauteil wirken und nicht im Gleichschritt blinken. */}
-      <ImpulsTrenner variante="a" className="mx-auto max-w-6xl px-6" />
-      <HowItWorks />
+      {/* "In vier Stationen" (HowItWorks) ist hier entfallen: Den Weg
+          führt jetzt die Zielauswahl, und die Seite war ohnehin lang. */}
       {toggles.studio && <StudioTeaser />}
       {toggles.erfolgsgeschichten && <TestimonialsTeaser />}
       <TrustSection />
@@ -110,6 +122,6 @@ export default async function Home() {
       <ImpulsTrenner variante="c" className="mx-auto max-w-6xl px-6" />
       <FaqSection />
       <CtaBanner />
-    </>
+    </ZielProvider>
   );
 }

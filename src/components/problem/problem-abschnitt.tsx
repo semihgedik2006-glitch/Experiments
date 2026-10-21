@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { Check, X } from "lucide-react";
+import { Check } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { MehrDazu } from "@/components/ui/mehr-dazu";
@@ -14,10 +14,14 @@ import { MehrDazu } from "@/components/ui/mehr-dazu";
  * Woche). Jetzt hat jede Hauptseite ihr eigenes Problem. Damit sie sich
  * gleich anfühlen, teilen sie Aufbau, Karte und Takt:
  *
- *   links:  Kicker, Überschrift, "Klassisch" (X), "Bei uns" (Haken),
+ *   links:  Kicker, Überschrift, zwei bis drei Punkte mit Haken,
  *           optional eine Rechnung zum Aufklappen, ein Knopf
  *   rechts: dunkle Karte mit der Grafik und einer Zeile darunter, in der
- *           das Alte durchgestrichen wird und das Neue aufleuchtet
+ *           am Ende das Ergebnis aufleuchtet
+ *
+ * Früher stand links "Klassisch" mit einem X gegen "Bei uns" mit Haken.
+ * Das las sich wie ein Seitenhieb auf Fitnessstudios - und schlechtmachen
+ * wollen wir niemanden. Jetzt zählt jeder Punkt, was es bei uns gibt.
  *
  * Der Ablauf steht in globals.css ("Die volle Woche" und "Probleme auf
  * den Unterseiten"). Jedes Element bekommt seinen Einsatz als --ab.
@@ -67,8 +71,7 @@ export function useAblauf<T extends Element>() {
 export function ProblemAbschnitt({
   kicker,
   titel,
-  klassisch,
-  beiUns,
+  punkte,
   rechnung,
   knopf,
   kartenTitel,
@@ -82,13 +85,14 @@ export function ProblemAbschnitt({
 }: {
   kicker: string;
   titel: string;
-  klassisch: ReactNode;
-  beiUns: ReactNode;
+  punkte: { label: string; text: ReactNode }[];
   rechnung?: { titel: string; inhalt: ReactNode };
   knopf: { href: string; text: string };
   kartenTitel: string;
   legende?: ReactNode;
-  alt: { label: string; wert: string };
+  /** Links in der Fußzeile der Karte, ohne Hervorhebung. */
+  alt?: { label: string; wert: string };
+  /** Rechts, leuchtet am Ende des Ablaufs auf. */
   neu: { label: string; wert: string };
   aufloesung?: number;
   hintergrund?: "surface" | "background";
@@ -129,22 +133,16 @@ export function ProblemAbschnitt({
             </h2>
 
             <ul className="mt-8 space-y-5">
-              <li className="zp-auf flex gap-4" style={ab(0.2)}>
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/12 text-orange-600 dark:text-orange-400">
-                  <X size={16} aria-hidden />
-                </span>
-                <p className="lesebreite text-muted">
-                  <strong className="font-semibold text-foreground">Klassisch:</strong> {klassisch}
-                </p>
-              </li>
-              <li className="zp-auf flex gap-4" style={ab(0.3)}>
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-lime text-on-lime">
-                  <Check size={16} aria-hidden />
-                </span>
-                <p className="lesebreite text-muted">
-                  <strong className="font-semibold text-foreground">Bei uns:</strong> {beiUns}
-                </p>
-              </li>
+              {punkte.map((punkt, i) => (
+                <li key={punkt.label} className="zp-auf flex gap-4" style={ab(0.2 + i * 0.1)}>
+                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-lime text-on-lime">
+                    <Check size={16} aria-hidden />
+                  </span>
+                  <p className="lesebreite text-muted">
+                    <strong className="font-semibold text-foreground">{punkt.label}:</strong> {punkt.text}
+                  </p>
+                </li>
+              ))}
             </ul>
 
             {rechnung && (
@@ -173,10 +171,13 @@ export function ProblemAbschnitt({
               {children}
 
               <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-white/10 pt-4 text-sm">
-                <span className="zp-alt text-muted">
-                  {alt.label}{" "}
-                  <span className="zp-alt-zahl relative font-semibold text-foreground">{alt.wert}</span>
-                </span>
+                {alt ? (
+                  <span className="zp-alt text-muted">
+                    {alt.label} <span className="font-semibold text-foreground">{alt.wert}</span>
+                  </span>
+                ) : (
+                  <span />
+                )}
                 <span className="zp-neu flex items-center gap-2 font-semibold">
                   <span className="font-normal text-muted">{neu.label}</span>
                   <span className="rounded-full bg-lime px-3 py-1 text-on-lime">{neu.wert}</span>

@@ -2045,21 +2045,7 @@ summary::-webkit-details-marker {
 .kal-belegt {
   fill: rgb(255 255 255 / 0.11);
 }
-.kal-studio rect {
-  fill: rgb(251 146 60 / 0.16);
-  stroke: #fb923c;
-  stroke-width: 1.5;
-  stroke-dasharray: 4 3;
-}
-.kal-studio text {
-  font-size: 10px;
-  font-weight: 600;
-  fill: #fdba74;
-}
 /* Endbild: verblasst - "passt nicht". */
-.kal-studio {
-  opacity: 0.32;
-}
 .kal-ems-block {
   fill: var(--ink-lime);
   filter: drop-shadow(0 0 6px var(--ink-lime));
@@ -2078,18 +2064,6 @@ summary::-webkit-details-marker {
   font-weight: 700;
   fill: #0d0f0a;
 }
-/* Endbild unten: 4,5 Std. durchgestrichen. */
-.zp-alt-zahl::after {
-  content: "";
-  position: absolute;
-  left: -2px;
-  right: -2px;
-  top: 52%;
-  height: 2px;
-  border-radius: 2px;
-  background: #ef4444;
-  transform-origin: left;
-}
 
 /* ---------- Der Ablauf ---------- */
 .zp-bereit .zp-auf,
@@ -2106,40 +2080,28 @@ summary::-webkit-details-marker {
   transform-origin: top;
   animation: zp-fuellen 0.7s var(--ab, 0s) var(--weich) both;
 }
-.zp-bereit .kal-studio,
-.zp-laeuft .kal-studio {
-  animation: zp-studio 2.4s var(--ab, 0s) both;
-}
-.zp-bereit .kal-studio rect,
-.zp-laeuft .kal-studio rect {
-  animation: zp-stoss 2.4s var(--ab, 0s) ease both;
-}
 .zp-bereit .kal-ems-block,
 .zp-laeuft .kal-ems-block {
   transform-box: fill-box;
   transform-origin: center;
   animation:
-    zp-ems 0.9s 3.7s var(--federnd) both,
-    zp-atmen 2.8s 4.8s ease-in-out infinite;
+    zp-ems 0.9s 2.1s var(--federnd) both,
+    zp-atmen 2.8s 3.2s ease-in-out infinite;
 }
 .zp-bereit .kal-ems-linie,
 .zp-laeuft .kal-ems-linie {
   stroke-dasharray: 120;
-  animation: zp-linie 0.7s 4.2s var(--weich) both;
+  animation: zp-linie 0.7s 2.6s var(--weich) both;
 }
 .zp-bereit .kal-ems-schild,
 .zp-laeuft .kal-ems-schild {
   transform-box: fill-box;
   transform-origin: left center;
-  animation: zp-schild 0.7s 4.6s var(--federnd) both;
+  animation: zp-schild 0.7s 3.0s var(--federnd) both;
 }
 .zp-bereit .zp-alt,
 .zp-laeuft .zp-alt {
   animation: zp-auf 0.8s calc(var(--aufloesung, 3.4s) - 1.2s) var(--weich) both;
-}
-.zp-bereit .zp-alt-zahl::after,
-.zp-laeuft .zp-alt-zahl::after {
-  animation: zp-strich 0.5s var(--aufloesung, 3.4s) var(--weich) both;
 }
 .zp-bereit .zp-neu,
 .zp-laeuft .zp-neu {
@@ -2169,47 +2131,6 @@ summary::-webkit-details-marker {
   }
 }
 /* Fällt hinein, federt kurz nach, stößt an (kleines Zucken), verblasst. */
-@keyframes zp-studio {
-  0% {
-    opacity: 0;
-    transform: translateY(-22px);
-    animation-timing-function: var(--federnd);
-  }
-  22% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateX(-2.5px);
-  }
-  36% {
-    transform: translateX(2px);
-  }
-  42% {
-    transform: translateX(0);
-  }
-  72% {
-    opacity: 1;
-    animation-timing-function: var(--weich);
-  }
-  100% {
-    opacity: 0.32;
-  }
-}
-@keyframes zp-stoss {
-  0%,
-  24% {
-    stroke: #fb923c;
-  }
-  32%,
-  68% {
-    stroke: #ef4444;
-    fill: rgb(239 68 68 / 0.24);
-  }
-  100% {
-    stroke: #fb923c;
-  }
-}
 @keyframes zp-ems {
   from {
     opacity: 0;
@@ -2238,11 +2159,6 @@ summary::-webkit-details-marker {
   from {
     opacity: 0;
     transform: scale(0.6);
-  }
-}
-@keyframes zp-strich {
-  from {
-    transform: scaleX(0);
   }
 }
 /* ---------- Probleme auf den Unterseiten (components/problem/unterseiten) ----------

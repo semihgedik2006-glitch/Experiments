@@ -59,17 +59,15 @@ const priceFactors = [
   },
 ];
 
-const timeComparison = [
-  { label: "Trainingszeit pro Woche", ems: "20 Minuten", gym: "3-5 Stunden" },
-  { label: "Anfahrt pro Woche", ems: "1x", gym: "2-4x" },
-  { label: "Umziehen und Duschen", ems: "1x pro Woche", gym: "bei jedem Besuch" },
-  { label: "Planung des Trainings", ems: "übernimmt dein Trainer", gym: "machst du selbst" },
-  // Hier stand "Zeit bis zu ersten Effekten: 4-6 Wochen". Das ist keine
-  // Zeitangabe, sondern ein Versprechen - und nebenan stand beim
-  // Fitnessstudio ehrlicherweise "je nach Regelmäßigkeit", was für EMS
-  // genauso gilt. Die Zeile vergleicht jetzt, was sich vergleichen
-  // lässt: den Aufwand, nicht das Ergebnis.
-  { label: "Erholung zwischen zwei Einheiten", ems: "eine Woche eingeplant", gym: "planst du selbst" },
+// Hier stand eine Tabelle "EMS bei Körperformen gegen klassisches
+// Studio". Fitnessstudios schlechtzumachen ist nicht unser Stil - die
+// Zeilen nennen jetzt nur, was die Woche mit EMS tatsächlich kostet.
+const zeitaufwand = [
+  { label: "Training pro Woche", wert: "20 Minuten" },
+  { label: "Termine pro Woche", wert: "einer, fest eingeplant" },
+  { label: "Umziehen", wert: "einmal pro Woche" },
+  { label: "Planung des Trainings", wert: "übernimmt dein Trainer" },
+  { label: "Erholung", wert: "eine Woche bis zur nächsten Einheit" },
 ];
 
 export default async function PreisePage() {
@@ -225,53 +223,23 @@ export default async function PreisePage() {
               die Aussage des Abschnitts, nur als Bild. */}
           <div className="mb-14 grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
             <SectionHeader
-              kicker="Zum Vergleich"
+              kicker="Dein Zeitaufwand"
               title="Was dich EMS an Zeit kostet"
-              intro="Geld ist das eine - Zeit das andere. Genau hier liegt der Unterschied zum klassischen Fitnessstudio."
+              intro="Geld ist das eine - Zeit das andere. So sieht deine Woche mit EMS aus."
             />
             <ImpulsSzene name="woche" className="mx-auto hidden w-full max-w-[220px] md:block" />
           </div>
 
-          {/* Auf schmalen Bildschirmen gestapelt: eine Tabelle mit drei Spalten
-              wäre dort entweder unlesbar klein oder seitlich abgeschnitten. */}
-          <Reveal className="space-y-4 sm:hidden">
-            {timeComparison.map((row) => (
-              <div key={row.label} className="karte-hebt karte-glanz card p-5">
-                <p className="text-sm font-semibold">{row.label}</p>
-                <dl className="mt-3 space-y-2 text-sm">
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-accent">Körperformen</dt>
-                    <dd className="text-right font-medium">{row.ems}</dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-muted">Klassisches Studio</dt>
-                    <dd className="text-right text-muted">{row.gym}</dd>
-                  </div>
-                </dl>
-              </div>
+          <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {zeitaufwand.map((zeile) => (
+              <StaggerItem key={zeile.label}>
+                <div className="h-full border-t border-lime/40 pt-4">
+                  <p className="text-sm text-muted">{zeile.label}</p>
+                  <p className="mt-1 text-lg font-semibold">{zeile.wert}</p>
+                </div>
+              </StaggerItem>
             ))}
-          </Reveal>
-
-          <Reveal className="hidden sm:block">
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-border text-left">
-                  <th className="py-4 pr-4 font-semibold text-muted"><span className="sr-only">Merkmal</span></th>
-                  <th className="py-4 pr-4 font-semibold text-accent">EMS bei Körperformen</th>
-                  <th className="py-4 font-semibold">Klassisches Studio</th>
-                </tr>
-              </thead>
-              <tbody>
-                {timeComparison.map((row) => (
-                  <tr key={row.label} className="border-b border-border/60">
-                    <td className="py-4 pr-4 font-medium">{row.label}</td>
-                    <td className="py-4 pr-4">{row.ems}</td>
-                    <td className="py-4 text-muted">{row.gym}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Reveal>
+          </Stagger>
         </Container>
       </section>
 

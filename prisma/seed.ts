@@ -82,7 +82,7 @@ async function main() {
       excerpt:
         "Kein Zeitaufwand für Anfahrt, Umziehen oder lange Trainingseinheiten. So passt effektives Training in einen vollen Alltag.",
       content:
-        "Gerade für Berufstätige zwischen 30 und 70 Jahren ist Zeit die knappste Ressource. Ein EMS-Training bei Körperformen dauert inklusive Beratung nur rund 20 Minuten - ganz ohne stundenlange Einheiten im Fitnessstudio. So bleibt Training auch im stressigen Alltag machbar.",
+        "Gerade für Berufstätige zwischen 30 und 70 Jahren ist Zeit die knappste Ressource. Ein EMS-Training bei Körperformen dauert inklusive Beratung nur rund 20 Minuten - einmal pro Woche, fest im Kalender. So bleibt Training auch im stressigen Alltag machbar.",
     },
     {
       slug: "ems-gegen-rueckenschmerzen",
@@ -127,7 +127,7 @@ async function main() {
     {
       question: "Wie oft muss ich trainieren?",
       answer:
-        "Einmal pro Woche, rund 20 Minuten. Darauf ist das Training ausgelegt: kurz, dafür intensiv und mit genug Abstand dazwischen, damit sich die Muskulatur erholen kann. Das ist deutlich weniger Zeitaufwand als klassisches Fitnesstraining.",
+        "Einmal pro Woche, rund 20 Minuten. Darauf ist das Training ausgelegt: kurz, dafür intensiv und mit genug Abstand dazwischen, damit sich die Muskulatur erholen kann.",
     },
     {
       question: "Ist EMS-Training für Anfänger geeignet?",
@@ -137,7 +137,7 @@ async function main() {
     {
       question: "Ist EMS-Training gelenkschonend?",
       answer:
-        "Es kommt ohne schwere Gewichte aus - die Belastung für Gelenke und Wirbelsäule ist dadurch geringer als beim Hanteltraining. Ob es bei bestehenden Beschwerden für dich in Frage kommt, klärst du vorher bitte mit deinem Arzt; wir sind kein medizinischer Betrieb.",
+        "Es kommt ohne schwere Gewichte aus - es kommt also keine Zusatzlast auf Gelenke und Wirbelsäule. Ob es bei bestehenden Beschwerden für dich in Frage kommt, klärst du vorher bitte mit deinem Arzt; wir sind kein medizinischer Betrieb.",
     },
     {
       question: "Was sollte ich zum Training mitbringen?",

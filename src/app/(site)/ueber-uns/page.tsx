@@ -153,8 +153,8 @@ export default async function UeberUnsPage() {
               die sich mit klassischen Übungen nur schwer gezielt ansteuern lassen.
             </p>
             <p>
-              Weil das Training ohne schwere Gewichte auskommt, ist die Belastung
-              für Gelenke und Wirbelsäule geringer als beim Hanteltraining.
+              Das Training kommt ohne schwere Gewichte aus &ndash; es kommt keine
+              Zusatzlast auf Gelenke und Wirbelsäule.
             </p>
             <p>
               <Link

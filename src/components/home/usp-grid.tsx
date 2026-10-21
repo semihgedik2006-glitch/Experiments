@@ -1,14 +1,16 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Clock, HeartPulse, Users, Sparkles, MapPin } from "lucide-react";
+import { Clock, ClipboardList, Gift, HeartPulse, Layers, MapPin, SlidersHorizontal, Sparkles, Users } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/ui/section-header";
 
 /**
- * Vier Karten, vier Tatsachen.
+ * Acht Karten, acht Tatsachen. (Vorher vier - zu wenig, um zu zeigen,
+ * was das Training ausmacht; vor allem fehlte, dass es auf jeden einzeln
+ * eingestellt wird.)
  *
  * In der vierten stand "Sichtbare Erfolge - Muskelaufbau, Straffung und
  * Gewichtsreduktion, messbar und spürbar". Das ist kein Grund, sondern
@@ -26,22 +28,37 @@ function karten(standorte: number, zeitspanne: string | null) {
     {
       icon: Clock,
       title: "Nur 20 Minuten",
-      text: "Einmal pro Woche statt mehrmals im Fitnessstudio - ideal für einen vollen Terminkalender.",
+      text: "Einmal pro Woche, fester Termin - passt auch in einen vollen Kalender.",
     },
     {
-      icon: HeartPulse,
-      title: "Ohne schwere Gewichte",
-      text: "Die Impulse kommen zu deiner eigenen Bewegung dazu. Dadurch ist die Belastung für Gelenke und Wirbelsäule geringer als beim Hanteltraining.",
+      icon: ClipboardList,
+      title: "Dein eigener Plan",
+      text: "Kein Standardpaket: Dein Trainer stellt das Training auf dein Ziel und deinen Körper ein.",
     },
     {
       icon: Users,
       title: "Einer für dich allein",
       text: "Kein Training auf eigene Faust: Bei jeder Einheit steht ein Trainer neben dir und stellt die Intensität mit dir zusammen ein.",
     },
+    {
+      icon: SlidersHorizontal,
+      title: "Jede Muskelgruppe einzeln",
+      text: "Acht Zonen, acht Einstellungen - kräftiger, wo du stärker werden willst, sanfter, wo du vorsichtig sein musst.",
+    },
+    {
+      icon: Layers,
+      title: "Auch die Tiefe",
+      text: "Die Impulse erreichen viele Muskelgruppen gleichzeitig, auch tiefliegende Schichten.",
+    },
+    {
+      icon: HeartPulse,
+      title: "Ohne schwere Gewichte",
+      text: "Die Impulse kommen zu deiner eigenen Bewegung dazu - ganz ohne Zusatzlast durch Hanteln oder Geräte.",
+    },
     standorte > 1
       ? {
           icon: MapPin,
-          title: `${standorte} Studios rund um Köln`,
+          title: `${standorte} Studios in Köln und Umgebung`,
           text: zeitspanne
             ? `Trainier dort, wo du gerade bist - vor der Arbeit oder danach. Termine gibt es von ${zeitspanne}.`
             : "Trainier dort, wo du gerade bist - morgens neben dem Büro, abends um die Ecke.",
@@ -51,6 +68,11 @@ function karten(standorte: number, zeitspanne: string | null) {
           title: "Feste Zeit, feste Person",
           text: "Dein Termin liegt jede Woche gleich, und du weißt vorher, wer dich erwartet.",
         },
+    {
+      icon: Gift,
+      title: "Kostenlos ausprobieren",
+      text: "Das erste Training kostet nichts. Danach entscheidest du in Ruhe, ob es zu dir passt.",
+    },
   ];
 }
 
@@ -72,9 +94,9 @@ export function UspGrid({
       <ImpulsStreu anordnung="rand" />
       <Container className="relative">
         <SectionHeader
-          kicker="Warum EMS"
-          title="Vier Gründe, warum es funktioniert"
-          intro="Kurze Einheiten, echte Betreuung und ein Netz aus Studios, das sich deinem Tag anpasst statt umgekehrt."
+          kicker="Deine Vorteile"
+          title="Was du bei uns bekommst"
+          intro="Kurze Einheiten, ein Trainer an deiner Seite und ein Training, das auf dich eingestellt ist - nicht auf den Durchschnitt."
           className="mb-16"
         />
 

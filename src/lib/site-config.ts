@@ -28,7 +28,7 @@ export const siteConfig = {
     // Muskeln aufbauen und Rückenschmerzen lindern" - ein Gesundheits-
     // versprechen, das niemand belegen kann und das abmahnfähig ist.
     // Jetzt: was es gibt, wo, und der nächste Schritt.
-    "EMS-Training mit persönlichem Trainer: 20 Minuten pro Woche, in Studios rund um Köln. Jetzt kostenloses Probetraining buchen.",
+    "EMS-Training mit persönlichem Trainer: 20 Minuten pro Woche, in 14 Studios in Köln und Umgebung. Jetzt kostenloses Probetraining buchen.",
   url: basisadresseErmitteln().url,
   keywords: [
     "EMS",
@@ -45,6 +45,15 @@ export const siteConfig = {
   contact: {
     phone: "+49 2233 9667181",
     email: "huerth@kformen.com",
+  },
+  /**
+   * Das Körperformen-Netz, zu dem die eigenen Studios gehören. Die Zahl der
+   * eigenen Studios kommt aus der Datenbank; die Gesamtzahl kennt nur die
+   * Zentrale - deshalb steht sie hier und muss bei Änderungen von Hand
+   * nachgezogen werden.
+   */
+  netzwerk: {
+    studiosGesamt: 277,
   },
   social: {
     instagram: "https://instagram.com/koerperformen_huerth",

@@ -34,7 +34,7 @@ export async function GET() {
 
   const text = `# ${siteConfig.name}
 
-> EMS-Training (Elektromuskelstimulation) mit persönlichem Trainer: eine Einheit pro Woche, 20 Minuten Training, in ${studios.length > 1 ? `${studios.length} Studios rund um Köln` : "unserem Studio"}. Das erste Probetraining ist kostenlos und unverbindlich.
+> EMS-Training (Elektromuskelstimulation) mit persönlichem Trainer: eine Einheit pro Woche, 20 Minuten Training, in ${studios.length > 1 ? `${studios.length} Studios in Köln und Umgebung` : "unserem Studio"}. Das erste Probetraining ist kostenlos und unverbindlich.
 
 ## Das Angebot
 
