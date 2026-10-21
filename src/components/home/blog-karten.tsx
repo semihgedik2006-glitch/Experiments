@@ -7,7 +7,8 @@ import { Reveal } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/ui/section-header";
 import { PostThumb } from "@/components/blog/post-thumb";
 import { useZiel } from "@/components/ziel/ziel-kontext";
-import { nachZiel, zielInhalt } from "@/lib/ziel-inhalte";
+import { ZIEL_INHALTE, nachZiel, passung, zielInhalt } from "@/lib/ziel-inhalte";
+import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 
 export type BlogKarte = {
   id: string;
@@ -49,7 +50,10 @@ export function BlogKarten({ posts }: { posts: BlogKarte[] }) {
                 href={`/blog/${post.slug}`}
                 className="karte-hebt karte-glanz group flex h-full flex-col overflow-hidden card"
               >
-                <PostThumb slug={post.slug} title={post.title} coverImage={post.coverImage} />
+                <div className="relative">
+                  <PostThumb slug={post.slug} title={post.title} coverImage={post.coverImage} />
+                  <ThemaMarke text={`${post.slug} ${post.title} ${post.excerpt}`} />
+                </div>
                 <div className="flex flex-1 flex-col p-6">
                   <span className="text-xs text-muted">{post.datum}</span>
                   <h3 className="mt-3 text-lg font-semibold">{post.title}</h3>
@@ -64,5 +68,26 @@ export function BlogKarten({ posts }: { posts: BlogKarte[] }) {
         </div>
       </Container>
     </section>
+  );
+}
+
+/**
+ * Kleine Marke oben links im Kartenkopf: das Motiv des Ziels, zu dem der
+ * Beitrag am besten passt - "Abnehmen mit EMS" bekommt die Wochen-Haken.
+ * Passt er zu keinem Ziel, entfällt sie. Ohne Bewegung: Drei animierte
+ * Motive nebeneinander wären Unruhe, keine Information.
+ */
+function ThemaMarke({ text }: { text: string }) {
+  const treffer = ZIEL_INHALTE.map((z) => ({ z, p: passung(text, z) }))
+    .filter((t) => t.p > 0)
+    .sort((a, b) => b.p - a.p)[0];
+  if (!treffer) return null;
+  return (
+    <span className="on-ink absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/70 py-1 pl-1 pr-3 text-xs font-semibold text-foreground backdrop-blur">
+      <span className="h-7 w-7 rounded-full bg-black/60 p-1">
+        <ZielMotiv ziel={treffer.z.wert} stehend className="h-full w-full" />
+      </span>
+      {treffer.z.kurz}
+    </span>
   );
 }

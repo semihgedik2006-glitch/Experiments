@@ -19,7 +19,8 @@ import { ZielMotiv } from "@/components/ziel/ziel-motiv";
  * die Aussage - dasselbe Gerät, für jeden anders eingestellt.
  *
  * Das Ziel kommt aus dem ersten Bildschirm (ZielProvider). Hat noch
- * niemand gewählt, steht der Rücken da - das häufigste Anliegen. Ein Klick
+ * niemand gewählt, steht der Rücken als Beispiel da - das häufigste
+ * Anliegen -, aber nicht als ausgewählt und ohne Vorgabe fürs Formular. Ein Klick
  * hier ändert die Wahl auch oben und im Formular.
  */
 
@@ -48,7 +49,7 @@ export function ZielWelt({ auswahl = true }: { auswahl?: boolean }) {
         {auswahl && (
           <div role="tablist" aria-label="Dein Ziel" className="mt-10 flex flex-wrap gap-2">
             {ZIEL_INHALTE.map((z) => {
-              const aktiv = z.wert === inhalt.wert;
+              const aktiv = z.wert === ziel;
               return (
                 <button
                   key={z.wert}
@@ -79,7 +80,7 @@ export function ZielWelt({ auswahl = true }: { auswahl?: boolean }) {
         <div
           id="ziel-panel"
           role={auswahl ? "tabpanel" : undefined}
-          aria-labelledby={auswahl ? `ziel-tab-${inhalt.wert}` : undefined}
+          aria-labelledby={auswahl && ziel ? `ziel-tab-${ziel}` : undefined}
           className="mt-10 grid items-start gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16"
         >
           <AnimatePresence mode="wait" initial={false}>
@@ -120,8 +121,10 @@ export function ZielWelt({ auswahl = true }: { auswahl?: boolean }) {
               <p className="mt-8 max-w-xl text-sm text-muted">{inhalt.hinweis}</p>
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <Button href={auswahl ? probeterminHref(inhalt.wert) : "#termin"}>
-                  {inhalt.knopf}
+                <Button href={auswahl ? probeterminHref(ziel) : "#termin"}>
+                  {/* Ohne gewähltes Ziel ist Rücken nur das Beispiel - der
+                      Knopf darf es dann nicht ins Formular tragen. */}
+                  {ziel ? inhalt.knopf : "Kostenloses Probetraining"}
                   <ArrowRight size={16} aria-hidden />
                 </Button>
                 {auswahl && (

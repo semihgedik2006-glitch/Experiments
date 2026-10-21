@@ -2,28 +2,20 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
-import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { BeweisLeiste } from "@/components/beweis-leiste";
 import { TrustBar } from "@/components/trust-bar";
-import { ZielWelt } from "@/components/home/ziel-welt";
-import { Individuell } from "@/components/home/individuell";
-import { ZeitProblem } from "@/components/home/zeit-problem";
-import { UspGrid } from "@/components/home/usp-grid";
-import { Netzwerk } from "@/components/home/netzwerk";
-import { TestimonialsTeaser } from "@/components/home/testimonials-teaser";
-import { BlogTeaser } from "@/components/home/blog-teaser";
-import { TrustSection } from "@/components/trust-section";
-import { FaqSection } from "@/components/faq-section";
 import { ZielProvider } from "@/components/ziel/ziel-kontext";
 import { ZielAbschnitte } from "@/components/ziel/ziel-abschnitte";
+import { zielAbschnitteBauen, zeitspanneAus } from "@/components/ziel/ziel-abschnitte-bauen";
+import { TerminHinweise } from "@/components/booking/termin-hinweise";
 import { ZielKopf } from "@/components/ziel/ziel-kopf";
 import { getToggles } from "@/lib/site-toggles";
 import { getSlotsMitBelegung, getStudios } from "@/lib/data";
 import { tageJeStudio } from "@/lib/termin-tage";
 import { beweiseHolen } from "@/lib/beweise";
 import { siteConfig } from "@/lib/site-config";
-import { ZIEL_INHALTE, zielInhalt } from "@/lib/ziel-inhalte";
+import { ZIEL_INHALTE, seitenBeschreibung, zielInhalt } from "@/lib/ziel-inhalte";
 
 /**
  * Eine eigene Seite je Ziel: /ziel/ruecken, /ziel/abnehmen, ...
@@ -51,13 +43,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const inhalt = zielInhalt(slug);
   if (!inhalt) return {};
+  const beschreibung = seitenBeschreibung(inhalt, (await getStudios()).length);
   return {
     title: inhalt.seite.titel,
-    description: inhalt.seite.beschreibung,
+    description: beschreibung,
     alternates: { canonical: `/ziel/${inhalt.wert}` },
     openGraph: {
       title: `${inhalt.seite.titel} | ${siteConfig.name}`,
-      description: inhalt.seite.beschreibung,
+      description: beschreibung,
       url: `${siteConfig.url}/ziel/${inhalt.wert}`,
     },
   };
@@ -75,32 +68,19 @@ export default async function ZielSeite({ params }: { params: Promise<{ slug: st
     beweiseHolen(),
   ]);
   const slotsByStudio = tageJeStudio(slots);
-  const zeitspanne =
-    beweise.frueheste && beweise.spaeteste ? `${beweise.frueheste} bis ${beweise.spaeteste} Uhr` : null;
 
   return (
     <ZielProvider fest={inhalt.wert}>
       <ZielKopf inhalt={inhalt} anzahlStudios={studios.length} />
       <ZielAbschnitte
-        abschnitte={{
-          zielwelt: <ZielWelt auswahl={false} />,
-          individuell: <Individuell />,
-          zeit: <ZeitProblem />,
-          vorteile: <UspGrid standorte={studios.length} zeitspanne={zeitspanne} />,
-          netzwerk:
-            studios.length > 0 ? (
-              <Netzwerk gesamt={siteConfig.netzwerk.studiosGesamt} eigene={studios.length} />
-            ) : null,
-          erfolge: toggles.erfolgsgeschichten ? <TestimonialsTeaser /> : null,
-          vertrauen: <TrustSection />,
-          blog: toggles.blog ? <BlogTeaser /> : null,
-          faq: (
-            <>
-              <ImpulsTrenner variante="c" className="mx-auto max-w-6xl px-6" />
-              <FaqSection />
-            </>
-          ),
-        }}
+        abschnitte={zielAbschnitteBauen({
+          anzahlStudios: studios.length,
+          toggles,
+          zeitspanne: zeitspanneAus(beweise.frueheste, beweise.spaeteste),
+          auswahl: false,
+          instagram: null,
+          studioListe: false,
+        })}
       />
 
       {/* Das Formular steht auf der Seite selbst: Wer über eine Anzeige
@@ -120,6 +100,7 @@ export default async function ZielSeite({ params }: { params: Promise<{ slug: st
           <Reveal className="mt-12 border-t border-border pt-8">
             <TrustBar />
           </Reveal>
+          <TerminHinweise />
         </Container>
       </section>
     </ZielProvider>

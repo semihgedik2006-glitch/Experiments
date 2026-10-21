@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Target } from "lucide-react";
 import { useZiel } from "@/components/ziel/ziel-kontext";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 import {
@@ -88,7 +88,9 @@ export function ZielLeiste() {
                   <ZielMotiv ziel={inhalt.wert} className="h-full w-full" />
                 </span>
               ) : (
-                <span className="h-8 w-8 shrink-0 rounded-full bg-lime/20" aria-hidden />
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-lime text-on-lime" aria-hidden>
+                  <Target size={16} />
+                </span>
               )}
               <span className="text-muted">{inhalt ? "Dein Ziel:" : "Was ist dein Ziel?"}</span>
               {inhalt && <span className="font-semibold text-foreground">{inhalt.kurz}</span>}

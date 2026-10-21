@@ -79,9 +79,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Die Zielseiten (/ziel/ruecken, ...): Auf sie zielen Suchen wie "EMS
   // Rücken Köln" - deshalb wie die Standortseiten ausdrücklich gemeldet.
+  // Ohne lastModified: Die Seiten ändern sich nur mit einer neuen Fassung
+  // der Website, und ein bei jedem Abruf neues Datum wäre falsch.
   const zielRoutes = ZIEL_INHALTE.map((ziel) => ({
     url: `${siteConfig.url}/ziel/${ziel.wert}`,
-    lastModified: new Date(),
     priority: 0.8,
   }));
 

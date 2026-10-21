@@ -28,7 +28,7 @@ export const siteConfig = {
     // Muskeln aufbauen und Rückenschmerzen lindern" - ein Gesundheits-
     // versprechen, das niemand belegen kann und das abmahnfähig ist.
     // Jetzt: was es gibt, wo, und der nächste Schritt.
-    "EMS-Training mit persönlichem Trainer: 20 Minuten pro Woche, in 14 Studios in Köln und Umgebung. Jetzt kostenloses Probetraining buchen.",
+    "EMS-Training mit persönlichem Trainer: 20 Minuten pro Woche, in Studios in Köln und Umgebung. Jetzt kostenloses Probetraining buchen.",
   url: basisadresseErmitteln().url,
   keywords: [
     "EMS",

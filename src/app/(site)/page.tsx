@@ -1,21 +1,10 @@
-import { ZeitProblem } from "@/components/home/zeit-problem";
 import { Hero } from "@/components/home/hero";
 import { StatsStrip } from "@/components/home/stats-strip";
-import { UspGrid } from "@/components/home/usp-grid";
-import { ZielWelt } from "@/components/home/ziel-welt";
-import { Individuell } from "@/components/home/individuell";
-import { Netzwerk } from "@/components/home/netzwerk";
 import { ZielProvider } from "@/components/ziel/ziel-kontext";
 import { ZielAbschnitte, ZielLeiste } from "@/components/ziel/ziel-abschnitte";
-import { siteConfig } from "@/lib/site-config";
-import { StudioTeaser } from "@/components/home/studio-teaser";
-import { TestimonialsTeaser } from "@/components/home/testimonials-teaser";
-import { TrustSection } from "@/components/trust-section";
-import { BlogTeaser } from "@/components/home/blog-teaser";
-import { FaqSection } from "@/components/faq-section";
+import { zielAbschnitteBauen, zeitspanneAus } from "@/components/ziel/ziel-abschnitte-bauen";
 import { CtaBanner } from "@/components/cta-banner";
 import { InstagramWand } from "@/components/instagram-wand";
-import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { StudioJsonLd, WebsiteJsonLd, FaqJsonLd } from "@/components/structured-data";
 import { getToggles } from "@/lib/site-toggles";
 import { getStudios, getUpcomingSlots } from "@/lib/data";
@@ -58,10 +47,7 @@ export default async function Home() {
   const zahlen = kennzahlen(beweise);
   // "07:00 bis 21:00 Uhr" - abgeleitet aus den tatsächlich angelegten
   // Terminen. Gibt es keine, entfällt der Halbsatz.
-  const zeitspanne =
-    beweise.frueheste && beweise.spaeteste
-      ? `${beweise.frueheste} bis ${beweise.spaeteste} Uhr`
-      : null;
+  const zeitspanne = zeitspanneAus(beweise.frueheste, beweise.spaeteste);
 
   const naechsteSlots = toggles.studio ? await getUpcomingSlots() : [];
   const naechster = naechsteSlots[0];
@@ -93,29 +79,16 @@ export default async function Home() {
           "In vier Stationen" (HowItWorks) ist entfallen: Den Weg führt
           jetzt die Zielauswahl. */}
       <ZielAbschnitte
-        abschnitte={{
-          zielwelt: <ZielWelt />,
-          individuell: <Individuell />,
-          zeit: <ZeitProblem />,
-          vorteile: <UspGrid standorte={studios.length} zeitspanne={zeitspanne} />,
-          netzwerk:
-            studios.length > 0 ? (
-              <Netzwerk gesamt={siteConfig.netzwerk.studiosGesamt} eigene={studios.length} />
-            ) : null,
-          studio: toggles.studio ? <StudioTeaser /> : null,
-          erfolge: toggles.erfolgsgeschichten ? <TestimonialsTeaser /> : null,
-          vertrauen: <TrustSection />,
-          blog: toggles.blog ? <BlogTeaser /> : null,
+        abschnitte={zielAbschnitteBauen({
+          anzahlStudios: studios.length,
+          toggles,
+          zeitspanne,
+          auswahl: true,
           // Instagram zeigt, wie es im Studio aussieht - ohne gewähltes
           // Ziel zwischen Blog und Fragen.
           instagram: <InstagramWand beitraege={instagram} />,
-          faq: (
-            <>
-              <ImpulsTrenner variante="c" className="mx-auto max-w-6xl px-6" />
-              <FaqSection />
-            </>
-          ),
-        }}
+          studioListe: true,
+        })}
       />
       <ZielLeiste />
       <CtaBanner />

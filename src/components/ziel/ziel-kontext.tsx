@@ -1,9 +1,8 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { ZielWert } from "@/lib/ziel-inhalte";
-import { zielInhalt } from "@/lib/ziel-inhalte";
 
 /**
  * Das Ziel, das jemand oben auf der Startseite gewählt hat.
@@ -53,18 +52,10 @@ export function ZielProvider({
   });
   const [wechsel, setWechsel] = useState(0);
 
-  // Erst nach dem Aufbau im Browser lesen - auf dem Server gibt es keinen
-  // Speicher, und ein anderes erstes Bild verwürfe React.
-  useEffect(() => {
-    if (fest) return;
-    try {
-      const gemerkt = sessionStorage.getItem(ZIEL_SPEICHER);
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- einmaliges Übernehmen aus dem Browser
-      if (zielInhalt(gemerkt)) setZiel(gemerkt as ZielWert);
-    } catch {
-      // Privater Modus oder gesperrter Speicher: dann eben ohne Erinnerung.
-    }
-  }, [fest]);
+  // Ein gemerktes Ziel wird hier bewusst NICHT wiederhergestellt. Die
+  // Startseite käme sonst erst in der allgemeinen Fassung und sortierte
+  // sich nach dem Laden sichtbar um - Abschnitte verschwänden unter dem
+  // Lesenden weg. Gemerkt bleibt es trotzdem: Das Formular liest es.
 
   const waehlen = useCallback((neu: ZielWert) => {
     setZiel(neu);

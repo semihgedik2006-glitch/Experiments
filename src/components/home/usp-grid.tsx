@@ -87,9 +87,9 @@ export function UspGrid({
   const items = karten(standorte, zeitspanne);
 
   return (
-    // Das Streufeld liegt hinter den Karten. Anordnung "rand": Die Karten
-    // reichen hier bis in die Mitte, dort wäre ein Punkt entweder verdeckt
-    // oder störend.
+    // Das Streufeld liegt hinter der Liste. Anordnung "rand": Die Liste
+    // reicht bis in die Mitte, dort wäre ein Punkt entweder verdeckt oder
+    // störend.
     <section className="relative overflow-hidden py-20 sm:py-24 md:py-32">
       <ImpulsStreu anordnung="rand" />
       <Container className="relative">
@@ -100,28 +100,29 @@ export function UspGrid({
           className="mb-16"
         />
 
-        <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Eine Liste statt acht gleicher Karten: Die Seite hat schon
+            genug Kartengitter (Vertrauen, Blog, Studios), und acht Kästen
+            nebeneinander lesen sich wie ein Prospekt. Hier tragen
+            Symbol, Linie und Weißraum. */}
+        <Stagger className="grid gap-x-16 sm:grid-cols-2">
           {items.map(({ icon: Icon, title, text }) => (
             <StaggerItem key={title}>
-              <motion.div
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="karte-hebt karte-glanz h-full card p-7"
-              >
-                {/* Das Symbol springt kurz nach der Karte federnd auf - eine
-                    kleine zweite Bewegung, die die Karte lebendig macht. */}
+              <div className="group flex h-full gap-5 border-t border-border py-7">
+                {/* Das Symbol springt kurz nach der Zeile federnd auf. */}
                 <motion.div
                   initial={{ scale: 0.4, rotate: -18, opacity: 0 }}
                   whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
                   viewport={{ once: true, margin: "0px 0px -10% 0px" }}
-                  transition={{ type: "spring", stiffness: 260, damping: 14, delay: 0.25 }}
-                  className="karte-symbol flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent"
+                  transition={{ type: "spring", stiffness: 260, damping: 14, delay: 0.2 }}
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-lime/12 text-accent transition-colors duration-300 group-hover:bg-lime group-hover:text-on-lime"
                 >
-                  <Icon size={20} />
+                  <Icon size={22} />
                 </motion.div>
-                <h3 className="mt-6 text-lg font-semibold tracking-tight">{title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted">{text}</p>
-              </motion.div>
+                <div>
+                  <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
+                  <p className="mt-2 max-w-md text-[15px] leading-relaxed text-muted">{text}</p>
+                </div>
+              </div>
             </StaggerItem>
           ))}
         </Stagger>

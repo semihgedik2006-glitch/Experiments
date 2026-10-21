@@ -24,8 +24,17 @@ import type { ZielWert } from "@/lib/ziel-inhalte";
 const LIME = "var(--ink-lime)";
 const SPUR = "rgb(255 255 255 / 0.12)";
 
-export function ZielMotiv({ ziel, className }: { ziel: ZielWert; className?: string }) {
-  const still = useReducedMotion() ?? false;
+export function ZielMotiv({
+  ziel,
+  className,
+  stehend = false,
+}: {
+  ziel: ZielWert;
+  className?: string;
+  /** Nur das Endbild, ohne Bewegung - wo mehrere Motive nebeneinander stehen. */
+  stehend?: boolean;
+}) {
+  const still = (useReducedMotion() ?? false) || stehend;
   const Motiv = { ruecken: Ruecken, straffen: Straffen, abnehmen: Abnehmen, muskelaufbau: Muskeln, fitness: Fitness }[ziel];
   return (
     <svg viewBox="0 0 200 200" aria-hidden className={className}>

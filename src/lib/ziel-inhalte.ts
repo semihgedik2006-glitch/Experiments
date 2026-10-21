@@ -73,7 +73,11 @@ export type ZielInhalt = {
    * Die eigene Seite unter /ziel/<wert> - für Google ("EMS Rücken Köln")
    * und als Ziel für Werbeanzeigen zu genau diesem Thema.
    */
-  seite: { titel: string; beschreibung: string };
+  seite: {
+    titel: string;
+    /** "{studios}" wird durch die aktuelle Zahl ersetzt ("14 Studios"). */
+    beschreibung: string;
+  };
   /** Knopf in der Auswahl. */
   kurz: string;
   /** Ein Satz, der nach der Auswahl im ersten Bildschirm steht. */
@@ -94,7 +98,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     seite: {
       titel: "EMS-Training für einen starken Rücken in Köln",
       beschreibung:
-        "Rücken stärken mit EMS-Training: 20 Minuten pro Woche, persönlicher Trainer, Schwerpunkt auf Rücken und Rumpf. 14 Studios in Köln und Umgebung - Probetraining kostenlos.",
+        "Rücken stärken mit EMS-Training: 20 Minuten pro Woche, persönlicher Trainer, Schwerpunkt auf Rücken und Rumpf. {studios} in Köln und Umgebung - Probetraining kostenlos.",
     },
     titel: ["Ein Rücken, der deinen", "Tag mitmacht."],
     knopf: "Probetraining für deinen Rücken",
@@ -120,12 +124,12 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     seite: {
       titel: "EMS-Training zum Straffen und Formen in Köln",
       beschreibung:
-        "Straffen und formen mit EMS-Training: Dein Trainer stellt Bauch, Po, Beine und Arme gezielt ein. 20 Minuten pro Woche in 14 Studios in Köln und Umgebung.",
+        "Straffen und formen mit EMS-Training: Dein Trainer stellt Bauch, Po, Beine und Arme gezielt ein. 20 Minuten pro Woche in {studios} in Köln und Umgebung.",
     },
     titel: ["Mehr Form. Mehr Spannung.", "Mehr du."],
     knopf: "Probetraining für mehr Form",
     reihenfolge: ["zielwelt", "individuell", "erfolge", "vorteile", "zeit", "studio", "blog", "vertrauen", "netzwerk", "faq"],
-    stichworte: ["ergebnis", "straff", "muskel", "form"],
+    stichworte: ["ergebnis", "straff", "definier", "muskel", "form"],
     kurz: "Straffen und formen",
     antwort: "Dein Trainer setzt die Intensität dort höher, wo du mehr Spannung und Form willst – Bauch, Po, Beine oder Arme.",
     erkennst: [
@@ -146,7 +150,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     seite: {
       titel: "Abnehmen mit EMS-Training in Köln",
       beschreibung:
-        "Abnehmen mit EMS-Training: ein fester Termin pro Woche, ein Trainer, der mit dir dranbleibt, auf Wunsch Ernährungsberatung. 14 Studios in Köln und Umgebung.",
+        "Abnehmen mit EMS-Training: ein fester Termin pro Woche, ein Trainer, der mit dir dranbleibt, auf Wunsch Ernährungsberatung. {studios} in Köln und Umgebung.",
     },
     titel: ["Dranbleiben war noch", "nie so einfach."],
     knopf: "Probetraining zum Abnehmen",
@@ -172,7 +176,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     seite: {
       titel: "Muskelaufbau mit EMS-Training in Köln",
       beschreibung:
-        "Muskeln aufbauen mit EMS-Training: jede Muskelgruppe einzeln eingestellt, saubere Ausführung mit Trainer, 20 Minuten pro Woche. 14 Studios in Köln und Umgebung.",
+        "Muskeln aufbauen mit EMS-Training: jede Muskelgruppe einzeln eingestellt, saubere Ausführung mit Trainer, 20 Minuten pro Woche. {studios} in Köln und Umgebung.",
     },
     titel: ["Stärker werden,", "Woche für Woche."],
     knopf: "Probetraining für mehr Kraft",
@@ -198,7 +202,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     seite: {
       titel: "Fitter im Alltag mit EMS-Training in Köln",
       beschreibung:
-        "Fitter im Alltag mit EMS-Training: 20 Minuten pro Woche, ganzer Körper, dein Trainer plant alles. 14 Studios in Köln und Umgebung - jetzt kostenlos testen.",
+        "Fitter im Alltag mit EMS-Training: 20 Minuten pro Woche, ganzer Körper, dein Trainer plant alles. {studios} in Köln und Umgebung - jetzt kostenlos testen.",
     },
     titel: ["Treppen, Einkäufe, Kinder –", "wieder leicht."],
     knopf: "Probetraining für mehr Fitness",
@@ -213,7 +217,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     ],
     soArbeiten: [
       { titel: "Ganzer Körper, eine Einheit", text: "Alle acht Zonen arbeiten gleichzeitig – ausgewogen eingestellt für deinen Alltag." },
-      { titel: "Passt in jede Woche", text: "20 Minuten Training, ein fester Termin, 14 Studios in Köln und Umgebung." },
+      { titel: "Passt in jede Woche", text: "20 Minuten Training, ein fester Termin, Studios in ganz Köln und Umgebung." },
       { titel: "Du musst nichts planen", text: "Dein Trainer weiß, wo ihr steht, und stellt alles ein. Du kommst und trainierst." },
     ],
     profil: [0.65, 0.65, 0.6, 0.65, 0.65, 0.55, 0.7, 0.7],
@@ -226,14 +230,16 @@ export function zielInhalt(wert: string | null | undefined): ZielInhalt | undefi
 }
 
 /**
- * Wie gut passt ein Text zu einem Ziel? Zählt die Stichworte, die darin
- * vorkommen. Groß- und Kleinschreibung egal; "abnehm" findet "Abnehmen"
- * und "abnehmen-mit-ems".
+ * Wie gut passt ein Text zu einem Ziel? Zählt die Stichworte, mit denen
+ * ein Wort im Text BEGINNT - "abnehm" findet "Abnehmen", "form" findet
+ * "Form" und "formen", aber nicht "Körperformen"; "sicher" findet nicht
+ * "unsicher". Ein einfaches "kommt irgendwo vor" machte "form" zum
+ * Treffer in fast jedem Text, weil der Markenname es enthält.
  */
 export function passung(text: string, ziel: ZielInhalt | undefined): number {
   if (!ziel) return 0;
   const klein = text.toLowerCase();
-  return ziel.stichworte.filter((wort) => klein.includes(wort)).length;
+  return ziel.stichworte.filter((wort) => new RegExp(`(^|[^a-zäöüß])${wort}`).test(klein)).length;
 }
 
 /** Stabil nach Passung sortieren - Gleichstand behält die alte Reihenfolge. */
@@ -243,4 +249,10 @@ export function nachZiel<T>(liste: T[], text: (eintrag: T) => string, ziel: Ziel
     .map((eintrag, i) => ({ eintrag, i, p: passung(text(eintrag), ziel) }))
     .sort((a, b) => b.p - a.p || a.i - b.i)
     .map((x) => x.eintrag);
+}
+
+/** Die Seitenbeschreibung mit der aktuellen Zahl der Studios. */
+export function seitenBeschreibung(ziel: ZielInhalt, anzahlStudios: number): string {
+  const studios = anzahlStudios > 1 ? `${anzahlStudios} Studios` : "Studios";
+  return ziel.seite.beschreibung.replace("{studios}", studios);
 }
