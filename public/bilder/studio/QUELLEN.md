@@ -13,4 +13,6 @@ Verwendet in der Scroll-Story der Startseite und auf /erster-besuch
 - high-five-trainer.jpg      - Cool-down & Feedback
 - team-jubel.jpg             - Dein Plan (/erster-besuch)
 
-Noch nicht verwendet: training-kniebeuge.jpg, high-five-trainerin.jpg.
+- training-kniebeuge.jpg      - "Dein Training ist nur deins" (Handy)
+- high-five-trainerin.jpg     - Standortseiten (/studio/[slug])
+- team-jubel.jpg             - auch Hintergrund des Aufrufs "Bereit für deine erste Einheit?"
