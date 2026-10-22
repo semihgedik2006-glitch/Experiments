@@ -34,6 +34,7 @@ export type AbschnittKey =
   | "individuell"
   | "zeit"
   | "ablauf"
+  | "reels"
   | "vorteile"
   | "studio"
   | "erfolge"
@@ -56,6 +57,7 @@ export const STANDARD_REIHENFOLGE: AbschnittKey[] = [
   "auszeichnung",
   "individuell",
   "ablauf",
+  "reels",
   "vorteile",
   "studio",
   "erfolge",
@@ -109,7 +111,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     },
     titel: ["Ein Rücken, der deinen", "Tag mitmacht."],
     knopf: "Probetraining für deinen Rücken",
-    reihenfolge: ["zielwelt", "auszeichnung", "individuell", "ablauf", "vorteile", "erfolge", "vertrauen", "blog", "faq"],
+    reihenfolge: ["zielwelt", "auszeichnung", "individuell", "ablauf", "reels", "vorteile", "erfolge", "vertrauen", "blog", "faq"],
     stichworte: ["rücken", "gelenk", "beschwerden", "sicher", "geeignet"],
     kurz: "Rücken stärken",
     antwort: "Dein Trainer legt den Schwerpunkt auf Rücken und Rumpf – mit einer Intensität, die zu deinem Rücken passt.",
@@ -135,7 +137,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     },
     titel: ["Mehr Form. Mehr Spannung.", "Mehr du."],
     knopf: "Probetraining für mehr Form",
-    reihenfolge: ["zielwelt", "auszeichnung", "individuell", "erfolge", "ablauf", "vorteile", "studio", "blog", "faq"],
+    reihenfolge: ["zielwelt", "auszeichnung", "individuell", "erfolge", "ablauf", "reels", "vorteile", "studio", "blog", "faq"],
     stichworte: ["ergebnis", "straff", "definier", "muskel", "form"],
     kurz: "Straffen und formen",
     antwort: "Dein Trainer setzt die Intensität dort höher, wo du mehr Spannung und Form willst – Bauch, Po, Beine oder Arme.",
@@ -161,7 +163,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     },
     titel: ["Dranbleiben war noch", "nie so einfach."],
     knopf: "Probetraining zum Abnehmen",
-    reihenfolge: ["zielwelt", "auszeichnung", "zeit", "individuell", "erfolge", "ablauf", "vorteile", "blog", "faq"],
+    reihenfolge: ["zielwelt", "auszeichnung", "zeit", "individuell", "erfolge", "ablauf", "reels", "vorteile", "blog", "faq"],
     stichworte: ["abnehm", "ernährung", "ergebnis", "kosten"],
     kurz: "Abnehmen",
     antwort: "Ein fester Termin, ein Trainer, der dich erwartet – und auf Wunsch Ernährungsberatung dazu.",
@@ -187,7 +189,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     },
     titel: ["Stärker werden,", "Woche für Woche."],
     knopf: "Probetraining für mehr Kraft",
-    reihenfolge: ["zielwelt", "auszeichnung", "individuell", "ablauf", "vorteile", "erfolge", "studio", "blog", "faq"],
+    reihenfolge: ["zielwelt", "auszeichnung", "individuell", "ablauf", "reels", "vorteile", "erfolge", "studio", "blog", "faq"],
     stichworte: ["muskel", "oft", "ergebnis", "anfänger"],
     kurz: "Muskeln aufbauen",
     antwort: "Dein Trainer stellt jede Muskelgruppe einzeln ein und steigert die Intensität mit dir – Woche für Woche.",
@@ -213,7 +215,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     },
     titel: ["Treppen, Einkäufe, Kinder –", "wieder leicht."],
     knopf: "Probetraining für mehr Fitness",
-    reihenfolge: ["zielwelt", "auszeichnung", "zeit", "ablauf", "vorteile", "individuell", "studio", "blog", "faq"],
+    reihenfolge: ["zielwelt", "auszeichnung", "zeit", "ablauf", "reels", "vorteile", "individuell", "studio", "blog", "faq"],
     stichworte: ["oft", "anfänger", "zeit", "berufstätig", "mitbringen"],
     kurz: "Fitter im Alltag",
     antwort: "Einmal pro Woche 20 Minuten, alles eingestellt von deinem Trainer – damit du dich im Alltag wieder leichter fühlst.",
