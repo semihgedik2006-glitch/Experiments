@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/container";
 import { ImpulsMotiv } from "@/components/ui/impuls-motiv";
 import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { BookingFlow } from "@/components/booking/booking-flow";
+import { GoalPickerEn } from "@/components/ziel/goal-picker-en";
 import { getStudios, getSlotsMitBelegung } from "@/lib/data";
 import { tageJeStudio } from "@/lib/termin-tage";
 import { legalConfig } from "@/lib/legal-config";
@@ -93,8 +94,8 @@ export default async function EnglishPage() {
             className="hero-anim mt-4 text-balance hyphens-auto text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl md:text-6xl"
             style={{ "--hero-delay": "0.14s" } as React.CSSProperties}
           >
-            Twenty minutes a week.{" "}
-            <span className="text-accent-strong">That is the whole plan.</span>
+            Feel good in your body again.{" "}
+            <span className="text-accent-strong">Twenty minutes a week.</span>
           </h1>
 
           <p
@@ -143,7 +144,7 @@ export default async function EnglishPage() {
         </Container>
       </section>
 
-      <ImpulsTrenner variante="a" className="mx-auto max-w-4xl px-6" />
+      <GoalPickerEn />
 
       <section className="py-16 md:py-20">
         <Container className="max-w-4xl">
