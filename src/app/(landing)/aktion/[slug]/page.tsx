@@ -9,6 +9,10 @@ import { TrustBar } from "@/components/trust-bar";
 import { BeweisLeiste } from "@/components/beweis-leiste";
 import { getStudios, getSlotsMitBelegung } from "@/lib/data";
 import { getCampaign, getCampaignSlugs } from "@/lib/campaigns";
+import { zielInhalt } from "@/lib/ziel-inhalte";
+import { ZielProvider } from "@/components/ziel/ziel-kontext";
+import { ZielMotiv } from "@/components/ziel/ziel-motiv";
+import { TerminHinweise } from "@/components/booking/termin-hinweise";
 import { tageJeStudio } from "@/lib/termin-tage";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -41,20 +45,33 @@ export default async function CampaignPage({ params }: Props) {
   const slotsByStudio = tageJeStudio(slots);
 
   const studio = studios[0];
+  const ziel = zielInhalt(campaign.ziel);
 
   return (
-    <>
+    // Mit Ziel steht es im Formular schon fest (ZielProvider fest=...).
+    <ZielProvider fest={ziel?.wert}>
       {/* Auch die Kampagnenseite bekommt das Motiv: Wer über eine Anzeige
           kommt, sieht als Erstes DIESE Seite - und sie sah bisher aus wie
           ein Textdokument, während die Startseite eine Website ist. Das
           ist ausgerechnet die Seite, für die Geld ausgegeben wird. */}
       <section className="relative overflow-hidden border-b border-border py-16 md:py-24">
-        <div
-          aria-hidden
-          className="zierde-ruht pointer-events-none absolute -right-20 top-1/2 hidden w-[380px] -translate-y-1/2 opacity-50 lg:block"
-        >
-          <ImpulsMotiv className="w-full" />
-        </div>
+        {ziel ? (
+          // Zur Kampagne mit Ziel gehört das Motiv dieses Ziels - dasselbe
+          // wie auf der Startseite und der Zielseite.
+          <div
+            aria-hidden
+            className="kal-karte on-ink pointer-events-none absolute right-[max(1.5rem,calc((100vw-72rem)/2))] top-1/2 hidden h-64 w-64 -translate-y-1/2 rounded-[2rem] p-8 lg:block"
+          >
+            <ZielMotiv ziel={ziel.wert} className="h-full w-full" />
+          </div>
+        ) : (
+          <div
+            aria-hidden
+            className="zierde-ruht pointer-events-none absolute -right-20 top-1/2 hidden w-[380px] -translate-y-1/2 opacity-50 lg:block"
+          >
+            <ImpulsMotiv className="w-full" />
+          </div>
+        )}
         <Container className="relative max-w-4xl">
           <span className="hero-anim flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent"
             style={{ "--hero-delay": "0.05s" } as React.CSSProperties}
@@ -96,7 +113,26 @@ export default async function CampaignPage({ params }: Props) {
         </Container>
       </section>
 
-      <ImpulsTrenner variante="b" className="mx-auto max-w-4xl px-6" />
+      {ziel ? (
+        <section className="border-b border-border bg-surface py-12 md:py-16">
+          <Container className="max-w-4xl">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Erkennst du dich wieder?</h2>
+            <ul className="mt-6 space-y-3">
+              {ziel.erkennst.map((satz) => (
+                <li key={satz} className="flex gap-3 text-base sm:text-lg">
+                  <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-lime text-on-lime">
+                    <Check size={13} strokeWidth={3} />
+                  </span>
+                  {satz}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 max-w-2xl text-muted">{ziel.antwort}</p>
+          </Container>
+        </section>
+      ) : (
+        <ImpulsTrenner variante="b" className="mx-auto max-w-4xl px-6" />
+      )}
 
       <section className="py-12 md:py-16">
         <Container className="max-w-2xl">
@@ -110,6 +146,9 @@ export default async function CampaignPage({ params }: Props) {
 
           <div className="mt-10">
             <BookingFlow studios={studios} slotsByStudio={slotsByStudio} />
+          </div>
+          <div>
+            <TerminHinweise />
           </div>
 
           <div className="mt-12 border-t border-border pt-8">
@@ -129,6 +168,6 @@ export default async function CampaignPage({ params }: Props) {
           </div>
         </Container>
       </section>
-    </>
+    </ZielProvider>
   );
 }
