@@ -21,6 +21,8 @@
  * muss auch im Studio noch stimmen.
  */
 
+import type { ZielWert } from "@/lib/ziel-inhalte";
+
 export type Campaign = {
   /** Kleiner Hinweis über der Überschrift. */
   kicker: string;
@@ -36,19 +38,27 @@ export type Campaign = {
   /** Titel und Beschreibung für Suchmaschinen und geteilte Links. */
   metaTitle: string;
   metaDescription: string;
+  /**
+   * Das Ziel dieser Kampagne (@/lib/ziel-inhalte). Die Seite zeigt dann
+   * das passende Motiv und "Erkennst du dich wieder?", und das Ziel ist
+   * im Formular schon angekreuzt.
+   */
+  ziel?: ZielWert;
 };
 
+// Keine Vergleiche mit anderen Trainingsformen und keine Wirkversprechen
+// ("sichtbare Ergebnisse", "mehr Grundumsatz") - wie auf der übrigen Seite.
 export const campaigns: Record<string, Campaign> = {
   probetraining: {
     kicker: "Kostenlos & unverbindlich",
-    headline: "20 Minuten, die",
-    highlight: "alles verändern",
+    headline: "20 Minuten pro Woche.",
+    highlight: "Auf dich eingestellt.",
     subline:
       "Probier EMS-Training kostenlos aus - mit persönlicher Betreuung. Danach zeigt dir dein Trainer, welche Mitgliedschaft zu deinem Ziel passt.",
     bullets: [
-      "Nur 20 Minuten pro Woche - fester Termin, kein Planungsaufwand",
-      "Immer persönlich betreut - kein Training auf eigene Faust",
-      "Gelenkschonend und auch für Wiedereinsteiger geeignet",
+      "Ein fester Termin pro Woche, 20 Minuten Training",
+      "Bei jeder Einheit ein Trainer an deiner Seite",
+      "Ohne schwere Gewichte - auch für Einsteiger",
     ],
     formTitle: "Sichere dir deinen Termin",
     metaTitle: "Kostenloses EMS-Probetraining",
@@ -56,58 +66,81 @@ export const campaigns: Record<string, Campaign> = {
       "Teste EMS-Training kostenlos und unverbindlich. 20 Minuten pro Woche, persönlich betreut. Jetzt Wunschtermin sichern.",
   },
 
+  // Die Adresse bleibt "rueckenschmerzen": Laufende Anzeigen verlinken sie.
   rueckenschmerzen: {
-    kicker: "Für alle mit Büro-Rücken",
-    headline: "Etwas tun gegen den",
-    highlight: "Büro-Rücken",
+    ziel: "ruecken",
+    kicker: "Für alle, die viel sitzen",
+    headline: "Etwas tun für einen",
+    highlight: "starken Rücken",
     subline:
-      "EMS erreicht die tiefe Rumpfmuskulatur, die beim klassischen Training kaum angesprochen wird - genau die Muskeln, die deinen Rücken stützen.",
+      "EMS erreicht auch die tiefliegende Rumpfmuskulatur, die sich mit normalen Übungen schwer gezielt ansteuern lässt. Dein Trainer stellt die Intensität auf deinen Rücken ein.",
     bullets: [
-      "Setzt gezielt an der tiefliegenden Stützmuskulatur an",
-      "Ohne schwere Gewichte, dadurch gelenkschonend",
+      "Schwerpunkt auf Rücken und Rumpf",
+      "Ohne schwere Gewichte - keine Zusatzlast auf der Wirbelsäule",
       "Kostenloses Probetraining, danach entscheidest du",
     ],
     formTitle: "Kostenlos ausprobieren",
-    metaTitle: "EMS-Training für den Rücken - kostenloses Probetraining",
+    metaTitle: "EMS-Training für einen starken Rücken - kostenloses Probetraining",
     metaDescription:
-      "Rückenschmerzen vom Bürojob? EMS-Training setzt an der tiefen Rumpfmuskulatur an. Jetzt kostenlos und unverbindlich testen.",
+      "Viel Sitzen, wenig Zeit? EMS-Training mit Schwerpunkt auf Rücken und Rumpf, persönlich betreut. Jetzt kostenlos und unverbindlich testen.",
+  },
+
+  straffen: {
+    ziel: "straffen",
+    kicker: "Für mehr Form und Spannung",
+    headline: "Straffen und formen -",
+    highlight: "genau da, wo du willst",
+    subline:
+      "Du sagst, welche Stellen dich stören. Dein Trainer stellt Bauch, Po, Beine oder Arme gezielt kräftiger ein - in 20 Minuten pro Woche.",
+    bullets: [
+      "Intensität je Muskelgruppe auf dich eingestellt",
+      "Viele Muskelgruppen gleichzeitig in einer Einheit",
+      "Kostenloses Probetraining, danach entscheidest du",
+    ],
+    formTitle: "Kostenlos ausprobieren",
+    metaTitle: "Straffen und formen mit EMS - kostenloses Probetraining",
+    metaDescription:
+      "Straffen und formen mit EMS-Training: dein Trainer stellt Bauch, Po, Beine und Arme gezielt ein. 20 Minuten pro Woche. Jetzt kostenlos testen.",
   },
 
   abnehmen: {
+    ziel: "abnehmen",
     kicker: "Für alle, denen die Zeit fehlt",
     headline: "Abnehmen, ohne dass",
     highlight: "der Kalender platzt",
     subline:
-      "EMS lässt viele Muskelgruppen gleichzeitig arbeiten - auch die tiefliegenden. Mehr Muskulatur heißt mehr Grundumsatz, und der arbeitet auch dann, wenn du nicht trainierst.",
+      "Ein fester Termin pro Woche, ein Trainer, der mit dir dranbleibt - und auf Wunsch Ernährungsberatung. Viele große Muskelgruppen arbeiten dabei gleichzeitig.",
     bullets: [
-      "Eine Einheit pro Woche, 20 Minuten - mehr braucht es nicht",
-      "Trainingsplan und Ernährungsberatung passend zu deinem Alltag",
+      "Eine Einheit pro Woche, 20 Minuten Training",
+      "Trainingsplan und auf Wunsch Ernährungsberatung",
       "Kostenloses Probetraining, danach entscheidest du in Ruhe",
     ],
     formTitle: "Kostenlos ausprobieren",
     metaTitle: "Abnehmen mit EMS-Training - kostenloses Probetraining",
     metaDescription:
-      "Abnehmen mit wenig Zeit: EMS-Training baut Muskulatur auf und erhöht den Grundumsatz. 20 Minuten pro Woche, persönlich betreut. Jetzt kostenlos testen.",
+      "Abnehmen mit wenig Zeit: ein fester EMS-Termin pro Woche, persönlich betreut, auf Wunsch mit Ernährungsberatung. Jetzt kostenlos testen.",
   },
 
   muskelaufbau: {
-    kicker: "Für sichtbare Ergebnisse",
-    headline: "Muskeln aufbauen in",
+    ziel: "muskelaufbau",
+    kicker: "Für mehr Kraft",
+    headline: "Muskeln aufbauen mit",
     highlight: "20 Minuten pro Woche",
     subline:
-      "Der elektrische Impuls erreicht auch die tiefen Muskelschichten, an die klassisches Training kaum herankommt - bei deutlich weniger Belastung für Gelenke und Sehnen.",
+      "Dein Trainer stellt jede Muskelgruppe einzeln ein und steigert die Intensität mit dir. Die Impulse erreichen auch tiefliegende Muskelschichten.",
     bullets: [
-      "Erreicht auch die tiefliegenden Schichten",
-      "Ohne schwere Gewichte, dadurch gelenkschonend",
-      "Immer persönlich betreut - die Einstellung wird an dich angepasst",
+      "Jede Muskelgruppe einzeln eingestellt",
+      "Ohne schwere Gewichte, saubere Ausführung mit Trainer",
+      "Kostenloses Probetraining, danach entscheidest du",
     ],
     formTitle: "Sichere dir deinen Termin",
     metaTitle: "Muskelaufbau mit EMS - kostenloses Probetraining",
     metaDescription:
-      "Muskelaufbau ohne stundenlanges Training: EMS erreicht auch die tiefen Muskelschichten. 20 Minuten pro Woche, persönlich betreut. Jetzt kostenlos testen.",
+      "Muskelaufbau mit EMS: jede Muskelgruppe einzeln eingestellt, persönlich betreut, 20 Minuten pro Woche. Jetzt kostenlos testen.",
   },
 
   wiedereinstieg: {
+    ziel: "fitness",
     kicker: "Für alle nach einer langen Pause",
     headline: "Wieder anfangen,",
     highlight: "ohne sich zu überfordern",
@@ -115,13 +148,13 @@ export const campaigns: Record<string, Campaign> = {
       "Lange nichts gemacht? Das Training startet auf deinem Niveau und wächst mit. Die Stärke des Impulses stellt dein Trainer ein - nicht du und nicht ein Gerät.",
     bullets: [
       "Beginnt auf deinem Level, nicht auf einem Standardprogramm",
-      "Gelenkschonend, auch nach längerer Pause",
+      "Ohne schwere Gewichte, auch nach längerer Pause",
       "Erst kostenlos testen, dann die passende Mitgliedschaft wählen",
     ],
     formTitle: "Kostenlos wieder einsteigen",
     metaTitle: "Wiedereinstieg ins Training mit EMS - kostenlos testen",
     metaDescription:
-      "Nach langer Pause wieder anfangen: EMS-Training startet auf deinem Niveau, gelenkschonend und persönlich betreut. Jetzt kostenloses Probetraining sichern.",
+      "Nach langer Pause wieder anfangen: EMS-Training startet auf deinem Niveau, ohne schwere Gewichte und persönlich betreut. Jetzt kostenloses Probetraining sichern.",
   },
 
   "zu-zweit": {
@@ -129,7 +162,7 @@ export const campaigns: Record<string, Campaign> = {
     headline: "Probetraining",
     highlight: "zu zweit",
     subline:
-      "Der erste Termin fällt zu zweit deutlich leichter - und wer zusammen anfängt, bleibt erfahrungsgemäß auch eher dabei. Sag im Formular einfach Bescheid, dann reservieren wir zwei Plätze.",
+      "Der erste Termin fällt zu zweit leichter. Sag im Formular einfach Bescheid, dann reservieren wir zwei Plätze.",
     bullets: [
       "Zwei Plätze im selben Termin, mit einem Trainer für euch beide",
       "Für beide kostenlos und unverbindlich",

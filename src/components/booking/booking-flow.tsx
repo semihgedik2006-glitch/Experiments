@@ -26,11 +26,21 @@ export function BookingFlow({
   studios,
   slotsByStudio,
   sprache = "de",
+  standortErstImBild = false,
 }: {
   studios: StudioOption[];
   slotsByStudio: Record<string, DayGroup[]>;
   /** Auf der englischen Seite "en" - siehe src/lib/sprache.ts. */
   sprache?: Sprache;
+  /**
+   * Nach dem Standort erst fragen, wenn das Formular ins Bild kommt.
+   *
+   * Auf /probetermin ist das Formular die Seite, dort gleich beim Laden.
+   * Auf den Zielseiten steht es ganz unten - wer über eine Anzeige kommt,
+   * bekäme sonst als Erstes die Browserfrage "Standort freigeben?", bevor
+   * er überhaupt weiß, worum es geht.
+   */
+  standortErstImBild?: boolean;
 }) {
   const t = texte(sprache);
   const englisch = sprache === "en";
@@ -67,9 +77,27 @@ export function BookingFlow({
   // muss.
   const settledRef = useRef(false);
 
+  const wurzel = useRef<HTMLDivElement>(null);
+  const [imBild, setImBild] = useState(!standortErstImBild);
+  useEffect(() => {
+    if (imBild || !wurzel.current) return;
+    const beobachter = new IntersectionObserver(
+      ([eintrag]) => {
+        if (eintrag.isIntersecting) {
+          setImBild(true);
+          beobachter.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -20% 0px" },
+    );
+    beobachter.observe(wurzel.current);
+    return () => beobachter.disconnect();
+  }, [imBild]);
+
   const locating =
     isClient &&
     canLocate &&
+    imBild &&
     !locationSettled &&
     typeof navigator !== "undefined" &&
     !!navigator.geolocation;
@@ -109,8 +137,9 @@ export function BookingFlow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canLocate, canName]);
 
+
   useEffect(() => {
-    if (!canLocate) return;
+    if (!canLocate || !imBild) return;
     requestLocation();
 
     // Eigene Wartezeitüberwachung: Solange die Erlaubnisabfrage offen ist,
@@ -126,7 +155,7 @@ export function BookingFlow({
     }, 12000);
 
     return () => clearTimeout(timer);
-  }, [requestLocation, canLocate]);
+  }, [requestLocation, canLocate, imBild]);
 
   if (studios.length === 0) {
     return (
@@ -139,7 +168,7 @@ export function BookingFlow({
   }
 
   return (
-    <div className="space-y-8">
+    <div ref={wurzel} className="space-y-8">
       {studios.length > 1 && (
         <div>
           <p className="mb-3 flex flex-wrap items-center gap-2 text-sm font-semibold">

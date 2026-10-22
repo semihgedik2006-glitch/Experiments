@@ -19,6 +19,9 @@ import type { ZielWert } from "@/lib/ziel-inhalte";
 
 export const ZIEL_SPEICHER = "kf-ziel";
 
+/** Ereignis, mit dem ein Formular auf derselben Seite eine neue Zielwahl übernimmt. */
+export const ZIEL_EREIGNIS = "kf-ziel";
+
 type ZielKontext = {
   ziel: ZielWert | null;
   waehlen: (ziel: ZielWert) => void;

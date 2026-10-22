@@ -8,7 +8,7 @@ import { gebuchtMerken } from "@/lib/einladung";
 import { createBooking } from "@/lib/actions/booking";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
 import { ZIELE, istZiel } from "@/lib/ziel";
-import { ZIEL_SPEICHER } from "@/components/ziel/ziel-kontext";
+import { ZIEL_EREIGNIS, ZIEL_SPEICHER } from "@/components/ziel/ziel-kontext";
 import { herkunftAusBrowser, type Herkunft } from "@/lib/herkunft";
 import type { TerminTag as DayGroup } from "@/lib/termin-tage";
 import type { ActionResult } from "@/lib/actions/newsletter";
@@ -91,6 +91,17 @@ export function BookingForm({
       // eslint-disable-next-line react-hooks/set-state-in-effect -- einmaliges Übernehmen aus dem Browser
       setFelder((bisher) => (bisher.ziel ? bisher : { ...bisher, ziel }));
     }
+  }, []);
+
+  // Wählt jemand auf derselben Seite ein Ziel, während das Formular schon
+  // dasteht (englische Seite), übernimmt es die Wahl sofort.
+  useEffect(() => {
+    const beimZiel = (ereignis: Event) => {
+      const ziel = (ereignis as CustomEvent<string>).detail;
+      if (istZiel(ziel)) setFelder((bisher) => ({ ...bisher, ziel }));
+    };
+    window.addEventListener(ZIEL_EREIGNIS, beimZiel);
+    return () => window.removeEventListener(ZIEL_EREIGNIS, beimZiel);
   }, []);
 
   const aendern =
