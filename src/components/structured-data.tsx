@@ -1,6 +1,7 @@
 import { getStudios, getFaqItems } from "@/lib/data";
 import { siteConfig } from "@/lib/site-config";
 import { legalConfig } from "@/lib/legal-config";
+import type { Frage } from "@/lib/fragen";
 
 /**
  * Strukturierte Daten (JSON-LD).
@@ -28,6 +29,9 @@ function JsonLd({ data }: { data: unknown }) {
     />
   );
 }
+
+/** Alle Standorte und Seiten verweisen auf diese eine Organisation. */
+const ORGANISATION_ID = `${siteConfig.url}/#organisation`;
 
 /**
  * Wandelt die frei gepflegten Öffnungszeiten in das von Google erwartete
@@ -118,6 +122,7 @@ export async function StudioJsonLd() {
         }
       : {}),
     openingHoursSpecification: parseOpeningHours(studio.openingHours),
+    parentOrganization: { "@id": ORGANISATION_ID },
     sameAs: Object.values(siteConfig.social),
     ...(legalConfig.vatId ? { vatID: legalConfig.vatId } : {}),
   }));
@@ -183,7 +188,7 @@ export function StandortJsonLd({
               }
             : {}),
           openingHoursSpecification: parseOpeningHours(studio.openingHours),
-          parentOrganization: { "@type": "Organization", name: siteConfig.name },
+          parentOrganization: { "@id": ORGANISATION_ID },
           sameAs: Object.values(siteConfig.social),
           ...(legalConfig.vatId ? { vatID: legalConfig.vatId } : {}),
         },
@@ -219,7 +224,83 @@ export function WebsiteJsonLd() {
         name: siteConfig.name,
         url: siteConfig.url,
         inLanguage: "de-DE",
-        publisher: { "@type": "Organization", name: siteConfig.name },
+        publisher: { "@id": ORGANISATION_ID },
+      }}
+    />
+  );
+}
+
+/**
+ * Wir als Unternehmen: Name, Logo, Einzugsgebiet, Zahl der Studios.
+ *
+ * Damit Suchmaschinen und KI-Assistenten die vierzehn Standorte einem
+ * Anbieter zuordnen können - jeder Standort verweist über
+ * parentOrganization hierher.
+ *
+ * Die DtGV-Auszeichnung steht bewusst NICHT als "award" darin: Sie gilt
+ * der Marke Körperformen, nicht diesem Partner (siehe @/lib/auszeichnung).
+ * Auf den Seiten steht sie mit genau diesem Zusatz - in den Daten fehlt
+ * der Platz für den Zusatz.
+ */
+export async function OrganisationJsonLd() {
+  const studios = await getStudios().catch(() => []);
+  return (
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": ORGANISATION_ID,
+        name: siteConfig.name,
+        url: siteConfig.url,
+        logo: `${siteConfig.url}/logo-light.svg`,
+        description: siteConfig.claim,
+        areaServed: { "@type": "City", name: "Köln" },
+        email: siteConfig.contact.email,
+        telephone: siteConfig.contact.phone,
+        sameAs: Object.values(siteConfig.social),
+        ...(studios.length > 0
+          ? { subOrganization: studios.map((s) => ({ "@id": `${siteConfig.url}/studio/${s.slug}#studio` })) }
+          : {}),
+      }}
+    />
+  );
+}
+
+/** Brotkrumen - im Suchergebnis steht dann der Pfad statt der nackten Adresse. */
+export function BrotkrumenJsonLd({ pfad }: { pfad: { name: string; href: string }[] }) {
+  return (
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [{ name: "Startseite", href: "" }, ...pfad].map((p, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: p.name,
+          item: `${siteConfig.url}${p.href}`,
+        })),
+      }}
+    />
+  );
+}
+
+/**
+ * Eine Fragen-Seite: die Frage mit ihrer kurzen Antwort. Die Antwort steht
+ * im selben Wortlaut oben auf der Seite.
+ */
+export function FrageJsonLd({ frage }: { frage: Frage }) {
+  return (
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: frage.frage,
+            acceptedAnswer: { "@type": "Answer", text: frage.antwort },
+          },
+        ],
       }}
     />
   );
@@ -273,8 +354,8 @@ export function ArticleJsonLd({
         mainEntityOfPage: `${siteConfig.url}/blog/${slug}`,
         ...(publishedAt ? { datePublished: publishedAt.toISOString() } : {}),
         dateModified: updatedAt.toISOString(),
-        author: { "@type": "Organization", name: siteConfig.name },
-        publisher: { "@type": "Organization", name: siteConfig.name },
+        author: { "@id": ORGANISATION_ID },
+        publisher: { "@id": ORGANISATION_ID },
       }}
     />
   );

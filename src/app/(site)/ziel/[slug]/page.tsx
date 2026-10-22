@@ -14,6 +14,7 @@ import { getToggles } from "@/lib/site-toggles";
 import { getStudios } from "@/lib/data";
 import { siteConfig } from "@/lib/site-config";
 import { ZIEL_INHALTE, seitenBeschreibung, zielInhalt } from "@/lib/ziel-inhalte";
+import { BrotkrumenJsonLd, FaqJsonLd } from "@/components/structured-data";
 
 /**
  * Eine eigene Seite je Ziel: /ziel/ruecken, /ziel/abnehmen, ...
@@ -63,6 +64,10 @@ export default async function ZielSeite({ params }: { params: Promise<{ slug: st
 
   return (
     <ZielProvider fest={inhalt.wert}>
+      {/* Die häufigen Fragen stehen auch auf dieser Seite (im Abschnitt
+          FAQ, nach Ziel sortiert) - deshalb auch hier als Daten. */}
+      <BrotkrumenJsonLd pfad={[{ name: inhalt.kurz, href: `/ziel/${inhalt.wert}` }]} />
+      <FaqJsonLd />
       <ZielKopf inhalt={inhalt} anzahlStudios={studios.length} />
       <ZielAbschnitte
         abschnitte={zielAbschnitteBauen({

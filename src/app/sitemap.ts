@@ -4,6 +4,7 @@ import { siteConfig } from "@/lib/site-config";
 import { getToggles } from "@/lib/site-toggles";
 import { erfolgeVorhanden } from "@/lib/kundenstimmen";
 import { ZIEL_INHALTE } from "@/lib/ziel-inhalte";
+import { FRAGEN } from "@/lib/fragen";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, toggles, studios, erfolge] = await Promise.all([
@@ -87,5 +88,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...zielRoutes, ...studioRoutes, ...postRoutes];
+  // Die Fragen-Seiten (@/lib/fragen) samt Übersicht - aus demselben Grund.
+  const fragenRoutes = ["/fragen", ...FRAGEN.map((f) => `/fragen/${f.slug}`)].map((route) => ({
+    url: `${siteConfig.url}${route}`,
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...zielRoutes, ...fragenRoutes, ...studioRoutes, ...postRoutes];
 }

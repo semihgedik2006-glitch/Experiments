@@ -5,7 +5,7 @@ import { ZielAbschnitte, ZielLeiste } from "@/components/ziel/ziel-abschnitte";
 import { zielAbschnitteBauen } from "@/components/ziel/ziel-abschnitte-bauen";
 import { CtaBanner } from "@/components/cta-banner";
 import { InstagramWand } from "@/components/instagram-wand";
-import { StudioJsonLd, WebsiteJsonLd, FaqJsonLd } from "@/components/structured-data";
+import { StudioJsonLd, WebsiteJsonLd, FaqJsonLd, OrganisationJsonLd } from "@/components/structured-data";
 import { getToggles } from "@/lib/site-toggles";
 import { getStudios } from "@/lib/data";
 import { letzteBeitraege } from "@/lib/instagram";
@@ -38,6 +38,7 @@ export default async function Home() {
 
   return (
     <ZielProvider>
+      <OrganisationJsonLd />
       <StudioJsonLd />
       <WebsiteJsonLd />
       <FaqJsonLd />

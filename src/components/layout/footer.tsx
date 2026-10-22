@@ -118,6 +118,14 @@ export async function Footer({
                 Ziel-Check machen
               </Link>
             </li>
+            <li>
+              <Link
+                href="/fragen"
+                className="tastflaeche block py-1.5 text-sm text-muted hover:text-foreground"
+              >
+                Fragen kurz beantwortet
+              </Link>
+            </li>
           </ul>
         </div>
 

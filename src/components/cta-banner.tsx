@@ -22,7 +22,6 @@ import { ImpulsMotiv } from "@/components/ui/impuls-motiv";
  * Rückmeldung bekommen.
  */
 export function CtaBanner() {
-
   return (
     <section className="on-ink relative overflow-hidden pt-24 pb-24 sm:pt-28 md:pt-36">
       {/* Erst ab md: Auf dem Handy nimmt der Text die volle Breite ein, und
