@@ -96,7 +96,7 @@ export default async function ZielSeite({ params }: { params: Promise<{ slug: st
             </p>
           </Reveal>
           <BeweisLeiste className="mb-10" />
-          <BookingFlow studios={studios} slotsByStudio={slotsByStudio} />
+          <BookingFlow studios={studios} slotsByStudio={slotsByStudio} standortErstImBild />
           <Reveal className="mt-12 border-t border-border pt-8">
             <TrustBar />
           </Reveal>
