@@ -43,17 +43,22 @@ export async function TrustSection() {
           className="mb-16"
         />
 
-        <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <Stagger className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
           {trustPoints.map((point) => {
             const Icon = icons[point.icon];
             return (
               <StaggerItem key={point.title}>
-                <div className="karte-hebt karte-glanz h-full card p-7">
-                  <div className="karte-symbol flex h-11 w-11 items-center justify-center rounded-full bg-lime/10 text-accent">
+                {/* Auf dem Handy Symbol links neben dem Text statt darüber -
+                    vier Karten untereinander waren sonst fast zwei
+                    Bildschirme lang. */}
+                <div className="karte-hebt karte-glanz flex h-full gap-4 card p-5 sm:block sm:p-7">
+                  <div className="karte-symbol flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-lime/10 text-accent">
                     <Icon size={20} />
                   </div>
-                  <h3 className="mt-6 text-lg font-semibold tracking-tight">{point.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted">{point.text}</p>
+                  <div>
+                    <h3 className="text-lg font-semibold tracking-tight sm:mt-6">{point.title}</h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted sm:mt-3">{point.text}</p>
+                  </div>
                 </div>
               </StaggerItem>
             );

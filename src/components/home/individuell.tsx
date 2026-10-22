@@ -127,7 +127,9 @@ function PlanKarte({ stufe }: { stufe: number }) {
   ];
 
   return (
-    <div className="on-ink kal-karte relative rounded-3xl p-6 sm:p-8 lg:sticky lg:top-24">
+    // Erst ab sm: Auf dem Handy stünde die Karte unter den vier Schritten
+    // und wiederholte sie nur - neben ihnen zeigt sie, wie sie sich füllen.
+    <div className="on-ink kal-karte relative hidden rounded-3xl p-6 sm:block sm:p-8 lg:sticky lg:top-24">
       <p className="text-sm font-semibold text-foreground">Dein Plan</p>
       <dl className="mt-6 divide-y divide-white/10">
         {zeilen.map((zeile, i) => {

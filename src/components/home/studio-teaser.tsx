@@ -102,9 +102,12 @@ export async function StudioTeaser() {
           />
         </div>
 
-        <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Auf dem Handy eine Reihe zum Wischen statt sechs Karten
+            untereinander - die standen sonst über zwei Bildschirme lang
+            zwischen den Abschnitten. Ab sm wieder das Raster. */}
+        <Stagger className="-mx-6 flex snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-auto px-6 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
           {gezeigt.map((studio) => (
-            <StaggerItem key={studio.id} className="h-full">
+            <StaggerItem key={studio.id} className="h-full w-[78%] shrink-0 snap-start sm:w-auto">
               <div className="karte-hebt karte-glanz flex h-full flex-col card p-6">
                 <h3 className="text-lg font-semibold">{studio.name}</h3>
                 <ul className="mt-4 flex-1 space-y-3 text-sm text-muted">
@@ -119,7 +122,7 @@ export async function StudioTeaser() {
                     </li>
                   )}
                 </ul>
-                <Button href="/studio" variant="secondary" className="karte-knopf mt-6 w-full">
+                <Button href={`/studio/${studio.slug}`} variant="secondary" className="karte-knopf mt-6 w-full">
                   Details &amp; Anfahrt
                 </Button>
               </div>

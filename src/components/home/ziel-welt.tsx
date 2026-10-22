@@ -182,7 +182,7 @@ function Schwerpunkt({
           animate={{ opacity: 1, scale: 1 }}
           exit={wenigerBewegung ? undefined : { opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.3 }}
-          className="mx-auto mb-6 h-36 w-36 sm:h-44 sm:w-44"
+          className="mx-auto mb-6 h-24 w-24 sm:h-44 sm:w-44"
         >
           <ZielUebergang an={uebergang}>
             <ZielMotiv ziel={ziel} className="h-full w-full" />
@@ -205,7 +205,7 @@ function Schwerpunkt({
         </AnimatePresence>
       </div>
 
-      <ul className="mt-6 space-y-4" aria-label={`Beispiel-Schwerpunkte für ${titel}`}>
+      <ul className="mt-6 space-y-2.5 sm:space-y-4" aria-label={`Beispiel-Schwerpunkte für ${titel}`}>
         {ZONEN.map((zone, i) => {
           const wert = profil[i] ?? 0.5;
           const stark = staerkste.has(i);

@@ -5,6 +5,8 @@ import { PageHeader } from "@/components/ui/page-header";
 import { getStudios } from "@/lib/data";
 import { StudioJsonLd } from "@/components/structured-data";
 import { StudioList } from "@/components/studio/studio-list";
+import { Netzwerk } from "@/components/home/netzwerk";
+import { siteConfig } from "@/lib/site-config";
 import { StandortUebersicht } from "@/components/studio/standort-uebersicht";
 import { Container } from "@/components/ui/container";
 import { notFound } from "next/navigation";
@@ -26,7 +28,6 @@ export default async function StudioPage() {
 
   const studios = await getStudios();
   if (studios.length === 0) return notFound();
-
 
   return (
     <>
@@ -65,6 +66,11 @@ export default async function StudioPage() {
       )}
 
       <StudioList studios={studios} />
+
+      {/* Das Körperformen-Netz - stand früher auf der Startseite. Hier
+          gehört es hin: Wer Standorte sucht, fragt auch, wie groß das Netz
+          dahinter ist. */}
+      {studios.length > 1 && <Netzwerk gesamt={siteConfig.netzwerk.studiosGesamt} eigene={studios.length} />}
 
       <StudioProblem
         studios={studios.flatMap((s) =>

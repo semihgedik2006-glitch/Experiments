@@ -75,7 +75,6 @@ export default async function ZielSeite({ params }: { params: Promise<{ slug: st
           toggles,
           zeitspanne: null,
           auswahl: false,
-          instagram: null,
           studioListe: false,
         })}
       />
