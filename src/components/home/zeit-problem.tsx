@@ -125,7 +125,7 @@ export function ZeitProblem() {
           text: <>der Rest der Woche gehört deiner Familie, deinem Job und dir.</>,
         },
       ]}
-      knopf={{ href: "/probetermin", text: "Freien Termin finden" }}
+      knopf={{ href: "/probetermin", text: "Wunschzeit nennen" }}
       kartenTitel="Deine Woche"
       legende={
         <>

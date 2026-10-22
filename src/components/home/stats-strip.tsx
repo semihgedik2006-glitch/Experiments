@@ -22,11 +22,9 @@ import type { Kennzahl } from "@/lib/beweise";
 //
 // Was jetzt hier steht, kommt vollständig aus der eigenen Datenbank
 // (siehe src/lib/beweise.ts): die Dauer einer Einheit, die Zahl der
-// Standorte und die freien Termine der nächsten sieben Tage. Das sind
-// Zahlen, die niemand nachschlagen muss, die kein Wettbewerber
-// abschreiben kann und die sich jeden Tag von selbst aktualisieren - und
-// sie beantworten genau die Frage, mit der jemand hier ist: Kann ich da
-// hin, und wann?
+// eigenen Standorte und die des Körperformen-Netzes. Freie Termine stehen
+// hier nicht mehr - die Studios planen ihr Team nach den Anfragen (siehe
+// src/lib/wunschzeit.ts).
 //
 // Keine Zahl wird hier hineingeschrieben. Kommt ein Studio dazu, stimmt
 // die Seite am selben Tag.

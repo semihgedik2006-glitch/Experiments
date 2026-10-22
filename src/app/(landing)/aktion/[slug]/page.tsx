@@ -7,13 +7,13 @@ import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { TrustBar } from "@/components/trust-bar";
 import { BeweisLeiste } from "@/components/beweis-leiste";
-import { getStudios, getSlotsMitBelegung } from "@/lib/data";
+import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
+import { getStudios } from "@/lib/data";
 import { getCampaign, getCampaignSlugs } from "@/lib/campaigns";
 import { zielInhalt } from "@/lib/ziel-inhalte";
 import { ZielProvider } from "@/components/ziel/ziel-kontext";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 import { TerminHinweise } from "@/components/booking/termin-hinweise";
-import { tageJeStudio } from "@/lib/termin-tage";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -40,9 +40,7 @@ export default async function CampaignPage({ params }: Props) {
   const campaign = getCampaign(slug);
   if (!campaign) return notFound();
 
-  const [studios, slots] = await Promise.all([getStudios(), getSlotsMitBelegung()]);
-
-  const slotsByStudio = tageJeStudio(slots);
+  const studios = await getStudios();
 
   const studio = studios[0];
   const ziel = zielInhalt(campaign.ziel);
@@ -110,6 +108,9 @@ export default async function CampaignPage({ params }: Props) {
               Seite kostet Geld pro Klick; sie ist die letzte, auf der
               eine Antwort darauf fehlen sollte. */}
           <BeweisLeiste className="hero-anim mt-10 max-w-xl" />
+          {/* Landingpages haben keinen Abschnitt mit der Auszeichnung -
+              die Plakette verweist deshalb direkt auf die Studie. */}
+          <AuszeichnungMarke aufStartseite={false} className="hero-anim mt-4" />
         </Container>
       </section>
 
@@ -145,7 +146,7 @@ export default async function CampaignPage({ params }: Props) {
           </p>
 
           <div className="mt-10">
-            <BookingFlow studios={studios} slotsByStudio={slotsByStudio} />
+            <BookingFlow studios={studios} />
           </div>
           <div>
             <TerminHinweise />

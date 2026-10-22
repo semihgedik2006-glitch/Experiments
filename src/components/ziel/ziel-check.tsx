@@ -9,8 +9,7 @@ import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 import { ZIEL_SPEICHER } from "@/components/ziel/ziel-kontext";
 import { ZIEL_INHALTE, ZONEN, zielInhalt, type ZielWert } from "@/lib/ziel-inhalte";
 import { ERFAHRUNG, type ErfahrungWert, type Fenster, type FensterWert } from "@/lib/ziel-check";
-
-export type FensterTermin = { label: string; studio: string };
+import { istTageszeit, TAGESZEIT_SPEICHER } from "@/lib/wunschzeit";
 
 type Antworten = {
   ziel: ZielWert | "unsicher" | null;
@@ -29,11 +28,13 @@ const weich = [0.16, 1, 0.3, 1] as const;
  * nicht; nur das Ziel wird für das Probetermin-Formular gemerkt.
  */
 export function ZielCheck({
-  termine,
   fensterListe,
+  formular,
 }: {
-  termine: Partial<Record<string, FensterTermin>>;
   fensterListe: readonly Fenster[];
+  /** Das Anfrageformular, vom Server mit den Standorten gebaut. Steht erst
+      unter dem fertigen Startplan - vorher wäre es nur im Weg. */
+  formular: React.ReactNode;
 }) {
   const [schritt, setSchritt] = useState(0);
   const [richtung, setRichtung] = useState(1);
@@ -50,6 +51,16 @@ export function ZielCheck({
         sessionStorage.setItem(ZIEL_SPEICHER, teil.ziel);
       } catch {
         // Ohne Speicher eben ohne Vorauswahl im Formular.
+      }
+    }
+    // Das Zeitfenster wird im Formular zur vorausgewählten Wunschzeit.
+    // "Ist mir egal" heißt: keine Vorauswahl.
+    if (teil.fenster) {
+      try {
+        if (istTageszeit(teil.fenster)) sessionStorage.setItem(TAGESZEIT_SPEICHER, teil.fenster);
+        else sessionStorage.removeItem(TAGESZEIT_SPEICHER);
+      } catch {
+        // Wie oben.
       }
     }
   }
@@ -104,71 +115,91 @@ export function ZielCheck({
   const fertig = schritt >= fragen.length;
 
   return (
-    <section className="on-ink hero-foto relative isolate min-h-[80vh] overflow-hidden">
-      <div aria-hidden className="hero-schein pointer-events-none absolute -z-10" />
-      <Container className="max-w-3xl py-14 sm:py-20">
-        <div className="flex items-center justify-between gap-4">
-          <p className="text-sm font-semibold text-accent">Ziel-Check · 30 Sekunden</p>
-          {!fertig && (
-            <p className="text-sm tabular-nums text-muted" aria-live="polite">
-              Frage {schritt + 1} von {fragen.length}
-            </p>
-          )}
-        </div>
-
-        {/* Fortschritt: drei Abschnitte, die sich nacheinander füllen. */}
-        <div className="mt-4 grid grid-cols-3 gap-2" aria-hidden>
-          {fragen.map((_, i) => (
-            <span key={i} className="h-1.5 overflow-hidden rounded-full bg-white/10">
-              <motion.span
-                className="block h-full rounded-full bg-[var(--ink-lime)]"
-                initial={false}
-                animate={{ width: i < schritt ? "100%" : "0%" }}
-                transition={still ? { duration: 0 } : { duration: 0.5, ease: weich }}
-              />
-            </span>
-          ))}
-        </div>
-
-        <div className="relative mt-10">
-          <AnimatePresence mode="wait" initial={false} custom={richtung}>
-            {!fertig ? (
-              <motion.div
-                key={schritt}
-                custom={richtung}
-                initial={still ? false : { opacity: 0, x: 40 * richtung }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={still ? undefined : { opacity: 0, x: -40 * richtung }}
-                transition={{ duration: 0.35, ease: weich }}
-              >
-                <h1 className="font-display text-balance text-3xl font-black leading-tight tracking-tight sm:text-5xl">
-                  {fragen[schritt].titel}
-                </h1>
-                <div className="mt-8">{fragen[schritt].inhalt}</div>
-                {schritt > 0 && (
-                  <button
-                    type="button"
-                    onClick={zurueck}
-                    className="mt-8 inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-foreground"
-                  >
-                    <ArrowLeft size={16} aria-hidden /> Zurück
-                  </button>
-                )}
-              </motion.div>
-            ) : (
-              <motion.div
-                key="plan"
-                initial={still ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: weich }}
-              >
-                <Startplan antworten={antworten} termine={termine} fensterListe={fensterListe} neu={neu} />
-              </motion.div>
+    <>
+      <section className="on-ink hero-foto relative isolate min-h-[80vh] overflow-hidden">
+        <div aria-hidden className="hero-schein pointer-events-none absolute -z-10" />
+        <Container className="max-w-3xl py-14 sm:py-20">
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-sm font-semibold text-accent">Ziel-Check · 30 Sekunden</p>
+            {!fertig && (
+              <p className="text-sm tabular-nums text-muted" aria-live="polite">
+                Frage {schritt + 1} von {fragen.length}
+              </p>
             )}
-          </AnimatePresence>
-        </div>
-      </Container>
-    </section>
+          </div>
+
+          {/* Fortschritt: drei Abschnitte, die sich nacheinander füllen. */}
+          <div className="mt-4 grid grid-cols-3 gap-2" aria-hidden>
+            {fragen.map((_, i) => (
+              <span key={i} className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                <motion.span
+                  className="block h-full rounded-full bg-[var(--ink-lime)]"
+                  initial={false}
+                  animate={{ width: i < schritt ? "100%" : "0%" }}
+                  transition={still ? { duration: 0 } : { duration: 0.5, ease: weich }}
+                />
+              </span>
+            ))}
+          </div>
+
+          <div className="relative mt-10">
+            <AnimatePresence mode="wait" initial={false} custom={richtung}>
+              {!fertig ? (
+                <motion.div
+                  key={schritt}
+                  custom={richtung}
+                  initial={still ? false : { opacity: 0, x: 40 * richtung }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={still ? undefined : { opacity: 0, x: -40 * richtung }}
+                  transition={{ duration: 0.35, ease: weich }}
+                >
+                  <h1 className="font-display text-balance text-3xl font-black leading-tight tracking-tight sm:text-5xl">
+                    {fragen[schritt].titel}
+                  </h1>
+                  <div className="mt-8">{fragen[schritt].inhalt}</div>
+                  {schritt > 0 && (
+                    <button
+                      type="button"
+                      onClick={zurueck}
+                      className="mt-8 inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-foreground"
+                    >
+                      <ArrowLeft size={16} aria-hidden /> Zurück
+                    </button>
+                  )}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="plan"
+                  initial={still ? false : { opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: weich }}
+                >
+                  <Startplan antworten={antworten} fensterListe={fensterListe} neu={neu} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </Container>
+      </section>
+
+      {/* Direkt unter dem Plan anfragen, statt erst auf eine andere Seite
+          zu wechseln. Erst jetzt eingebaut: Das Formular übernimmt beim
+          Aufbau Ziel und Tageszeit, die der Check gerade gemerkt hat. */}
+      {fertig && (
+        <section id="termin" className="scroll-mt-20 border-t border-border bg-surface py-16 sm:py-20">
+          <Container className="max-w-3xl">
+            <h2 className="font-display text-balance text-2xl font-black tracking-tight sm:text-4xl">
+              Gleich hier anfragen<span className="text-accent">.</span>
+            </h2>
+            <p className="mt-3 max-w-xl text-foreground/80">
+              Ziel und Tageszeit aus deinem Check sind schon eingetragen. Nenn uns noch deine Wunschtage – wir
+              melden uns mit einem passenden Termin.
+            </p>
+            <div className="mt-8">{formular}</div>
+          </Container>
+        </section>
+      )}
+    </>
   );
 }
 
@@ -222,12 +253,10 @@ function Optionen({
 
 function Startplan({
   antworten,
-  termine,
   fensterListe,
   neu,
 }: {
   antworten: Antworten;
-  termine: Partial<Record<string, FensterTermin>>;
   fensterListe: readonly Fenster[];
   neu: () => void;
 }) {
@@ -237,7 +266,6 @@ function Startplan({
   // ist "Fitter im Alltag". Das eigentliche Ziel klärt das Probetraining.
   const inhalt = zielInhalt(offen ? "fitness" : antworten.ziel) ?? ZIEL_INHALTE[0];
   const fenster = fensterListe.find((f) => f.wert === antworten.fenster);
-  const termin = antworten.fenster ? termine[antworten.fenster] : undefined;
   const erfahrung = ERFAHRUNG.find((e) => e.wert === antworten.erfahrung);
   const schwerpunkte = inhalt.profil
     .map((wert, i) => ({ wert, zone: ZONEN[i] }))
@@ -245,7 +273,6 @@ function Startplan({
     .slice(0, 3)
     .map((z) => z.zone)
     .join(", ");
-  const href = `/probetermin?ziel=${offen ? "unsicher" : inhalt.wert}`;
 
   const zeilen = [
     { label: "Dein Ziel", wert: offen ? "Finden wir gemeinsam heraus" : inhalt.kurz },
@@ -307,23 +334,23 @@ function Startplan({
           </motion.div>
         </div>
 
-        {/* Der nächste freie Termin im gewählten Zeitfenster - aus den echten
-            Terminen. Gibt es keinen, entfällt die Zeile. */}
-        {termin && (
-          <motion.div
-            initial={still ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.95, ease: weich }}
-            className="mt-6 flex items-center gap-3 rounded-2xl border border-lime/40 bg-lime/5 px-4 py-3"
-          >
-            <CalendarDays size={18} className="shrink-0 text-accent" aria-hidden />
-            <p className="text-sm">
-              <span className="text-muted">Nächster freier Termin{fenster?.imSatz ? ` ${fenster.imSatz}` : ""}: </span>
-              <span className="font-semibold">{termin.label}</span>
-              {termin.studio && <span className="text-muted"> · {termin.studio}</span>}
-            </p>
-          </motion.div>
-        )}
+        {/* Kein fester Termin: Die Studios teilen ihr Team nach den Anfragen
+            ein (siehe @/lib/wunschzeit). Die Tageszeit steht im Formular
+            schon drin. */}
+        <motion.div
+          initial={still ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.95, ease: weich }}
+          className="mt-6 flex items-center gap-3 rounded-2xl border border-lime/40 bg-lime/5 px-4 py-3"
+        >
+          <CalendarDays size={18} className="shrink-0 text-accent" aria-hidden />
+          <p className="text-sm">
+            <span className="font-semibold">
+              {fenster?.imSatz ? `Wunschzeit ${fenster.imSatz} ist vorgemerkt.` : "Nenn uns im nächsten Schritt deine Wunschzeit."}
+            </span>{" "}
+            <span className="text-muted">Wir melden uns mit einem passenden Termin.</span>
+          </p>
+        </motion.div>
       </div>
 
       <motion.div
@@ -332,7 +359,7 @@ function Startplan({
         transition={{ duration: 0.4, delay: 1.1, ease: weich }}
         className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
       >
-        <Button href={href} className="knopf-glanz-dauer whitespace-nowrap px-8 py-3.5">
+        <Button href="#termin" className="knopf-glanz-dauer whitespace-nowrap px-8 py-3.5">
           Probetraining mit diesem Plan
           <ArrowRight size={16} aria-hidden />
         </Button>

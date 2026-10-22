@@ -7,6 +7,8 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
+import { ZielUebergang } from "@/components/ui/ziel-uebergang";
+import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 import { ZIEL_INHALTE, type ZielInhalt } from "@/lib/ziel-inhalte";
 
 /**
@@ -38,6 +40,9 @@ export function ZielKopf({ inhalt, anzahlStudios }: { inhalt: ZielInhalt; anzahl
           <p className="hero-anim text-sm font-semibold text-accent" style={{ "--hero-delay": "0.1s" } as React.CSSProperties}>
             EMS-Training · {inhalt.kurz}
           </p>
+          <div className="hero-anim mt-3" style={{ "--hero-delay": "0.15s" } as React.CSSProperties}>
+            <AuszeichnungMarke />
+          </div>
           <h1 className="font-display mt-5 text-[2.4rem] font-black leading-[1.04] tracking-tight sm:text-[3.2rem] xl:text-[3.7rem]">
             <span className="hero-anim block" style={{ "--hero-delay": "0.2s" } as React.CSSProperties}>
               {eins}
@@ -78,7 +83,9 @@ export function ZielKopf({ inhalt, anzahlStudios }: { inhalt: ZielInhalt; anzahl
             className="hero-anim kal-karte relative aspect-square rounded-[2rem] p-8 sm:p-10"
             style={{ "--hero-delay": "0.3s" } as React.CSSProperties}
           >
-            <ZielMotiv ziel={inhalt.wert} className="h-full w-full" />
+            <ZielUebergang>
+              <ZielMotiv ziel={inhalt.wert} className="h-full w-full" />
+            </ZielUebergang>
           </div>
         </motion.div>
       </Container>

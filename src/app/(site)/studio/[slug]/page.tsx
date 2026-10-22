@@ -7,8 +7,6 @@ import { isVisible } from "@/lib/site-toggles";
 import { siteConfig } from "@/lib/site-config";
 import { studioMapUrl } from "@/lib/studio-map";
 import { haversineDistanceKm } from "@/lib/geo";
-import { tageAusSlots } from "@/lib/termin-tage";
-import { freiePlaetze } from "@/lib/kapazitaet";
 import { Container } from "@/components/ui/container";
 import { TrainerWand } from "@/components/studio/trainer-wand";
 import { Zusatzangebote } from "@/components/preise/zusatzangebote";
@@ -33,7 +31,7 @@ import { BeweisLeiste } from "@/components/beweis-leiste";
  *
  * Damit die Seiten nicht vierzehn fast gleiche Seiten werden, steht auf
  * jeder etwas, das nur dort gilt: Anschrift, Öffnungszeiten, Karte, die
- * tatsächlich freien Termine dieses Studios, die nächstgelegenen anderen
+ * Wunschzeit-Anfrage für genau dieses Studio, die nächstgelegenen anderen
  * Standorte - und die beiden Textfelder aus dem Adminbereich.
  */
 
@@ -114,13 +112,8 @@ export default async function StudioDetailSeite({
   const ort = ortsname(studio.name, studio.city);
   const anschrift = `${studio.street}, ${studio.postalCode} ${studio.city}`;
 
-  const [alleStudios, slots, trainer, angebote] = await Promise.all([
+  const [alleStudios, trainer, angebote] = await Promise.all([
     prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
-    prisma.availabilitySlot.findMany({
-      where: { studioId: studio.id, date: { gte: heuteMitternacht() } },
-      include: { bookings: { where: { status: { not: "CANCELLED" } } } },
-      orderBy: [{ date: "asc" }, { startTime: "asc" }, { id: "asc" }],
-    }),
     // Nur die eingeschalteten Profile, und nur die Felder, die die Karte
     // braucht - die Reihenfolge legt das Studio im Adminbereich fest.
     prisma.trainer.findMany({
@@ -145,13 +138,6 @@ export default async function StudioDetailSeite({
       select: { id: true, name: true, text: true, preis: true, symbol: true, nurStudios: true },
     }),
   ]);
-
-  // Tage für das Buchungsformular - dieselbe Form wie auf /probetermin,
-  // nur auf diesen einen Standort begrenzt. Belegte Zeiten bleiben dabei:
-  // Sie sind der Einstieg in die Warteliste.
-  const tage = tageAusSlots(
-    slots.map((slot) => ({ ...slot, frei: freiePlaetze(slot.capacity, slot.bookings) })),
-  );
 
   const nachbarn = naechsteStudios(studio, alleStudios, NACHBARN);
 
@@ -194,10 +180,8 @@ export default async function StudioDetailSeite({
           )}
         </div>
 
-        {/* Was HIER frei ist, nicht irgendwo. Diese vierzehn Seiten sind
-            die Anlaufstelle für die örtliche Suche ("EMS Hürth") - und
-            die einzige Frage, die dabei offen bleibt, ist die nach einem
-            Termin in erreichbarer Nähe. */}
+        {/* Wie man hier zu einem Termin kommt: Wunschzeit nennen, das
+            Studio meldet sich. */}
         <BeweisLeiste studioId={studio.id} className="mt-8 max-w-xl" />
       </PageHeader>
 
@@ -314,7 +298,6 @@ export default async function StudioDetailSeite({
                   longitude: studio.longitude,
                 },
               ]}
-              slotsByStudio={{ [studio.id]: tage }}
             />
           </div>
         </Container>
@@ -374,12 +357,6 @@ export default async function StudioDetailSeite({
  */
 function entfernungText(km: number): string {
   return km < 9.95 ? km.toFixed(1).replace(".", ",") : String(Math.round(km));
-}
-
-function heuteMitternacht(): Date {
-  const heute = new Date();
-  heute.setHours(0, 0, 0, 0);
-  return heute;
 }
 
 type StudioZeile = {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { MapPin, Phone, Clock, LocateFixed, CalendarCheck } from "lucide-react";
+import { MapPin, Phone, Clock, LocateFixed } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,13 +32,6 @@ export type StudioEntry = {
   openingHours: string;
   latitude: number | null;
   longitude: number | null;
-  /**
-   * Freie Plätze in den nächsten sieben Tagen. Ist nichts frei, steht
-   * hier null und die Zeile entfällt - "0 freie Termine" liest sich wie
-   * "brauchst du gar nicht erst zu fragen", dabei ergibt ein Anruf
-   * häufig trotzdem eine Zeit.
-   */
-  freieTermine: number | null;
 };
 
 /**
@@ -178,7 +171,7 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
           oben auf dieser Seite, der schon interaktiv ist.
 
           Geblieben ist alles, wonach hier gesucht wird: Name, Adresse,
-          Entfernung, Telefon, Öffnungszeiten und die freien Termine.
+          Entfernung, Telefon und Öffnungszeiten.
           ------------------------------------------------------------------ */}
       <section className="py-16 sm:py-20">
         <Container>
@@ -236,18 +229,6 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
                       </span>
                     </li>
 
-                    {/* Die Zahl, die auf dieser Seite tatsächlich gesucht
-                        wird: Kann ich da diese Woche überhaupt hin? */}
-                    {studio.freieTermine !== null && (
-                      <li className="flex items-start gap-2.5">
-                        <CalendarCheck size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
-                        <span>
-                          <strong className="font-semibold">{studio.freieTermine}</strong>{" "}
-                          {studio.freieTermine === 1 ? "freier Termin" : "freie Termine"} in
-                          den nächsten 7 Tagen
-                        </span>
-                      </li>
-                    )}
                   </ul>
 
                   {/* Zur Standortseite statt zur allgemeinen Terminseite:

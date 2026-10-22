@@ -69,6 +69,7 @@ export default async function AdminAuswertungPage({
         herkunftSeite: true,
         herkunftKampagne: true,
         herkunftQuelle: true,
+        herkunftEinstieg: true,
         promotion: { select: { code: true, label: true } },
       },
     }),
@@ -86,6 +87,8 @@ export default async function AdminAuswertungPage({
   const proZiel = new Map<string, number>();
   const proQuelle = new Map<string, number>();
   const proAktion = new Map<string, number>();
+  const proEinstieg = new Map<string, number>();
+  const proSeite = new Map<string, number>();
   let ohneStandort = 0;
   let ohneErreichbarkeit = 0;
   let ohneZiel = 0;
@@ -130,6 +133,14 @@ export default async function AdminAuswertungPage({
         ? `Kampagne ${anfrage.herkunftKampagne}`
         : (anfrage.herkunftQuelle ?? "nicht bekannt");
     proQuelle.set(quelle, (proQuelle.get(quelle) ?? 0) + 1);
+
+    // Welcher Knopf zur Anfrage führte (@/lib/einstieg) - ohne die Seite,
+    // auf der er stand; die steht in der Liste daneben.
+    const einstieg = anfrage.herkunftEinstieg?.split(" · ")[0] ?? "direkt im Formular";
+    proEinstieg.set(einstieg, (proEinstieg.get(einstieg) ?? 0) + 1);
+    // Wo der Knopf stand - oder, ohne Knopf, wo das Formular stand.
+    const seite = anfrage.herkunftEinstieg?.split(" · ")[1] ?? anfrage.herkunftSeite ?? "nicht bekannt";
+    proSeite.set(seite, (proSeite.get(seite) ?? 0) + 1);
 
     if (anfrage.promotion) {
       const name = `${anfrage.promotion.code} - ${anfrage.promotion.label}`;
@@ -211,6 +222,14 @@ export default async function AdminAuswertungPage({
       matt: name === "nicht bekannt" || name === "direkt",
     }))
     .sort((a, b) => b.wert - a.wert);
+
+  const einstiege = [...proEinstieg.entries()]
+    .map(([name, wert]) => ({ schluessel: name, name, wert, matt: name === "direkt im Formular" }))
+    .sort((a, b) => b.wert - a.wert);
+  const seiten = [...proSeite.entries()]
+    .map(([name, wert]) => ({ schluessel: name, name: name === "/" ? "Startseite" : name, wert, matt: name === "nicht bekannt" }))
+    .sort((a, b) => b.wert - a.wert)
+    .slice(0, 12);
 
   const aktionen = [...proAktion.entries()]
     .map(([name, wert]) => ({ schluessel: name, name, wert }))
@@ -301,6 +320,23 @@ export default async function AdminAuswertungPage({
                 </div>
               </details>
             </Panel>
+          </AdminSection>
+
+          <AdminSection
+            title="Was auf der Website zur Anfrage führte"
+            description="Der zuletzt angetippte Buchungsknopf vor der Anfrage - und auf welcher Seite er stand. Erfasst seit Oktober 2026; ältere Anfragen stehen unter „direkt im Formular“."
+            className="mt-8"
+          >
+            <div className="grid gap-4 lg:grid-cols-2">
+              <Panel>
+                <p className="mb-3 text-sm font-semibold">Knopf</p>
+                <Rangbalken beschriftung={`Knopf vor der Anfrage, ${zeitraumText}`} eintraege={einstiege} />
+              </Panel>
+              <Panel>
+                <p className="mb-3 text-sm font-semibold">Seite</p>
+                <Rangbalken beschriftung={`Seite vor der Anfrage, ${zeitraumText}`} eintraege={seiten} />
+              </Panel>
+            </div>
           </AdminSection>
 
           <AdminSection

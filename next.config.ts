@@ -35,6 +35,12 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Seitenübergänge über die View-Transitions-Schnittstelle des Browsers
+  // (siehe src/components/ui/ziel-uebergang.tsx). Experimentell in Next 16;
+  // Browser ohne Unterstützung wechseln die Seite einfach wie bisher.
+  experimental: {
+    viewTransition: true,
+  },
   async headers() {
     return [
       {

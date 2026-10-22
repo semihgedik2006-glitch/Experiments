@@ -9,6 +9,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { probeterminHref, useZiel } from "@/components/ziel/ziel-kontext";
 import { ZIEL_INHALTE, ZONEN, zielInhalt, type ZielWert } from "@/lib/ziel-inhalte";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
+import { ZielUebergang } from "@/components/ui/ziel-uebergang";
 
 /**
  * "Erkennst du dich wieder?" - der Abschnitt, der zum gewählten Ziel spricht.
@@ -139,7 +140,7 @@ export function ZielWelt({ auswahl = true }: { auswahl?: boolean }) {
             </motion.div>
           </AnimatePresence>
 
-          <Schwerpunkt ziel={inhalt.wert} profil={inhalt.profil} titel={inhalt.kurz} />
+          <Schwerpunkt ziel={inhalt.wert} profil={inhalt.profil} titel={inhalt.kurz} uebergang={auswahl} />
         </div>
       </Container>
     </section>
@@ -151,7 +152,18 @@ export function ZielWelt({ auswahl = true }: { auswahl?: boolean }) {
  * gleichzeitig auf den neuen Schwerpunkt - leicht versetzt von oben nach
  * unten, damit das Auge der Bewegung folgen kann.
  */
-function Schwerpunkt({ ziel, profil, titel }: { ziel: ZielWert; profil: number[]; titel: string }) {
+function Schwerpunkt({
+  ziel,
+  profil,
+  titel,
+  uebergang,
+}: {
+  ziel: ZielWert;
+  profil: number[];
+  titel: string;
+  /** Das Motiv gleitet beim Klick auf die Zielseite dorthin mit. */
+  uebergang: boolean;
+}) {
   const wenigerBewegung = useReducedMotion();
   const staerkste = new Set(
     [...profil]
@@ -172,7 +184,9 @@ function Schwerpunkt({ ziel, profil, titel }: { ziel: ZielWert; profil: number[]
           transition={{ duration: 0.3 }}
           className="mx-auto mb-6 h-36 w-36 sm:h-44 sm:w-44"
         >
-          <ZielMotiv ziel={ziel} className="h-full w-full" />
+          <ZielUebergang an={uebergang}>
+            <ZielMotiv ziel={ziel} className="h-full w-full" />
+          </ZielUebergang>
         </motion.div>
       </AnimatePresence>
       <div className="flex items-baseline justify-between gap-4">

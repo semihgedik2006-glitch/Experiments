@@ -2,7 +2,7 @@
 
 import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Check } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import { gebuchtMerken } from "@/lib/einladung";
 import { createBooking } from "@/lib/actions/booking";
@@ -10,32 +10,32 @@ import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
 import { ZIELE, istZiel } from "@/lib/ziel";
 import { ZIEL_EREIGNIS, ZIEL_SPEICHER } from "@/components/ziel/ziel-kontext";
 import { herkunftAusBrowser, type Herkunft } from "@/lib/herkunft";
-import type { TerminTag as DayGroup } from "@/lib/termin-tage";
+import { einstiegLesen } from "@/lib/einstieg";
+import { TAGESZEITEN, TAGESZEIT_SPEICHER, WOCHENTAGE, istTageszeit, tageszeitLabel, wochentagLabel, wunschzeitText } from "@/lib/wunschzeit";
 import type { ActionResult } from "@/lib/actions/newsletter";
 import { erreichbarkeitLabel, spanneLabel, texte, zielLabel, type Sprache } from "@/lib/sprache";
 
 const initialState: ActionResult = { ok: false, message: "" };
 
 export function BookingForm({
-  days,
   studioId,
-  studioName,
   sprache = "de",
 }: {
-  days: DayGroup[];
   /** Der oben gewählte Standort. Er wird mitgeschickt, damit die Anfrage
       auch dann bei einem Studio landet, wenn keine feste Zeit dabei ist. */
   studioId: string;
-  studioName: string;
   /** Auf der englischen Seite "en" - siehe src/lib/sprache.ts. */
   sprache?: Sprache;
 }) {
   const t = texte(sprache);
-  const [selectedDay, setSelectedDay] = useState("");
-  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+  // Der Wunsch statt eines festen Termins - siehe @/lib/wunschzeit.
+  const [tage, setTage] = useState<string[]>([]);
+  const [zeiten, setZeiten] = useState<string[]>([]);
   // "Wir kommen zu zweit" steht außerhalb von `felder`, weil es kein Text
   // ist - ein Kontrollkästchen kennt nur an und aus.
   const [zuZweit, setZuZweit] = useState(false);
+  // Die freiwilligen Felder - zugeklappt, bis jemand sie braucht.
+  const [mehr, setMehr] = useState(false);
   const [state, formAction, pending] = useActionState(createBooking, initialState);
 
   // Die Eingaben liegen in React und nicht nur im Formular.
@@ -86,9 +86,15 @@ export function BookingForm({
         vorgabe = null;
       }
     }
+    try {
+      const zeit = sessionStorage.getItem(TAGESZEIT_SPEICHER);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- einmaliges Übernehmen aus dem Browser
+      if (zeit && istTageszeit(zeit)) setZeiten((bisher) => (bisher.length ? bisher : [zeit]));
+    } catch {
+      // ohne Speicher eben ohne Vorauswahl
+    }
     if (vorgabe && istZiel(vorgabe)) {
       const ziel = vorgabe;
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- einmaliges Übernehmen aus dem Browser
       setFelder((bisher) => (bisher.ziel ? bisher : { ...bisher, ziel }));
     }
   }, []);
@@ -130,6 +136,8 @@ export function BookingForm({
     daten.set("herkunftSeite", herkunft.current.seite ?? "");
     daten.set("herkunftKampagne", herkunft.current.kampagne ?? "");
     daten.set("herkunftQuelle", herkunft.current.quelle ?? "");
+    // Erst beim Absenden gelesen: Es zählt der zuletzt angetippte Knopf.
+    daten.set("herkunftEinstieg", einstiegLesen());
     // Die Sprache mitschicken: Die Meldungen des Servers ("Bitte gib eine
     // gültige E-Mail-Adresse ein") entstehen dort und müssen zur Seite
     // passen, auf der das Formular steht.
@@ -142,8 +150,6 @@ export function BookingForm({
   useEffect(() => {
     if (state.ok) gebuchtMerken();
   }, [state.ok]);
-
-  const activeDay = days.find((d) => d.dateKey === selectedDay);
 
   if (state.ok) {
     return (
@@ -178,109 +184,61 @@ export function BookingForm({
       />
 
       <div className="space-y-6">
-        <p className="text-sm font-semibold">
-          {days.length > 0 ? t.wannPasstNummeriert : t.wannPasst}
-        </p>
+        <p className="text-sm font-semibold">{t.wannPasstNummeriert}</p>
 
-        {days.length > 0 ? (
-          <>
-            <div>
-              <p className="lesebreite mb-3 text-xs text-muted">
-                {sprache === "de"
-                  ? "Such dir einen Tag aus - oder lass die Auswahl leer und schreib unten, wann du kannst."
-                  : "Pick a day - or leave it empty and tell us below when you can make it."}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {days.map((day) => (
-                  <button
-                    key={day.dateKey}
-                    type="button"
-                    onClick={() => {
-                      setSelectedDay(selectedDay === day.dateKey ? "" : day.dateKey);
-                      setSelectedSlotId(null);
-                    }}
-                    className={`rounded-full border px-4 py-2.5 text-sm transition-colors ${
-                      selectedDay === day.dateKey
-                        ? "border-lime bg-lime text-on-lime"
-                        : "border-border hover:border-lime"
-                    }`}
-                  >
-                    {day.dateLabel}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {activeDay && (
-              <div>
-                <p className="lesebreite mb-3 text-xs text-muted">{t.uhrzeitAm(activeDay.dateLabel)}</p>
-                <div className="flex flex-wrap gap-2">
-                  {activeDay.slots.map((slot) => {
-                    // Belegte Zeiten verschwinden nicht mehr, sondern sind
-                    // anwählbar und führen auf die Warteliste. Wer genau um
-                    // 18 Uhr kann und nur die 19 Uhr sieht, geht sonst
-                    // wieder - und wir erfahren nie, dass er da war.
-                    const reicht = slot.frei >= (zuZweit ? 2 : 1);
-                    const gewaehlt = selectedSlotId === slot.id;
-                    return (
-                      <button
-                        key={slot.id}
-                        type="button"
-                        onClick={() => setSelectedSlotId(gewaehlt ? null : slot.id)}
-                        aria-pressed={gewaehlt}
-                        className={`rounded-full border px-4 py-2.5 text-sm transition-colors ${
-                          gewaehlt
-                            ? "border-lime bg-lime text-on-lime"
-                            : reicht
-                              ? "border-border hover:border-lime"
-                              : "border-dashed border-border text-muted hover:border-lime"
-                        }`}
-                      >
-                        {slot.startTime}
-                        {!reicht && (
-                          <span className={`ml-1.5 text-xs ${gewaehlt ? "" : "text-muted"}`}>
-                            {sprache === "de" ? "belegt" : "taken"}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Der Hinweis erscheint erst, wenn eine belegte Zeit
-                    tatsächlich angeklickt ist - vorher wäre er eine Warnung
-                    vor etwas, das noch niemand vorhat. */}
-                {activeDay.slots.some(
-                  (slot) => slot.id === selectedSlotId && slot.frei < (zuZweit ? 2 : 1),
-                ) && (
-                  <p className="mt-3 rounded-lg border border-border bg-surface px-4 py-3 text-xs text-muted">
-                    {sprache === "de"
-                      ? "Diese Zeit ist schon vergeben. Schick die Anfrage trotzdem ab - dann stehst du auf der Warteliste und wir melden uns sofort, wenn dort ein Platz frei wird."
-                      : "That time is taken. Send the request anyway - you will be on the waiting list and we will get in touch the moment a spot opens up."}
-                  </p>
-                )}
-              </div>
-            )}
-          </>
-        ) : (
-          <p className="lesebreite text-sm text-muted">
-            {studioName && sprache === "de"
-              ? `Für ${studioName} sind aktuell keine festen Termine hinterlegt`
-              : studioName
-                ? `No fixed slots are listed for ${studioName} right now`
-                : t.keineTermine}{" "}
+        {/* Wochentage und Tageszeit statt fester Termine: Das Team wird
+            nach den Anfragen eingeteilt, nicht umgekehrt (siehe
+            @/lib/wunschzeit). Beides freiwillig und mehrfach wählbar. */}
+        <div>
+          <p className="lesebreite mb-3 text-xs text-muted">
             {sprache === "de"
-              ? "- schreib uns einfach, wann es dir passt."
-              : "- just tell us when it suits you."}
+              ? "An welchen Tagen passt es dir? Mehrfachauswahl möglich - wir melden uns mit einem passenden Termin."
+              : "Which days suit you? Pick as many as you like - we will get back to you with a matching time."}
           </p>
-        )}
-
-        {/* Hier stand ein Feld "Deine Wunschzeit". Es ist entfallen: Die
-            festen Zeiten stehen darüber zur Auswahl, wann jemand
-            telefonisch erreichbar ist, wird weiter unten gefragt - und wann
-            es tatsächlich passt, klärt sich im Rückruf in zwanzig
-            Sekunden. Übrig blieb ein Feld, das Text sammelte, den niemand
-            auswertete. */}
+          <div className="flex flex-wrap gap-2">
+            {WOCHENTAGE.map((tag) => {
+              const an = tage.includes(tag.wert);
+              return (
+                <button
+                  key={tag.wert}
+                  type="button"
+                  aria-pressed={an}
+                  onClick={() => setTage((bisher) => (an ? bisher.filter((x) => x !== tag.wert) : [...bisher, tag.wert]))}
+                  className={`min-w-14 rounded-full border px-4 py-2.5 text-sm transition-colors ${
+                    an ? "border-lime bg-lime text-on-lime" : "border-border hover:border-lime"
+                  }`}
+                >
+                  {wochentagLabel(sprache, tag.wert)}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div>
+          <p className="lesebreite mb-3 text-xs text-muted">
+            {sprache === "de" ? "Zu welcher Tageszeit?" : "What time of day?"}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {TAGESZEITEN.map((zeit) => {
+              const an = zeiten.includes(zeit.wert);
+              return (
+                <button
+                  key={zeit.wert}
+                  type="button"
+                  aria-pressed={an}
+                  onClick={() => setZeiten((bisher) => (an ? bisher.filter((x) => x !== zeit.wert) : [...bisher, zeit.wert]))}
+                  className={`rounded-full border px-4 py-2.5 text-sm transition-colors ${
+                    an ? "border-lime bg-lime text-on-lime" : "border-border hover:border-lime"
+                  }`}
+                >
+                  {tageszeitLabel(sprache, zeit.wert)}
+                  <span className={`ml-1.5 text-xs ${an ? "" : "text-muted"}`}>{zeit.spanne}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <input type="hidden" name="terminWunsch" value={wunschzeitText(tage, zeiten)} />
 
         {/* Zu zweit ist keine Nebensache, sondern eine Frage der Plätze:
             Zwei Personen brauchen zwei Geräte und zwei Westen. Steht es
@@ -301,7 +259,6 @@ export function BookingForm({
         </label>
       </div>
 
-      <input type="hidden" name="slotId" value={selectedSlotId ?? ""} />
       {/* Der oben gewählte Standort. Bisher stand er nur auf dem Bildschirm
           und wurde nie mitgeschickt - wer kein festes Zeitfenster anklickte,
           dessen Anfrage kam ohne Standort an und musste von Hand zugeordnet
@@ -310,7 +267,7 @@ export function BookingForm({
 
       <div>
         <p className="mb-3 text-sm font-semibold">
-          {days.length > 0 ? t.deineDatenNummeriert : t.deineDaten}
+          {t.deineDatenNummeriert}
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <input
@@ -343,58 +300,8 @@ export function BookingForm({
             placeholder={t.telefon}
             className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
           />
-          {/* Der Platzhalter war "Nachricht (optional)" - und entsprechend
-              kam meist nichts oder "Bitte um Rückruf" zurück. Ein Feld
-              bekommt die Antworten, nach denen es fragt: Hier steht jetzt,
-              was im Studio tatsächlich etwas ändert.
-
-              Bewusst NICHT nach Beschwerden oder Vorerkrankungen gefragt -
-              das sind besonders geschützte Gesundheitsdaten und gehören in
-              die Anamnese vor Ort, nicht in ein Webformular. Begründung in
-              src/lib/ziel.ts. */}
-          <label className="sm:col-span-2">
-            <span className="text-sm">{t.nachrichtLabel}</span>
-            <textarea
-              name="message"
-              rows={3}
-              maxLength={1000}
-              value={felder.message}
-              onChange={aendern("message")}
-              placeholder={t.nachrichtPlatzhalter}
-              className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
-            />
-          </label>
         </div>
 
-        {/* Freiwillig, aber die nützlichste Angabe im ganzen Formular: Wer
-            abnehmen will, bekommt ein anderes erstes Gespräch als jemand,
-            der seinen Rücken stärken möchte. Über alle Anfragen zusammen
-            zeigt die Verteilung außerdem, womit geworben werden sollte. */}
-        <fieldset className="mt-6">
-          <legend className="text-sm font-medium">{t.zielFrage}</legend>
-          <p className="mt-1 text-xs text-muted">
-            {sprache === "de"
-              ? "Freiwillig - hilft uns, das erste Gespräch auf dich abzustimmen."
-              : "Optional - it helps us tailor the first conversation to you."}
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {ZIELE.map((option) => (
-              <label key={option.wert} className="cursor-pointer">
-                <input
-                  type="radio"
-                  name="ziel"
-                  value={option.wert}
-                  checked={felder.ziel === option.wert}
-                  onChange={aendern("ziel")}
-                  className="peer sr-only"
-                />
-                <span className="block rounded-full border border-border px-4 py-2.5 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-lime">
-                  {zielLabel(sprache, option.wert)}
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
       </div>
 
       {/* Pflichtangabe - als einzige neben Name, E-Mail und Telefon.
@@ -408,7 +315,7 @@ export function BookingForm({
           es eine Auswahl ist und wie viele Möglichkeiten es gibt. */}
       <fieldset>
         <legend className="text-sm font-semibold">
-          {days.length > 0 ? t.wannErreichbarNummeriert : t.wannErreichbar}
+          {t.wannErreichbarNummeriert}
         </legend>
         <p className="lesebreite mt-1.5 text-xs text-muted">
           {sprache === "de"
@@ -441,29 +348,115 @@ export function BookingForm({
         </div>
       </fieldset>
 
-      {/* Freiwillig und deshalb schmal: Wer keinen Code hat, soll nicht
-          das Gefühl bekommen, ihm fehle etwas. Ein falscher Code wird beim
-          Absenden benannt statt stillschweigend verworfen - sonst käme
-          jemand mit einer Erwartung ins Studio, von der dort niemand
-          weiß. */}
-      {/* Ein Feld für beide Arten von Code. Für den, der ihn eingibt, ist
-          es "der Code, den ich bekommen habe" - ihn zwischen zwei Feldern
-          wählen zu lassen wäre eine Hürde ohne Nutzen. */}
-      <label className="block max-w-xs">
-        <span className="text-sm">{t.codeLabel}</span>
-        <span className="mt-0.5 block text-xs text-muted">{t.codeHinweis}</span>
-        <input
-          type="text"
-          name="aktionsCode"
-          maxLength={40}
-          autoComplete="off"
-          autoCapitalize="characters"
-          value={felder.aktionsCode}
-          onChange={aendern("aktionsCode")}
-          placeholder={t.codePlatzhalter}
-          className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm uppercase outline-none placeholder:normal-case focus:border-lime"
-        />
-      </label>
+
+      {/* Alles Freiwillige hinter einem Knopf: Pflicht sind nur Daten und
+          Erreichbarkeit. Vorher stand das Formular mit Nachricht, Ziel und
+          Code in voller Länge da - auf dem Handy drei Bildschirme bis zum
+          Absenden. Die Felder bleiben im Formular (nur verborgen), ein
+          vorausgewähltes Ziel geht also auch zugeklappt mit. */}
+      <div>
+        <button
+          type="button"
+          aria-expanded={mehr}
+          aria-controls="mehr-angaben"
+          onClick={() => setMehr((offen) => !offen)}
+          className="flex w-full items-center justify-between gap-3 rounded-lg border border-dashed border-border px-4 py-3 text-left text-sm transition-colors hover:border-lime"
+        >
+          <span>
+            <span className="font-medium">
+              {sprache === "de" ? "Mehr angeben" : "Add more"}
+            </span>{" "}
+            <span className="text-muted">
+              {sprache === "de" ? "(freiwillig: Ziel, Nachricht, Aktionscode)" : "(optional: goal, message, promo code)"}
+            </span>
+            {!mehr && felder.ziel && (
+              <span className="mt-0.5 block text-xs text-accent">
+                {sprache === "de" ? "Ziel" : "Goal"}: {zielLabel(sprache, felder.ziel)}
+              </span>
+            )}
+          </span>
+          <ChevronDown
+            size={16}
+            aria-hidden
+            className={`shrink-0 text-muted transition-transform ${mehr ? "rotate-180" : ""}`}
+          />
+        </button>
+        <div id="mehr-angaben" hidden={!mehr} className="mt-5 space-y-6">
+        {/* Freiwillig, aber die nützlichste Angabe im ganzen Formular: Wer
+            abnehmen will, bekommt ein anderes erstes Gespräch als jemand,
+            der seinen Rücken stärken möchte. Über alle Anfragen zusammen
+            zeigt die Verteilung außerdem, womit geworben werden sollte. */}
+        <fieldset>
+          <legend className="text-sm font-medium">{t.zielFrage}</legend>
+          <p className="mt-1 text-xs text-muted">
+            {sprache === "de"
+              ? "Freiwillig - hilft uns, das erste Gespräch auf dich abzustimmen."
+              : "Optional - it helps us tailor the first conversation to you."}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {ZIELE.map((option) => (
+              <label key={option.wert} className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="ziel"
+                  value={option.wert}
+                  checked={felder.ziel === option.wert}
+                  onChange={aendern("ziel")}
+                  className="peer sr-only"
+                />
+                <span className="block rounded-full border border-border px-4 py-2.5 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-lime">
+                  {zielLabel(sprache, option.wert)}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        {/* Der Platzhalter war "Nachricht (optional)" - und entsprechend
+            kam meist nichts oder "Bitte um Rückruf" zurück. Ein Feld
+            bekommt die Antworten, nach denen es fragt: Hier steht jetzt,
+            was im Studio tatsächlich etwas ändert.
+
+            Bewusst NICHT nach Beschwerden oder Vorerkrankungen gefragt -
+            das sind besonders geschützte Gesundheitsdaten und gehören in
+            die Anamnese vor Ort, nicht in ein Webformular. Begründung in
+            src/lib/ziel.ts. */}
+        <label className="block">
+          <span className="text-sm">{t.nachrichtLabel}</span>
+          <textarea
+            name="message"
+            rows={3}
+            maxLength={1000}
+            value={felder.message}
+            onChange={aendern("message")}
+            placeholder={t.nachrichtPlatzhalter}
+            className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
+          />
+        </label>
+        {/* Freiwillig und deshalb schmal: Wer keinen Code hat, soll nicht
+            das Gefühl bekommen, ihm fehle etwas. Ein falscher Code wird beim
+            Absenden benannt statt stillschweigend verworfen - sonst käme
+            jemand mit einer Erwartung ins Studio, von der dort niemand
+            weiß. */}
+        {/* Ein Feld für beide Arten von Code. Für den, der ihn eingibt, ist
+            es "der Code, den ich bekommen habe" - ihn zwischen zwei Feldern
+            wählen zu lassen wäre eine Hürde ohne Nutzen. */}
+        <label className="block max-w-xs">
+          <span className="text-sm">{t.codeLabel}</span>
+          <span className="mt-0.5 block text-xs text-muted">{t.codeHinweis}</span>
+          <input
+            type="text"
+            name="aktionsCode"
+            maxLength={40}
+            autoComplete="off"
+            autoCapitalize="characters"
+            value={felder.aktionsCode}
+            onChange={aendern("aktionsCode")}
+            placeholder={t.codePlatzhalter}
+            className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm uppercase outline-none placeholder:normal-case focus:border-lime"
+          />
+        </label>
+        </div>
+      </div>
 
       {state.message && !state.ok && (
         <motion.p

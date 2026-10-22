@@ -26,8 +26,8 @@ export const metadata: Metadata = {
 const VORHER = [
   {
     icon: CalendarCheck,
-    titel: "Termin wählen",
-    text: "Online in einer Minute – kostenlos und unverbindlich.",
+    titel: "Wunschzeit nennen",
+    text: "Online in einer Minute – wir melden uns mit einem passenden Termin.",
   },
   {
     icon: Droplets,

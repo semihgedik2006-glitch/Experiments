@@ -42,6 +42,11 @@ export type Herkunft = {
   quelle: string | null;
 };
 
+/** Der Knopf, der zur Anfrage geführt hat (@/lib/einstieg) - gesäubert. */
+export function einstiegAusFormular(formData: FormData): string | null {
+  return saeubern(String(formData.get("herkunftEinstieg") ?? ""));
+}
+
 /**
  * Liest die Herkunft im Browser aus. Wird beim Aufbau des Formulars
  * einmal aufgerufen - und nicht beim Absenden, weil bis dahin schon

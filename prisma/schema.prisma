@@ -381,6 +381,11 @@ model Booking {
   herkunftSeite    String?
   herkunftKampagne String?
   herkunftQuelle   String?
+  /// Welcher Knopf zur Anfrage geführt hat ("Handy-Leiste", "Pop-up",
+  /// "Ziel-Check", ...) und auf welcher Seite er stand - siehe
+  /// src/lib/einstieg.ts. Leer, wenn direkt im Formular angefragt wurde,
+  /// ohne vorher einen Buchungsknopf anzutippen.
+  herkunftEinstieg String?
 
   /// Wann das Studio über diese Anfrage informiert wurde. Verhindert eine
   /// zweite Benachrichtigung, wenn etwas wiederholt wird.

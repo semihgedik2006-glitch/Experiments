@@ -159,3 +159,8 @@ export function erledigt(welche: Einladung): void {
 export function gebuchtMerken(): void {
   schreiben(GEBUCHT);
 }
+
+/** Wurde in diesem Besuch schon angefragt? */
+export function schonGebucht(): boolean {
+  return lesen(GEBUCHT) !== null;
+}

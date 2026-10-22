@@ -5,7 +5,6 @@ import { MapPin, LocateFixed } from "lucide-react";
 import { motion } from "motion/react";
 import { BookingForm } from "@/components/booking/booking-form";
 import { allStudiosLocatable, anyStudioLocatable, sortStudiosByDistance } from "@/lib/geo";
-import type { TerminTag as DayGroup } from "@/lib/termin-tage";
 import { texte, type Sprache } from "@/lib/sprache";
 
 /** Der Zustand ändert sich nie - useSyncExternalStore dient hier nur dazu,
@@ -24,12 +23,10 @@ type StudioOption = {
 
 export function BookingFlow({
   studios,
-  slotsByStudio,
   sprache = "de",
   standortErstImBild = false,
 }: {
   studios: StudioOption[];
-  slotsByStudio: Record<string, DayGroup[]>;
   /** Auf der englischen Seite "en" - siehe src/lib/sprache.ts. */
   sprache?: Sprache;
   /**
@@ -243,15 +240,10 @@ export function BookingFlow({
         </div>
       )}
 
-      {/* Der Standort geht als verstecktes Feld mit ins Formular. Ohne ihn
-          hing eine Anfrage nur dann an einem Studio, wenn zusätzlich eine
-          feste Zeit angeklickt wurde. */}
+      {/* Der Standort geht als verstecktes Feld mit ins Formular - so landet
+          die Anfrage beim gewählten Studio. */}
       <BookingForm
-        days={slotsByStudio[selectedStudioId] ?? []}
         studioId={selectedStudioId}
-        studioName={
-          orderedStudios.find((studio) => studio.id === selectedStudioId)?.name ?? ""
-        }
         sprache={sprache}
       />
     </div>

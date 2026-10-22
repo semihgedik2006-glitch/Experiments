@@ -6,8 +6,7 @@ import { ImpulsMotiv } from "@/components/ui/impuls-motiv";
 import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { GoalPickerEn } from "@/components/ziel/goal-picker-en";
-import { getStudios, getSlotsMitBelegung } from "@/lib/data";
-import { tageJeStudio } from "@/lib/termin-tage";
+import { getStudios } from "@/lib/data";
 import { legalConfig } from "@/lib/legal-config";
 import { siteConfig } from "@/lib/site-config";
 
@@ -61,11 +60,7 @@ const argumente = [
 ];
 
 export default async function EnglishPage() {
-  const [studios, slots] = await Promise.all([getStudios(), getSlotsMitBelegung()]);
-  // Die Sprache auch hier: Ohne sie stünden auf der englischen Seite
-  // deutsche Tagesabkürzungen ("Fr., 12.09.") - gemessen als einziger
-  // deutscher Rest im Formular.
-  const slotsByStudio = tageJeStudio(slots, "en");
+  const studios = await getStudios();
 
   return (
     <>
@@ -235,7 +230,7 @@ export default async function EnglishPage() {
                 Englisch - samt der Meldungen, die vom Server kommen. Zwei
                 getrennte Formulare wären zwei Stellen, an denen eine
                 Änderung vergessen wird. */}
-            <BookingFlow studios={studios} slotsByStudio={slotsByStudio} sprache="en" />
+            <BookingFlow studios={studios} sprache="en" />
           </div>
 
           <p className="mt-10 border-t border-border pt-6 text-sm text-muted">

@@ -17,7 +17,7 @@ import { neuerVerwaltungsSchluessel } from "@/lib/termin-angaben";
 import { istErreichbarkeit } from "@/lib/erreichbarkeit";
 import { istZiel, zielText } from "@/lib/ziel";
 import { aktionscodePruefen } from "@/lib/aktionscode";
-import { herkunftAusFormular } from "@/lib/herkunft";
+import { einstiegAusFormular, herkunftAusFormular } from "@/lib/herkunft";
 import { passtNoch } from "@/lib/kapazitaet";
 import type { ActionResult } from "@/lib/actions/newsletter";
 import { spracheAusText, texte } from "@/lib/sprache";
@@ -58,6 +58,9 @@ export async function createBooking(
   // wird stillschweigend verworfen. Er kommt aus einer Auswahl, aber ein
   // Formular lässt sich auch ohne Browser abschicken - ungeprüft stünde
   // hier beliebiger Text und liefe später in die Auswertung.
+  // Der Wunsch statt eines festen Termins ("Mo, Mi · Nach Feierabend"),
+  // zusammengesetzt im Formular (@/lib/wunschzeit). Freiwillig.
+  const terminWunsch = String(formData.get("terminWunsch") ?? "").trim().slice(0, 200) || null;
   const zielRoh = String(formData.get("ziel") ?? "").trim();
   const ziel = istZiel(zielRoh) ? zielRoh : null;
 
@@ -185,6 +188,7 @@ export async function createBooking(
       email,
       phone,
       message: message || null,
+      terminWunsch,
       ziel,
       erreichbarkeit,
       zuZweit,
@@ -194,6 +198,7 @@ export async function createBooking(
       herkunftSeite: herkunft.seite,
       herkunftKampagne: herkunft.kampagne,
       herkunftQuelle: herkunft.quelle,
+      herkunftEinstieg: einstiegAusFormular(formData),
       manageToken: neuerVerwaltungsSchluessel(),
     },
     include: { slot: true, studio: { select: { name: true, email: true } } },
@@ -217,7 +222,9 @@ export async function createBooking(
       antwortAn: buchung.studio?.email ?? null,
       terminZeile: buchung.slot
         ? `${formatDate(buchung.slot.date)} um ${buchung.slot.startTime} Uhr`
-        : "kein fester Termin - individuell abzustimmen",
+        : buchung.terminWunsch
+          ? `Wunsch: ${buchung.terminWunsch} - Termin abstimmen`
+          : "kein Wunsch angegeben - Termin abstimmen",
       // Als Beschriftung, nicht als gespeicherter Wert: In der Mail soll
       // "Rücken stärken" stehen und nicht "ruecken".
       ziel: buchung.ziel ? zielText(buchung.ziel) : null,

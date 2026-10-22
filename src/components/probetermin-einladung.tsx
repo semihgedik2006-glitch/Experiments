@@ -39,15 +39,7 @@ import {
 
 type StudioWahl = { id: string; name: string };
 
-export function ProbeterminEinladung({
-  naechsterTermin,
-  freieDieseWoche,
-  studios,
-}: {
-  naechsterTermin: string | null;
-  freieDieseWoche: number | null;
-  studios: StudioWahl[];
-}) {
+export function ProbeterminEinladung({ studios }: { studios: StudioWahl[] }) {
   const pfad = usePathname();
   const [ausstiegOffen, setAusstiegOffen] = useState(false);
 
@@ -55,8 +47,6 @@ export function ProbeterminEinladung({
     <>
       <AusstiegEinladung
         pfad={pfad}
-        naechsterTermin={naechsterTermin}
-        freieDieseWoche={freieDieseWoche}
         onOffen={setAusstiegOffen}
       />
       <MitteEinladung pfad={pfad} studios={studios} gesperrt={ausstiegOffen} />
@@ -76,13 +66,9 @@ const WISCH_SCHWELLE = 55;
 
 function AusstiegEinladung({
   pfad,
-  naechsterTermin,
-  freieDieseWoche,
   onOffen,
 }: {
   pfad: string;
-  naechsterTermin: string | null;
-  freieDieseWoche: number | null;
   onOffen: (offen: boolean) => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -236,23 +222,20 @@ function AusstiegEinladung({
             </span>
           </h2>
 
-          {/* Der nächste echte Termin aus dem Kalender. Keine erfundene
-              Dringlichkeit, kein Countdown - die Zahl stimmt, und genau
-              das ist ihre Wirkung. */}
-          {naechsterTermin && (
-            <p
-              className="einladung-stufe mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-2xl border border-border bg-surface px-4 py-3 text-sm"
-              style={stufe(4)}
-            >
-              <span className="einladung-live" aria-hidden />
-              <CalendarClock size={16} className="shrink-0 text-accent" aria-hidden />
-              <span className="text-muted">Nächster freier Termin:</span>
-              <span className="text-balance text-center font-semibold">{naechsterTermin}</span>
-            </p>
-          )}
+          {/* Statt eines festen Termins: wie es läuft. Die Studios planen
+              ihr Team nach den Anfragen (siehe @/lib/wunschzeit). */}
+          <p
+            className="einladung-stufe mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-2xl border border-border bg-surface px-4 py-3 text-center text-sm"
+            style={stufe(4)}
+          >
+            <CalendarClock size={16} className="shrink-0 text-accent" aria-hidden />
+            <span className="text-muted">Nenn uns deine Wunschzeit -</span>
+            <span className="font-semibold">wir melden uns mit einem passenden Termin.</span>
+          </p>
 
           <Link
             href="/probetermin"
+            data-einstieg="Pop-up"
             onClick={schliessen}
             className="einladung-stufe einladung-knopf mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-lime px-6 py-4 text-sm font-bold text-on-lime"
             style={stufe(5)}
@@ -263,7 +246,6 @@ function AusstiegEinladung({
 
           <p className="einladung-stufe mt-3 text-center text-xs text-muted" style={stufe(6)}>
             Kostenlos und unverbindlich
-            {freieDieseWoche ? ` · ${freieDieseWoche} freie Termine diese Woche` : ""}
           </p>
 
           <button
@@ -357,6 +339,7 @@ function MitteEinladung({
     daten.set("herkunftSeite", pfad);
     daten.set("herkunftKampagne", "Einladung Mitte");
     daten.set("herkunftQuelle", "");
+    daten.set("herkunftEinstieg", `Pop-up (Formular) · ${pfad}`);
     daten.set("sprache", "de");
     startTransition(() => formAction(daten));
   }

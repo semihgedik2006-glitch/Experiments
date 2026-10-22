@@ -7,15 +7,14 @@ import { BeweisLeiste } from "@/components/beweis-leiste";
 import { TrustBar } from "@/components/trust-bar";
 import { ZielProvider } from "@/components/ziel/ziel-kontext";
 import { ZielAbschnitte } from "@/components/ziel/ziel-abschnitte";
-import { zielAbschnitteBauen, zeitspanneAus } from "@/components/ziel/ziel-abschnitte-bauen";
+import { zielAbschnitteBauen } from "@/components/ziel/ziel-abschnitte-bauen";
 import { TerminHinweise } from "@/components/booking/termin-hinweise";
 import { ZielKopf } from "@/components/ziel/ziel-kopf";
 import { getToggles } from "@/lib/site-toggles";
-import { getSlotsMitBelegung, getStudios } from "@/lib/data";
-import { tageJeStudio } from "@/lib/termin-tage";
-import { beweiseHolen } from "@/lib/beweise";
+import { getStudios } from "@/lib/data";
 import { siteConfig } from "@/lib/site-config";
 import { ZIEL_INHALTE, seitenBeschreibung, zielInhalt } from "@/lib/ziel-inhalte";
+import { BrotkrumenJsonLd, FaqJsonLd } from "@/components/structured-data";
 
 /**
  * Eine eigene Seite je Ziel: /ziel/ruecken, /ziel/abnehmen, ...
@@ -61,22 +60,20 @@ export default async function ZielSeite({ params }: { params: Promise<{ slug: st
   const inhalt = zielInhalt(slug);
   if (!inhalt) notFound();
 
-  const [toggles, studios, slots, beweise] = await Promise.all([
-    getToggles(),
-    getStudios(),
-    getSlotsMitBelegung(),
-    beweiseHolen(),
-  ]);
-  const slotsByStudio = tageJeStudio(slots);
+  const [toggles, studios] = await Promise.all([getToggles(), getStudios()]);
 
   return (
     <ZielProvider fest={inhalt.wert}>
+      {/* Die häufigen Fragen stehen auch auf dieser Seite (im Abschnitt
+          FAQ, nach Ziel sortiert) - deshalb auch hier als Daten. */}
+      <BrotkrumenJsonLd pfad={[{ name: inhalt.kurz, href: `/ziel/${inhalt.wert}` }]} />
+      <FaqJsonLd />
       <ZielKopf inhalt={inhalt} anzahlStudios={studios.length} />
       <ZielAbschnitte
         abschnitte={zielAbschnitteBauen({
           anzahlStudios: studios.length,
           toggles,
-          zeitspanne: zeitspanneAus(beweise.frueheste, beweise.spaeteste),
+          zeitspanne: null,
           auswahl: false,
           instagram: null,
           studioListe: false,
@@ -96,7 +93,7 @@ export default async function ZielSeite({ params }: { params: Promise<{ slug: st
             </p>
           </Reveal>
           <BeweisLeiste className="mb-10" />
-          <BookingFlow studios={studios} slotsByStudio={slotsByStudio} standortErstImBild />
+          <BookingFlow studios={studios} standortErstImBild />
           <Reveal className="mt-12 border-t border-border pt-8">
             <TrustBar />
           </Reveal>
