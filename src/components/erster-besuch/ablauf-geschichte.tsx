@@ -27,25 +27,22 @@ import type { Schritt } from "@/lib/ablauf";
  * sichtbar schneller. Der Ablauf selbst kommt aus lib/ablauf.ts, damit er
  * hier und auf /ems-training nicht auseinanderläuft.
  *
- * FOTOS: Eine Station mit Foto zeigt es groß, alle anderen tragen ihr
- * Symbol. Sobald Fotos aus dem Studio da sind, reicht ein Eintrag in
- * FOTOS - die Seite ist ohne sie vollständig.
+ * FOTOS: Jede Station zeigt ihr Foto aus einem Körperformen-Studio
+ * (Schritt.foto in lib/ablauf.ts). Eine Station ohne Foto trägt nur ihr
+ * Symbol - die Seite ist auch ohne sie vollständig.
  */
 
 const SYMBOLE: LucideIcon[] = [Handshake, Shirt, SlidersHorizontal, Zap, MessagesSquare];
 
-/** Fotos je Station (Index wie in ABLAUF_EINHEIT, 5 = "Dein Plan"). */
-const FOTOS: Record<number, { src: string; alt: string } | undefined> = {
-  4: {
-    src: "/bilder/start/studio-high-five.jpg",
-    alt: "Ein Körperformen-Trainer gibt einem Kunden im EMS-Anzug nach dem Training ein High Five.",
-  },
-};
 
 const PLAN: Schritt = {
   step: "Dein Plan & deine Mitgliedschaft",
   text: "Zum Schluss besprecht ihr, wie es weitergeht: dein Trainingsplan und die Mitgliedschaft, die zu deinem Ziel passt. Wenn es dir gefallen hat, kannst du direkt loslegen.",
   duration: "",
+  foto: {
+    src: "/bilder/studio/team-jubel.jpg",
+    alt: "Zwei Körperformen-Trainer und ein Kunde im EMS-Anzug jubeln gemeinsam im Studio.",
+  },
 };
 
 export function AblaufGeschichte({ schritte }: { schritte: Schritt[] }) {
@@ -113,7 +110,7 @@ export function AblaufGeschichte({ schritte }: { schritte: Schritt[] }) {
 
             {alle.map((schritt, i) => {
               const Symbol = SYMBOLE[i] ?? ClipboardCheck;
-              const foto = FOTOS[i];
+              const foto = schritt.foto;
               return (
                 <motion.li
                   key={schritt.step}
