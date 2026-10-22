@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { EINSTIEG_KNOEPFE, einstiegMerken } from "@/lib/einstieg";
 
 /** Die Knöpfe, die zum Probetraining führen oder es abschicken. */
 const KNOEPFE = ".knopf-glanz, .knopf-glanz-dauer, .einladung-knopf";
@@ -8,6 +9,9 @@ const KNOEPFE = ".knopf-glanz, .knopf-glanz-dauer, .einladung-knopf";
 /**
  * Ein kurzer Lime-Ring beim Antippen eines Buchungsknopfs (CSS:
  * .klick-impuls in globals.css).
+ *
+ * Derselbe Baustein merkt sich, welcher Buchungsknopf angeklickt wurde
+ * (@/lib/einstieg) - deshalb steht er auf allen Seiten mit Formular.
  *
  * Eine Stelle für alle Knöpfe statt eines Effekts in jedem: Die Knöpfe
  * sind teils Links, teils Formularknöpfe, teils vom Server gerendert -
@@ -27,8 +31,18 @@ export function KlickImpuls() {
       knopf.classList.add("klick-impuls");
       knopf.addEventListener("animationend", () => knopf.classList.remove("klick-impuls"), { once: true });
     };
+    // Nebenbei: welcher Knopf zur Anfrage führt (@/lib/einstieg). Über
+    // "click", damit auch die Eingabetaste zählt.
+    const beimKlick = (ereignis: MouseEvent) => {
+      const einstieg = (ereignis.target as Element | null)?.closest(EINSTIEG_KNOEPFE);
+      if (einstieg) einstiegMerken(einstieg);
+    };
     document.addEventListener("pointerdown", beimTippen);
-    return () => document.removeEventListener("pointerdown", beimTippen);
+    document.addEventListener("click", beimKlick, { capture: true });
+    return () => {
+      document.removeEventListener("pointerdown", beimTippen);
+      document.removeEventListener("click", beimKlick, { capture: true });
+    };
   }, []);
   return null;
 }

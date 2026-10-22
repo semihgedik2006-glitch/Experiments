@@ -10,6 +10,7 @@ import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
 import { ZIELE, istZiel } from "@/lib/ziel";
 import { ZIEL_EREIGNIS, ZIEL_SPEICHER } from "@/components/ziel/ziel-kontext";
 import { herkunftAusBrowser, type Herkunft } from "@/lib/herkunft";
+import { einstiegLesen } from "@/lib/einstieg";
 import { TAGESZEITEN, TAGESZEIT_SPEICHER, WOCHENTAGE, istTageszeit, tageszeitLabel, wochentagLabel, wunschzeitText } from "@/lib/wunschzeit";
 import type { ActionResult } from "@/lib/actions/newsletter";
 import { erreichbarkeitLabel, spanneLabel, texte, zielLabel, type Sprache } from "@/lib/sprache";
@@ -135,6 +136,8 @@ export function BookingForm({
     daten.set("herkunftSeite", herkunft.current.seite ?? "");
     daten.set("herkunftKampagne", herkunft.current.kampagne ?? "");
     daten.set("herkunftQuelle", herkunft.current.quelle ?? "");
+    // Erst beim Absenden gelesen: Es zählt der zuletzt angetippte Knopf.
+    daten.set("herkunftEinstieg", einstiegLesen());
     // Die Sprache mitschicken: Die Meldungen des Servers ("Bitte gib eine
     // gültige E-Mail-Adresse ein") entstehen dort und müssen zur Seite
     // passen, auf der das Formular steht.

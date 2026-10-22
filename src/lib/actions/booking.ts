@@ -17,7 +17,7 @@ import { neuerVerwaltungsSchluessel } from "@/lib/termin-angaben";
 import { istErreichbarkeit } from "@/lib/erreichbarkeit";
 import { istZiel, zielText } from "@/lib/ziel";
 import { aktionscodePruefen } from "@/lib/aktionscode";
-import { herkunftAusFormular } from "@/lib/herkunft";
+import { einstiegAusFormular, herkunftAusFormular } from "@/lib/herkunft";
 import { passtNoch } from "@/lib/kapazitaet";
 import type { ActionResult } from "@/lib/actions/newsletter";
 import { spracheAusText, texte } from "@/lib/sprache";
@@ -198,6 +198,7 @@ export async function createBooking(
       herkunftSeite: herkunft.seite,
       herkunftKampagne: herkunft.kampagne,
       herkunftQuelle: herkunft.quelle,
+      herkunftEinstieg: einstiegAusFormular(formData),
       manageToken: neuerVerwaltungsSchluessel(),
     },
     include: { slot: true, studio: { select: { name: true, email: true } } },

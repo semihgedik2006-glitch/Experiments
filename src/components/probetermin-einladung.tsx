@@ -235,6 +235,7 @@ function AusstiegEinladung({
 
           <Link
             href="/probetermin"
+            data-einstieg="Pop-up"
             onClick={schliessen}
             className="einladung-stufe einladung-knopf mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-lime px-6 py-4 text-sm font-bold text-on-lime"
             style={stufe(5)}
@@ -338,6 +339,7 @@ function MitteEinladung({
     daten.set("herkunftSeite", pfad);
     daten.set("herkunftKampagne", "Einladung Mitte");
     daten.set("herkunftQuelle", "");
+    daten.set("herkunftEinstieg", `Pop-up (Formular) · ${pfad}`);
     daten.set("sprache", "de");
     startTransition(() => formAction(daten));
   }

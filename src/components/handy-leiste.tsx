@@ -82,6 +82,7 @@ export function HandyLeiste() {
           <div className="flex items-center gap-2">
             <Link
               href={ziel}
+              data-einstieg="Handy-Leiste"
               className="knopf-glanz flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-lime px-5 text-sm font-bold text-on-lime"
             >
               Kostenloses Probetraining
