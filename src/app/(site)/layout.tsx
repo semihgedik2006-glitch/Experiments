@@ -7,6 +7,7 @@ import { getToggles } from "@/lib/site-toggles";
 import { erfolgeVorhanden } from "@/lib/kundenstimmen";
 import { getStudios } from "@/lib/data";
 import { ProbeterminEinladung } from "@/components/probetermin-einladung";
+import { HandyLeiste } from "@/components/handy-leiste";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const toggles = await getToggles();
@@ -60,6 +61,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
       {/* Wann sie erscheinen darf, entscheidet sie selbst - die Regeln
           stehen in lib/einladung.ts. Hier steht sie nur bereit. */}
+      {/* Auf dem Handy: Probetraining und Anrufen immer im Daumenbereich. */}
+      <HandyLeiste />
       <ProbeterminEinladung
         studios={studios.map((s) => ({ id: s.id, name: s.name }))}
       />

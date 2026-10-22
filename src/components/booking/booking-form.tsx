@@ -2,7 +2,7 @@
 
 import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Check } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import { gebuchtMerken } from "@/lib/einladung";
 import { createBooking } from "@/lib/actions/booking";
@@ -33,6 +33,8 @@ export function BookingForm({
   // "Wir kommen zu zweit" steht außerhalb von `felder`, weil es kein Text
   // ist - ein Kontrollkästchen kennt nur an und aus.
   const [zuZweit, setZuZweit] = useState(false);
+  // Die freiwilligen Felder - zugeklappt, bis jemand sie braucht.
+  const [mehr, setMehr] = useState(false);
   const [state, formAction, pending] = useActionState(createBooking, initialState);
 
   // Die Eingaben liegen in React und nicht nur im Formular.
@@ -295,58 +297,8 @@ export function BookingForm({
             placeholder={t.telefon}
             className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
           />
-          {/* Der Platzhalter war "Nachricht (optional)" - und entsprechend
-              kam meist nichts oder "Bitte um Rückruf" zurück. Ein Feld
-              bekommt die Antworten, nach denen es fragt: Hier steht jetzt,
-              was im Studio tatsächlich etwas ändert.
-
-              Bewusst NICHT nach Beschwerden oder Vorerkrankungen gefragt -
-              das sind besonders geschützte Gesundheitsdaten und gehören in
-              die Anamnese vor Ort, nicht in ein Webformular. Begründung in
-              src/lib/ziel.ts. */}
-          <label className="sm:col-span-2">
-            <span className="text-sm">{t.nachrichtLabel}</span>
-            <textarea
-              name="message"
-              rows={3}
-              maxLength={1000}
-              value={felder.message}
-              onChange={aendern("message")}
-              placeholder={t.nachrichtPlatzhalter}
-              className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
-            />
-          </label>
         </div>
 
-        {/* Freiwillig, aber die nützlichste Angabe im ganzen Formular: Wer
-            abnehmen will, bekommt ein anderes erstes Gespräch als jemand,
-            der seinen Rücken stärken möchte. Über alle Anfragen zusammen
-            zeigt die Verteilung außerdem, womit geworben werden sollte. */}
-        <fieldset className="mt-6">
-          <legend className="text-sm font-medium">{t.zielFrage}</legend>
-          <p className="mt-1 text-xs text-muted">
-            {sprache === "de"
-              ? "Freiwillig - hilft uns, das erste Gespräch auf dich abzustimmen."
-              : "Optional - it helps us tailor the first conversation to you."}
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {ZIELE.map((option) => (
-              <label key={option.wert} className="cursor-pointer">
-                <input
-                  type="radio"
-                  name="ziel"
-                  value={option.wert}
-                  checked={felder.ziel === option.wert}
-                  onChange={aendern("ziel")}
-                  className="peer sr-only"
-                />
-                <span className="block rounded-full border border-border px-4 py-2.5 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-lime">
-                  {zielLabel(sprache, option.wert)}
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
       </div>
 
       {/* Pflichtangabe - als einzige neben Name, E-Mail und Telefon.
@@ -393,29 +345,115 @@ export function BookingForm({
         </div>
       </fieldset>
 
-      {/* Freiwillig und deshalb schmal: Wer keinen Code hat, soll nicht
-          das Gefühl bekommen, ihm fehle etwas. Ein falscher Code wird beim
-          Absenden benannt statt stillschweigend verworfen - sonst käme
-          jemand mit einer Erwartung ins Studio, von der dort niemand
-          weiß. */}
-      {/* Ein Feld für beide Arten von Code. Für den, der ihn eingibt, ist
-          es "der Code, den ich bekommen habe" - ihn zwischen zwei Feldern
-          wählen zu lassen wäre eine Hürde ohne Nutzen. */}
-      <label className="block max-w-xs">
-        <span className="text-sm">{t.codeLabel}</span>
-        <span className="mt-0.5 block text-xs text-muted">{t.codeHinweis}</span>
-        <input
-          type="text"
-          name="aktionsCode"
-          maxLength={40}
-          autoComplete="off"
-          autoCapitalize="characters"
-          value={felder.aktionsCode}
-          onChange={aendern("aktionsCode")}
-          placeholder={t.codePlatzhalter}
-          className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm uppercase outline-none placeholder:normal-case focus:border-lime"
-        />
-      </label>
+
+      {/* Alles Freiwillige hinter einem Knopf: Pflicht sind nur Daten und
+          Erreichbarkeit. Vorher stand das Formular mit Nachricht, Ziel und
+          Code in voller Länge da - auf dem Handy drei Bildschirme bis zum
+          Absenden. Die Felder bleiben im Formular (nur verborgen), ein
+          vorausgewähltes Ziel geht also auch zugeklappt mit. */}
+      <div>
+        <button
+          type="button"
+          aria-expanded={mehr}
+          aria-controls="mehr-angaben"
+          onClick={() => setMehr((offen) => !offen)}
+          className="flex w-full items-center justify-between gap-3 rounded-lg border border-dashed border-border px-4 py-3 text-left text-sm transition-colors hover:border-lime"
+        >
+          <span>
+            <span className="font-medium">
+              {sprache === "de" ? "Mehr angeben" : "Add more"}
+            </span>{" "}
+            <span className="text-muted">
+              {sprache === "de" ? "(freiwillig: Ziel, Nachricht, Aktionscode)" : "(optional: goal, message, promo code)"}
+            </span>
+            {!mehr && felder.ziel && (
+              <span className="mt-0.5 block text-xs text-accent">
+                {sprache === "de" ? "Ziel" : "Goal"}: {zielLabel(sprache, felder.ziel)}
+              </span>
+            )}
+          </span>
+          <ChevronDown
+            size={16}
+            aria-hidden
+            className={`shrink-0 text-muted transition-transform ${mehr ? "rotate-180" : ""}`}
+          />
+        </button>
+        <div id="mehr-angaben" hidden={!mehr} className="mt-5 space-y-6">
+        {/* Freiwillig, aber die nützlichste Angabe im ganzen Formular: Wer
+            abnehmen will, bekommt ein anderes erstes Gespräch als jemand,
+            der seinen Rücken stärken möchte. Über alle Anfragen zusammen
+            zeigt die Verteilung außerdem, womit geworben werden sollte. */}
+        <fieldset>
+          <legend className="text-sm font-medium">{t.zielFrage}</legend>
+          <p className="mt-1 text-xs text-muted">
+            {sprache === "de"
+              ? "Freiwillig - hilft uns, das erste Gespräch auf dich abzustimmen."
+              : "Optional - it helps us tailor the first conversation to you."}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {ZIELE.map((option) => (
+              <label key={option.wert} className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="ziel"
+                  value={option.wert}
+                  checked={felder.ziel === option.wert}
+                  onChange={aendern("ziel")}
+                  className="peer sr-only"
+                />
+                <span className="block rounded-full border border-border px-4 py-2.5 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-lime">
+                  {zielLabel(sprache, option.wert)}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        {/* Der Platzhalter war "Nachricht (optional)" - und entsprechend
+            kam meist nichts oder "Bitte um Rückruf" zurück. Ein Feld
+            bekommt die Antworten, nach denen es fragt: Hier steht jetzt,
+            was im Studio tatsächlich etwas ändert.
+
+            Bewusst NICHT nach Beschwerden oder Vorerkrankungen gefragt -
+            das sind besonders geschützte Gesundheitsdaten und gehören in
+            die Anamnese vor Ort, nicht in ein Webformular. Begründung in
+            src/lib/ziel.ts. */}
+        <label className="block">
+          <span className="text-sm">{t.nachrichtLabel}</span>
+          <textarea
+            name="message"
+            rows={3}
+            maxLength={1000}
+            value={felder.message}
+            onChange={aendern("message")}
+            placeholder={t.nachrichtPlatzhalter}
+            className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
+          />
+        </label>
+        {/* Freiwillig und deshalb schmal: Wer keinen Code hat, soll nicht
+            das Gefühl bekommen, ihm fehle etwas. Ein falscher Code wird beim
+            Absenden benannt statt stillschweigend verworfen - sonst käme
+            jemand mit einer Erwartung ins Studio, von der dort niemand
+            weiß. */}
+        {/* Ein Feld für beide Arten von Code. Für den, der ihn eingibt, ist
+            es "der Code, den ich bekommen habe" - ihn zwischen zwei Feldern
+            wählen zu lassen wäre eine Hürde ohne Nutzen. */}
+        <label className="block max-w-xs">
+          <span className="text-sm">{t.codeLabel}</span>
+          <span className="mt-0.5 block text-xs text-muted">{t.codeHinweis}</span>
+          <input
+            type="text"
+            name="aktionsCode"
+            maxLength={40}
+            autoComplete="off"
+            autoCapitalize="characters"
+            value={felder.aktionsCode}
+            onChange={aendern("aktionsCode")}
+            placeholder={t.codePlatzhalter}
+            className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm uppercase outline-none placeholder:normal-case focus:border-lime"
+          />
+        </label>
+        </div>
+      </div>
 
       {state.message && !state.ok && (
         <motion.p
