@@ -10,6 +10,7 @@ import { Container } from "@/components/ui/container";
 import { probeterminHref, useZiel } from "@/components/ziel/ziel-kontext";
 import { ZIEL_INHALTE, zielInhalt } from "@/lib/ziel-inhalte";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
+import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 
 /**
  * Der erste Bildschirm.
@@ -181,6 +182,9 @@ export function Hero({
               <MapPin size={13} className="text-accent" aria-hidden />
               {anzahlStudios > 1 ? `${anzahlStudios} Studios in Köln und Umgebung` : standorte}
             </span>
+            <div className="hero-anim mt-3" style={verz(0.2)}>
+              <AuszeichnungMarke />
+            </div>
 
             <Ueberschrift />
 

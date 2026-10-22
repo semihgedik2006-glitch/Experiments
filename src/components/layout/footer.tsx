@@ -4,6 +4,7 @@ import { siteConfig } from "@/lib/site-config";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { InstagramIcon, FacebookIcon, TikTokIcon } from "@/components/icons/social-icons";
 import { Logo } from "@/components/logo";
+import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 import { getStudios } from "@/lib/data";
 import { ZIEL_INHALTE } from "@/lib/ziel-inhalte";
 
@@ -34,6 +35,7 @@ export async function Footer({
         <div>
           <Logo className="h-8 w-auto" />
           <p className="mt-3 max-w-xs text-sm text-muted">{siteConfig.claim}</p>
+          <AuszeichnungMarke className="mt-4" />
           <div className="mt-5 flex gap-3">
             {socials.map(({ href, label, Icon }) => (
               <a

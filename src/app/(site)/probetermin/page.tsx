@@ -5,6 +5,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { TerminHinweise } from "@/components/booking/termin-hinweise";
 import { BeweisLeiste } from "@/components/beweis-leiste";
+import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 import { LottieBox } from "@/components/lottie-box";
 import { TrustBar } from "@/components/trust-bar";
 import { getStudios, getSlotsMitBelegung } from "@/lib/data";
@@ -48,6 +49,7 @@ export default async function ProbeterminPage() {
           {/* Über dem Formular und nicht darunter: Wer hier ankommt, hat
               sich schon entschieden hinzusehen - jetzt zählt, dass diese
               Woche tatsächlich etwas frei ist. */}
+          <AuszeichnungMarke className="mb-4" />
           <BeweisLeiste className="mb-10" />
 
           <Reveal>

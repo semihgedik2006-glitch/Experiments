@@ -7,6 +7,7 @@ import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { TrustBar } from "@/components/trust-bar";
 import { BeweisLeiste } from "@/components/beweis-leiste";
+import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 import { getStudios, getSlotsMitBelegung } from "@/lib/data";
 import { getCampaign, getCampaignSlugs } from "@/lib/campaigns";
 import { zielInhalt } from "@/lib/ziel-inhalte";
@@ -110,6 +111,9 @@ export default async function CampaignPage({ params }: Props) {
               Seite kostet Geld pro Klick; sie ist die letzte, auf der
               eine Antwort darauf fehlen sollte. */}
           <BeweisLeiste className="hero-anim mt-10 max-w-xl" />
+          {/* Landingpages haben keinen Abschnitt mit der Auszeichnung -
+              die Plakette verweist deshalb direkt auf die Studie. */}
+          <AuszeichnungMarke aufStartseite={false} className="hero-anim mt-4" />
         </Container>
       </section>
 

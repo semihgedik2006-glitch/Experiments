@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { ZielWelt } from "@/components/home/ziel-welt";
+import { AuszeichnungAbschnitt } from "@/components/auszeichnung/auszeichnung";
 import { Individuell } from "@/components/home/individuell";
 import { ZeitProblem } from "@/components/home/zeit-problem";
 import { UspGrid } from "@/components/home/usp-grid";
@@ -44,6 +45,10 @@ export function zielAbschnitteBauen({
 }): Partial<Record<AbschnittKey, ReactNode>> {
   return {
     zielwelt: <ZielWelt auswahl={auswahl} />,
+    // Die DtGV-Auszeichnung direkt nach "Erkennst du dich wieder?": Wer
+    // sich wiedererkannt hat, fragt als Nächstes, ob er dem Anbieter trauen
+    // kann.
+    auszeichnung: <AuszeichnungAbschnitt />,
     individuell: <Individuell />,
     zeit: <ZeitProblem />,
     vorteile: <UspGrid standorte={anzahlStudios} zeitspanne={zeitspanne} />,
