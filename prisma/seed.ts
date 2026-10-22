@@ -137,7 +137,7 @@ async function main() {
     {
       question: "Ist EMS-Training gelenkschonend?",
       answer:
-        "Es kommt ohne schwere Gewichte aus - es kommt also keine Zusatzlast auf Gelenke und Wirbelsäule. Ob es bei bestehenden Beschwerden für dich in Frage kommt, klärst du vorher bitte mit deinem Arzt; wir sind kein medizinischer Betrieb.",
+        "Es kommt ohne schwere Gewichte aus - es lastet also kein zusätzliches Gewicht auf Gelenken und Wirbelsäule. Ob es bei bestehenden Beschwerden für dich in Frage kommt, klärst du vorher bitte mit deinem Arzt; wir sind kein medizinischer Betrieb.",
     },
     {
       question: "Was sollte ich zum Training mitbringen?",
