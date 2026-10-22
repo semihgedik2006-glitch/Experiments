@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Globe } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { legalConfig } from "@/lib/legal-config";
+import { KlickImpuls } from "@/components/klick-impuls";
 
 /**
  * Der Rahmen der englischen Seite.
@@ -87,6 +88,7 @@ export default function EnglishLayout({ children }: { children: React.ReactNode 
           </p>
         </div>
       </footer>
+      <KlickImpuls />
     </div>
   );
 }

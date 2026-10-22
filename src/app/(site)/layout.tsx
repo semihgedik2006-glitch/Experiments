@@ -8,6 +8,7 @@ import { erfolgeVorhanden } from "@/lib/kundenstimmen";
 import { getStudios } from "@/lib/data";
 import { ProbeterminEinladung } from "@/components/probetermin-einladung";
 import { HandyLeiste } from "@/components/handy-leiste";
+import { KlickImpuls } from "@/components/klick-impuls";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const toggles = await getToggles();
@@ -63,6 +64,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           stehen in lib/einladung.ts. Hier steht sie nur bereit. */}
       {/* Auf dem Handy: Probetraining und Anrufen immer im Daumenbereich. */}
       <HandyLeiste />
+      <KlickImpuls />
       <ProbeterminEinladung
         studios={studios.map((s) => ({ id: s.id, name: s.name }))}
       />

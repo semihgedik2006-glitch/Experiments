@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
+import { ZielUebergang } from "@/components/ui/ziel-uebergang";
 import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 import { ZIEL_INHALTE, type ZielInhalt } from "@/lib/ziel-inhalte";
 
@@ -82,7 +83,9 @@ export function ZielKopf({ inhalt, anzahlStudios }: { inhalt: ZielInhalt; anzahl
             className="hero-anim kal-karte relative aspect-square rounded-[2rem] p-8 sm:p-10"
             style={{ "--hero-delay": "0.3s" } as React.CSSProperties}
           >
-            <ZielMotiv ziel={inhalt.wert} className="h-full w-full" />
+            <ZielUebergang>
+              <ZielMotiv ziel={inhalt.wert} className="h-full w-full" />
+            </ZielUebergang>
           </div>
         </motion.div>
       </Container>

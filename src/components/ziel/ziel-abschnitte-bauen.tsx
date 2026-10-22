@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { ZielWelt } from "@/components/home/ziel-welt";
 import { AuszeichnungAbschnitt } from "@/components/auszeichnung/auszeichnung";
 import { Individuell } from "@/components/home/individuell";
+import { EinheitStory } from "@/components/home/einheit-story";
 import { ZeitProblem } from "@/components/home/zeit-problem";
 import { UspGrid } from "@/components/home/usp-grid";
 import { Netzwerk } from "@/components/home/netzwerk";
@@ -51,6 +52,7 @@ export function zielAbschnitteBauen({
     auszeichnung: <AuszeichnungAbschnitt />,
     individuell: <Individuell />,
     zeit: <ZeitProblem />,
+    ablauf: <EinheitStory />,
     vorteile: <UspGrid standorte={anzahlStudios} zeitspanne={zeitspanne} />,
     netzwerk:
       anzahlStudios > 0 ? (
