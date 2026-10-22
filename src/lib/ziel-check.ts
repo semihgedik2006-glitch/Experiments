@@ -21,15 +21,6 @@ export const FENSTER: readonly Fenster[] = [
   { wert: "flexibel", label: "Ist mir egal", spanne: "Hauptsache bald", imSatz: null },
 ];
 
-/** In welches Zeitfenster fällt ein Termin ("17:30")? */
-export function fensterVon(startTime: string): Exclude<FensterWert, "flexibel"> {
-  const stunde = Number(startTime.split(":")[0]);
-  if (stunde < 12) return "morgens";
-  if (stunde < 15) return "mittags";
-  if (stunde < 17) return "nachmittags";
-  return "abends";
-}
-
 export type ErfahrungWert = "keine" | "etwas" | "regelmaessig";
 
 export const ERFAHRUNG: readonly {

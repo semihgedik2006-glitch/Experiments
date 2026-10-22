@@ -2,7 +2,6 @@
 
 import { Fragment, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { ArrowRight, ChevronDown, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -82,24 +81,15 @@ function StaggeredLine({
   );
 }
 
-export type NaechsterTermin = {
-  label: string;
-  studio: string;
-  href: string;
-  /** Wie viele Plätze in den nächsten sieben Tagen noch frei sind. */
-  freieDieseWoche: number | null;
-};
 
 const verz = (s: number) => ({ "--hero-delay": `${s}s` }) as React.CSSProperties;
 
 export function Hero({
   standorte,
   anzahlStudios,
-  naechsterTermin,
 }: {
   standorte: string;
   anzahlStudios: number;
-  naechsterTermin: NaechsterTermin | null;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const wenigerBewegung = useReducedMotion();
@@ -194,38 +184,6 @@ export function Hero({
             </p>
 
             <ZielWahl />
-
-            {/* Echte Daten statt eines weiteren Versprechens. Fehlt der
-                Termin, entfällt der Block. */}
-            {naechsterTermin && (
-              <Link
-                href={naechsterTermin.href}
-                className="hero-anim group mt-7 inline-flex max-w-full items-center gap-4 rounded-2xl border border-lime/40 bg-lime/5 px-5 py-4 transition-colors hover:border-lime"
-                style={verz(1.05)}
-              >
-                <span aria-hidden className="relative flex h-2.5 w-2.5 shrink-0">
-                  <span className="puls-welle absolute inset-0 rounded-full bg-lime" />
-                  <span className="relative h-2.5 w-2.5 rounded-full bg-lime" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-widest text-muted">
-                    Nächster freier Termin
-                  </span>
-                  <span className="mt-0.5 block text-base font-semibold">
-                    {naechsterTermin.label}
-                    {naechsterTermin.studio && (
-                      <span className="font-normal text-muted"> · {naechsterTermin.studio}</span>
-                    )}
-                  </span>
-                  {naechsterTermin.freieDieseWoche && (
-                    <span className="mt-1 block text-xs text-muted">
-                      {naechsterTermin.freieDieseWoche} freie Termine in den nächsten 7 Tagen
-                    </span>
-                  )}
-                </span>
-                <ArrowRight size={17} aria-hidden className="shrink-0 text-accent transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            )}
           </motion.div>
         </Container>
       </motion.div>

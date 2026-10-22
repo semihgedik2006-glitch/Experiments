@@ -9,8 +9,7 @@ import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 import { ZIEL_SPEICHER } from "@/components/ziel/ziel-kontext";
 import { ZIEL_INHALTE, ZONEN, zielInhalt, type ZielWert } from "@/lib/ziel-inhalte";
 import { ERFAHRUNG, type ErfahrungWert, type Fenster, type FensterWert } from "@/lib/ziel-check";
-
-export type FensterTermin = { label: string; studio: string };
+import { istTageszeit, TAGESZEIT_SPEICHER } from "@/lib/wunschzeit";
 
 type Antworten = {
   ziel: ZielWert | "unsicher" | null;
@@ -28,13 +27,7 @@ const weich = [0.16, 1, 0.3, 1] as const;
  * überblicken muss. Zurück geht immer. Die Antworten verlassen den Browser
  * nicht; nur das Ziel wird für das Probetermin-Formular gemerkt.
  */
-export function ZielCheck({
-  termine,
-  fensterListe,
-}: {
-  termine: Partial<Record<string, FensterTermin>>;
-  fensterListe: readonly Fenster[];
-}) {
+export function ZielCheck({ fensterListe }: { fensterListe: readonly Fenster[] }) {
   const [schritt, setSchritt] = useState(0);
   const [richtung, setRichtung] = useState(1);
   const [antworten, setAntworten] = useState<Antworten>({ ziel: null, fenster: null, erfahrung: null });
@@ -50,6 +43,16 @@ export function ZielCheck({
         sessionStorage.setItem(ZIEL_SPEICHER, teil.ziel);
       } catch {
         // Ohne Speicher eben ohne Vorauswahl im Formular.
+      }
+    }
+    // Das Zeitfenster wird im Formular zur vorausgewählten Wunschzeit.
+    // "Ist mir egal" heißt: keine Vorauswahl.
+    if (teil.fenster) {
+      try {
+        if (istTageszeit(teil.fenster)) sessionStorage.setItem(TAGESZEIT_SPEICHER, teil.fenster);
+        else sessionStorage.removeItem(TAGESZEIT_SPEICHER);
+      } catch {
+        // Wie oben.
       }
     }
   }
@@ -162,7 +165,7 @@ export function ZielCheck({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: weich }}
               >
-                <Startplan antworten={antworten} termine={termine} fensterListe={fensterListe} neu={neu} />
+                <Startplan antworten={antworten} fensterListe={fensterListe} neu={neu} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -222,12 +225,10 @@ function Optionen({
 
 function Startplan({
   antworten,
-  termine,
   fensterListe,
   neu,
 }: {
   antworten: Antworten;
-  termine: Partial<Record<string, FensterTermin>>;
   fensterListe: readonly Fenster[];
   neu: () => void;
 }) {
@@ -237,7 +238,6 @@ function Startplan({
   // ist "Fitter im Alltag". Das eigentliche Ziel klärt das Probetraining.
   const inhalt = zielInhalt(offen ? "fitness" : antworten.ziel) ?? ZIEL_INHALTE[0];
   const fenster = fensterListe.find((f) => f.wert === antworten.fenster);
-  const termin = antworten.fenster ? termine[antworten.fenster] : undefined;
   const erfahrung = ERFAHRUNG.find((e) => e.wert === antworten.erfahrung);
   const schwerpunkte = inhalt.profil
     .map((wert, i) => ({ wert, zone: ZONEN[i] }))
@@ -307,23 +307,23 @@ function Startplan({
           </motion.div>
         </div>
 
-        {/* Der nächste freie Termin im gewählten Zeitfenster - aus den echten
-            Terminen. Gibt es keinen, entfällt die Zeile. */}
-        {termin && (
-          <motion.div
-            initial={still ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.95, ease: weich }}
-            className="mt-6 flex items-center gap-3 rounded-2xl border border-lime/40 bg-lime/5 px-4 py-3"
-          >
-            <CalendarDays size={18} className="shrink-0 text-accent" aria-hidden />
-            <p className="text-sm">
-              <span className="text-muted">Nächster freier Termin{fenster?.imSatz ? ` ${fenster.imSatz}` : ""}: </span>
-              <span className="font-semibold">{termin.label}</span>
-              {termin.studio && <span className="text-muted"> · {termin.studio}</span>}
-            </p>
-          </motion.div>
-        )}
+        {/* Kein fester Termin: Die Studios teilen ihr Team nach den Anfragen
+            ein (siehe @/lib/wunschzeit). Die Tageszeit steht im Formular
+            schon drin. */}
+        <motion.div
+          initial={still ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.95, ease: weich }}
+          className="mt-6 flex items-center gap-3 rounded-2xl border border-lime/40 bg-lime/5 px-4 py-3"
+        >
+          <CalendarDays size={18} className="shrink-0 text-accent" aria-hidden />
+          <p className="text-sm">
+            <span className="font-semibold">
+              {fenster?.imSatz ? `Wunschzeit ${fenster.imSatz} ist vorgemerkt.` : "Nenn uns im nächsten Schritt deine Wunschzeit."}
+            </span>{" "}
+            <span className="text-muted">Wir melden uns mit einem passenden Termin.</span>
+          </p>
+        </motion.div>
       </div>
 
       <motion.div

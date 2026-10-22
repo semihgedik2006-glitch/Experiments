@@ -8,8 +8,7 @@ import { BeweisLeiste } from "@/components/beweis-leiste";
 import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 import { LottieBox } from "@/components/lottie-box";
 import { TrustBar } from "@/components/trust-bar";
-import { getStudios, getSlotsMitBelegung } from "@/lib/data";
-import { tageJeStudio } from "@/lib/termin-tage";
+import { getStudios } from "@/lib/data";
 
 export const metadata: Metadata = {
   // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
@@ -22,9 +21,7 @@ export const metadata: Metadata = {
 export default async function ProbeterminPage() {
   // Auch belegte Termine: Sie werden im Formular als belegt angezeigt und
   // führen auf die Warteliste, statt gar nicht erst zu erscheinen.
-  const [studios, slots] = await Promise.all([getStudios(), getSlotsMitBelegung()]);
-
-  const slotsByStudio = tageJeStudio(slots);
+  const studios = await getStudios();
 
   return (
     <>
@@ -53,7 +50,7 @@ export default async function ProbeterminPage() {
           <BeweisLeiste className="mb-10" />
 
           <Reveal>
-            <BookingFlow studios={studios} slotsByStudio={slotsByStudio} />
+            <BookingFlow studios={studios} />
           </Reveal>
 
           {/* Die Illustration steht bewusst unter dem Formular: Oben war sie
