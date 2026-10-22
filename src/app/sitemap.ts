@@ -26,6 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...(toggles.erfolgsgeschichten && erfolge ? ["/erfolgsgeschichten"] : []),
     ...(toggles["ueber-uns"] ? ["/ueber-uns"] : []),
     "/probetermin",
+    "/ziel-check",
     // Der Einstieg in den eigenen Terminbereich. Nur das Formular - die
     // Seite dahinter ist von der Indizierung ausgenommen. Sie gehört
     // hierher, weil sie im Menü absichtlich nicht auftaucht und sonst

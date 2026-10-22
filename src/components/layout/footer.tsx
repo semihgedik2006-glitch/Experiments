@@ -108,6 +108,14 @@ export async function Footer({
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                href="/ziel-check"
+                className="tastflaeche block py-1.5 text-sm text-accent hover:text-foreground"
+              >
+                Ziel-Check machen
+              </Link>
+            </li>
           </ul>
         </div>
 

@@ -323,8 +323,8 @@ function ZielWahl() {
                 Kostenloses Probetraining
                 <ArrowRight size={16} aria-hidden />
               </Button>
-              <Button href="/ems-training" variant="secondary" className="border-white/25">
-                Wie EMS funktioniert
+              <Button href="/ziel-check" variant="secondary" className="border-white/25">
+                Unsicher? Ziel-Check machen
               </Button>
             </motion.div>
           )}
