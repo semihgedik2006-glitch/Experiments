@@ -63,7 +63,7 @@ function Geschichte() {
   const schritt = ABLAUF_EINHEIT[aktiv];
 
   return (
-    <section ref={ref} className="on-ink relative" style={{ height: `${n * 70 + 60}vh` }}>
+    <section ref={ref} className="on-ink relative" style={{ height: `${n * 45 + 60}vh` }}>
       <div className="sticky top-0 flex h-svh items-center overflow-hidden">
         <div aria-hidden className="hero-schein pointer-events-none absolute -z-10" />
         <Container className="w-full">

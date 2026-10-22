@@ -1,27 +1,23 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Clock, ClipboardList, Gift, HeartPulse, Layers, MapPin, SlidersHorizontal, Sparkles, Users } from "lucide-react";
+import { Clock, HeartPulse, MapPin, SlidersHorizontal, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/ui/section-header";
 
 /**
- * Acht Karten, acht Tatsachen. (Vorher vier - zu wenig, um zu zeigen,
- * was das Training ausmacht; vor allem fehlte, dass es auf jeden einzeln
- * eingestellt wird.)
+ * Vier Tatsachen über das Training selbst.
  *
- * In der vierten stand "Sichtbare Erfolge - Muskelaufbau, Straffung und
- * Gewichtsreduktion, messbar und spürbar". Das ist kein Grund, sondern
- * ein Versprechen, und zwar eines, das niemand einlösen kann: Ob jemand
- * abnimmt, hängt an seiner Ernährung, nicht an unserem Text.
+ * Vorher acht. Vier davon standen ein zweites Mal auf der Startseite:
+ * "Dein eigener Plan" im Abschnitt "Dein Training ist nur deins", "Einer
+ * für dich allein" und "Kostenlos ausprobieren" bei den Zusagen
+ * (trust-config). "Auch die Tiefe" war die einzige Karte, die mehr
+ * behauptete, als die Seite belegen kann. Übrig bleibt, was nur hier steht.
  *
- * An ihrer Stelle steht jetzt das, was diese Kette tatsächlich von einem
- * einzelnen Studio unterscheidet - vierzehn Standorte. Das ist nachprüfbar
- * (die Adressen stehen weiter unten auf derselben Seite), es ist für
- * jemanden mit vollem Kalender ein echtes Argument, und die Zahl kommt
- * aus der Datenbank statt aus diesem Text.
+ * Kein Wirkungsversprechen ("sichtbare Erfolge"): Ob jemand abnimmt,
+ * hängt an seiner Ernährung, nicht an unserem Text.
  */
 function karten(standorte: number, zeitspanne: string | null) {
   return [
@@ -31,24 +27,9 @@ function karten(standorte: number, zeitspanne: string | null) {
       text: "Einmal pro Woche, fester Termin - passt auch in einen vollen Kalender.",
     },
     {
-      icon: ClipboardList,
-      title: "Dein eigener Plan",
-      text: "Kein Standardpaket: Dein Trainer stellt das Training auf dein Ziel und deinen Körper ein.",
-    },
-    {
-      icon: Users,
-      title: "Einer für dich allein",
-      text: "Kein Training auf eigene Faust: Bei jeder Einheit steht ein Trainer neben dir und stellt die Intensität mit dir zusammen ein.",
-    },
-    {
       icon: SlidersHorizontal,
       title: "Jede Muskelgruppe einzeln",
       text: "Acht Zonen, acht Einstellungen - kräftiger, wo du stärker werden willst, sanfter, wo du vorsichtig sein musst.",
-    },
-    {
-      icon: Layers,
-      title: "Auch die Tiefe",
-      text: "Die Impulse erreichen viele Muskelgruppen gleichzeitig, auch tiefliegende Schichten.",
     },
     {
       icon: HeartPulse,
@@ -68,11 +49,6 @@ function karten(standorte: number, zeitspanne: string | null) {
           title: "Feste Zeit, feste Person",
           text: "Dein Termin liegt jede Woche gleich, und du weißt vorher, wer dich erwartet.",
         },
-    {
-      icon: Gift,
-      title: "Kostenlos ausprobieren",
-      text: "Das erste Training kostet nichts. Danach entscheidest du in Ruhe, ob es zu dir passt.",
-    },
   ];
 }
 
@@ -100,9 +76,9 @@ export function UspGrid({
           className="mb-16"
         />
 
-        {/* Eine Liste statt acht gleicher Karten: Die Seite hat schon
-            genug Kartengitter (Vertrauen, Blog, Studios), und acht Kästen
-            nebeneinander lesen sich wie ein Prospekt. Hier tragen
+        {/* Eine Liste statt gleicher Karten: Die Seite hat schon genug
+            Kartengitter (Vertrauen, Studios), und Kästen nebeneinander
+            lesen sich wie ein Prospekt. Hier tragen
             Symbol, Linie und Weißraum. */}
         <Stagger className="grid gap-x-16 sm:grid-cols-2">
           {items.map(({ icon: Icon, title, text }) => (

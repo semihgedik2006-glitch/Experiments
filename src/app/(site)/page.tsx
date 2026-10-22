@@ -4,11 +4,9 @@ import { ZielProvider } from "@/components/ziel/ziel-kontext";
 import { ZielAbschnitte, ZielLeiste } from "@/components/ziel/ziel-abschnitte";
 import { zielAbschnitteBauen } from "@/components/ziel/ziel-abschnitte-bauen";
 import { CtaBanner } from "@/components/cta-banner";
-import { InstagramWand } from "@/components/instagram-wand";
 import { StudioJsonLd, WebsiteJsonLd, FaqJsonLd, OrganisationJsonLd } from "@/components/structured-data";
 import { getToggles } from "@/lib/site-toggles";
 import { getStudios } from "@/lib/data";
-import { letzteBeitraege } from "@/lib/instagram";
 import { beweiseHolen, kennzahlen } from "@/lib/beweise";
 
 export default async function Home() {
@@ -26,11 +24,6 @@ export default async function Home() {
       : studios.length === 1
         ? `EMS-Studio in ${studios[0].city}`
         : "EMS-Training in Köln und Umgebung";
-
-  // Die Instagram-Wand. Ist kein Zugang hinterlegt oder Instagram gerade
-  // nicht erreichbar, kommt eine leere Liste zurück und der Abschnitt
-  // entfällt - die Startseite hängt nie an einem fremden Dienst.
-  const instagram = toggles.instagram ? await letzteBeitraege() : [];
 
   // Die Zahlen für das Band unter dem Hero - aus der eigenen Datenbank.
   const beweise = await beweiseHolen();
@@ -60,9 +53,6 @@ export default async function Home() {
           toggles,
           zeitspanne: null,
           auswahl: true,
-          // Instagram zeigt, wie es im Studio aussieht - ohne gewähltes
-          // Ziel zwischen Blog und Fragen.
-          instagram: <InstagramWand beitraege={instagram} />,
           studioListe: true,
         })}
       />
