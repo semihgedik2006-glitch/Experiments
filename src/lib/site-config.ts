@@ -22,13 +22,18 @@ import { basisadresseErmitteln } from "@/lib/basisadresse";
 
 export const siteConfig = {
   name: "Körperformen",
-  tagline: "Der Vorreiter für gesundheitsorientiertes EMS Training",
+  // Steht im Seitentitel ("Körperformen - EMS-Training in Köln und
+  // Umgebung"). Vorher "Der Vorreiter für gesundheitsorientiertes EMS
+  // Training" - eine Behauptung, die sich nicht belegen lässt.
+  tagline: "EMS-Training in Köln und Umgebung",
+  /** Unter dem Logo im Fußbereich und auf "Über uns". */
+  claim: "Der größte Körperformen-Partner in Köln und Umgebung",
   description:
     // Das steht in Google unter dem Suchergebnis. Vorher: "Abnehmen,
     // Muskeln aufbauen und Rückenschmerzen lindern" - ein Gesundheits-
     // versprechen, das niemand belegen kann und das abmahnfähig ist.
     // Jetzt: was es gibt, wo, und der nächste Schritt.
-    "EMS-Training mit persönlichem Trainer: 20 Minuten pro Woche, in Studios rund um Köln. Jetzt kostenloses Probetraining buchen.",
+    "EMS-Training mit persönlichem Trainer: 20 Minuten pro Woche, in Studios in Köln und Umgebung. Jetzt kostenloses Probetraining buchen.",
   url: basisadresseErmitteln().url,
   keywords: [
     "EMS",
@@ -45,6 +50,15 @@ export const siteConfig = {
   contact: {
     phone: "+49 2233 9667181",
     email: "huerth@kformen.com",
+  },
+  /**
+   * Das Körperformen-Netz, zu dem die eigenen Studios gehören. Die Zahl der
+   * eigenen Studios kommt aus der Datenbank; die Gesamtzahl kennt nur die
+   * Zentrale - deshalb steht sie hier und muss bei Änderungen von Hand
+   * nachgezogen werden.
+   */
+  netzwerk: {
+    studiosGesamt: 277,
   },
   social: {
     instagram: "https://instagram.com/koerperformen_huerth",

@@ -66,13 +66,16 @@ const audiences = [
   },
 ];
 
-const comparison = [
-  { label: "Zeitaufwand pro Woche", ems: "20 Minuten", gym: "3-5 Stunden inkl. Anfahrt" },
-  { label: "Muskelgruppen je Einheit", ems: "viele gleichzeitig, auch tiefliegende", gym: "je Übung einzelne Muskelgruppen" },
-  { label: "Gelenkbelastung", ems: "minimal - ohne Zusatzgewichte", gym: "hoch bei schweren Gewichten" },
-  { label: "Betreuung", ems: "immer persönlich durch einen Trainer", gym: "meist auf sich gestellt" },
-  { label: "Einstiegshürde", ems: "niedrig - Plan wird angepasst", gym: "hoch - Technik muss sitzen" },
-  { label: "Tiefenmuskulatur", ems: "wird direkt mitstimuliert", gym: "nur über spezielle Übungen" },
+// Hier stand eine Tabelle "EMS gegen klassisches Studio" mit roten
+// Kreuzen in der zweiten Spalte. Fitnessstudios schlechtzumachen ist
+// nicht unser Stil - übrig bleibt, was EMS bei uns ausmacht.
+const merkmale = [
+  { label: "Zeitaufwand pro Woche", ems: "20 Minuten Training" },
+  { label: "Muskelgruppen je Einheit", ems: "viele gleichzeitig, auch tiefliegende" },
+  { label: "Gewichte", ems: "keine - die Impulse kommen zu deiner Bewegung dazu" },
+  { label: "Betreuung", ems: "immer persönlich durch einen Trainer" },
+  { label: "Einstieg", ems: "ohne Vorerfahrung - dein Plan wird an dich angepasst" },
+  { label: "Intensität", ems: "für jede Muskelgruppe einzeln eingestellt" },
 ];
 
 
@@ -121,56 +124,27 @@ export default function EmsTrainingPage() {
         <Container>
           <Reveal className="mb-12 max-w-2xl">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              EMS vs. klassisches Krafttraining
+              Was EMS bei uns ausmacht
             </h2>
             <p className="mt-4 text-muted">
-              Beides baut Muskeln auf - der Unterschied liegt in Effizienz,
-              Belastung und Betreuung.
+              Kurze Einheiten, viele Muskelgruppen auf einmal und ein Trainer, der
+              alles auf dich einstellt.
             </p>
           </Reveal>
 
-          {/* tabIndex am scrollbaren Kasten: Die Tabelle ist breiter als ein
-              Handy-Bildschirm und muss seitlich geschoben werden. Mit der
-              Maus geht das per Wischen - mit der Tastatur nur, wenn der
-              Kasten selbst anwählbar ist. Ohne das kam man an die dritte
-              Spalte ohne Maus nicht heran. */}
-          <Reveal>
-            <div
-              tabIndex={0}
-              role="region"
-              aria-label="Vergleich EMS und klassisches Studio"
-              className="overflow-x-auto rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
-            <table className="w-full min-w-[560px] border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-border text-left">
-                  <th className="py-4 pr-4 font-semibold text-muted"><span className="sr-only">Merkmal</span></th>
-                  <th className="py-4 pr-4 font-semibold text-accent">EMS bei Körperformen</th>
-                  <th className="py-4 font-semibold">Klassisches Studio</th>
-                </tr>
-              </thead>
-              <tbody>
-                {comparison.map((row) => (
-                  <tr key={row.label} className="border-b border-border/60">
-                    <td className="py-4 pr-4 font-medium">{row.label}</td>
-                    <td className="py-4 pr-4">
-                      <span className="flex items-start gap-2">
-                        <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-accent" />
-                        {row.ems}
-                      </span>
-                    </td>
-                    <td className="py-4 text-muted">
-                      <span className="flex items-start gap-2">
-                        <XCircle size={16} className="mt-0.5 shrink-0 opacity-50" />
-                        {row.gym}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
-          </Reveal>
+          <Stagger className="grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+            {merkmale.map((zeile) => (
+              <StaggerItem key={zeile.label}>
+                <div className="flex h-full items-start gap-3 border-t border-white/10 pt-5">
+                  <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-accent" aria-hidden />
+                  <div>
+                    <p className="text-sm text-muted">{zeile.label}</p>
+                    <p className="mt-1 font-semibold">{zeile.ems}</p>
+                  </div>
+                </div>
+              </StaggerItem>
+            ))}
+          </Stagger>
         </Container>
       </section>
 

@@ -13,7 +13,7 @@ import { siteConfig } from "@/lib/site-config";
 export const metadata: Metadata = {
   title: "EMS training in Cologne - in English",
   description:
-    "One 20-minute session a week, guided one to one. Fourteen studios around Cologne. Book a free trial session in English - no contract, no pressure.",
+    "One 20-minute session a week, guided one to one. Fourteen studios in and around Cologne. Book a free trial session in English - no contract, no pressure.",
   alternates: {
     canonical: "/en",
     // Beide Fassungen zeigen aufeinander. Ohne diese Angabe hält Google
@@ -103,7 +103,7 @@ export default async function EnglishPage() {
           >
             EMS is strength training with electrical impulses. One short session a
             week, guided one to one, at {studios.length > 1 ? `${studios.length} studios` : "our studio"}{" "}
-            around Cologne. New here? The first session is free - and we will happily
+            in and around Cologne. New here? The first session is free - and we will happily
             run it in English.
           </p>
 

@@ -145,10 +145,11 @@ const de: Woerterbuch = {
   ortNichtVerfuegbar: "Standort ließ sich nicht bestimmen. Wähl dein Studio bitte selbst.",
 
   ziele: {
+    straffen: "Straffen und formen",
     abnehmen: "Abnehmen",
     muskelaufbau: "Muskeln aufbauen",
     ruecken: "Rücken stärken",
-    fitness: "Einfach fitter werden",
+    fitness: "Fitter im Alltag",
     unsicher: "Weiß ich noch nicht",
   },
   erreichbarkeiten: {
@@ -233,10 +234,11 @@ const en: Woerterbuch = {
   ortNichtVerfuegbar: "We could not determine your location. Please pick a studio yourself.",
 
   ziele: {
+    straffen: "Tone and shape",
     abnehmen: "Lose weight",
     muskelaufbau: "Build muscle",
     ruecken: "Strengthen my back",
-    fitness: "Simply get fitter",
+    fitness: "Fitter in everyday life",
     unsicher: "Not sure yet",
   },
   erreichbarkeiten: {

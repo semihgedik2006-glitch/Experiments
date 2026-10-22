@@ -3,33 +3,33 @@
 import { Fragment, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { ArrowRight, ChevronDown, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { probeterminHref, useZiel } from "@/components/ziel/ziel-kontext";
+import { ZIEL_INHALTE, zielInhalt } from "@/lib/ziel-inhalte";
+import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 
 /**
  * Der erste Bildschirm.
  *
- * Vorige Fassung: eine gezeichnete Figur und die Überschrift "20 Minuten
- * Training. Ein sichtbarer Unterschied." Sauber, aber sachlich - sie sagte,
- * WAS es gibt, nicht, WARUM jemand es will. Wer abends nach zehn Stunden
- * Arbeit auf die Seite kommt, entscheidet in zwei Sekunden, ob sie ihn
- * meint.
+ * Vorige Fassungen: "20 Minuten Training. Ein sichtbarer Unterschied." und
+ * danach "Du bist für alle da. Bleib es auch." - die zweite sprach
+ * Gefühle an, sagte aber nicht, WOFÜR jemand trainiert. Diese Fassung
+ * führt über das Ziel:
  *
- * Diese Fassung spricht genau diesen Menschen an:
+ *   "Fühl dich wieder wohl in deinem Körper."
+ *   + "Was willst du erreichen?" mit fünf Zielen zum Antippen
  *
- *   "Du bist für alle da. Bleib es auch."
+ * Lebensqualität als Überschrift, das Ziel als erste Handlung. Wer ein
+ * Ziel wählt, bekommt eine Antwort darauf und wird durch die Seite
+ * geführt (siehe ZielWahl unten und components/ziel/ziel-kontext). Kein
+ * Wirkungsversprechen - beschrieben wird, wie trainiert wird.
  *
- * Für Kinder, Enkel, Partner, Kollegen da sein - und dafür selbst in Form
- * bleiben wollen. Bewusst positiv: Ein Satz wie "Wer nicht trainiert,
- * lässt seine Familie im Stich" wäre Angstmache, wirkt aufdringlich und
- * ist wettbewerbsrechtlich heikel. Kein Wirkungsversprechen, keine Zahl,
- * die niemand belegen kann. Dazu ein Foto statt einer Zeichnung: eine
- * Trainerin, die neben jemandem steht und hinsieht - bei einer Kniebeuge
- * ohne Gewichte. Das ist das Versprechen der ganzen Seite ("persönlich
- * betreut") als Bild. Ein früheres Foto zeigte Hanteln und ein Zuggerät;
- * beides gibt es in den Studios nicht, das hätte in die Irre geführt.
+ * Das Foto: eine Trainerin bzw. ein Trainer direkt neben dem Kunden - das
+ * Versprechen "persönlich betreut" als Bild. Ein früheres Foto zeigte
+ * Hanteln und ein Zuggerät; beides gibt es in den Studios nicht.
  *
  * Kleine Geschichte am Rand: "18:40 noch im Büro" -> "19:00 Deine 20
  * Minuten" -> "19:40 wieder bei deinen Liebsten". Ein Abend in drei
@@ -120,8 +120,10 @@ export function Hero({
 
       <motion.div style={{ opacity: inhaltOpacity }}>
         <Container className="grid items-center gap-10 pb-16 pt-8 sm:pb-20 lg:min-h-[88vh] lg:grid-cols-[1fr_1.12fr] lg:gap-14 lg:py-20">
-          {/* ---------- Das Foto: auf dem Handy zuerst, am Computer rechts ---------- */}
-          <motion.div style={{ y: bildY }} className="relative lg:order-2">
+          {/* ---------- Das Foto: am Computer rechts, auf dem Handy unter dem
+              Text - dort stand es zuerst und schob die Zielfrage aus dem
+              ersten Bildschirm. ---------- */}
+          <motion.div style={{ y: bildY }} className="relative order-2">
             <div className="hero-anim hero-rahmen relative overflow-hidden rounded-[1.75rem]" style={verz(0.1)}>
               <div className="hero-foto-bild relative aspect-[16/11] lg:aspect-[4/3]">
                 <Image
@@ -133,6 +135,7 @@ export function Hero({
                   className="object-cover object-[60%_center]"
                 />
               </div>
+              <ZielKarte />
             </div>
 
             {/* Die kleine Geschichte: Feierabend, Training, zuhause. Hängt
@@ -170,37 +173,23 @@ export function Hero({
           </motion.div>
 
           {/* ---------- Die Aussage ---------- */}
-          <motion.div style={{ y: textY }} className="min-w-0 lg:order-1">
+          <motion.div style={{ y: textY }} className="order-1 min-w-0">
             <span
-              className="hero-anim inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-foreground/85"
+              className="hero-anim inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/85"
               style={verz(0.15)}
             >
               <MapPin size={13} className="text-accent" aria-hidden />
-              {anzahlStudios > 1 ? `${anzahlStudios} Studios rund um Köln` : standorte}
+              {anzahlStudios > 1 ? `${anzahlStudios} Studios in Köln und Umgebung` : standorte}
             </span>
 
-            <h1 className="font-display mt-6 text-[2.9rem] font-black leading-[1.02] tracking-tight sm:text-[4rem] xl:text-[4.6rem]">
-              {/* Geschütztes Leerzeichen: "da." darf nie allein in einer Zeile
-                  stehen - als einzelnes Wort fiel die Überschrift auseinander. */}
-              <StaggeredLine text={"Du bist für alle\u00a0da."} startDelay={0.25} />
-              <br />
-              <StaggeredLine text="Bleib es auch." className="text-accent" startDelay={0.55} />
-            </h1>
+            <Ueberschrift />
 
-            <p className="hero-anim mt-6 max-w-lg text-lg leading-relaxed text-foreground/80" style={verz(0.75)}>
-              Für die Menschen, die dich brauchen – und für dich: 20 Minuten EMS-Training pro
-              Woche, mit deinem persönlichen Trainer, ganz in deiner Nähe.
+            <p className="hero-anim mt-6 max-w-lg text-lg leading-relaxed text-foreground/80" style={verz(0.7)}>
+              EMS-Training mit deinem persönlichen Trainer: 20 Minuten pro Woche, abgestimmt auf
+              dein Ziel, deinen Körper und deinen Alltag.
             </p>
 
-            <div className="hero-anim mt-8 flex flex-col gap-3 sm:flex-row sm:items-center" style={verz(0.88)}>
-              <Button href="/probetermin" className="knopf-glanz-dauer px-8 py-3.5">
-                Kostenloses Probetraining
-                <ArrowRight size={16} aria-hidden />
-              </Button>
-              <Button href="/ems-training" variant="secondary" className="border-white/25">
-                Wie EMS funktioniert
-              </Button>
-            </div>
+            <ZielWahl />
 
             {/* Echte Daten statt eines weiteren Versprechens. Fehlt der
                 Termin, entfällt der Block. */}
@@ -208,7 +197,7 @@ export function Hero({
               <Link
                 href={naechsterTermin.href}
                 className="hero-anim group mt-7 inline-flex max-w-full items-center gap-4 rounded-2xl border border-lime/40 bg-lime/5 px-5 py-4 transition-colors hover:border-lime"
-                style={verz(1)}
+                style={verz(1.05)}
               >
                 <span aria-hidden className="relative flex h-2.5 w-2.5 shrink-0">
                   <span className="puls-welle absolute inset-0 rounded-full bg-lime" />
@@ -233,10 +222,6 @@ export function Hero({
                 <ArrowRight size={17} aria-hidden className="shrink-0 text-accent transition-transform group-hover:translate-x-0.5" />
               </Link>
             )}
-
-            <p className="hero-anim mt-6 text-xs text-foreground/70" style={verz(1.1)}>
-              Kostenlos &middot; Unverbindlich &middot; Persönlich betreut
-            </p>
           </motion.div>
         </Container>
       </motion.div>
@@ -255,5 +240,154 @@ export function Hero({
         </div>
       </motion.div>
     </section>
+  );
+}
+
+/**
+ * "Was willst du erreichen?" - fünf Ziele zum Antippen.
+ *
+ * Die Wahl ändert drei Dinge: Unter den Knöpfen steht ein Satz dazu, wie
+ * das Training für genau dieses Ziel aussieht; der Abschnitt "Erkennst du
+ * dich wieder?" weiter unten springt auf dasselbe Ziel; und der Knopf zum
+ * Probetermin nimmt es mit ins Formular. Wer nichts wählt, sieht die
+ * gewohnten zwei Knöpfe - die Frage ist eine Einladung, keine Hürde.
+ */
+function ZielWahl() {
+  const { ziel, waehlen } = useZiel();
+  const inhalt = zielInhalt(ziel);
+  const wenigerBewegung = useReducedMotion();
+
+  return (
+    <div className="hero-anim mt-8" style={verz(0.85)}>
+      <p id="ziel-frage" className="text-sm font-semibold text-foreground">
+        Was willst du erreichen?
+      </p>
+      <div role="radiogroup" aria-labelledby="ziel-frage" className="mt-3 flex flex-wrap gap-2">
+        {ZIEL_INHALTE.map((z) => {
+          const aktiv = z.wert === ziel;
+          return (
+            <button
+              key={z.wert}
+              type="button"
+              role="radio"
+              aria-checked={aktiv}
+              onClick={() => waehlen(z.wert)}
+              className={`relative isolate rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                aktiv ? "border-lime text-on-lime" : "border-white/20 text-foreground/85 hover:border-lime/60 hover:text-foreground"
+              }`}
+            >
+              {aktiv && (
+                <motion.span
+                  layoutId="ziel-pille"
+                  transition={wenigerBewegung ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 34 }}
+                  className="absolute inset-0 -z-10 rounded-full bg-lime"
+                />
+              )}
+              {z.kurz}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-5 min-h-[7.5rem] sm:min-h-[6.5rem]" aria-live="polite">
+        <AnimatePresence mode="wait" initial={false}>
+          {inhalt ? (
+            <motion.div
+              key={inhalt.wert}
+              initial={wenigerBewegung ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={wenigerBewegung ? undefined : { opacity: 0, y: -8 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <p className="max-w-lg text-[15px] leading-relaxed text-foreground/80">{inhalt.antwort}</p>
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Button href={probeterminHref(inhalt.wert)} className="knopf-glanz-dauer whitespace-nowrap px-7 py-3.5">
+                  {inhalt.knopf}
+                  <ArrowRight size={16} aria-hidden />
+                </Button>
+                <a href="#dein-ziel" className="text-sm font-semibold text-accent underline-offset-4 hover:underline">
+                  So trainierst du dafür
+                </a>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="ohne"
+              initial={wenigerBewegung ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={wenigerBewegung ? undefined : { opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="flex flex-col gap-3 sm:flex-row sm:items-center"
+            >
+              <Button href="/probetermin" className="knopf-glanz-dauer px-8 py-3.5">
+                Kostenloses Probetraining
+                <ArrowRight size={16} aria-hidden />
+              </Button>
+              <Button href="/ziel-check" variant="secondary" className="border-white/25">
+                Unsicher? Ziel-Check machen
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Die Überschrift - ohne Ziel die allgemeine, mit Ziel die des Ziels.
+ *
+ * Beim Wechsel wird sie neu aufgebaut, damit die Wörter wieder aus ihrer
+ * Zeile steigen (CSS-Animation, siehe .hero-anim-word). Beim ersten Laden
+ * mit kurzer Verzögerung, beim Wechsel sofort.
+ */
+const ALLGEMEIN: [string, string] = ["Fühl dich wieder\u00a0wohl", "in\u00a0deinem\u00a0Körper."];
+
+function Ueberschrift() {
+  const { ziel, wechsel } = useZiel();
+  const inhalt = zielInhalt(ziel);
+  // Geschütztes Leerzeichen vor dem letzten Wort: Es darf nie allein in
+  // einer Zeile stehen.
+  const [eins, zwei] = (inhalt?.titel ?? ALLGEMEIN).map((zeile) => zeile.replace(/ (\S+)$/, "\u00a0$1"));
+  const start = wechsel > 0 ? 0 : 0.25;
+  return (
+    <h1
+      key={inhalt?.wert ?? "allgemein"}
+      className="font-display mt-6 text-[2.4rem] font-black leading-[1.04] tracking-tight sm:text-[3.2rem] xl:text-[3.7rem]"
+    >
+      <StaggeredLine text={eins} startDelay={start} />
+      <br />
+      <StaggeredLine text={zwei} className="text-accent" startDelay={start + 0.25} />
+    </h1>
+  );
+}
+
+/** Kleine Karte oben links auf dem Foto: das Motiv zum gewählten Ziel. */
+function ZielKarte() {
+  const { ziel } = useZiel();
+  const inhalt = zielInhalt(ziel);
+  const wenigerBewegung = useReducedMotion();
+  return (
+    <AnimatePresence mode="wait">
+      {inhalt && (
+        <motion.div
+          key={inhalt.wert}
+          aria-hidden
+          initial={wenigerBewegung ? false : { opacity: 0, scale: 0.85, y: -8 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={wenigerBewegung ? undefined : { opacity: 0, scale: 0.9 }}
+          transition={{ type: "spring", stiffness: 320, damping: 26 }}
+          className="hero-geschichte absolute left-3 top-3 flex items-center gap-3 rounded-2xl py-2 pl-2 pr-4 sm:left-4 sm:top-4"
+        >
+          <div className="h-14 w-14 rounded-xl bg-black/50 p-1.5 sm:h-16 sm:w-16">
+            <ZielMotiv ziel={inhalt.wert} className="h-full w-full" />
+          </div>
+          <p className="text-xs leading-tight text-foreground/80">
+            <span className="block text-[10px] uppercase tracking-widest text-muted">Dein Fokus</span>
+            <span className="mt-0.5 block text-sm font-semibold text-foreground">{inhalt.kurz}</span>
+          </p>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

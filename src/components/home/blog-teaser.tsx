@@ -1,57 +1,28 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { Container } from "@/components/ui/container";
-import { Reveal } from "@/components/ui/reveal";
-import { SectionHeader } from "@/components/ui/section-header";
 import { getPublishedPosts } from "@/lib/data";
 import { formatDate } from "@/lib/format";
-import { PostThumb } from "@/components/blog/post-thumb";
+import { BlogKarten } from "@/components/home/blog-karten";
 
+/**
+ * Drei Beiträge auf der Startseite.
+ *
+ * Geladen werden ein paar mehr: Mit gewähltem Ziel zeigt die Startseite die
+ * drei, die am besten dazu passen (siehe BlogKarten) - "Abnehmen mit EMS"
+ * für alle, die abnehmen wollen, statt einfach der neuesten drei.
+ */
 export async function BlogTeaser() {
-  const posts = await getPublishedPosts(3);
+  const posts = await getPublishedPosts(9);
   if (posts.length === 0) return null;
 
   return (
-    <section className="border-t border-border py-20 sm:py-24 md:py-32">
-      <Container>
-        <SectionHeader
-          kicker="Wissen"
-          title="Aus dem Blog"
-          intro="Trainingstipps, EMS-Wissen und Neuigkeiten aus dem Studio."
-          className="mb-16"
-          action={
-            <Link
-              href="/blog"
-              className="hidden items-center gap-1 text-sm font-medium text-accent hover:underline md:flex"
-            >
-              Alle Artikel <ArrowRight size={14} />
-            </Link>
-          }
-        />
-
-        <div className="grid gap-6 md:grid-cols-3">
-          {posts.map((post, index) => (
-            <Reveal key={post.id} delay={index * 0.1}>
-              <Link
-                href={`/blog/${post.slug}`}
-                className="karte-hebt karte-glanz group flex h-full flex-col overflow-hidden card"
-              >
-                <PostThumb slug={post.slug} title={post.title} coverImage={post.coverImage} />
-                <div className="flex flex-1 flex-col p-6">
-                  <span className="text-xs text-muted">
-                    {post.publishedAt ? formatDate(post.publishedAt) : ""}
-                  </span>
-                  <h3 className="mt-3 text-lg font-semibold">{post.title}</h3>
-                  <p className="mt-2 flex-1 text-sm text-muted">{post.excerpt}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm text-accent">
-                    Weiterlesen <ArrowRight size={14} className="karte-pfeil" aria-hidden />
-                  </span>
-                </div>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
-      </Container>
-    </section>
+    <BlogKarten
+      posts={posts.map((post) => ({
+        id: post.id,
+        slug: post.slug,
+        title: post.title,
+        excerpt: post.excerpt,
+        coverImage: post.coverImage,
+        datum: post.publishedAt ? formatDate(post.publishedAt) : "",
+      }))}
+    />
   );
 }

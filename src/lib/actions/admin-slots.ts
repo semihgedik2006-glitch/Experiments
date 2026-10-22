@@ -32,6 +32,8 @@ export async function createSlot(
 
   revalidatePath("/admin/verfuegbarkeit");
   revalidatePath("/probetermin");
+  revalidatePath("/ziel/[slug]", "page");
+  revalidatePath("/ziel-check");
 
   return { ok: true, message: "Termin wurde angelegt." };
 }
@@ -54,6 +56,8 @@ export async function deleteSlot(id: string) {
   await prisma.availabilitySlot.delete({ where: { id } });
   revalidatePath("/admin/verfuegbarkeit");
   revalidatePath("/probetermin");
+  revalidatePath("/ziel/[slug]", "page");
+  revalidatePath("/ziel-check");
 
   if (slot) {
     await protokollieren({
@@ -94,6 +98,8 @@ export async function createSlotTemplate(
 
   revalidatePath("/admin/verfuegbarkeit");
   revalidatePath("/probetermin");
+  revalidatePath("/ziel/[slug]", "page");
+  revalidatePath("/ziel-check");
 
   return {
     ok: true,
@@ -113,6 +119,8 @@ export async function deleteSlotTemplate(id: string) {
 
   revalidatePath("/admin/verfuegbarkeit");
   revalidatePath("/probetermin");
+  revalidatePath("/ziel/[slug]", "page");
+  revalidatePath("/ziel-check");
 
   await protokollieren({
     art: "GELOESCHT",

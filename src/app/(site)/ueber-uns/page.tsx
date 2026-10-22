@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site-config";
 import { isVisible } from "@/lib/site-toggles";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
@@ -126,7 +127,7 @@ export default async function UeberUnsPage() {
         intro="20 Minuten pro Woche, persönlich betreut - ob Abnehmen, Muskelaufbau oder ein gesünderer Rücken."
       >
         <p className="mt-6 max-w-2xl font-semibold text-accent">
-          Körperformen - der Vorreiter für gesundheitsorientiertes EMS Training.
+          {siteConfig.claim}.
         </p>
       </PageHeader>
 
@@ -153,8 +154,8 @@ export default async function UeberUnsPage() {
               die sich mit klassischen Übungen nur schwer gezielt ansteuern lassen.
             </p>
             <p>
-              Weil das Training ohne schwere Gewichte auskommt, ist die Belastung
-              für Gelenke und Wirbelsäule geringer als beim Hanteltraining.
+              Das Training kommt ohne schwere Gewichte aus &ndash; es kommt keine
+              Zusatzlast auf Gelenke und Wirbelsäule.
             </p>
             <p>
               <Link

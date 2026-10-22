@@ -7,7 +7,8 @@ import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import { gebuchtMerken } from "@/lib/einladung";
 import { createBooking } from "@/lib/actions/booking";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
-import { ZIELE } from "@/lib/ziel";
+import { ZIELE, istZiel } from "@/lib/ziel";
+import { ZIEL_SPEICHER } from "@/components/ziel/ziel-kontext";
 import { herkunftAusBrowser, type Herkunft } from "@/lib/herkunft";
 import type { TerminTag as DayGroup } from "@/lib/termin-tage";
 import type { ActionResult } from "@/lib/actions/newsletter";
@@ -71,6 +72,25 @@ export function BookingForm({
   const herkunft = useRef<Herkunft>({ seite: null, kampagne: null, quelle: null });
   useEffect(() => {
     herkunft.current = herkunftAusBrowser();
+  }, []);
+
+  // Das Ziel von der Startseite: aus der Adresse (?ziel=ruecken) oder aus
+  // dem, was sich der Browser in diesem Besuch gemerkt hat. Nur ein Wert,
+  // den das Formular kennt, und nur, solange noch nichts angekreuzt ist.
+  useEffect(() => {
+    let vorgabe: string | null = new URLSearchParams(window.location.search).get("ziel");
+    if (!vorgabe) {
+      try {
+        vorgabe = sessionStorage.getItem(ZIEL_SPEICHER);
+      } catch {
+        vorgabe = null;
+      }
+    }
+    if (vorgabe && istZiel(vorgabe)) {
+      const ziel = vorgabe;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- einmaliges Übernehmen aus dem Browser
+      setFelder((bisher) => (bisher.ziel ? bisher : { ...bisher, ziel }));
+    }
   }, []);
 
   const aendern =

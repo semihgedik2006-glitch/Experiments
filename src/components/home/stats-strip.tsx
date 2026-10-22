@@ -162,11 +162,10 @@ export function StatsStrip({ zahlen }: { zahlen: Kennzahl[] }) {
                 Die Standorte, die im Adminbereich geführt werden. Kommt einer
                 dazu, steht er hier am selben Tag.
               </Herkunft>
-              <Herkunft begriff="220 Minuten mehr Zeit">
-                Eine Beispielrechnung: Klassisch dreimal Studio pro Woche, je 60
-                Minuten Training, 20 Minuten Weg und 10 Minuten Umziehen &ndash; zusammen
-                270 Minuten. Bei uns einmal 20 Minuten Training mit denselben 30 Minuten
-                drumherum &ndash; 50 Minuten. Die Differenz sind 220 Minuten pro Woche.
+              <Herkunft begriff="Körperformen-Studios">
+                Alle Körperformen-Studios zusammen. Mit unseren Studios in Köln und
+                Umgebung betreibt kein anderer Partner im Körperformen-Netz mehr
+                Standorte.
               </Herkunft>
             </dl>
           </MehrDazu>

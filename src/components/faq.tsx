@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { ChevronDown, Search, SearchX } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
+import { useZiel } from "@/components/ziel/ziel-kontext";
+import { nachZiel, zielInhalt } from "@/lib/ziel-inhalte";
 
 export type FaqEntry = { question: string; answer: string };
 
@@ -75,9 +77,19 @@ function enthaelt(text: string, begriff: string): boolean {
   );
 }
 
-export function Faq({ items }: { items: FaqEntry[] }) {
+export function Faq({ items: alle }: { items: FaqEntry[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const [suche, setSuche] = useState("");
+
+  // Auf der Startseite mit gewähltem Ziel rücken die Fragen dazu nach
+  // vorne - wer "Rücken" gewählt hat, liest zuerst "Ist EMS gelenkschonend?".
+  // Überall sonst gibt es kein Ziel, und die Reihenfolge bleibt die aus dem
+  // Adminbereich.
+  const { ziel } = useZiel();
+  const items = useMemo(
+    () => nachZiel(alle, (item) => `${item.question} ${item.answer}`, zielInhalt(ziel)),
+    [alle, ziel],
+  );
 
   const begriff = suche.trim();
 

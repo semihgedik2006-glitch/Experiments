@@ -22,7 +22,7 @@ export const legalConfig = {
 
   /** Ladungsfähige Geschäftsanschrift (Impressumspflicht). */
   address: {
-    street: "Rondorfer Hauptstr. 27A",
+    street: "Rondorfer Hauptstr. 10",
     postalCode: "50997",
     city: "Köln",
     country: "Deutschland",

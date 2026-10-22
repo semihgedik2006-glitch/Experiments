@@ -3,20 +3,19 @@
 import { ProblemAbschnitt, Legende, ab } from "@/components/problem/problem-abschnitt";
 
 /**
- * Das Problem, das wir lösen: Zeit.
+ * Zeit: 20 Minuten passen auch in eine volle Woche.
  *
- * Bewusst KEIN Versprechen über Wirkung ("so effektiv wie drei Stunden
- * Studio") - das wäre eine Behauptung, die niemand belegen kann. Gezeigt
- * wird nur, was sich nachrechnen lässt: Wie viel Platz drei Studio-Einheiten
- * in einer vollen Arbeitswoche brauchen, und wie viel ein Termin bei uns.
+ * Vorher stand hier eine Rechnung "drei Mal Fitnessstudio = 4,5 Stunden
+ * gegen 20 Minuten bei uns". Das machte Fitnessstudios schlecht - das
+ * wollen wir nicht. Jetzt zeigt die Grafik nur die eigene Woche und den
+ * einen Termin, der hineinpasst.
  *
  * DER ABLAUF (globals.css, "Die volle Woche"), ein Takt für den ganzen
  * Abschnitt statt Einzeleffekte:
  *   1. Text und Karte gleiten herein.
  *   2. Die Woche füllt sich Tag für Tag mit Terminen.
- *   3. Drei Studio-Blöcke fallen hinein, stoßen an, werden rot, verblassen.
- *   4. Ein schmaler Lime-Block setzt sich in die Lücke und atmet weiter.
- *   5. Unten: 4,5 Std. wird durchgestrichen, "unter 1 Std." leuchtet auf.
+ *   3. Ein schmaler Lime-Block setzt sich in die Lücke und atmet weiter.
+ *   4. Unten leuchtet "20 Min." auf.
  *
  * Nur opacity und transform - beides rechnet die Grafikkarte, nichts
  * ruckelt. Ohne JavaScript und bei "Bewegung reduzieren" steht sofort das
@@ -41,13 +40,6 @@ const BELEGT: [tag: number, von: number, bis: number][] = [
   [4, 8, 13], [4, 14, 17],
 ];
 
-/** Drei Studio-Einheiten à 90 Minuten (Training, Weg, Umziehen). */
-const STUDIO: [tag: number, von: number][] = [
-  [0, 17],
-  [2, 18],
-  [4, 16.5],
-];
-
 /** Der eine Termin bei uns: 20 Minuten Training. */
 const EMS = { tag: 3, von: 17.5, dauer: 20 / 60 };
 
@@ -56,7 +48,7 @@ function Kalender() {
     <svg
       viewBox="0 0 360 280"
       role="img"
-      aria-label="Eine volle Arbeitswoche: Drei Studio-Einheiten à 90 Minuten stoßen an bestehende Termine. Ein 20-Minuten-Termin passt am Donnerstag um 17:30 Uhr in eine Lücke."
+      aria-label="Eine volle Arbeitswoche mit Arbeit und Terminen. Ein 20-Minuten-Training passt am Donnerstag um 17:30 Uhr in eine Lücke."
       className="w-full"
     >
       {["Mo", "Di", "Mi", "Do", "Fr"].map((tag, i) => (
@@ -85,16 +77,6 @@ function Kalender() {
           className="kal-belegt"
           style={ab(0.55 + tag * 0.09 + (i % 2) * 0.12)}
         />
-      ))}
-
-      {/* Drei Mal Studio - stößt überall an. */}
-      {STUDIO.map(([tag, von], i) => (
-        <g key={tag} className="kal-studio" style={ab(1.55 + i * 0.28)}>
-          <rect x={x(tag) + 3} y={y(von)} width={BREITE - 6} height={1.5 * PRO_STUNDE} rx={4} />
-          <text x={x(tag) + BREITE / 2} y={y(von) + 17} textAnchor="middle">
-            Studio
-          </text>
-        </g>
       ))}
 
       {/* Der eine Termin. */}
@@ -127,45 +109,33 @@ function Kalender() {
 export function ZeitProblem() {
   return (
     <ProblemAbschnitt
-      kicker="Das kennst du"
-      titel="Dreimal die Woche ins Studio? Dein Kalender sagt nein."
-      klassisch={
-        <>
-          drei Einheiten, dazu Weg und Umziehen – gut{" "}
-          <strong className="font-semibold text-foreground">4,5 Stunden</strong> pro Woche.
-        </>
-      }
-      beiUns={
-        <>
-          ein fester Termin, 20 Minuten Training, dein Trainer stellt alles ein. Mit Weg{" "}
-          <strong className="font-semibold text-foreground">unter einer Stunde</strong>.
-        </>
-      }
-      rechnung={{
-        titel: "So ist gerechnet",
-        inhalt: (
-          <>
-            <p>
-              Klassisch: 3 × (60 Min. Training + 20 Min. Weg + 10 Min. Umziehen) = 270 Min.
-              Bei uns: 1 × (20 Min. Training + 20 Min. Weg + 10 Min. Umziehen) = 50 Min.
-            </p>
-            <p className="mt-2">
-              Eine Beispielrechnung – dein Weg hängt davon ab, wo du wohnst und arbeitest.
-              Mit 14 Studios rund um Köln ist er meistens kurz.
-            </p>
-          </>
-        ),
-      }}
+      kicker="Passt in deine Woche"
+      titel="Dein Kalender ist voll? 20 Minuten passen trotzdem rein."
+      punkte={[
+        {
+          label: "Ein fester Termin",
+          text: <>einmal pro Woche, 20 Minuten Training. Er liegt jede Woche gleich und wird zur Gewohnheit.</>,
+        },
+        {
+          label: "Nichts zu planen",
+          text: <>dein Trainer stellt alles ein und weiß, woran ihr arbeitet. Du kommst, trainierst und gehst weiter in deinen Tag.</>,
+        },
+        {
+          label: "Mehr Zeit für dich",
+          text: <>der Rest der Woche gehört deiner Familie, deinem Job und dir.</>,
+        },
+      ]}
       knopf={{ href: "/probetermin", text: "Freien Termin finden" }}
       kartenTitel="Deine Woche"
       legende={
         <>
           <Legende farbe="termin">Termine</Legende>
-          <Legende farbe="alt">Studio</Legende>
+          <Legende farbe="neu">Dein Training</Legende>
         </>
       }
-      alt={{ label: "Klassisch", wert: "4,5 Std." }}
-      neu={{ label: "Bei uns", wert: "unter 1 Std." }}
+      alt={{ label: "Deine Woche", wert: "voll" }}
+      neu={{ label: "Training", wert: "20 Min." }}
+      aufloesung={2.4}
     >
       <Kalender />
     </ProblemAbschnitt>

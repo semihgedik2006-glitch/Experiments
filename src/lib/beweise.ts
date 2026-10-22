@@ -1,3 +1,4 @@
+import { siteConfig } from "@/lib/site-config";
 import { prisma } from "@/lib/prisma";
 import { freiePlaetze } from "@/lib/kapazitaet";
 
@@ -155,8 +156,6 @@ export type Kennzahl = {
   statisch?: boolean;
 };
 
-/** 270 Min. (3 x Studio mit Weg und Umziehen) minus 50 Min. (1 x bei uns). */
-export const ZEITGEWINN_MINUTEN = 220;
 
 export function kennzahlen(b: Beweise): Kennzahl[] {
   // Keine Abfrage, sondern das Angebot selbst - und die Zahl, wegen der
@@ -166,23 +165,17 @@ export function kennzahlen(b: Beweise): Kennzahl[] {
   ];
 
   if (b.standorte > 0) {
-    liste.push({ wert: String(b.standorte), label: "Studios rund um Köln" });
+    liste.push({ wert: String(b.standorte), label: b.standorte === 1 ? "Studio in Köln und Umgebung" : "Studios in Köln und Umgebung" });
   }
 
-  // Die dritte Stelle: die gewonnene Zeit. Vorher stand hier, je nach
-  // Datenlage, die Zahl freier Termine, die Spanne der Trainingszeiten
-  // oder "8 Orte rund um Köln" - Letzteres sagt niemandem etwas, der
-  // ohnehin in Köln sucht. Die Zeit dagegen ist der Grund, warum jemand
-  // hier ist. Gerechnet wie im Abschnitt "Das kennst du":
-  // 3 x (60 + 20 Weg + 10 Umziehen) = 270 Min. gegen 1 x (20 + 20 + 10)
-  // = 50 Min. - die Differenz, 220 Minuten pro Woche. Die freien Termine
-  // stehen weiter im ersten Bildschirm und im Aufruf am Seitenende.
+  // Die dritte Stelle: das Körperformen-Netz. Vorher stand hier "220 Min.
+  // mehr Zeit" - gerechnet gegen dreimal Fitnessstudio pro Woche. Diesen
+  // Vergleich wollen wir nicht mehr ziehen. Die Gesamtzahl der Studios
+  // pflegt die Zentrale, sie steht in site-config.
   liste.push({
-    wert: String(ZEITGEWINN_MINUTEN),
-    einheit: " Min.",
-    label: "mehr Zeit für deine Liebsten – jede Woche",
+    wert: String(siteConfig.netzwerk.studiosGesamt),
+    label: "Körperformen-Studios – wir sind der größte Partner",
   });
-
   return liste.slice(0, 3);
 }
 

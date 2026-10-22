@@ -92,7 +92,7 @@ export async function BeweisLeiste({
         <>
           <span className="font-semibold">{beweise.standorte} Studios</span>
           <span className="text-muted">
-            {beweise.orte > 1 ? ` in ${beweise.orte} Orten rund um Köln` : " rund um Köln"}
+            {beweise.orte > 1 ? ` in ${beweise.orte} Orten in Köln und Umgebung` : " in Köln und Umgebung"}
           </span>
         </>
       ),

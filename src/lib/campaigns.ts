@@ -46,7 +46,7 @@ export const campaigns: Record<string, Campaign> = {
     subline:
       "Probier EMS-Training kostenlos aus - mit persönlicher Betreuung. Danach zeigt dir dein Trainer, welche Mitgliedschaft zu deinem Ziel passt.",
     bullets: [
-      "Nur 20 Minuten pro Woche statt stundenlang im Fitnessstudio",
+      "Nur 20 Minuten pro Woche - fester Termin, kein Planungsaufwand",
       "Immer persönlich betreut - kein Training auf eigene Faust",
       "Gelenkschonend und auch für Wiedereinsteiger geeignet",
     ],

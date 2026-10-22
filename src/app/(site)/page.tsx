@@ -1,16 +1,10 @@
-import { ZeitProblem } from "@/components/home/zeit-problem";
 import { Hero } from "@/components/home/hero";
 import { StatsStrip } from "@/components/home/stats-strip";
-import { UspGrid } from "@/components/home/usp-grid";
-import { HowItWorks } from "@/components/home/how-it-works";
-import { StudioTeaser } from "@/components/home/studio-teaser";
-import { TestimonialsTeaser } from "@/components/home/testimonials-teaser";
-import { TrustSection } from "@/components/trust-section";
-import { BlogTeaser } from "@/components/home/blog-teaser";
-import { FaqSection } from "@/components/faq-section";
+import { ZielProvider } from "@/components/ziel/ziel-kontext";
+import { ZielAbschnitte, ZielLeiste } from "@/components/ziel/ziel-abschnitte";
+import { zielAbschnitteBauen, zeitspanneAus } from "@/components/ziel/ziel-abschnitte-bauen";
 import { CtaBanner } from "@/components/cta-banner";
 import { InstagramWand } from "@/components/instagram-wand";
-import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { StudioJsonLd, WebsiteJsonLd, FaqJsonLd } from "@/components/structured-data";
 import { getToggles } from "@/lib/site-toggles";
 import { getStudios, getUpcomingSlots } from "@/lib/data";
@@ -29,7 +23,7 @@ export default async function Home() {
   const studios = await getStudios();
   const standorte =
     studios.length > 1
-      ? `${studios.length} EMS-Studios rund um Köln`
+      ? `${studios.length} EMS-Studios in Köln und Umgebung`
       : studios.length === 1
         ? `EMS-Studio in ${studios[0].city}`
         : "EMS-Training in Köln und Umgebung";
@@ -53,10 +47,7 @@ export default async function Home() {
   const zahlen = kennzahlen(beweise);
   // "07:00 bis 21:00 Uhr" - abgeleitet aus den tatsächlich angelegten
   // Terminen. Gibt es keine, entfällt der Halbsatz.
-  const zeitspanne =
-    beweise.frueheste && beweise.spaeteste
-      ? `${beweise.frueheste} bis ${beweise.spaeteste} Uhr`
-      : null;
+  const zeitspanne = zeitspanneAus(beweise.frueheste, beweise.spaeteste);
 
   const naechsteSlots = toggles.studio ? await getUpcomingSlots() : [];
   const naechster = naechsteSlots[0];
@@ -70,7 +61,7 @@ export default async function Home() {
     : null;
 
   return (
-    <>
+    <ZielProvider>
       <StudioJsonLd />
       <WebsiteJsonLd />
       <FaqJsonLd />
@@ -82,34 +73,25 @@ export default async function Home() {
       {/* Weniger als zwei Zahlen sind keine Aussage, sondern eine
           Behauptung - dann entfällt das Band lieber ganz. */}
       {zahlen.length >= 2 && <StatsStrip zahlen={zahlen} />}
-      <ZeitProblem />
-      <UspGrid standorte={studios.length} zeitspanne={zeitspanne} />
-      {/* Die Trenner stehen dort, wo zwei helle Abschnitte aneinander
-          stoßen - genau die Stellen, an denen die Seite beim Scrollen
-          bisher stillstand. Nicht überall: Wo ohnehin ein dunkles Band
-          oder eine Flächenfarbe wechselt, ist der Schnitt schon sichtbar,
-          und eine Linie obendrauf wäre eine Verzierung zu viel.
-
-          Drei verschiedene Varianten, damit die Linien nicht wie dreimal
-          dasselbe Bauteil wirken und nicht im Gleichschritt blinken. */}
-      <ImpulsTrenner variante="a" className="mx-auto max-w-6xl px-6" />
-      <HowItWorks />
-      {toggles.studio && <StudioTeaser />}
-      {toggles.erfolgsgeschichten && <TestimonialsTeaser />}
-      <TrustSection />
-      {toggles.blog && (
-        <>
-          <ImpulsTrenner variante="b" className="mx-auto max-w-6xl px-6" />
-          <BlogTeaser />
-        </>
-      )}
-      {/* Instagram steht zwischen Blog und Fragen: Bis hierher hat die
-          Seite erklärt und belegt - sechs Bilder aus dem Studio zeigen
-          danach, wie es dort tatsächlich aussieht. */}
-      <InstagramWand beitraege={instagram} />
-      <ImpulsTrenner variante="c" className="mx-auto max-w-6xl px-6" />
-      <FaqSection />
+      {/* Ab hier richtet sich die Seite nach dem Ziel: Wer oben eines
+          gewählt hat, sieht die Abschnitte in der Reihenfolge, die dazu
+          passt - und nur die, die dafür zählen (siehe ZIEL_INHALTE).
+          "In vier Stationen" (HowItWorks) ist entfallen: Den Weg führt
+          jetzt die Zielauswahl. */}
+      <ZielAbschnitte
+        abschnitte={zielAbschnitteBauen({
+          anzahlStudios: studios.length,
+          toggles,
+          zeitspanne,
+          auswahl: true,
+          // Instagram zeigt, wie es im Studio aussieht - ohne gewähltes
+          // Ziel zwischen Blog und Fragen.
+          instagram: <InstagramWand beitraege={instagram} />,
+          studioListe: true,
+        })}
+      />
+      <ZielLeiste />
       <CtaBanner />
-    </>
+    </ZielProvider>
   );
 }

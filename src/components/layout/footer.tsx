@@ -5,6 +5,7 @@ import { NewsletterForm } from "@/components/newsletter-form";
 import { InstagramIcon, FacebookIcon, TikTokIcon } from "@/components/icons/social-icons";
 import { Logo } from "@/components/logo";
 import { getStudios } from "@/lib/data";
+import { ZIEL_INHALTE } from "@/lib/ziel-inhalte";
 
 const socials = [
   { href: siteConfig.social.instagram, label: "Instagram", Icon: InstagramIcon },
@@ -32,7 +33,7 @@ export async function Footer({
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-4">
         <div>
           <Logo className="h-8 w-auto" />
-          <p className="mt-3 max-w-xs text-sm text-muted">{siteConfig.tagline}</p>
+          <p className="mt-3 max-w-xs text-sm text-muted">{siteConfig.claim}</p>
           <div className="mt-5 flex gap-3">
             {socials.map(({ href, label, Icon }) => (
               <a
@@ -89,6 +90,30 @@ export async function Footer({
                 className="tastflaeche block py-1.5 text-sm text-muted hover:text-foreground"
               >
                 Meine Termine
+              </Link>
+            </li>
+          </ul>
+
+          {/* Die Zielseiten - im Menü oben ist für sie kein Platz, aber
+              Google und alle, die nach unten scrollen, sollen sie finden. */}
+          <p className="mt-6 text-sm font-semibold">Deine Ziele</p>
+          <ul className="mt-3 space-y-0">
+            {ZIEL_INHALTE.map((ziel) => (
+              <li key={ziel.wert}>
+                <Link
+                  href={`/ziel/${ziel.wert}`}
+                  className="tastflaeche block py-1.5 text-sm text-muted hover:text-foreground"
+                >
+                  {ziel.kurz}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link
+                href="/ziel-check"
+                className="tastflaeche block py-1.5 text-sm text-accent hover:text-foreground"
+              >
+                Ziel-Check machen
               </Link>
             </li>
           </ul>

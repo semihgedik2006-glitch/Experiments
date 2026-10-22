@@ -3,6 +3,7 @@ import { getPublishedPosts, getStudios } from "@/lib/data";
 import { siteConfig } from "@/lib/site-config";
 import { getToggles } from "@/lib/site-toggles";
 import { erfolgeVorhanden } from "@/lib/kundenstimmen";
+import { ZIEL_INHALTE } from "@/lib/ziel-inhalte";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, toggles, studios, erfolge] = await Promise.all([
@@ -25,6 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...(toggles.erfolgsgeschichten && erfolge ? ["/erfolgsgeschichten"] : []),
     ...(toggles["ueber-uns"] ? ["/ueber-uns"] : []),
     "/probetermin",
+    "/ziel-check",
     // Der Einstieg in den eigenen Terminbereich. Nur das Formular - die
     // Seite dahinter ist von der Indizierung ausgenommen. Sie gehört
     // hierher, weil sie im Menü absichtlich nicht auftaucht und sonst
@@ -76,5 +78,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...studioRoutes, ...postRoutes];
+  // Die Zielseiten (/ziel/ruecken, ...): Auf sie zielen Suchen wie "EMS
+  // Rücken Köln" - deshalb wie die Standortseiten ausdrücklich gemeldet.
+  // Ohne lastModified: Die Seiten ändern sich nur mit einer neuen Fassung
+  // der Website, und ein bei jedem Abruf neues Datum wäre falsch.
+  const zielRoutes = ZIEL_INHALTE.map((ziel) => ({
+    url: `${siteConfig.url}/ziel/${ziel.wert}`,
+    priority: 0.8,
+  }));
+
+  return [...staticRoutes, ...zielRoutes, ...studioRoutes, ...postRoutes];
 }

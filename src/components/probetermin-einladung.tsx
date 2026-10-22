@@ -314,6 +314,16 @@ function MitteEinladung({
   const [state, formAction, pending] = useActionState(createBooking, leer);
   const fertig = useRef(false);
 
+  // Auf einer neuen Seite beginnt die Einladung von vorn. Zurückgesetzt
+  // wird beim Rendern und nicht im Effekt darunter - so erscheint nie ein
+  // Bild, auf dem noch die Einladung der vorigen Seite steht.
+  const [pfadVorher, setPfadVorher] = useState(pfad);
+  if (pfad !== pfadVorher) {
+    setPfadVorher(pfad);
+    setSichtbar(false);
+    setAufgeklappt(false);
+  }
+
   // Nach dem Absenden: für diesen Besuch keine weitere Einladung.
   useEffect(() => {
     if (state.ok) gebuchtMerken();
@@ -321,8 +331,6 @@ function MitteEinladung({
 
   useEffect(() => {
     fertig.current = false;
-    setSichtbar(false);
-    setAufgeklappt(false);
     if (!darfErscheinen("mitte", pfad)) return;
 
     const beimScrollen = () => {
