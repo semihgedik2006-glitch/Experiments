@@ -1,6 +1,8 @@
 import { WegLeiste } from "@/components/weg-leiste";
 import { EmsProblem } from "@/components/problem/unterseiten";
 import type { Metadata } from "next";
+import { ReelReihe } from "@/components/reels/reel-reihe";
+import { REELS } from "@/lib/reels";
 import { ABLAUF_EINHEIT, GEGENANZEIGEN } from "@/lib/ablauf";
 import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import {
@@ -119,6 +121,15 @@ export default function EmsTrainingPage() {
 
       <EmsProblem />
       <ActivationSequence />
+
+      {/* Zwei Reels aus den Studios: die Weste und das Training einmal in
+          echt, statt nur als Zeichnung. */}
+      <ReelReihe
+        reels={[REELS.weste, REELS.emsErklaert]}
+        kicker="Einmal in echt"
+        titel="Weste an, Impulse an"
+        intro="Eine Trainerin zeigt, was die Weste macht und wie sich das Training anfühlt – mit Untertiteln."
+      />
 
       <section className="on-ink py-20 sm:py-24 md:py-32">
         <Container>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ArrowRight, CalendarClock, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
@@ -23,7 +24,19 @@ import { ImpulsMotiv } from "@/components/ui/impuls-motiv";
  */
 export function CtaBanner() {
   return (
-    <section className="on-ink relative overflow-hidden pt-24 pb-24 sm:pt-28 md:pt-36">
+    <section className="on-ink relative isolate overflow-hidden pt-24 pb-24 sm:pt-28 md:pt-36">
+      {/* Das Team im Hintergrund, stark gedämpft: Gesichter statt Leere,
+          ohne dass der Text dagegen ankämpfen muss. */}
+      <div aria-hidden className="absolute inset-0 -z-10">
+        <Image
+          src="/bilder/studio/team-jubel.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-[50%_30%] opacity-35"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--ink)] via-[var(--ink)]/60 to-[var(--ink)]" />
+      </div>
       {/* Erst ab md: Auf dem Handy nimmt der Text die volle Breite ein, und
           das Motiv läge direkt hinter der Überschrift. */}
       <div

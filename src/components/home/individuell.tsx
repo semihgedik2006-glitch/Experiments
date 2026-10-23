@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
@@ -103,6 +104,20 @@ export function Individuell() {
           </ol>
 
           <PlanKarte stufe={sichtbar} />
+
+          {/* Auf dem Handy statt der Plan-Karte ein Foto: Trainer und
+              Kunde nebeneinander in derselben Übung - genau das, was die
+              vier Schritte beschreiben. */}
+          <div className="overflow-hidden rounded-3xl sm:hidden">
+            <Image
+              src="/bilder/studio/training-kniebeuge.jpg"
+              alt="Eine Trainerin macht eine Kniebeuge mit einem Kunden im EMS-Anzug, daneben das EMS-Gerät."
+              width={1600}
+              height={1067}
+              sizes="100vw"
+              className="aspect-[4/3] w-full object-cover object-[45%_center]"
+            />
+          </div>
         </div>
       </Container>
     </section>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Clock, Mail, MapPin, Navigation, Phone } from "lucide-react";
@@ -184,6 +185,25 @@ export default async function StudioDetailSeite({
             Studio meldet sich. */}
         <BeweisLeiste studioId={studio.id} className="mt-8 max-w-xl" />
       </PageHeader>
+
+      {/* Ein Foto aus einem Körperformen-Studio. Ausdrücklich so
+          beschriftet: Es ist nicht zwingend dieser Standort - eigene Fotos
+          je Studio kommen über die Trainer (TrainerWand weiter unten). */}
+      <Container className="pt-4">
+        <figure>
+          <div className="overflow-hidden rounded-3xl">
+            <Image
+              src="/bilder/studio/high-five-trainerin.jpg"
+              alt="Eine Körperformen-Trainerin und ein Kunde im EMS-Anzug geben sich ein High Five."
+              width={1600}
+              height={1067}
+              sizes="(min-width: 1152px) 1104px, 100vw"
+              className="aspect-[4/3] w-full object-cover sm:aspect-[21/9] sm:object-[50%_35%]"
+            />
+          </div>
+          <figcaption className="mt-2 text-xs text-muted">Training bei Körperformen</figcaption>
+        </figure>
+      </Container>
 
       {/* Karte und Eckdaten */}
       <section className="py-20 sm:py-24">

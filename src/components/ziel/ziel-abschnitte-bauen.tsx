@@ -3,6 +3,7 @@ import { ZielWelt } from "@/components/home/ziel-welt";
 import { AuszeichnungAbschnitt } from "@/components/auszeichnung/auszeichnung";
 import { Individuell } from "@/components/home/individuell";
 import { EinheitStory } from "@/components/home/einheit-story";
+import { ZielReels } from "@/components/reels/ziel-reels";
 import { ZeitProblem } from "@/components/home/zeit-problem";
 import { UspGrid } from "@/components/home/usp-grid";
 import { StudioTeaser } from "@/components/home/studio-teaser";
@@ -47,6 +48,7 @@ export function zielAbschnitteBauen({
     individuell: <Individuell />,
     zeit: <ZeitProblem />,
     ablauf: <EinheitStory />,
+    reels: <ZielReels />,
     vorteile: <UspGrid standorte={anzahlStudios} zeitspanne={zeitspanne} />,
     studio: studioListe && toggles.studio ? <StudioTeaser /> : null,
     erfolge: toggles.erfolgsgeschichten ? <TestimonialsTeaser /> : null,
