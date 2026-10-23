@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
   AnimatePresence,
   motion,
+  useInView,
   useMotionValueEvent,
   useReducedMotion,
   useScroll,
@@ -63,25 +64,55 @@ function Geschichte() {
   });
   const schritt = ABLAUF_EINHEIT[aktiv];
 
+  // Es läuft nur die Schleife der aktiven Station - und nur, solange der
+  // Abschnitt im Bild ist. Vorher lädt nichts (preload="none").
+  const imBild = useInView(ref, { margin: "200px 0px" });
+  const videos = useRef<(HTMLVideoElement | null)[]>([]);
+  useEffect(() => {
+    videos.current.forEach((v, i) => {
+      if (!v) return;
+      if (imBild && i === aktiv) v.play().catch(() => {});
+      else v.pause();
+    });
+  }, [aktiv, imBild]);
+
   return (
     <section ref={ref} className="on-ink relative" style={{ height: `${n * 45 + 60}vh` }}>
       <div className="sticky top-0 isolate flex h-svh items-center overflow-hidden">
         <div aria-hidden className="hero-schein pointer-events-none absolute -z-10" />
-        {/* Das Foto der Station - echte Bilder aus einem Körperformen-
-            Studio, eines je Station, die ineinander überblenden. Alle
+        {/* Das Bild der Station - eine kurze stumme Videoschleife aus dem
+            Dreh im Studio (sonst das Foto), je Station, ineinander
+            überblendend. Alle
             liegen von Anfang an da (nur unsichtbar), damit beim Wechsel
             nichts nachlädt. Am Computer rechte Hälfte, auf dem Handy
             gedämpft hinter dem Text; der Verlauf hält den Text lesbar. */}
         <div aria-hidden className="absolute inset-0 -z-20 lg:left-[42%]">
-          {ABLAUF_EINHEIT.map((s, i) =>
-            s.foto ? (
-              <motion.div
-                key={s.foto.src}
-                className="absolute inset-0"
-                initial={false}
-                animate={{ opacity: i === aktiv ? 1 : 0, scale: i === aktiv ? 1 : 1.04 }}
-                transition={{ duration: 0.6, ease: weich }}
-              >
+          {ABLAUF_EINHEIT.map((s, i) => (
+            <motion.div
+              key={s.step}
+              className="absolute inset-0"
+              initial={false}
+              animate={{ opacity: i === aktiv ? 1 : 0, scale: i === aktiv ? 1 : 1.04 }}
+              transition={{ duration: 0.6, ease: weich }}
+            >
+              {s.video ? (
+                // Nur die aktive Station und die nächste laden vor - der
+                // Rest kommt erst, wenn man hinscrollt.
+                <video
+                  ref={(el) => {
+                    videos.current[i] = el;
+                  }}
+                  poster={`${s.video}.jpg`}
+                  muted
+                  loop
+                  playsInline
+                  preload={imBild && (i === aktiv || i === aktiv + 1) ? "auto" : "none"}
+                  className="h-full w-full object-cover opacity-30 lg:opacity-100"
+                >
+                  <source src={`${s.video}.webm`} type="video/webm" />
+                  <source src={`${s.video}.mp4`} type="video/mp4" />
+                </video>
+              ) : s.foto ? (
                 <Image
                   src={s.foto.src}
                   alt=""
@@ -89,9 +120,9 @@ function Geschichte() {
                   sizes="(min-width: 1024px) 58vw, 100vw"
                   className="object-cover opacity-30 lg:opacity-100"
                 />
-              </motion.div>
-            ) : null,
-          )}
+              ) : null}
+            </motion.div>
+          ))}
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/70 to-[var(--ink)]/40 lg:bg-gradient-to-r lg:from-[var(--ink)] lg:via-[var(--ink)]/40 lg:to-transparent" />
         </div>
         <Container className="w-full">

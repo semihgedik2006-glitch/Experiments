@@ -16,6 +16,12 @@ export type Schritt = {
   duration: string;
   /** Echtes Foto aus einem Körperformen-Studio (public/bilder/studio). */
   foto?: { src: string; alt: string };
+  /**
+   * Kurze stumme Schleife (5 s) aus dem Videodreh im Studio, ohne Endung:
+   * Es gibt .webm, .mp4 und .jpg (Standbild). Läuft in der Scroll-Story der
+   * Startseite statt des Fotos; das Foto bleibt für /erster-besuch.
+   */
+  video?: string;
 };
 
 export const ABLAUF_EINHEIT: Schritt[] = [
@@ -24,30 +30,35 @@ export const ABLAUF_EINHEIT: Schritt[] = [
     text: "Beim ersten Besuch klären wir deine Ziele und deinen Gesundheitszustand - damit das Training sicher zu dir passt.",
     duration: "5 Min",
     foto: { src: "/bilder/studio/team-begruessung.jpg", alt: "Zwei Körperformen-Trainer begrüßen einen Kunden im EMS-Anzug im Studio." },
+    video: "/videos/ablauf/checkin",
   },
   {
     step: "Funktionswäsche & Weste anlegen",
     text: "Du bekommst Funktionsunterwäsche von uns. Die Trainerin legt dir die EMS-Weste an und verbindet sie mit dem Impulsgerät.",
     duration: "5 Min",
     foto: { src: "/bilder/studio/weste-angelegt.jpg", alt: "Ein Kunde im angelegten EMS-Anzug zeigt den Daumen nach oben, neben ihm sein Trainer." },
+    video: "/videos/ablauf/weste",
   },
   {
     step: "Impulse einstellen",
     text: "Jede Muskelgruppe wird einzeln angesteuert und individuell dosiert - du bestimmst mit, was sich gut anfühlt.",
     duration: "3 Min",
     foto: { src: "/bilder/studio/training-mit-trainer.jpg", alt: "Ein Trainer macht eine Übung vor, der Kunde im EMS-Anzug macht sie mit, daneben das EMS-Gerät." },
+    video: "/videos/ablauf/impulse",
   },
   {
     step: "Das Training",
     text: "Einfache Übungen wie Kniebeugen oder Ausfallschritte - die Impulse kommen zu jeder Bewegung dazu.",
     duration: "20 Min",
     foto: { src: "/bilder/studio/training-ausfallschritt.jpg", alt: "Eine Trainerin und ein Kunde im EMS-Anzug im Ausfallschritt." },
+    video: "/videos/ablauf/training",
   },
   {
     step: "Cool-down & Feedback",
     text: "Lockeres Ausklingen mit Entspannungsimpulsen, danach kurzes Feedback und Planung der nächsten Einheit.",
     duration: "5 Min",
     foto: { src: "/bilder/studio/high-five-trainer.jpg", alt: "Ein Trainer und ein Kunde im EMS-Anzug geben sich nach dem Training ein High Five." },
+    video: "/videos/ablauf/feedback",
   },
 ];
 
