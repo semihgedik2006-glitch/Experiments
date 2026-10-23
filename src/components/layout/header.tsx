@@ -14,7 +14,7 @@ export function Header({
   nav,
   studioLabel,
 }: {
-  nav: { label: string; href: string }[];
+  nav: { label: string; href: string; nurUnten?: boolean }[];
   /** Beschriftung für den Standort-Knopf, z.B. "14 Studios". Fehlt sie,
       ist die Studio-Seite ausgeblendet und der Knopf entfällt. */
   studioLabel?: string;
@@ -41,7 +41,7 @@ export function Header({
         </Link>
 
         <nav aria-label="Hauptnavigation" className="hidden items-center gap-5 lg:flex xl:gap-8">
-          {nav.map((item) => {
+          {nav.filter((item) => !item.nurUnten).map((item) => {
             const active = pathname === item.href;
             return (
               <Link

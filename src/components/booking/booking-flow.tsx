@@ -21,6 +21,9 @@ type StudioOption = {
   longitude: number | null;
 };
 
+/** So viele Studios stehen zuerst da (nach Entfernung sortiert, sobald bekannt). */
+const SICHTBAR = 4;
+
 export function BookingFlow({
   studios,
   sprache = "de",
@@ -47,6 +50,10 @@ export function BookingFlow({
   // Studio soll auch tatsächlich obenstehen und nicht nur ausgewählt sein.
   const [orderedStudios, setOrderedStudios] = useState(studios);
   const [userPicked, setUserPicked] = useState(false);
+  // Erst die nächsten vier, der Rest auf Knopfdruck: Vierzehn Kacheln
+  // untereinander waren auf dem Handy anderthalb Bildschirme vor dem
+  // eigentlichen Formular.
+  const [alleZeigen, setAlleZeigen] = useState(false);
 
   // Sortiert wird, sobald wenigstens ein Studio Koordinaten hat. Studios
   // ohne hängen hinten an.
@@ -199,44 +206,55 @@ export function BookingFlow({
             )}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
-            {orderedStudios.map((studio) => {
-              const isSelected = selectedStudioId === studio.id;
-              const isRecommended = recommendedStudioId === studio.id;
-              return (
-                <motion.button
-                  key={studio.id}
-                  type="button"
-                  onClick={() => {
-                    setUserPicked(true);
-                    setSelectedStudioId(studio.id);
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                  // karte-hebt gibt derselben Kachel dieselbe Rückmeldung
-                  // wie überall sonst auf der Seite. Die ausgewählte hebt
-                  // sich nicht mit: Sie ist schon hervorgehoben, und eine
-                  // zweite Hervorhebung darüber macht die Auswahl unklar.
-                  className={`rounded-xl border p-4 text-left transition-colors ${
-                    isSelected
-                      ? "border-lime bg-lime/10"
-                      : "karte-hebt border-border"
-                  }`}
-                >
-                  <span className="flex items-center gap-2 font-semibold">
-                    <MapPin size={15} className="shrink-0 text-accent" />
-                    {studio.name}
-                    {isRecommended && (
-                      <span className="rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-on-lime">
-                        {englisch ? "Closest" : "Am nächsten"}
-                      </span>
-                    )}
-                  </span>
-                  <span className="mt-1 block text-xs text-muted">
-                    {studio.street}, {studio.postalCode} {studio.city}
-                  </span>
-                </motion.button>
-              );
-            })}
+            {orderedStudios
+              .filter((studio, i) => alleZeigen || i < SICHTBAR || studio.id === selectedStudioId)
+              .map((studio) => {
+                const isSelected = selectedStudioId === studio.id;
+                const isRecommended = recommendedStudioId === studio.id;
+                return (
+                  <motion.button
+                    key={studio.id}
+                    type="button"
+                    onClick={() => {
+                      setUserPicked(true);
+                      setSelectedStudioId(studio.id);
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    // karte-hebt gibt derselben Kachel dieselbe Rückmeldung
+                    // wie überall sonst auf der Seite. Die ausgewählte hebt
+                    // sich nicht mit: Sie ist schon hervorgehoben, und eine
+                    // zweite Hervorhebung darüber macht die Auswahl unklar.
+                    className={`rounded-xl border p-4 text-left transition-colors ${
+                      isSelected
+                        ? "border-lime bg-lime/10"
+                        : "karte-hebt border-border"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2 font-semibold">
+                      <MapPin size={15} className="shrink-0 text-accent" />
+                      {studio.name}
+                      {isRecommended && (
+                        <span className="rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-on-lime">
+                          {englisch ? "Closest" : "Am nächsten"}
+                        </span>
+                      )}
+                    </span>
+                    <span className="mt-1 block text-xs text-muted">
+                      {studio.street}, {studio.postalCode} {studio.city}
+                    </span>
+                  </motion.button>
+                );
+              })}
           </div>
+          {!alleZeigen && orderedStudios.length > SICHTBAR && (
+            <button
+              type="button"
+              onClick={() => setAlleZeigen(true)}
+              className="mt-3 text-sm font-semibold text-accent underline-offset-4 hover:underline"
+            >
+              {englisch ? `Show all ${orderedStudios.length} studios` : `Alle ${orderedStudios.length} Studios anzeigen`}
+            </button>
+          )}
         </div>
       )}
 

@@ -1980,13 +1980,6 @@ summary::-webkit-details-marker {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
-/* Das Büro-Foto: kühl und etwas entsättigt - der Moment davor. */
-.hero-buero img {
-  filter: saturate(0.55) brightness(0.85);
-}
-.hero-familie img {
-  filter: saturate(1.05);
-}
 .hero-linie {
   background: linear-gradient(to right, rgb(255 255 255 / 0.35), var(--ink-lime));
 }

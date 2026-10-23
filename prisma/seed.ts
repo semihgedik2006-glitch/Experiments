@@ -87,11 +87,11 @@ async function main() {
     {
       slug: "ems-gegen-rueckenschmerzen",
       themen: ["Rücken", "Gesundheit"],
-      title: "EMS gegen Rückenschmerzen: Was steckt dahinter?",
+      title: "EMS-Training und der Rücken: Was Training leisten kann – und was nicht",
       excerpt:
-        "Rückenschmerzen gehören zu den häufigsten Beschwerden überhaupt. Warum EMS-Training gerade die tiefe Rumpfmuskulatur erreicht, die klassisches Training oft verfehlt.",
+        "Viele, die viel sitzen, spüren ihren Rücken. Was EMS-Training für Rücken und Rumpf bedeutet, wo die Grenzen sind und wann der Arzt zuerst dran ist.",
       content:
-        "Wer viel sitzt, kennt das Ziehen im unteren Rücken. Die Ursache ist selten ein einzelnes Ereignis, sondern meist eine schwache tiefliegende Rumpfmuskulatur, die die Wirbelsäule nicht mehr ausreichend stützt.\nGenau hier setzt EMS an: Die elektrischen Impulse erreichen auch die tiefen Muskelschichten, die mit klassischen Übungen nur schwer gezielt trainierbar sind. Ob das im Einzelfall hilft, hängt von der Ursache der Beschwerden ab - bei anhaltenden oder starken Schmerzen gehört die Abklärung zuerst zum Arzt, nicht ins Studio.\nWichtig ist die richtige Betreuung: Bei Körperformen wird jede Einheit persönlich begleitet, die Impulsstärke individuell dosiert und die Übungsauswahl an dein Beschwerdebild angepasst.\nUnser Tipp: Ergänze das wöchentliche Training mit kleinen Gewohnheiten im Alltag - regelmäßig aufstehen, Schulterkreisen am Schreibtisch, ein kurzer Spaziergang in der Mittagspause. Die Kombination macht den Unterschied.",
+        "Wer viel sitzt, kennt das Ziehen im unteren Rücken. Rückenbeschwerden können viele Ursachen haben – welche bei dir dahintersteckt, kann nur ein Arzt klären. Bei anhaltenden oder starken Schmerzen gehört die Abklärung deshalb zuerst in die Praxis, nicht ins Studio.\nWas EMS-Training leisten kann: Es kräftigt die Muskulatur – auch an Rücken und Rumpf – und kommt dabei ohne schwere Gewichte aus. Eine Therapie ist es nicht, und eine Heilung versprechen wir nicht.\nWichtig ist die Betreuung: Bei Körperformen ist bei jeder Einheit ein Trainer dabei, und die Impulsstärke wird für jede Muskelgruppe einzeln eingestellt. Wenn bei dir etwas vorliegt, sag es uns beim ersten Termin.\nUnser Tipp: Ergänze das wöchentliche Training mit kleinen Gewohnheiten im Alltag – regelmäßig aufstehen, Schulterkreisen am Schreibtisch, ein kurzer Spaziergang in der Mittagspause.",
     },
     {
       slug: "abnehmen-mit-ems",
@@ -100,7 +100,7 @@ async function main() {
       excerpt:
         "Kann man mit 20 Minuten pro Woche wirklich abnehmen? Ja - aber anders, als die Werbung mancher Anbieter verspricht. Ein ehrlicher Blick.",
       content:
-        "Vorweg die ehrliche Antwort: EMS ist kein Wundermittel. Abnehmen funktioniert nur mit einem Kaloriendefizit - daran ändert auch die beste Technologie nichts.\nWas EMS aber besser kann als fast jedes andere Training: In kurzer Zeit viel Muskulatur aktivieren. Mehr Muskelmasse bedeutet einen höheren Grundumsatz - dein Körper verbrennt also auch in Ruhe mehr Kalorien. Genau dieser Effekt macht EMS zu einem starken Partner beim Abnehmen.\nUnsere Empfehlung für Ergebnisse, die bleiben: wöchentliches EMS-Training für den Muskelerhalt, dazu eine eiweißreiche, alltagstaugliche Ernährung ohne Verbote - und Geduld. Wie schnell es geht, ist von Mensch zu Mensch verschieden und hängt vor allem daran, ob die Ernährung mitzieht. Bei deinem Probetermin sprechen wir offen über deine Ziele und was in welchem Zeitraum für dich erreichbar ist.",
+        "Vorweg die ehrliche Antwort: EMS ist kein Wundermittel. Abnehmen funktioniert nur mit einem Kaloriendefizit - daran ändert auch die beste Technologie nichts.\nWas EMS dabei beitragen kann: In kurzer Zeit viel Muskulatur trainieren. Muskeln zu erhalten und aufzubauen ist beim Abnehmen sinnvoll – EMS-Training kann so ein Baustein sein, neben der Ernährung.\nUnsere Empfehlung für Ergebnisse, die bleiben: wöchentliches EMS-Training für den Muskelerhalt, dazu eine eiweißreiche, alltagstaugliche Ernährung ohne Verbote - und Geduld. Wie schnell es geht, ist von Mensch zu Mensch verschieden und hängt vor allem daran, ob die Ernährung mitzieht. Bei deinem Probetermin sprechen wir offen über deine Ziele und was in welchem Zeitraum für dich erreichbar ist.",
     },
     {
       slug: "5-mythen-ueber-ems",

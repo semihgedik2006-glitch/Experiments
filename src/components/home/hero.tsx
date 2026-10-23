@@ -3,7 +3,7 @@
 import { Fragment, useRef } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { ArrowRight, ChevronDown, MapPin } from "lucide-react";
+import { ArrowRight, Briefcase, ChevronDown, House, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { probeterminHref, useZiel } from "@/components/ziel/ziel-kontext";
@@ -40,8 +40,9 @@ import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
  * spiegelverkehrt - und ist zurückgedreht. Weil der Kunde links im Bild
  * steht, liegt es nicht mehr vollflächig hinter dem Text, sondern als
  * gerahmte Karte rechts daneben: So verdeckt die Überschrift niemanden.
- * Die zwei Mini-Fotos der Abend-Geschichte bleiben Symbolbilder von
- * Pexels (siehe public/bilder/start/QUELLEN.md).
+ * Die Abend-Geschichte zeigt Symbole statt Fotos: Vorher standen dort
+ * zwei Stockfotos von Pexels - die einzigen Fremdbilder der Seite, seit
+ * es echte Studio-Fotos gibt.
  *
  * Ladezeit: Die Eingangsanimation läuft weiter über CSS (.hero-anim in
  * globals.css), nicht über Motion - sonst stünde der Text bis zur
@@ -137,8 +138,8 @@ export function Hero({
               aria-hidden
             >
               <div className="hero-anim hero-geschichte flex items-center gap-2.5 rounded-2xl py-2 pl-2 pr-4" style={verz(1.15)}>
-                <div className="hero-buero h-11 w-11 overflow-hidden rounded-xl">
-                  <Image src="/bilder/start/spaet-im-buero.jpg" alt="" width={88} height={88} sizes="44px" className="h-full w-full object-cover object-[50%_25%]" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-foreground/80">
+                  <Briefcase size={18} />
                 </div>
                 <p className="whitespace-nowrap text-xs leading-tight text-foreground/80">
                   <span className="block font-semibold tabular-nums text-foreground">18:40</span>
@@ -152,8 +153,8 @@ export function Hero({
               </div>
               <div className="hero-linie hero-anim h-px w-6" style={verz(1.65)} />
               <div className="hero-anim hero-geschichte flex items-center gap-2.5 rounded-2xl py-2 pl-2 pr-4" style={verz(1.8)}>
-                <div className="hero-familie h-11 w-11 overflow-hidden rounded-xl">
-                  <Image src="/bilder/start/familie-umarmung.jpg" alt="" width={88} height={88} sizes="44px" className="h-full w-full object-cover object-[50%_35%]" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-foreground/80">
+                  <House size={18} />
                 </div>
                 <p className="whitespace-nowrap text-xs leading-tight text-foreground/80">
                   <span className="block font-semibold tabular-nums text-foreground">19:40</span>
