@@ -30,34 +30,36 @@ export default async function Home() {
   const zahlen = kennzahlen(beweise);
 
   return (
-    <ZielProvider>
+    <>
       <OrganisationJsonLd />
       <StudioJsonLd />
       <WebsiteJsonLd />
       <FaqJsonLd />
-      <Hero
-        standorte={standorte}
-        anzahlStudios={studios.length}
-      />
-      {/* Weniger als zwei Zahlen sind keine Aussage, sondern eine
-          Behauptung - dann entfällt das Band lieber ganz. */}
-      {zahlen.length >= 2 && <StatsStrip zahlen={zahlen} />}
-      {/* Ab hier richtet sich die Seite nach dem Ziel: Wer oben eines
-          gewählt hat, sieht die Abschnitte in der Reihenfolge, die dazu
-          passt - und nur die, die dafür zählen (siehe ZIEL_INHALTE).
-          "In vier Stationen" (HowItWorks) ist entfallen: Den Weg führt
-          jetzt die Zielauswahl. */}
-      <ZielAbschnitte
-        abschnitte={zielAbschnitteBauen({
-          anzahlStudios: studios.length,
-          toggles,
-          zeitspanne: null,
-          auswahl: true,
-          studioListe: true,
-        })}
-      />
-      <ZielLeiste />
-      <CtaBanner />
-    </ZielProvider>
+      <ZielProvider>
+        <Hero
+          standorte={standorte}
+          anzahlStudios={studios.length}
+        />
+        {/* Weniger als zwei Zahlen sind keine Aussage, sondern eine
+            Behauptung - dann entfällt das Band lieber ganz. */}
+        {zahlen.length >= 2 && <StatsStrip zahlen={zahlen} />}
+        {/* Ab hier richtet sich die Seite nach dem Ziel: Wer oben eines
+            gewählt hat, sieht die Abschnitte in der Reihenfolge, die dazu
+            passt - und nur die, die dafür zählen (siehe ZIEL_INHALTE).
+            "In vier Stationen" (HowItWorks) ist entfallen: Den Weg führt
+            jetzt die Zielauswahl. */}
+        <ZielAbschnitte
+          abschnitte={zielAbschnitteBauen({
+            anzahlStudios: studios.length,
+            toggles,
+            zeitspanne: null,
+            auswahl: true,
+            studioListe: true,
+          })}
+        />
+        <ZielLeiste />
+        <CtaBanner />
+      </ZielProvider>
+    </>
   );
 }

@@ -53,5 +53,5 @@ export const legalConfig = {
   vatId: "DE301004860",
 
   /** Stand der Rechtstexte (Impressum, Datenschutzerklärung, AGB). */
-  lastUpdated: "September 2026",
+  lastUpdated: "Oktober 2026",
 } as const;

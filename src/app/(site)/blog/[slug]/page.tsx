@@ -8,6 +8,8 @@ import { CommentForm } from "@/components/comment-form";
 import { CommentReplyToggle } from "@/components/comment-reply-toggle";
 import { getPostBySlug, getApprovedComments, getPublishedPosts } from "@/lib/data";
 import { verwandteBeitraege } from "@/lib/blog-themen";
+import { fragenZu } from "@/lib/fragen";
+import { ZIEL_INHALTE, passung } from "@/lib/ziel-inhalte";
 import { formatDate } from "@/lib/format";
 import { lesezeit } from "@/lib/lesezeit";
 import { PostThumb } from "@/components/blog/post-thumb";
@@ -104,6 +106,38 @@ export default async function BlogPostPage({ params }: Props) {
             <p key={i}>{paragraph}</p>
           ))}
         </div>
+
+        {/* Die Seiten, die dasselbe Thema ausführlich behandeln. Ein Beitrag
+            über den Rücken steht sonst neben der Zielseite und der
+            Fragen-Seite zum Rücken - für Google drei Seiten zum selben
+            Thema, die gegeneinander antreten. Der Verweis macht klar,
+            welche die Hauptseite ist. */}
+        {(() => {
+          const ziel = [...ZIEL_INHALTE]
+            .map((z) => ({ z, p: passung(post.title, z) }))
+            .filter((x) => x.p > 0)
+            .sort((a, b) => b.p - a.p)[0]?.z;
+          const fragen = fragenZu(post.title);
+          if (!ziel && fragen.length === 0) return null;
+          return (
+            <ul className="mt-12 space-y-2 rounded-2xl border border-border bg-surface p-5 text-sm">
+              {ziel && (
+                <li>
+                  <Link href={`/ziel/${ziel.wert}`} className="inline-flex items-center gap-1.5 font-semibold text-accent hover:underline">
+                    {ziel.seite.titel} <ArrowRight size={14} aria-hidden />
+                  </Link>
+                </li>
+              )}
+              {fragen.map((f) => (
+                <li key={f.slug}>
+                  <Link href={`/fragen/${f.slug}`} className="inline-flex items-center gap-1.5 font-semibold text-accent hover:underline">
+                    {f.frage} <ArrowRight size={14} aria-hidden />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          );
+        })()}
 
         {/* Verwandte Beiträge.
             Wer bis hierher gelesen hat, ist der aufmerksamste Besucher der

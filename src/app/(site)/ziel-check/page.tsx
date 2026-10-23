@@ -19,7 +19,7 @@ import { getStudios } from "@/lib/data";
 export const metadata: Metadata = {
   title: "Ziel-Check: Passt EMS zu dir?",
   description:
-    "Drei kurze Fragen zu deinem Ziel, deiner Zeit und deiner Erfahrung - danach siehst du deinen persönlichen EMS-Startplan und fragst mit einem Klick ein kostenloses Probetraining an.",
+    "Drei kurze Fragen zu Ziel, Zeit und Erfahrung - danach dein persönlicher EMS-Startplan und das kostenlose Probetraining.",
   alternates: { canonical: "/ziel-check" },
 };
 

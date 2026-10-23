@@ -63,42 +63,44 @@ export default async function ZielSeite({ params }: { params: Promise<{ slug: st
   const [toggles, studios] = await Promise.all([getToggles(), getStudios()]);
 
   return (
-    <ZielProvider fest={inhalt.wert}>
+    <>
       {/* Die häufigen Fragen stehen auch auf dieser Seite (im Abschnitt
           FAQ, nach Ziel sortiert) - deshalb auch hier als Daten. */}
       <BrotkrumenJsonLd pfad={[{ name: inhalt.kurz, href: `/ziel/${inhalt.wert}` }]} />
       <FaqJsonLd />
-      <ZielKopf inhalt={inhalt} anzahlStudios={studios.length} />
-      <ZielAbschnitte
-        abschnitte={zielAbschnitteBauen({
-          anzahlStudios: studios.length,
-          toggles,
-          zeitspanne: null,
-          auswahl: false,
-          studioListe: false,
-        })}
-      />
+      <ZielProvider fest={inhalt.wert}>
+        <ZielKopf inhalt={inhalt} anzahlStudios={studios.length} />
+        <ZielAbschnitte
+          abschnitte={zielAbschnitteBauen({
+            anzahlStudios: studios.length,
+            toggles,
+            zeitspanne: null,
+            auswahl: false,
+            studioListe: false,
+          })}
+        />
 
-      {/* Das Formular steht auf der Seite selbst: Wer über eine Anzeige
-          kommt, soll nicht noch einmal klicken müssen. Das Ziel ist darin
-          schon angekreuzt. */}
-      <section id="termin" className="scroll-mt-20 border-t border-border bg-surface py-20 sm:py-24 md:py-32">
-        <Container className="max-w-2xl">
-          <Reveal className="mb-10">
-            <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl">{inhalt.knopf}</h2>
-            <p className="mt-4 text-lg text-muted">
-              Kostenlos und unverbindlich. Such dir eine Zeit aus – wir bestätigen deinen Termin
-              persönlich.
-            </p>
-          </Reveal>
-          <BeweisLeiste className="mb-10" />
-          <BookingFlow studios={studios} standortErstImBild />
-          <Reveal className="mt-12 border-t border-border pt-8">
-            <TrustBar />
-          </Reveal>
-          <TerminHinweise />
-        </Container>
-      </section>
-    </ZielProvider>
+        {/* Das Formular steht auf der Seite selbst: Wer über eine Anzeige
+            kommt, soll nicht noch einmal klicken müssen. Das Ziel ist darin
+            schon angekreuzt. */}
+        <section id="termin" className="scroll-mt-20 border-t border-border bg-surface py-20 sm:py-24 md:py-32">
+          <Container className="max-w-2xl">
+            <Reveal className="mb-10">
+              <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl">{inhalt.knopf}</h2>
+              <p className="mt-4 text-lg text-muted">
+                Kostenlos und unverbindlich. Such dir eine Zeit aus – wir bestätigen deinen Termin
+                persönlich.
+              </p>
+            </Reveal>
+            <BeweisLeiste className="mb-10" />
+            <BookingFlow studios={studios} standortErstImBild />
+            <Reveal className="mt-12 border-t border-border pt-8">
+              <TrustBar />
+            </Reveal>
+            <TerminHinweise />
+          </Container>
+        </section>
+      </ZielProvider>
+    </>
   );
 }

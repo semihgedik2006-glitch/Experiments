@@ -78,6 +78,9 @@ export const mainNav = [
   { label: "Preise", href: "/preise" },
   { label: "Erfolge", href: "/erfolgsgeschichten" },
   { label: "Wissen", href: "/blog" },
-  { label: "Über uns", href: "/ueber-uns" },
-  { label: "Kontakt", href: "/kontakt" },
+  // In der Kopfzeile am Computer nicht mehr: Sieben Punkte plus Englisch,
+  // Suche und Hell/Dunkel waren zu viel. Beide stehen im Handy-Menü und in
+  // der Fußzeile - dort sucht man sie.
+  { label: "Über uns", href: "/ueber-uns", nurUnten: true },
+  { label: "Kontakt", href: "/kontakt", nurUnten: true },
 ];

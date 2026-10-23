@@ -8,7 +8,10 @@
  *
  * Gemerkt wird der zuletzt angetippte Buchungsknopf, für diesen Besuch
  * im sessionStorage - kein Cookie, nichts, was über den Besuch hinaus
- * bleibt. Mit der Anfrage geht er als ein kurzer Text mit, etwa
+ * bleibt. NUR MIT EINWILLIGUNG: Das ist Statistik und keine Funktion, die
+ * der Besucher braucht - nach § 25 Abs. 1 TDDDG also nur, wenn im
+ * Cookie-Hinweis "Alle akzeptieren" gewählt wurde (Datenschutzerklärung,
+ * Abschnitt 7). Mit der Anfrage geht er als ein kurzer Text mit, etwa
  * "Handy-Leiste · /ziel/ruecken".
  *
  * Knöpfe mit einem Attribut data-einstieg tragen ihren Namen selbst.
@@ -16,12 +19,15 @@
  * gemerkt - so fehlt auch ein später hinzugekommener Knopf nicht.
  */
 
+import { readConsent } from "@/lib/consent";
+
 const SPEICHER = "kf-einstieg";
 
 /** Was als Buchungsknopf zählt. */
 export const EINSTIEG_KNOEPFE = '[data-einstieg], a[href^="/probetermin"], a[href="#termin"]';
 
 export function einstiegMerken(knopf: Element): void {
+  if (readConsent() !== "accepted") return;
   const name =
     knopf.getAttribute("data-einstieg") ||
     `Knopf "${(knopf.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 40)}"`;

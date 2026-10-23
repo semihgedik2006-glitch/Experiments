@@ -165,3 +165,16 @@ export const FRAGEN: Frage[] = [
 export function frageZu(slug: string): Frage | undefined {
   return FRAGEN.find((f) => f.slug === slug);
 }
+
+/** Woran ein Text erkennen lässt, dass er eine dieser Fragen berührt. */
+const STICHWORTE: Record<string, RegExp> = {
+  kosten: /kost|preis|tarif|mitgliedschaft/i,
+  sicherheit: /sicher|gefähr|herzschrittmacher|schwanger/i,
+  ruecken: /rücken|wirbelsäule|rumpf/i,
+  erfahrungen: /erfahrung|bewertung|auszeichnung/i,
+};
+
+/** Die Fragen-Seiten, die zu einem Text passen (für Verweise darunter). */
+export function fragenZu(text: string, max = 2): Frage[] {
+  return FRAGEN.filter((f) => STICHWORTE[f.slug]?.test(text)).slice(0, max);
+}
