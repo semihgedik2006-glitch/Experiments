@@ -7,6 +7,7 @@ import { Logo } from "@/components/logo";
 import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 import { getStudios } from "@/lib/data";
 import { ZIEL_INHALTE } from "@/lib/ziel-inhalte";
+import { isVisible } from "@/lib/site-toggles";
 
 const socials = [
   { href: siteConfig.social.instagram, label: "Instagram", Icon: InstagramIcon },
@@ -28,6 +29,7 @@ export async function Footer({
   // site-config stehen; das ist weniger, aber es steht.
   const studios = await getStudios().catch(() => []);
   const studio = studios[0];
+  const gutschein = await isVisible("gutschein").catch(() => false);
 
   return (
     <footer className="on-ink">
@@ -83,6 +85,16 @@ export async function Footer({
                 Socials
               </Link>
             </li>
+            {gutschein && (
+              <li>
+                <Link
+                  href="/gutschein"
+                  className="tastflaeche block py-1.5 text-sm text-accent hover:text-foreground"
+                >
+                  Gutschein verschenken
+                </Link>
+              </li>
+            )}
             {/* Getrennt von der Hauptnavigation und bewusst hier unten:
                 Diese Seite sucht nur, wer schon einen Termin hat - im
                 Kopfbereich stünde sie jedem im Weg, der noch keinen hat. */}

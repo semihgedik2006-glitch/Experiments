@@ -8,7 +8,12 @@ import type { ActionResult } from "@/lib/actions/newsletter";
 
 const initialState: ActionResult = { ok: false, message: "" };
 
-export function ContactForm() {
+export function ContactForm({
+  vorbelegt,
+}: {
+  /** Betreff und Nachricht schon ausgefüllt - etwa für Gutschein-Anfragen. */
+  vorbelegt?: { subject: string; message: string };
+} = {}) {
   const [state, formAction, pending] = useActionState(sendContactMessage, initialState);
 
   // Die Eingaben liegen in React, nicht nur im Formular: Nach einer
@@ -20,8 +25,8 @@ export function ContactForm() {
     name: "",
     email: "",
     phone: "",
-    subject: "",
-    message: "",
+    subject: vorbelegt?.subject ?? "",
+    message: vorbelegt?.message ?? "",
   });
 
   const aendern =

@@ -21,7 +21,9 @@ export type ToggleKey =
   | "google-bewertungen"
   | "newsletter"
   | "kommentare"
-  | "instagram";
+  | "instagram"
+  | "gutschein"
+  | "aktion-neues-jahr";
 
 export const toggleDefinitions: {
   key: ToggleKey;
@@ -93,6 +95,22 @@ export const toggleDefinitions: {
     description:
       "Sechs Bilder aus dem Instagram-Konto auf der Startseite. Erscheint erst, wenn unter „Instagram“ ein Zugang hinterlegt ist.",
     defaultVisible: true,
+  },
+  {
+    key: "gutschein",
+    label: "Gutscheine (Weihnachten)",
+    description:
+      "Die Seite „Gutschein verschenken“ samt Hinweis in der Fußzeile. Ausgeschaltet sehen sie nur angemeldete Admins - als Vorschau.",
+    href: "/gutschein",
+    defaultVisible: false,
+  },
+  {
+    key: "aktion-neues-jahr",
+    label: "Aktion „Neues Jahr“",
+    description:
+      "Die Kampagnenseite für den Januar. Ausgeschaltet sehen sie nur angemeldete Admins - als Vorschau. Einschalten, sobald die Anzeigen laufen sollen.",
+    href: "/aktion/neues-jahr",
+    defaultVisible: false,
   },
   {
     key: "kommentare",

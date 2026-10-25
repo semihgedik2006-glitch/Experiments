@@ -65,6 +65,8 @@ enum MailArt {
   NEWSLETTER_TEST
   /// Der Zugangslink zum eigenen Terminbereich.
   KUNDENBEREICH
+  /// Einmal im Monat an das Team: die Zahlen des Vormonats.
+  MONATSBERICHT
 }
 
 /// Nachweis, dass eine E-Mail den Weg nach draußen gefunden hat.
@@ -331,6 +333,14 @@ model Booking {
   /// echter Text von echten Menschen steht - er wird im Adminbereich
   /// weiterhin angezeigt, nur nichts Neues mehr hineingeschrieben.
   terminWunsch   String?
+
+  /// Der vereinbarte Termin, wenn er nicht über einen festen Platz
+  /// (slot) gebucht wurde - seit den Wunschzeiten der Normalfall. Das
+  /// Studio trägt ihn beim Bestätigen ein; daran hängen die Erinnerung am
+  /// Vortag und die Bitte um eine Bewertung danach. Wie slot.date: der
+  /// Kalendertag als Mitternacht, die Uhrzeit als "18:30".
+  terminTag      DateTime?
+  terminUhrzeit  String?
 
   /// Was der Gast erreichen will - einer der Werte aus src/lib/ziel.ts.
   /// Freiwillig: Eine Anfrage darf nicht daran scheitern, dass jemand sein

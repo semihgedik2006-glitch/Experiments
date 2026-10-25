@@ -14,6 +14,8 @@ import { zielInhalt } from "@/lib/ziel-inhalte";
 import { ZielProvider } from "@/components/ziel/ziel-kontext";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 import { TerminHinweise } from "@/components/booking/termin-hinweise";
+import { sichtbarkeit } from "@/lib/vorschau";
+import { VorschauHinweis } from "@/components/vorschau-hinweis";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -39,6 +41,10 @@ export default async function CampaignPage({ params }: Props) {
   const { slug } = await params;
   const campaign = getCampaign(slug);
   if (!campaign) return notFound();
+  // Vorbereitete Aktionen: öffentlich erst mit Schalter, vorher nur für
+  // angemeldete Admins als Vorschau.
+  const stand = campaign.schalter ? await sichtbarkeit(campaign.schalter) : "live";
+  if (stand === "aus") return notFound();
 
   const studios = await getStudios();
 
@@ -48,6 +54,7 @@ export default async function CampaignPage({ params }: Props) {
   return (
     // Mit Ziel steht es im Formular schon fest (ZielProvider fest=...).
     <ZielProvider fest={ziel?.wert}>
+      {stand === "vorschau" && <VorschauHinweis />}
       {/* Auch die Kampagnenseite bekommt das Motiv: Wer über eine Anzeige
           kommt, sieht als Erstes DIESE Seite - und sie sah bisher aus wie
           ein Textdokument, während die Startseite eine Website ist. Das

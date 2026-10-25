@@ -36,6 +36,7 @@ const artText: Record<MailArt, string> = {
   NEWSLETTER: "Newsletter-Ausgabe an einen Abonnenten",
   NEWSLETTER_TEST: "Newsletter-Probeversand an den eigenen Zugang",
   KUNDENBEREICH: "Zugangslink zu den eigenen Terminen",
+  MONATSBERICHT: "Monatsbericht mit den Zahlen des Vormonats",
 };
 
 const ablaeufe: { titel: string; wann: string; an: string }[] = [
@@ -61,8 +62,13 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
   },
   {
     titel: "Erinnerung am Vortag",
-    wann: "täglich, für alle bestätigten Termine des Folgetags",
+    wann: "täglich, für alle bestätigten Termine des Folgetags - auch für Anfragen mit Wunschzeit, sobald ihr beim Bestätigen Tag und Uhrzeit eingetragen habt",
     an: "an den Gast",
+  },
+  {
+    titel: "Monatsbericht",
+    wann: "am 1. jedes Monats mit dem täglichen Lauf, mit den Zahlen des Vormonats",
+    an: "an die Sammeladresse",
   },
   {
     titel: "Erinnerung an offene Anfragen",

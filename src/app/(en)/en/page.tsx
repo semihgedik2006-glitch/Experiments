@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { Check, Clock, MapPin, Phone, Zap } from "lucide-react";
+import { Award, Check, Clock, MapPin, Phone, Zap } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { ImpulsMotiv } from "@/components/ui/impuls-motiv";
 import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { GoalPickerEn } from "@/components/ziel/goal-picker-en";
+import { auszeichnung } from "@/lib/auszeichnung";
 import { getStudios } from "@/lib/data";
 import { legalConfig } from "@/lib/legal-config";
 import { siteConfig } from "@/lib/site-config";
@@ -35,20 +36,27 @@ export const metadata: Metadata = {
  * Warum keine Preise: Dieselbe Haltung wie auf der deutschen Seite - das
  * Angebot entsteht im Gespräch. Hier steht nur, WIE sich der Preis
  * zusammensetzt, damit niemand mit der Erwartung einer Zahl kommt.
+ *
+ * Fotos und Auszeichnung wie auf der deutschen Seite: echte Bilder aus den
+ * Studios (public/bilder), die DtGV-Befragung aus @/lib/auszeichnung. Die
+ * Reels fehlen hier bewusst - ihre Untertitel sind deutsch.
  */
 
 const schritte = [
   {
     titel: "Come in for a free trial",
     text: "No contract, no obligation. You get proper training gear on site - just bring yourself.",
+    foto: { src: "/bilder/studio/team-begruessung.jpg", alt: "Two Körperformen trainers welcome a client in an EMS suit at the studio." },
   },
   {
     titel: "20 minutes, one to one",
     text: "A trainer stays with you the whole time, adjusts the intensity and watches your form. You are never left alone on the floor.",
+    foto: { src: "/bilder/studio/training-mit-trainer.jpg", alt: "A trainer demonstrates an exercise, the client in an EMS suit follows, the EMS device next to them." },
   },
   {
     titel: "Once a week is enough",
     text: "That is the whole point. The session is short because the stimulus is strong - and because your week is already full.",
+    foto: { src: "/bilder/studio/high-five-trainer.jpg", alt: "A trainer and a client in an EMS suit high-five after the session." },
   },
 ];
 
@@ -65,13 +73,6 @@ export default async function EnglishPage() {
   return (
     <>
       <section className="relative overflow-hidden border-b border-border py-16 md:py-24">
-        <div
-          aria-hidden
-          className="zierde-ruht pointer-events-none absolute -right-24 top-1/2 hidden w-[420px] -translate-y-1/2 opacity-50 lg:block"
-        >
-          <ImpulsMotiv className="w-full" />
-        </div>
-
         <Container className="relative max-w-4xl">
           <span
             className="hero-anim flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent"
@@ -136,6 +137,33 @@ export default async function EnglishPage() {
               Or just call: {legalConfig.contact.phone}
             </a>
           </p>
+
+          <a
+            href={auszeichnung.quelle}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hero-anim mt-8 inline-flex items-center gap-2.5 rounded-full border border-border px-4 py-2 text-xs text-muted transition-colors hover:border-lime"
+            style={{ "--hero-delay": "0.8s" } as React.CSSProperties}
+          >
+            <Award size={15} className="shrink-0 text-accent" aria-hidden />
+            <span>
+              <strong className="text-foreground">Rated no. 1</strong> in the {auszeichnung.herausgeberKurz} customer survey
+              &ldquo;{auszeichnung.titel}&rdquo;
+            </span>
+          </a>
+
+          <div
+            className="hero-anim relative mt-12 aspect-[16/10] overflow-hidden rounded-[1.75rem]"
+            style={{ "--hero-delay": "0.3s" } as React.CSSProperties}
+          >
+            <Image
+              src="/bilder/start/studio-high-five.jpg"
+              alt="A Körperformen trainer high-fives a client in an EMS suit, the EMS device next to them."
+              fill
+              sizes="(min-width: 896px) 848px, 100vw"
+              className="object-cover object-[60%_center]"
+            />
+          </div>
         </Container>
       </section>
 
@@ -151,13 +179,18 @@ export default async function EnglishPage() {
             {schritte.map((schritt, i) => (
               <li
                 key={schritt.titel}
-                className="karte-hebt karte-glanz rounded-2xl border border-border bg-surface-raised p-6"
+                className="karte-hebt karte-glanz overflow-hidden rounded-2xl border border-border bg-surface-raised"
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-lime/12 text-sm font-bold text-accent">
-                  {i + 1}
-                </span>
-                <h3 className="mt-4 font-semibold">{schritt.titel}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{schritt.text}</p>
+                <div className="relative aspect-[4/3]">
+                  <Image src={schritt.foto.src} alt={schritt.foto.alt} fill sizes="(min-width: 640px) 280px, 100vw" className="object-cover" />
+                </div>
+                <div className="p-6">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-lime/12 text-sm font-bold text-accent">
+                    {i + 1}
+                  </span>
+                  <h3 className="mt-4 font-semibold">{schritt.titel}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{schritt.text}</p>
+                </div>
               </li>
             ))}
           </ol>

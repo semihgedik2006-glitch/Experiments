@@ -11,7 +11,12 @@ import type { BookingStatus } from "@/generated/prisma/enums";
 import { protokollieren } from "@/lib/protokoll";
 import { STATUS_LABEL } from "@/lib/buchung-status";
 
-export async function updateBookingStatus(id: string, status: BookingStatus) {
+export async function updateBookingStatus(
+  id: string,
+  status: BookingStatus,
+  /** Beim Bestätigen ohne festen Platz: der mit dem Gast vereinbarte Termin. */
+  termin: { tag: Date; uhrzeit: string } | null = null,
+) {
   // Der Standort steht am Datensatz selbst, nicht im Formular - sonst
   // ließe er sich mitschicken und man erteilte sich damit die Erlaubnis.
   // Alte Anfragen aus der Zeit vor dieser Spalte haben keinen; die darf
@@ -29,6 +34,7 @@ export async function updateBookingStatus(id: string, status: BookingStatus) {
     where: { id },
     data: {
       status,
+      ...(termin ? { terminTag: termin.tag, terminUhrzeit: termin.uhrzeit } : {}),
       ...(zugehoerig?.manageToken ? {} : { manageToken: neuerVerwaltungsSchluessel() }),
     },
     include: { slot: { include: { studio: true } }, studio: true },

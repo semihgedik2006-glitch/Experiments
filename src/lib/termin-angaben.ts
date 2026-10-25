@@ -23,6 +23,10 @@ export type BuchungMitTermin = {
     endTime: string;
     studio: Ort;
   } | null;
+  /** Der vom Studio eingetragene Termin, wenn es keinen festen Platz gibt
+      (Wunschzeiten). Optional, damit ältere Aufrufe gültig bleiben. */
+  terminTag?: Date | null;
+  terminUhrzeit?: string | null;
 };
 
 export function terminAngaben(buchung: BuchungMitTermin): TerminAngaben {
@@ -39,12 +43,14 @@ export function terminAngaben(buchung: BuchungMitTermin): TerminAngaben {
     bookingId: buchung.id,
     email: buchung.email,
     name: buchung.name,
-    dateLabel: slot ? formatDate(slot.date) : null,
-    startTime: slot?.startTime ?? null,
+    dateLabel: slot ? formatDate(slot.date) : buchung.terminTag ? formatDate(buchung.terminTag) : null,
+    startTime: slot?.startTime ?? (buchung.terminTag ? buchung.terminUhrzeit ?? null : null),
+    // Ohne festen Platz kein festes Ende - der Kalendereintrag rechnet
+    // dann selbst eine Stunde dazu.
     endTime: slot?.endTime ?? null,
     studioName: ort?.name ?? null,
     studioAdresse: ort ? `${ort.street}, ${ort.postalCode} ${ort.city}` : null,
-    datum: slot?.date ?? null,
+    datum: slot?.date ?? buchung.terminTag ?? null,
     manageToken: buchung.manageToken,
     // Fehlt sie (Studio ohne eigene Adresse, oder die Abfrage hat sie
     // nicht mitgeladen), greift beim Versand die Sammeladresse.

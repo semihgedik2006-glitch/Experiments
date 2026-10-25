@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useReducedMotion } from "motion/react";
 import { Play, Volume2, VolumeX } from "lucide-react";
 import type { Reel } from "@/lib/reels";
@@ -15,12 +16,19 @@ import type { Reel } from "@/lib/reels";
  * stumm ist es also verständlich; Ton gibt es auf Antippen.
  *
  * Bei "Bewegung reduzieren" läuft nichts von selbst - ein Knopf startet.
+ *
+ * Das Standbild ist ein eigenes Bild statt poster="...": Ein Video-Poster
+ * lädt der Browser sofort mit der Seite, auch weit unten - bei vier Reels
+ * gut 300 KB, bevor man überhaupt hinscrollt. Als <Image> lädt es erst in
+ * der Nähe und in passender Größe. Es liegt über dem Video, bis das erste
+ * Bild tatsächlich läuft; danach zeigt das angehaltene Video sein Bild.
  */
 export function ReelKarte({ reel, className = "" }: { reel: Reel; className?: string }) {
   const video = useRef<HTMLVideoElement>(null);
   const still = useReducedMotion();
   const [laeuft, setLaeuft] = useState(false);
   const [ton, setTon] = useState(false);
+  const [gestartet, setGestartet] = useState(false);
 
   useEffect(() => {
     const el = video.current;
@@ -49,12 +57,12 @@ export function ReelKarte({ reel, className = "" }: { reel: Reel; className?: st
       <div className="relative aspect-[9/16] overflow-hidden rounded-3xl bg-black">
         <video
           ref={video}
-          poster={reel.poster}
           muted
           loop
           playsInline
           preload="none"
           onPlay={() => setLaeuft(true)}
+          onPlaying={() => setGestartet(true)}
           onPause={() => setLaeuft(false)}
           className="h-full w-full object-cover"
           aria-label={`Video: ${reel.titel}`}
@@ -62,6 +70,15 @@ export function ReelKarte({ reel, className = "" }: { reel: Reel; className?: st
           <source src={`${reel.src}.webm`} type="video/webm" />
           <source src={`${reel.src}.mp4`} type="video/mp4" />
         </video>
+        {!gestartet && (
+          <Image
+            src={reel.poster}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 62vw"
+            className="pointer-events-none object-cover"
+          />
+        )}
         {!laeuft && (
           <button
             type="button"

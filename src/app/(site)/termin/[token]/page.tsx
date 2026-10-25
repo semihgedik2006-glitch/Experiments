@@ -129,6 +129,16 @@ export default async function TerminSeite({
                     <br />
                     {buchung.slot.startTime} - {buchung.slot.endTime} Uhr
                   </>
+                ) : buchung.terminTag ? (
+                  <>
+                    {formatDate(buchung.terminTag)}
+                    {buchung.terminUhrzeit && (
+                      <>
+                        <br />
+                        {buchung.terminUhrzeit} Uhr
+                      </>
+                    )}
+                  </>
                 ) : (
                   "Noch kein fester Termin - wir stimmen die Zeit mit dir persönlich ab."
                 )}

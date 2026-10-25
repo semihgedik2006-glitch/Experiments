@@ -469,6 +469,11 @@ ${siteConfig.url}/admin/bookings?status=PENDING`,
   });
 }
 
+/** Der Monatsbericht an das Team (@/lib/monatsbericht). */
+export async function sendMonatsberichtEmail(an: string, betreff: string, text: string) {
+  return verschicken("MONATSBERICHT", { to: an, subject: betreff, text });
+}
+
 /** Benachrichtigung über eine neue Kontaktnachricht. */
 export async function sendKontaktInternEmail(
   an: string,

@@ -88,6 +88,8 @@ export default async function MeineTermineSeite({
       createdAt: true,
       manageToken: true,
       zuZweit: true,
+      terminTag: true,
+      terminUhrzeit: true,
       slot: {
         select: {
           date: true,
@@ -103,8 +105,13 @@ export default async function MeineTermineSeite({
   // Eine Anfrage ohne feste Zeit zählt als offen, solange sie nicht
   // abgesagt ist: Sie wartet auf einen Rückruf und gehört damit nach
   // oben, nicht ins Archiv.
-  const istOffen = (b: (typeof buchungen)[number]) =>
-    b.status !== "CANCELLED" && (!b.slot || b.slot.date >= heute);
+  // Der Tag des Termins: fester Platz oder vom Studio eingetragen.
+  const terminTag = (b: (typeof buchungen)[number]) => b.slot?.date ?? b.terminTag ?? null;
+
+  const istOffen = (b: (typeof buchungen)[number]) => {
+    const tag = terminTag(b);
+    return b.status !== "CANCELLED" && (!tag || tag >= heute);
+  };
 
   // Abgefragt wird nach Eingang, angezeigt wird nach Termin: In einer
   // Liste mit der Überschrift "Kommende Termine" erwartet niemand die
@@ -113,15 +120,15 @@ export default async function MeineTermineSeite({
   // stehen deshalb hinten.
   const offen = buchungen
     .filter(istOffen)
-    .sort((a, b) => (a.slot?.date.getTime() ?? Infinity) - (b.slot?.date.getTime() ?? Infinity));
+    .sort((a, b) => (terminTag(a)?.getTime() ?? Infinity) - (terminTag(b)?.getTime() ?? Infinity));
 
   // Rückwärts: Das zuletzt Gewesene interessiert am ehesten.
   const vergangen = buchungen
     .filter((b) => !istOffen(b))
     .sort(
       (a, b) =>
-        (b.slot?.date.getTime() ?? b.createdAt.getTime()) -
-        (a.slot?.date.getTime() ?? a.createdAt.getTime()),
+        (terminTag(b)?.getTime() ?? b.createdAt.getTime()) -
+        (terminTag(a)?.getTime() ?? a.createdAt.getTime()),
     );
 
   const vorname = buchungen[0]?.name.split(" ")[0];
@@ -205,6 +212,8 @@ type Buchung = {
   createdAt: Date;
   manageToken: string | null;
   zuZweit: boolean;
+  terminTag: Date | null;
+  terminUhrzeit: string | null;
   slot: {
     date: Date;
     startTime: string;
@@ -258,6 +267,16 @@ function TerminKarte({ buchung, vorbei }: { buchung: Buchung; vorbei?: boolean }
               {formatDate(buchung.slot.date)}
               <br />
               {buchung.slot.startTime} - {buchung.slot.endTime} Uhr
+            </>
+          ) : buchung.terminTag ? (
+            <>
+              {formatDate(buchung.terminTag)}
+              {buchung.terminUhrzeit && (
+                <>
+                  <br />
+                  {buchung.terminUhrzeit} Uhr
+                </>
+              )}
             </>
           ) : (
             <>

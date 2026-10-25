@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { notizSpeichern, updateBookingStatus } from "@/lib/actions/admin-bookings";
+import { terminAusFormular } from "@/lib/vereinbarter-termin";
 import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
@@ -171,6 +172,11 @@ export default async function AdminBookingsPage({
                     <>
                       Termin: {formatDate(booking.slot.date)} um {booking.slot.startTime} Uhr
                     </>
+                  ) : booking.terminTag ? (
+                    <>
+                      Termin: {formatDate(booking.terminTag)}
+                      {booking.terminUhrzeit ? ` um ${booking.terminUhrzeit} Uhr` : ""}
+                    </>
                   ) : (
                     <span className="text-muted">Kein bestimmter Termin - individuell abzustimmen</span>
                   )}
@@ -281,11 +287,29 @@ export default async function AdminBookingsPage({
             {booking.status === "PENDING" && (
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <form
-                  action={async () => {
+                  action={async (formData: FormData) => {
                     "use server";
-                    await updateBookingStatus(booking.id, "CONFIRMED");
+                    await updateBookingStatus(booking.id, "CONFIRMED", terminAusFormular(formData));
                   }}
+                  className="flex flex-wrap items-end gap-2"
                 >
+                  {/* Ohne festen Platz: den mit dem Gast vereinbarten Termin
+                      eintragen. Er steht dann in der Bestätigungsmail, und
+                      am Vortag geht die Erinnerung raus, danach die Bitte
+                      um eine Bewertung. Leer lassen geht auch - dann
+                      bleibt es bei "Termin wird abgestimmt". */}
+                  {!booking.slot && (
+                    <>
+                      <label className="text-xs">
+                        <span className="block text-muted">Vereinbarter Tag</span>
+                        <input type="date" name="terminTag" className={`${adminInput} mt-1 !py-1.5`} />
+                      </label>
+                      <label className="text-xs">
+                        <span className="block text-muted">Uhrzeit</span>
+                        <input type="time" name="terminUhrzeit" step={300} className={`${adminInput} mt-1 !py-1.5`} />
+                      </label>
+                    </>
+                  )}
                   {/* Bestätigen verschickt eine E-Mail an den Gast - dabei
                       darf der Knopf nicht mehrfach auslösen. */}
                   <SubmitButton
@@ -335,6 +359,35 @@ export default async function AdminBookingsPage({
               </label>
               <SubmitButton pendingLabel="Wird gespeichert...">Notiz sichern</SubmitButton>
             </AdminForm>
+
+            {/* Bestätigt, aber noch ohne Termin: nachtragen. Geht noch einmal
+                als Bestätigung an den Gast, jetzt mit Datum und Uhrzeit. */}
+            {booking.status === "CONFIRMED" && !booking.slot && !booking.terminTag && (
+              <form
+                action={async (formData: FormData) => {
+                  "use server";
+                  const termin = terminAusFormular(formData);
+                  if (termin) await updateBookingStatus(booking.id, "CONFIRMED", termin);
+                }}
+                className="mt-4 flex flex-wrap items-end gap-2"
+              >
+                <label className="text-xs">
+                  <span className="block text-muted">Vereinbarter Tag</span>
+                  <input type="date" name="terminTag" required className={`${adminInput} mt-1 !py-1.5`} />
+                </label>
+                <label className="text-xs">
+                  <span className="block text-muted">Uhrzeit</span>
+                  <input type="time" name="terminUhrzeit" required step={300} className={`${adminInput} mt-1 !py-1.5`} />
+                </label>
+                <SubmitButton
+                  className="!px-4 !py-2 !text-xs"
+                  pendingLabel="Wird gespeichert..."
+                  savedLabel="Eingetragen"
+                >
+                  Termin eintragen & Gast informieren
+                </SubmitButton>
+              </form>
+            )}
 
             {booking.status === "CONFIRMED" && (
               <div className="mt-4">
