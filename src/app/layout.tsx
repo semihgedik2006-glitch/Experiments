@@ -57,10 +57,9 @@ export const metadata: Metadata = {
   // Startseite.
   alternates: {
     canonical: "/",
-    // Verweis auf die englische Fassung. Sie ist keine Übersetzung dieser
-    // Seite, sondern ein eigener Einstieg - für Google sind es trotzdem
-    // zwei Sprachfassungen desselben Angebots.
-    languages: { de: "/", en: "/en" },
+    // Verweis auf die englische Fassung. Jede Seite mit eigener Angabe
+    // (seitenMetadaten) setzt ihr eigenes Paar.
+    languages: { de: "/", en: "/en", "x-default": "/" },
   },
   openGraph: {
     type: "website",

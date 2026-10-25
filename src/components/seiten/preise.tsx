@@ -187,7 +187,7 @@ export async function PreiseSeite({ sprache }: { sprache: Sprache }) {
   return (
     <>
       <PageHeader
-        kicker={en ? "Terms" : "Konditionen"}
+        kicker={en ? "Pricing" : "Konditionen"}
         title={
           en ? (
             <>
