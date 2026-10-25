@@ -55,3 +55,13 @@ export const legalConfig = {
   /** Stand der Rechtstexte (Impressum, Datenschutzerklärung, AGB). */
   lastUpdated: "Oktober 2026",
 } as const;
+
+/** "Oktober 2026" -> "October 2026" - für die englischen Rechtstexte. */
+export function standEnglisch(stand: string = legalConfig.lastUpdated): string {
+  const monate: Record<string, string> = {
+    Januar: "January", Februar: "February", März: "March", April: "April", Mai: "May", Juni: "June",
+    Juli: "July", August: "August", September: "September", Oktober: "October", November: "November",
+    Dezember: "December",
+  };
+  return stand.replace(/[A-Za-zä]+/g, (wort) => monate[wort] ?? wort);
+}

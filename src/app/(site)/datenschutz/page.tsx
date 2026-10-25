@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { legalConfig } from "@/lib/legal-config";
+import { seitenMetadaten } from "@/lib/i18n/metadaten";
 
-export const metadata: Metadata = {
-  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
-  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
-  alternates: { canonical: "/datenschutz" },
+export const metadata: Metadata = seitenMetadaten("de", "/datenschutz", {
   title: "Datenschutzerklärung",
-  description:
-    "Informationen zur Verarbeitung personenbezogener Daten bei KörperFormen Köln Rondorf.",
-};
+  description: "Informationen zur Verarbeitung personenbezogener Daten bei KörperFormen Köln Rondorf.",
+});
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
