@@ -5,6 +5,7 @@ import { InstagramIcon } from "@/components/icons/social-icons";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { siteConfig } from "@/lib/site-config";
 import type { Beitrag } from "@/lib/instagram";
+import type { Sprache } from "@/lib/sprache";
 
 /**
  * Die Instagram-Wand.
@@ -17,7 +18,8 @@ import type { Beitrag } from "@/lib/instagram";
  * Erst der Klick führt zu Instagram, und das ist ein gewöhnlicher Link:
  * Wer ihn nicht anklickt, hinterlässt dort keine Spur.
  */
-export function InstagramWand({ beitraege }: { beitraege: Beitrag[] }) {
+export function InstagramWand({ beitraege, sprache = "de" }: { beitraege: Beitrag[]; sprache?: Sprache }) {
+  const en = sprache === "en";
   // Ohne Beiträge kein Abschnitt. Eine Überschrift über einer leeren
   // Fläche sähe aus, als wäre die Seite kaputt - und "kein Zugang
   // hinterlegt" geht den Besucher nichts an.
@@ -28,7 +30,7 @@ export function InstagramWand({ beitraege }: { beitraege: Beitrag[] }) {
       <Container>
         <SectionHeader
           kicker="Instagram"
-          title="So sieht es bei uns aus"
+          title={en ? "This is what it looks like" : "So sieht es bei uns aus"}
           action={
             <a
               href={siteConfig.social.instagram}
@@ -37,7 +39,7 @@ export function InstagramWand({ beitraege }: { beitraege: Beitrag[] }) {
               className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold transition-colors hover:border-lime"
             >
               <InstagramIcon className="h-4 w-4" aria-hidden />
-              Folgen
+              {en ? "Follow" : "Folgen"}
             </a>
           }
         />
@@ -55,9 +57,13 @@ export function InstagramWand({ beitraege }: { beitraege: Beitrag[] }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={
-                  beitrag.text
-                    ? `${beitrag.text} - bei Instagram ansehen`
-                    : "Beitrag bei Instagram ansehen"
+                  en
+                    ? beitrag.text
+                      ? `${beitrag.text} - view on Instagram`
+                      : "View post on Instagram"
+                    : beitrag.text
+                      ? `${beitrag.text} - bei Instagram ansehen`
+                      : "Beitrag bei Instagram ansehen"
                 }
                 className="karte-hebt group relative block aspect-square overflow-hidden rounded-xl border border-border bg-surface"
               >

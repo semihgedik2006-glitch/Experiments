@@ -80,6 +80,11 @@ export const ERGEBNIS_HINWEIS =
   "Wie sich Training auswirkt, hängt von Ausgangslage, Ernährung, Schlaf und " +
   "Regelmäßigkeit ab und ist bei jedem Menschen anders.";
 
+export const ERGEBNIS_HINWEIS_EN =
+  "The results shown are individual cases, not a guaranteed effect. " +
+  "How training works out depends on your starting point, nutrition, sleep and " +
+  "regularity, and is different for everyone.";
+
 /** Grenzen der Felder. Was darüber hinausgeht, liest ohnehin niemand. */
 export const GRENZEN = {
   name: 40,

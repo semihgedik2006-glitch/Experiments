@@ -37,3 +37,23 @@ export const GUTSCHEINE: GutscheinArt[] = [
     preis: null,
   },
 ];
+
+/** Dieselben Gutscheine auf Englisch (Seite /en/voucher). Preise wie oben. */
+export const GUTSCHEINE_EN: GutscheinArt[] = [
+  {
+    titel: "Gift voucher",
+    text: "An amount of your choice – redeemable for training and membership at all studios.",
+    preis: GUTSCHEINE[0].preis,
+  },
+  {
+    titel: "One month of EMS training",
+    text: "Four 20-minute sessions with a trainer, functional underwear included.",
+    preis: GUTSCHEINE[1].preis,
+    hervorgehoben: true,
+  },
+  {
+    titel: "10-session card",
+    text: "Ten sessions, spread freely over the year – for anyone who wants to give it a try first.",
+    preis: GUTSCHEINE[2].preis,
+  },
+];

@@ -18,6 +18,10 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const consent = useSyncExternalStore(subscribeConsent, readConsent, serverConsent);
   const pathname = usePathname();
+  // Der Hinweis ist das Erste, was ein Besucher auf der englischen Seite
+  // sieht - auf Deutsch wäre er dort ein Fremdkörper und obendrein
+  // unverständlich für genau die Leute, für die die Seite gemacht ist.
+  const englisch = useSprache() === "en";
 
   // Im Adminbereich hat der Hinweis nichts verloren: Dort arbeitet nur das
   // Studio selbst, es ist von Suchmaschinen ausgenommen, und der Balken
@@ -25,11 +29,6 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
   // innerhalb dieser Komponente steckt, wird dort auch nichts geladen.
   const inAdmin = pathname?.startsWith("/admin") ?? false;
   if (inAdmin) return null;
-
-  // Der Hinweis ist das Erste, was ein Besucher auf der englischen Seite
-  // sieht - auf Deutsch wäre er dort ein Fremdkörper und obendrein
-  // unverständlich für genau die Leute, für die die Seite gemacht ist.
-  const englisch = useSprache() === "en";
 
   function choose(value: Consent) {
     writeConsent(value);

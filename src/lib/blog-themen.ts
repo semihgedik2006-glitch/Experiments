@@ -122,3 +122,33 @@ export function verwandteBeitraege<T extends BeitragMitThemen>(
     .slice(0, anzahl)
     .map((eintrag) => eintrag.beitrag);
 }
+
+/**
+ * Wie ein Thema auf der englischen Seite heißt.
+ *
+ * Die Themen pflegt das Studio auf Deutsch, und sie bleiben in der
+ * Adresse deutsch (?thema=Rücken) - übersetzt wird nur die Anzeige. Für
+ * die üblichen Themen steht die Übersetzung hier; ein neues, unbekanntes
+ * Thema erscheint so, wie es eingetragen ist.
+ */
+const THEMEN_EN: Record<string, string> = {
+  grundlagen: "Basics",
+  "ems erklärt": "EMS explained",
+  alltag: "Everyday life",
+  "wenig zeit": "Short on time",
+  rücken: "Back",
+  gesundheit: "Health",
+  abnehmen: "Weight loss",
+  ernährung: "Nutrition",
+  muskelaufbau: "Building muscle",
+  straffen: "Toning",
+  fitness: "Fitness",
+  motivation: "Motivation",
+  studio: "Studio",
+  training: "Training",
+};
+
+export function themaAnzeige(sprache: "de" | "en", thema: string): string {
+  if (sprache !== "en") return thema;
+  return THEMEN_EN[thema.toLocaleLowerCase("de")] ?? thema;
+}

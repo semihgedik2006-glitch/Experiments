@@ -147,3 +147,19 @@ export const GOALS_EN: readonly GoalContent[] = [
     hinweis: "Not sure what your goal is? Your trainer works it out with you at the trial session.",
   },
 ];
+
+/**
+ * Die englischen Kennungen der Zielseiten (/en/goal/back statt
+ * /en/goal/ruecken). Dieselben stehen in @/lib/i18n/pfade.
+ */
+export const ZIEL_SLUG_EN: Record<ZielWert, string> = {
+  ruecken: "back",
+  straffen: "toning",
+  abnehmen: "weight-loss",
+  muskelaufbau: "muscle",
+  fitness: "fitness",
+};
+
+export function zielAusSlugEn(slug: string): ZielWert | undefined {
+  return (Object.keys(ZIEL_SLUG_EN) as ZielWert[]).find((wert) => ZIEL_SLUG_EN[wert] === slug);
+}
