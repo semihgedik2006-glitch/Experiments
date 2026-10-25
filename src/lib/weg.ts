@@ -52,3 +52,26 @@ export const STATIONEN: Station[] = [
     auch: [{ label: "Socials", href: "/socials" }],
   },
 ];
+
+export const STATIONEN_EN: Station[] = [
+  { schluessel: "verstehen", name: "Understand", frage: "What is EMS training?", href: "/ems-training" },
+  { schluessel: "erleben", name: "Experience", frage: "How does my first visit work?", href: "/erster-besuch" },
+  {
+    schluessel: "entscheiden",
+    name: "Decide",
+    frage: "Which studio, which membership?",
+    href: "/studio",
+    auch: [{ label: "Prices", href: "/preise" }],
+  },
+  {
+    schluessel: "dabeibleiben",
+    name: "Keep going",
+    frage: "Tips, knowledge and insights",
+    href: "/blog",
+    auch: [{ label: "Socials", href: "/socials" }],
+  },
+];
+
+export function stationen(sprache: "de" | "en"): Station[] {
+  return sprache === "en" ? STATIONEN_EN : STATIONEN;
+}

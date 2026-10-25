@@ -140,6 +140,10 @@ model StudioLocation {
   /// Eingang im Hinterhof. Genau danach wird lokal gesucht, und es steht
   /// auf keiner anderen Seite.
   anfahrt       String?
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  openingHoursEn String?
+  introEn        String?
+  anfahrtEn      String?
   /// Link, unter dem man diesem Standort eine Google-Bewertung schreibt.
   /// Ohne ihn unterbleibt die Bitte um eine Bewertung - eine Mail, die
   /// jemanden auf die Suche schickt, bringt keine Bewertung.
@@ -187,6 +191,10 @@ model Trainer {
   /// Zwei, drei Sätze in eigenen Worten. Was ihn ausmacht, nicht was EMS
   /// ist - das steht auf jeder anderen Seite schon.
   text String?
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  rolleEn         String?
+  qualifikationEn String?
+  textEn          String?
 
   /// Adresse eines Fotos, wie beim Titelbild eines Blogbeitrags. Ohne Foto
   /// erscheint ein Feld mit den Anfangsbuchstaben, kein leerer Rahmen.
@@ -419,6 +427,10 @@ model BlogPost {
   title       String
   excerpt     String
   content     String
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  titleEn     String?
+  excerptEn   String?
+  contentEn   String?
   coverImage  String?
   /// Schlagwörter zu diesem Beitrag, im Adminbereich vergeben.
   ///
@@ -549,6 +561,9 @@ model FaqItem {
   id        String   @id @default(cuid())
   question  String   @unique
   answer    String
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  questionEn String?
+  answerEn   String?
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -581,6 +596,8 @@ model SiteToggle {
 model SiteText {
   key       String   @id
   wert      String
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  wertEn    String?
   updatedAt DateTime @updatedAt
 }
 
@@ -616,6 +633,13 @@ model Tarif {
 
   /// Kleingedrucktes zu genau diesem Tarif, etwa die Mindestlaufzeit.
   hinweis String?
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  nameEn        String?
+  untertitelEn  String?
+  preisEn       String?
+  preisZusatzEn String?
+  leistungenEn  String[] @default([])
+  hinweisEn     String?
 
   aktiv     Boolean  @default(true)
   sortOrder Int      @default(0)
@@ -636,6 +660,10 @@ model Zusatzangebot {
   text String?
   /// Wie beim Tarif ein Text: "ab 49 €" oder "im Beitrag enthalten".
   preis String?
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  nameEn  String?
+  textEn  String?
+  preisEn String?
 
   /// Eines von wenigen Sinnbildern - siehe src/lib/zusatzangebote.ts.
   symbol String @default("sonstiges")
@@ -811,6 +839,10 @@ model Verwandlung {
 
   /// In eigenen Worten, freigegeben. Freiwillig.
   text String?
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  zeitraumEn String?
+  kontextEn  String?
+  textEn     String?
 
   vorherUrl  String
   nachherUrl String
@@ -910,6 +942,8 @@ model Kundenstimme {
 
   /// Das Zitat. In den eigenen Worten der Person - nicht geglättet.
   text String
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  textEn String?
 
   /// "Rückengesundheit", "Abnehmen". Freiwillig.
   ziel String?

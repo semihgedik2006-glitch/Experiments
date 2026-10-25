@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { CalendarClock, KeyRound, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";

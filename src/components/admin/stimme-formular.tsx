@@ -1,4 +1,5 @@
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
+import { EnglischBlock, EnglischFeld } from "@/components/admin/englisch-block";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { adminInput } from "@/components/admin/ui";
 import {
@@ -11,6 +12,7 @@ export type StimmeDaten = {
   id: string;
   name: string;
   text: string;
+  textEn: string | null;
   ziel: string | null;
   monate: number | null;
   studioId: string | null;
@@ -67,6 +69,12 @@ export function StimmeFormular({
           einer.
         </span>
       </label>
+
+      <EnglischBlock ausgefuellt={!!stimme?.textEn}>
+        <EnglischFeld label="The quote in English - shown with the note “translated from German” (Zitat auf Englisch)">
+          <textarea name="textEn" rows={4} defaultValue={stimme?.textEn ?? ""} className={adminInput} />
+        </EnglischFeld>
+      </EnglischBlock>
 
       <div className="grid gap-3 sm:grid-cols-3">
         <label className="block">

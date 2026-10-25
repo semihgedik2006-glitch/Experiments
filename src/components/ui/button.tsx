@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 

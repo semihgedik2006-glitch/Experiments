@@ -1,5 +1,6 @@
 import { CalendarClock, MapPin, Clock3 } from "lucide-react";
 import { beweiseHolen } from "@/lib/beweise";
+import type { Sprache } from "@/lib/sprache";
 
 /**
  * Drei Tatsachen in einer Zeile.
@@ -16,10 +17,13 @@ export async function BeweisLeiste({
   className = "",
   /** Auf einen Standort eingeschränkt - für die Standortseiten. */
   studioId,
+  sprache = "de",
 }: {
   className?: string;
   studioId?: string;
+  sprache?: Sprache;
 }) {
+  const en = sprache === "en";
   const beweise = await beweiseHolen();
 
   // Keine freien Termine mehr: Das Team wird nach den Anfragen eingeteilt
@@ -30,8 +34,10 @@ export async function BeweisLeiste({
       icon: CalendarClock,
       text: (
         <>
-          <span className="font-semibold">Wunschzeit nennen</span>
-          <span className="text-muted"> - wir melden uns mit einem passenden Termin</span>
+          <span className="font-semibold">{en ? "Tell us when suits you" : "Wunschzeit nennen"}</span>
+          <span className="text-muted">
+            {en ? " - we will get back to you with a matching time" : " - wir melden uns mit einem passenden Termin"}
+          </span>
         </>
       ),
     },
@@ -39,8 +45,8 @@ export async function BeweisLeiste({
       icon: Clock3,
       text: (
         <>
-          <span className="font-semibold">20 Minuten</span>
-          <span className="text-muted"> Training, kostenlos und unverbindlich</span>
+          <span className="font-semibold">{en ? "20 minutes" : "20 Minuten"}</span>
+          <span className="text-muted">{en ? " of training, free and no strings attached" : " Training, kostenlos und unverbindlich"}</span>
         </>
       ),
     },
@@ -51,9 +57,17 @@ export async function BeweisLeiste({
       icon: MapPin,
       text: (
         <>
-          <span className="font-semibold">{beweise.standorte} Studios</span>
+          <span className="font-semibold">
+            {beweise.standorte} {en ? "studios" : "Studios"}
+          </span>
           <span className="text-muted">
-            {beweise.orte > 1 ? ` in ${beweise.orte} Orten in Köln und Umgebung` : " in Köln und Umgebung"}
+            {en
+              ? beweise.orte > 1
+                ? ` in ${beweise.orte} towns in and around Cologne`
+                : " in and around Cologne"
+              : beweise.orte > 1
+                ? ` in ${beweise.orte} Orten in Köln und Umgebung`
+                : " in Köln und Umgebung"}
           </span>
         </>
       ),

@@ -7,7 +7,8 @@ import { ArrowRight, Briefcase, ChevronDown, House, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { probeterminHref, useZiel } from "@/components/ziel/ziel-kontext";
-import { ZIEL_INHALTE, zielInhalt } from "@/lib/ziel-inhalte";
+import { zielInhalte, zielInhalt } from "@/lib/ziel-inhalte";
+import { useSprache } from "@/lib/i18n/use-sprache";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 
@@ -94,6 +95,7 @@ export function Hero({
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const wenigerBewegung = useReducedMotion();
+  const en = useSprache() === "en";
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
 
   // Drei Ebenen, drei Tempi: Das Foto zieht am langsamsten mit, der Text
@@ -120,7 +122,11 @@ export function Hero({
               <div className="hero-foto-bild relative aspect-[16/11] lg:aspect-[4/3]">
                 <Image
                   src="/bilder/start/studio-high-five.jpg"
-                  alt="Ein Körperformen-Trainer gibt einem Kunden im EMS-Anzug ein High Five, daneben das EMS-Gerät."
+                  alt={
+                    en
+                      ? "A Körperformen trainer high-fives a client in an EMS suit, the EMS device next to them."
+                      : "Ein Körperformen-Trainer gibt einem Kunden im EMS-Anzug ein High Five, daneben das EMS-Gerät."
+                  }
                   fill
                   priority
                   sizes="(min-width: 1024px) 55vw, 100vw"
@@ -142,14 +148,14 @@ export function Hero({
                   <Briefcase size={18} />
                 </div>
                 <p className="whitespace-nowrap text-xs leading-tight text-foreground/80">
-                  <span className="block font-semibold tabular-nums text-foreground">18:40</span>
-                  noch im Büro
+                  <span className="block font-semibold tabular-nums text-foreground">{en ? "6:40 pm" : "18:40"}</span>
+                  {en ? "still at the office" : "noch im Büro"}
                 </p>
               </div>
               <div className="hero-linie hero-anim h-px w-6" style={verz(1.35)} />
               <div className="hero-anim hero-chip flex items-center gap-2 whitespace-nowrap rounded-full bg-lime py-2 pl-2 pr-4 text-sm font-semibold text-on-lime" style={verz(1.5)}>
-                <span className="rounded-full bg-black/15 px-2 py-1 text-[11px] tabular-nums">19:00</span>
-                Deine 20 Minuten
+                <span className="rounded-full bg-black/15 px-2 py-1 text-[11px] tabular-nums">{en ? "7:00 pm" : "19:00"}</span>
+                {en ? "Your 20 minutes" : "Deine 20 Minuten"}
               </div>
               <div className="hero-linie hero-anim h-px w-6" style={verz(1.65)} />
               <div className="hero-anim hero-geschichte flex items-center gap-2.5 rounded-2xl py-2 pl-2 pr-4" style={verz(1.8)}>
@@ -157,8 +163,8 @@ export function Hero({
                   <House size={18} />
                 </div>
                 <p className="whitespace-nowrap text-xs leading-tight text-foreground/80">
-                  <span className="block font-semibold tabular-nums text-foreground">19:40</span>
-                  bei deinen Liebsten
+                  <span className="block font-semibold tabular-nums text-foreground">{en ? "7:40 pm" : "19:40"}</span>
+                  {en ? "back with your loved ones" : "bei deinen Liebsten"}
                 </p>
               </div>
             </motion.div>
@@ -171,7 +177,11 @@ export function Hero({
               style={verz(0.15)}
             >
               <MapPin size={13} className="text-accent" aria-hidden />
-              {anzahlStudios > 1 ? `${anzahlStudios} Studios in Köln und Umgebung` : standorte}
+              {anzahlStudios > 1
+                ? en
+                  ? `${anzahlStudios} studios in and around Cologne`
+                  : `${anzahlStudios} Studios in Köln und Umgebung`
+                : standorte}
             </span>
             <div className="hero-anim mt-3" style={verz(0.2)}>
               <AuszeichnungMarke />
@@ -180,8 +190,9 @@ export function Hero({
             <Ueberschrift />
 
             <p className="hero-anim mt-6 max-w-lg text-lg leading-relaxed text-foreground/80" style={verz(0.7)}>
-              EMS-Training mit deinem persönlichen Trainer: 20 Minuten pro Woche, abgestimmt auf
-              dein Ziel, deinen Körper und deinen Alltag.
+              {en
+                ? "EMS training with your personal trainer: 20 minutes a week, tailored to your goal, your body and your everyday life."
+                : "EMS-Training mit deinem persönlichen Trainer: 20 Minuten pro Woche, abgestimmt auf dein Ziel, deinen Körper und deinen Alltag."}
             </p>
 
             <ZielWahl />
@@ -217,16 +228,18 @@ export function Hero({
  */
 function ZielWahl() {
   const { ziel, waehlen } = useZiel();
-  const inhalt = zielInhalt(ziel);
+  const sprache = useSprache();
+  const en = sprache === "en";
+  const inhalt = zielInhalt(ziel, sprache);
   const wenigerBewegung = useReducedMotion();
 
   return (
     <div className="hero-anim mt-8" style={verz(0.85)}>
       <p id="ziel-frage" className="text-sm font-semibold text-foreground">
-        Was willst du erreichen?
+        {en ? "What do you want to achieve?" : "Was willst du erreichen?"}
       </p>
       <div role="radiogroup" aria-labelledby="ziel-frage" className="mt-3 flex flex-wrap gap-2">
-        {ZIEL_INHALTE.map((z) => {
+        {zielInhalte(sprache).map((z) => {
           const aktiv = z.wert === ziel;
           return (
             <button
@@ -269,7 +282,7 @@ function ZielWahl() {
                   <ArrowRight size={16} aria-hidden />
                 </Button>
                 <a href="#dein-ziel" className="text-sm font-semibold text-accent underline-offset-4 hover:underline">
-                  So trainierst du dafür
+                  {en ? "How you train for it" : "So trainierst du dafür"}
                 </a>
               </div>
             </motion.div>
@@ -283,11 +296,11 @@ function ZielWahl() {
               className="flex flex-col gap-3 sm:flex-row sm:items-center"
             >
               <Button href="/probetermin" className="knopf-glanz-dauer px-8 py-3.5">
-                Kostenloses Probetraining
+                {en ? "Free trial session" : "Kostenloses Probetraining"}
                 <ArrowRight size={16} aria-hidden />
               </Button>
               <Button href="/ziel-check" variant="secondary" className="border-white/25">
-                Unsicher? Ziel-Check machen
+                {en ? "Not sure? Take the goal check" : "Unsicher? Ziel-Check machen"}
               </Button>
             </motion.div>
           )}
@@ -305,13 +318,15 @@ function ZielWahl() {
  * mit kurzer Verzögerung, beim Wechsel sofort.
  */
 const ALLGEMEIN: [string, string] = ["Fühl dich wieder\u00a0wohl", "in\u00a0deinem\u00a0Körper."];
+const ALLGEMEIN_EN: [string, string] = ["Feel at home", "in\u00a0your\u00a0body\u00a0again."];
 
 function Ueberschrift() {
   const { ziel, wechsel } = useZiel();
-  const inhalt = zielInhalt(ziel);
+  const sprache = useSprache();
+  const inhalt = zielInhalt(ziel, sprache);
   // Geschütztes Leerzeichen vor dem letzten Wort: Es darf nie allein in
   // einer Zeile stehen.
-  const [eins, zwei] = (inhalt?.titel ?? ALLGEMEIN).map((zeile) => zeile.replace(/ (\S+)$/, "\u00a0$1"));
+  const [eins, zwei] = (inhalt?.titel ?? (sprache === "en" ? ALLGEMEIN_EN : ALLGEMEIN)).map((zeile) => zeile.replace(/ (\S+)$/, "\u00a0$1"));
   const start = wechsel > 0 ? 0 : 0.25;
   return (
     <h1
@@ -328,7 +343,8 @@ function Ueberschrift() {
 /** Kleine Karte oben links auf dem Foto: das Motiv zum gewählten Ziel. */
 function ZielKarte() {
   const { ziel } = useZiel();
-  const inhalt = zielInhalt(ziel);
+  const sprache = useSprache();
+  const inhalt = zielInhalt(ziel, sprache);
   const wenigerBewegung = useReducedMotion();
   return (
     <AnimatePresence mode="wait">
@@ -346,7 +362,7 @@ function ZielKarte() {
             <ZielMotiv ziel={inhalt.wert} className="h-full w-full" />
           </div>
           <p className="text-xs leading-tight text-foreground/80">
-            <span className="block text-[10px] uppercase tracking-widest text-muted">Dein Fokus</span>
+            <span className="block text-[10px] uppercase tracking-widest text-muted">{sprache === "en" ? "Your focus" : "Dein Fokus"}</span>
             <span className="mt-0.5 block text-sm font-semibold text-foreground">{inhalt.kurz}</span>
           </p>
         </motion.div>

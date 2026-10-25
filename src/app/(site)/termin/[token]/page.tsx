@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { notFound } from "next/navigation";
 import { CalendarCheck, CalendarX, Clock, MapPin } from "lucide-react";
 import { prisma } from "@/lib/prisma";

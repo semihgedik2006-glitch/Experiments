@@ -1,5 +1,6 @@
 import { UserRound, ShieldCheck, FileText, Lock } from "lucide-react";
-import { trustPoints } from "@/lib/trust-config";
+import { trustPointsIn } from "@/lib/trust-config";
+import type { Sprache } from "@/lib/sprache";
 
 const icons = {
   user: UserRound,
@@ -15,10 +16,10 @@ const icons = {
  * jemand seine Daten hinterlässt, und genau dort tauchen die Zweifel auf
  * ("binde ich mich damit an etwas?").
  */
-export function TrustBar({ className = "" }: { className?: string }) {
+export function TrustBar({ className = "", sprache = "de" }: { className?: string; sprache?: Sprache }) {
   return (
     <ul className={`grid gap-x-6 gap-y-4 text-sm text-muted sm:grid-cols-2 ${className}`}>
-      {trustPoints.map((point) => {
+      {trustPointsIn(sprache).map((point) => {
         const Icon = icons[point.icon];
         return (
           <li key={point.title} className="flex items-start gap-2.5">

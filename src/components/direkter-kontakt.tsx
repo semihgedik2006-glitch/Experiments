@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { Mail, MapPin, MessageSquare, Phone } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
@@ -6,6 +6,7 @@ import { siteConfig } from "@/lib/site-config";
 import { getStudios } from "@/lib/data";
 import { isVisible } from "@/lib/site-toggles";
 import { WhatsappKnopf } from "@/components/whatsapp-knopf";
+import type { Sprache } from "@/lib/sprache";
 
 /**
  * Direkter Kontaktweg.
@@ -20,12 +21,19 @@ import { WhatsappKnopf } from "@/components/whatsapp-knopf";
  * Antippen statt Abtippen.
  */
 export async function DirekterKontakt({
-  titel = "Lieber direkt fragen?",
-  text = "Was dein Training kostet, hängt davon ab, wie oft du trainierst und was du erreichen willst. Am schnellsten geht das im Gespräch - ganz unverbindlich.",
+  titel,
+  text,
+  sprache = "de",
 }: {
   titel?: string;
   text?: string;
+  sprache?: Sprache;
 }) {
+  const en = sprache === "en";
+  titel ??= en ? "Rather ask directly?" : "Lieber direkt fragen?";
+  text ??= en
+    ? "What your training costs depends on how often you train and what you want to achieve. The quickest way is to talk to us - with no obligation."
+    : "Was dein Training kostet, hängt davon ab, wie oft du trainierst und was du erreichen willst. Am schnellsten geht das im Gespräch - ganz unverbindlich.";
   const studios = (await isVisible("studio")) ? await getStudios() : [];
 
   // WhatsApp nur, wenn wenigstens ein Standort eine Nummer hinterlegt hat.
@@ -36,24 +44,24 @@ export async function DirekterKontakt({
   const wege = [
     {
       icon: Phone,
-      label: "Anrufen",
+      label: en ? "Call" : "Anrufen",
       wert: siteConfig.contact.phone,
       href: `tel:${siteConfig.contact.phone.replace(/\s/g, "")}`,
-      zusatz: "Zu den Öffnungszeiten direkt im Studio",
+      zusatz: en ? "Straight to the studio during opening hours" : "Zu den Öffnungszeiten direkt im Studio",
     },
     {
       icon: Mail,
-      label: "E-Mail schreiben",
+      label: en ? "Send an email" : "E-Mail schreiben",
       wert: siteConfig.contact.email,
       href: `mailto:${siteConfig.contact.email}`,
-      zusatz: "Antwort in der Regel am selben Werktag",
+      zusatz: en ? "Usually answered the same working day" : "Antwort in der Regel am selben Werktag",
     },
     {
       icon: MessageSquare,
-      label: "Formular ausfüllen",
-      wert: "Zum Kontaktformular",
-      href: "/kontakt",
-      zusatz: "Wenn du zurückgerufen werden möchtest",
+      label: en ? "Fill in the form" : "Formular ausfüllen",
+      wert: en ? "To the contact form" : "Zum Kontaktformular",
+      href: en ? "/en/contact" : "/kontakt",
+      zusatz: en ? "If you would like us to call you back" : "Wenn du zurückgerufen werden möchtest",
     },
   ];
 
@@ -90,7 +98,12 @@ export async function DirekterKontakt({
             <WhatsappKnopf
               nummer={mitWhatsapp.whatsapp}
               variante="schlicht"
-              text="Hallo, ich habe eine Frage zum EMS-Training bei Körperformen."
+              sprache={sprache}
+              text={
+                en
+                  ? "Hello, I have a question about EMS training at Körperformen."
+                  : "Hallo, ich habe eine Frage zum EMS-Training bei Körperformen."
+              }
             />
           </div>
         )}
@@ -100,11 +113,11 @@ export async function DirekterKontakt({
         {studios.length > 1 && (
           <p className="mt-5 flex flex-wrap items-center gap-2 text-sm text-muted">
             <MapPin size={15} className="text-accent" />
-            Du erreichst auch jedes Studio direkt &ndash;{" "}
+            {en ? "You can also reach every studio directly –" : "Du erreichst auch jedes Studio direkt –"}{" "}
             {/* Link statt <a>: Next lädt damit nur den geänderten Teil der
                 Seite nach, statt sie komplett neu aufzubauen. */}
             <Link href="/studio" className="text-accent underline underline-offset-2">
-              alle {studios.length} Standorte mit Telefonnummer
+              {en ? `all ${studios.length} studios with phone numbers` : `alle ${studios.length} Standorte mit Telefonnummer`}
             </Link>
           </p>
         )}

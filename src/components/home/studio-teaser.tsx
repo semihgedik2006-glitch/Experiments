@@ -7,8 +7,11 @@ import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import { studioMapUrl } from "@/lib/studio-map";
 import { getStudios } from "@/lib/data";
+import type { Sprache } from "@/lib/sprache";
+import { oeffnungszeiten } from "@/lib/i18n/oeffnungszeiten";
 
-export async function StudioTeaser() {
+export async function StudioTeaser({ sprache = "de" }: { sprache?: Sprache }) {
+  const en = sprache === "en";
   const studios = await getStudios();
   if (studios.length === 0) return null;
 
@@ -21,14 +24,15 @@ export async function StudioTeaser() {
         <Container className="relative grid gap-10 md:grid-cols-2 md:items-center">
           <Reveal>
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-              Standort
+              {en ? "Location" : "Standort"}
             </span>
             <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              Dein Studio in {studio.city}
+              {en ? `Your studio in ${studio.city}` : `Dein Studio in ${studio.city}`}
             </h2>
             <p className="mt-4 text-muted">
-              Modern ausgestattet, zentral gelegen und mit einem Team, das dich
-              auf deinem Weg begleitet.
+              {en
+                ? "Modern equipment, a central location and a team that supports you along the way."
+                : "Modern ausgestattet, zentral gelegen und mit einem Team, das dich auf deinem Weg begleitet."}
             </p>
 
             <ul className="mt-8 space-y-4 text-sm">
@@ -46,19 +50,19 @@ export async function StudioTeaser() {
               </li>
               <li className="flex items-start gap-3">
                 <Clock size={18} className="mt-0.5 shrink-0 text-accent" />
-                <span className="whitespace-pre-line">{studio.openingHours}</span>
+                <span className="whitespace-pre-line">{oeffnungszeiten(sprache, studio)}</span>
               </li>
             </ul>
 
             <Button href="/studio" variant="secondary" className="mt-8">
-              Studio &amp; Anfahrt ansehen
+              {en ? "Studio & directions" : "Studio & Anfahrt ansehen"}
             </Button>
           </Reveal>
 
           <Reveal delay={0.15} className="overflow-hidden rounded-2xl border border-border">
             <MapEmbed
               src={studioMapUrl(studio)}
-              title="Studio Standort auf Google Maps"
+              title={en ? "Studio location on Google Maps" : "Studio Standort auf Google Maps"}
               className="h-80 w-full"
             />
           </Reveal>
@@ -86,14 +90,15 @@ export async function StudioTeaser() {
         <div className="mb-14 grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
           <Reveal className="max-w-2xl">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-              Standorte
+              {en ? "Locations" : "Standorte"}
             </span>
             <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              {studios.length} Studios in deiner Nähe
+              {en ? `${studios.length} studios near you` : `${studios.length} Studios in deiner Nähe`}
             </h2>
             <p className="mt-4 text-muted">
-              Modern ausgestattet, zentral gelegen - such dir den Standort aus,
-              der am besten in deinen Alltag passt.
+              {en
+                ? "Modern equipment, central locations - pick the one that fits best into your everyday life."
+                : "Modern ausgestattet, zentral gelegen - such dir den Standort aus, der am besten in deinen Alltag passt."}
             </p>
           </Reveal>
           <ImpulsSzene
@@ -123,7 +128,7 @@ export async function StudioTeaser() {
                   )}
                 </ul>
                 <Button href={`/studio/${studio.slug}`} variant="secondary" className="karte-knopf mt-6 w-full">
-                  Details &amp; Anfahrt
+                  {en ? "Details & directions" : "Details & Anfahrt"}
                 </Button>
               </div>
             </StaggerItem>
@@ -132,16 +137,19 @@ export async function StudioTeaser() {
 
         <Reveal className="mt-10 flex flex-wrap items-center gap-4">
           <Button href="/studio">
-            {weitere > 0
-              ? `Alle ${studios.length} Standorte ansehen`
-              : "Alle Standorte ansehen"}
+            {en
+              ? weitere > 0
+                ? `View all ${studios.length} studios`
+                : "View all studios"
+              : weitere > 0
+                ? `Alle ${studios.length} Standorte ansehen`
+                : "Alle Standorte ansehen"}
           </Button>
           {weitere > 0 && (
             <span className="text-sm text-muted">
-              {weitere === 1
-                ? "Ein weiterer Standort"
-                : `${weitere} weitere Standorte`}{" "}
-              &ndash; mit Lageplan und Anfahrt.
+              {en
+                ? `${weitere === 1 ? "One more studio" : `${weitere} more studios`} – with map and directions.`
+                : `${weitere === 1 ? "Ein weiterer Standort" : `${weitere} weitere Standorte`} – mit Lageplan und Anfahrt.`}
             </span>
           )}
         </Reveal>

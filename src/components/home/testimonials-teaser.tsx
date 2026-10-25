@@ -1,9 +1,10 @@
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/ui/section-header";
-import { anfangsbuchstabe, stimmenHolen } from "@/lib/kundenstimmen";
+import { anfangsbuchstabe, stimmeIn, stimmenHolen } from "@/lib/kundenstimmen";
+import type { Sprache } from "@/lib/sprache";
 
 /**
  * Die drei ersten Kundenstimmen auf der Startseite.
@@ -19,7 +20,8 @@ import { anfangsbuchstabe, stimmenHolen } from "@/lib/kundenstimmen";
  * Bewertung abgegeben worden wäre. Wer Sterne will, findet sie bei
  * Google - dafür gibt es den Bewertungshinweis.
  */
-export async function TestimonialsTeaser() {
+export async function TestimonialsTeaser({ sprache = "de" }: { sprache?: Sprache }) {
+  const en = sprache === "en";
   const stimmen = await stimmenHolen(3);
   if (stimmen.length === 0) return null;
 
@@ -27,16 +29,20 @@ export async function TestimonialsTeaser() {
     <section className="on-ink py-20 sm:py-24 md:py-32">
       <Container>
         <SectionHeader
-          kicker="Erfahrungen"
-          title="Das sagen unsere Mitglieder"
-          intro="Unterschiedliche Ziele, ein gemeinsamer Nenner: 20 Minuten pro Woche, die wirken."
+          kicker={en ? "Experiences" : "Erfahrungen"}
+          title={en ? "What our members say" : "Das sagen unsere Mitglieder"}
+          intro={
+            en
+              ? "Different goals, one thing in common: 20 minutes a week that make a difference."
+              : "Unterschiedliche Ziele, ein gemeinsamer Nenner: 20 Minuten pro Woche, die wirken."
+          }
           className="mb-16"
           action={
             <Link
               href="/erfolgsgeschichten"
               className="hidden items-center gap-1 text-sm font-medium text-accent hover:underline md:flex"
             >
-              Alle Geschichten <ArrowRight size={14} />
+              {en ? "All stories" : "Alle Geschichten"} <ArrowRight size={14} />
             </Link>
           }
         />
@@ -53,11 +59,14 @@ export async function TestimonialsTeaser() {
                 : "md:grid-cols-3"
           }`}
         >
-          {stimmen.map((stimme) => (
+          {stimmen.map((stimme) => {
+            const anzeige = stimmeIn(sprache, stimme);
+            return (
             <StaggerItem key={stimme.id}>
               <figure className="flex h-full flex-col card p-7">
                 <blockquote className="flex-1 text-sm leading-relaxed text-foreground/90">
-                  &bdquo;{stimme.text}&ldquo;
+                  {en ? <>&ldquo;{anzeige.text}&rdquo;</> : <>&bdquo;{anzeige.text}&ldquo;</>}
+                  {anzeige.uebersetzt && <span className="mt-2 block text-xs text-muted">(translated from German)</span>}
                 </blockquote>
                 <figcaption className="mt-5 flex items-center gap-3">
                   <span
@@ -68,12 +77,13 @@ export async function TestimonialsTeaser() {
                   </span>
                   <span className="text-sm">
                     <span className="font-semibold">{stimme.name}</span>
-                    {stimme.ziel && <span className="text-muted"> &middot; {stimme.ziel}</span>}
+                    {anzeige.ziel && <span className="text-muted"> &middot; {anzeige.ziel}</span>}
                   </span>
                 </figcaption>
               </figure>
             </StaggerItem>
-          ))}
+            );
+          })}
         </Stagger>
       </Container>
     </section>

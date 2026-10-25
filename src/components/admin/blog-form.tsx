@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { Loader2 } from "lucide-react";
 import { themenSchreiben } from "@/lib/blog-themen";
 import type { ActionResult } from "@/lib/actions/newsletter";
+import { EnglischBlock, EnglischFeld } from "@/components/admin/englisch-block";
 
 const initialState: ActionResult = { ok: false, message: "" };
 
@@ -11,6 +12,9 @@ type Post = {
   title: string;
   excerpt: string;
   content: string;
+  titleEn: string | null;
+  excerptEn: string | null;
+  contentEn: string | null;
   themen: string[];
   published: boolean;
 };
@@ -92,6 +96,18 @@ export function BlogForm({
           </p>
         )}
       </div>
+
+      <EnglischBlock ausgefuellt={!!(post?.titleEn || post?.excerptEn || post?.contentEn)}>
+        <EnglischFeld label="Title (Titel)">
+          <input type="text" name="titleEn" defaultValue={post?.titleEn ?? ""} className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime" />
+        </EnglischFeld>
+        <EnglischFeld label="Short description (Kurzbeschreibung)">
+          <textarea name="excerptEn" rows={2} defaultValue={post?.excerptEn ?? ""} className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime" />
+        </EnglischFeld>
+        <EnglischFeld label="Content (Inhalt)">
+          <textarea name="contentEn" rows={12} defaultValue={post?.contentEn ?? ""} className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime" />
+        </EnglischFeld>
+      </EnglischBlock>
 
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" name="published" defaultChecked={post?.published} className="accent-lime" />

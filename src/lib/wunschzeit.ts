@@ -25,10 +25,10 @@ export const WOCHENTAGE = [
 ] as const;
 
 export const TAGESZEITEN = [
-  { wert: "morgens", de: "Morgens", en: "Morning", spanne: "vor 12 Uhr" },
-  { wert: "mittags", de: "Mittags", en: "Midday", spanne: "12 - 15 Uhr" },
-  { wert: "nachmittags", de: "Nachmittags", en: "Afternoon", spanne: "15 - 17 Uhr" },
-  { wert: "abends", de: "Nach Feierabend", en: "After work", spanne: "ab 17 Uhr" },
+  { wert: "morgens", de: "Morgens", en: "Morning", spanne: "vor 12 Uhr", spanneEn: "before 12 pm" },
+  { wert: "mittags", de: "Mittags", en: "Midday", spanne: "12 - 15 Uhr", spanneEn: "12 - 3 pm" },
+  { wert: "nachmittags", de: "Nachmittags", en: "Afternoon", spanne: "15 - 17 Uhr", spanneEn: "3 - 5 pm" },
+  { wert: "abends", de: "Nach Feierabend", en: "After work", spanne: "ab 17 Uhr", spanneEn: "from 5 pm" },
 ] as const;
 
 export type TageszeitWert = (typeof TAGESZEITEN)[number]["wert"];
@@ -54,6 +54,12 @@ export function wunschzeitText(tage: string[], zeiten: string[]): string {
 export function wochentagLabel(sprache: Sprache, wert: string) {
   const w = WOCHENTAGE.find((x) => x.wert === wert);
   return w ? w[sprache] : wert;
+}
+
+/** Die Zeitspanne zur Tageszeit - auf Englisch im Zwölfstundenformat. */
+export function tageszeitSpanne(sprache: Sprache, wert: string) {
+  const w = TAGESZEITEN.find((x) => x.wert === wert);
+  return w ? (sprache === "en" ? w.spanneEn : w.spanne) : "";
 }
 
 export function tageszeitLabel(sprache: Sprache, wert: string) {

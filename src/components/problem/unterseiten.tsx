@@ -1,6 +1,8 @@
 "use client";
 
 import { ProblemAbschnitt, Legende, ab } from "@/components/problem/problem-abschnitt";
+import { useSprache } from "@/lib/i18n/use-sprache";
+import { ZONEN_EN } from "@/lib/ziel-inhalte";
 
 /**
  * Die Probleme der Unterseiten - je eins, je eine Grafik.
@@ -30,11 +32,16 @@ const SPUR_B = 214;
 const GLEICH = 0.5;
 
 function Zonen() {
+  const en = useSprache() === "en";
   return (
     <svg
       viewBox="0 0 360 280"
       role="img"
-      aria-label="Acht Muskelgruppen mit je einem Regler. Zuerst stehen alle gleich, dann wird jede einzeln eingestellt - der untere Rücken am niedrigsten, Po und Arme am höchsten."
+      aria-label={
+        en
+          ? "Eight muscle groups, each with a slider. At first they are all the same, then each is set individually - the lower back lowest, glutes and arms highest."
+          : "Acht Muskelgruppen mit je einem Regler. Zuerst stehen alle gleich, dann wird jede einzeln eingestellt - der untere Rücken am niedrigsten, Po und Arme am höchsten."
+      }
       className="w-full"
     >
       {ZONEN.map(([name, wert], i) => {
@@ -42,7 +49,7 @@ function Zonen() {
         return (
           <g key={name} className="zp-auf" style={ab(0.4 + i * 0.05)}>
             <text x={SPUR_X - 14} y={yy + 4} textAnchor="end" className="zr-name">
-              {name}
+              {en ? ZONEN_EN[i] : name}
             </text>
             <rect x={SPUR_X} y={yy - 3} width={SPUR_B} height={6} rx={3} className="zr-spur" />
             <rect
@@ -69,6 +76,37 @@ function Zonen() {
 }
 
 export function EmsProblem() {
+  if (useSprache() === "en") {
+    return (
+      <ProblemAbschnitt
+        kicker="Set up for you"
+        titel="Your body gets exactly the intensity it needs."
+        punkte={[
+          {
+            label: "Muscle group by muscle group",
+            text: <>your trainer sets each zone individually – stronger where you want to build strength, gentler where you need to be careful.</>,
+          },
+          {
+            label: "New every session",
+            text: <>your trainer stands next to you, sees how you move and adjusts the setting to your day.</>,
+          },
+        ]}
+        knopf={{ href: "/probetermin", text: "Trial session with a trainer" }}
+        kartenTitel="Intensity per muscle group"
+        legende={
+          <>
+            <Legende farbe="termin">Range</Legende>
+            <Legende farbe="neu">For you</Legende>
+          </>
+        }
+        alt={{ label: "Muscle groups", wert: "8 zones" }}
+        neu={{ label: "Set", wert: "for you" }}
+        aufloesung={3.1}
+      >
+        <Zonen />
+      </ProblemAbschnitt>
+    );
+  }
   return (
     <ProblemAbschnitt
       kicker="Auf dich eingestellt"
@@ -124,6 +162,7 @@ function km(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
 }
 
 function Naehe({ studios }: { studios: StudioPunkt[] }) {
+  const en = useSprache() === "en";
   // Einfache Projektion: Längengrade mit cos(Breite) stauchen, damit Köln
   // nicht in die Breite gezogen wird. Für 50 km reicht das völlig.
   const alle = [...studios, START];
@@ -153,7 +192,11 @@ function Naehe({ studios }: { studios: StudioPunkt[] }) {
     <svg
       viewBox={`0 0 360 ${Math.round(hoehe)}`}
       role="img"
-      aria-label={`Karte mit ${studios.length} Studios in Köln und Umgebung. Von Köln-Ehrenfeld aus liegt ${naechstes.name} am nächsten, etwa ${naechstes.km.toFixed(1).replace(".", ",")} Kilometer Luftlinie.`}
+      aria-label={
+        en
+          ? `Map with ${studios.length} studios in and around Cologne. From Cologne-Ehrenfeld, ${naechstes.name} is closest, about ${naechstes.km.toFixed(1)} kilometres as the crow flies.`
+          : `Karte mit ${studios.length} Studios in Köln und Umgebung. Von Köln-Ehrenfeld aus liegt ${naechstes.name} am nächsten, etwa ${naechstes.km.toFixed(1).replace(".", ",")} Kilometer Luftlinie.`
+      }
       className="w-full"
     >
       {/* Radarringe um "Du" */}
@@ -180,7 +223,7 @@ function Naehe({ studios }: { studios: StudioPunkt[] }) {
         <g className="nh-du">
           <circle r={7} className="nh-du-punkt" />
           <text y={-13} textAnchor="middle" className="nh-du-text">
-            Du
+            {en ? "You" : "Du"}
           </text>
         </g>
       </g>
@@ -190,7 +233,7 @@ function Naehe({ studios }: { studios: StudioPunkt[] }) {
         <g className="nh-schild">
           <rect x={schildLinks ? -118 : 0} width={118} height={28} rx={14} />
           <text x={schildLinks ? -59 : 59} y={18} textAnchor="middle">
-            {naechstes.km.toFixed(1).replace(".", ",")} km Luftlinie
+            {en ? `${naechstes.km.toFixed(1)} km away` : `${naechstes.km.toFixed(1).replace(".", ",")} km Luftlinie`}
           </text>
         </g>
       </g>
@@ -199,9 +242,52 @@ function Naehe({ studios }: { studios: StudioPunkt[] }) {
 }
 
 export function StudioProblem({ studios }: { studios: StudioPunkt[] }) {
+  const en = useSprache() === "en";
   // Ohne genug Koordinaten ergäbe die Karte kein Bild - dann lieber nichts.
   if (studios.length < 3) return null;
   const n = studios.length;
+  if (en) {
+    return (
+      <ProblemAbschnitt
+        kicker="Near you"
+        titel="A short journey makes it easy to stick with it."
+        punkte={[
+          {
+            label: `${n} studios`,
+            text: <>in and around Cologne. One is almost always on your way – near the office in the morning or around the corner in the evening.</>,
+          },
+          {
+            label: "One standard",
+            text: <>the same process and the same supervision, whichever of our studios you train at.</>,
+          },
+        ]}
+        rechnung={{
+          titel: "How the map is made",
+          inhalt: (
+            <p>
+              The dots are the real locations of the studios. Cologne-Ehrenfeld is used as an example
+              starting point; the distance is as the crow flies. You can find your own nearest studio at
+              the top of this page – using your location.
+            </p>
+          ),
+        }}
+        knopf={{ href: "/probetermin", text: "Trial session near me" }}
+        kartenTitel="Cologne and surroundings"
+        legende={
+          <>
+            <Legende farbe="termin">Studio</Legende>
+            <Legende farbe="neu">Closest</Legende>
+          </>
+        }
+        alt={{ label: "Cologne and surroundings", wert: `${n} studios` }}
+        neu={{ label: "Your journey", wert: "short" }}
+        aufloesung={3.2}
+        hintergrund="background"
+      >
+        <Naehe studios={studios} />
+      </ProblemAbschnitt>
+    );
+  }
   return (
     <ProblemAbschnitt
       kicker="In deiner Nähe"
@@ -285,6 +371,29 @@ function Pfeil({ x, y, einsatz, art }: { x: number; y: number; einsatz: number; 
 }
 
 function Probe() {
+  if (useSprache() === "en") {
+    return (
+      <svg
+        viewBox="0 0 360 200"
+        role="img"
+        aria-label="Three steps: a free trial session with a trainer, then the question whether it suits you, then getting started with your own plan."
+        className="w-full"
+      >
+        <Schritt x={6} y={40} titel="Trial session" unter="€0 · with trainer" art="neu" ab={0.6} />
+        <Pfeil x={108} y={69} einsatz={1.0} art="neu" />
+        <Schritt x={132} y={40} titel="Right for you?" unter="you will feel it" art="neu" ab={1.1} />
+        <Pfeil x={234} y={69} einsatz={1.5} art="neu" />
+        <Schritt x={258} y={40} titel="Get started" unter="with your plan" art="fertig" ab={1.6} />
+
+        <text x={180} y={150} textAnchor="middle" className="pr-zeile zp-auf" style={ab(2.0)}>
+          You get your offer in writing
+        </text>
+        <text x={180} y={176} textAnchor="middle" className="pr-unter zp-auf" style={ab(2.2)}>
+          No decision on the spot – take your time.
+        </text>
+      </svg>
+    );
+  }
   return (
     <svg
       viewBox="0 0 360 200"
@@ -309,6 +418,31 @@ function Probe() {
 }
 
 export function PreisProblem() {
+  if (useSprache() === "en") {
+    return (
+      <ProblemAbschnitt
+        kicker="Try it first"
+        titel="Try it first, then decide in your own time."
+        punkte={[
+          {
+            label: "Free trial session",
+            text: <>you train once with your trainer and feel for yourself what EMS is like.</>,
+          },
+          {
+            label: "Your plan, your offer",
+            text: <>afterwards your trainer shows you which membership suits your goal – in writing to take home.</>,
+          },
+        ]}
+        knopf={{ href: "/probetermin", text: "Try it for free" }}
+        kartenTitel="The way to training"
+        alt={{ label: "Trial session", wert: "€0" }}
+        neu={{ label: "First", wert: "try it" }}
+        aufloesung={2.6}
+      >
+        <Probe />
+      </ProblemAbschnitt>
+    );
+  }
   return (
     <ProblemAbschnitt
       kicker="Erst probieren"

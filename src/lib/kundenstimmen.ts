@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { ZIELE } from "@/lib/ziel";
+import { zielLabel, type Sprache } from "@/lib/sprache";
 
 /**
  * Die freigegebenen Kundenstimmen.
@@ -16,9 +18,29 @@ export type Stimme = {
   id: string;
   name: string;
   text: string;
+  textEn: string | null;
   ziel: string | null;
   monate: number | null;
 };
+
+/**
+ * Eine Stimme für die Anzeige in einer Sprache.
+ *
+ * Auf Englisch steht die englische Fassung, wenn das Studio eine
+ * eingetragen hat - mit dem Hinweis, dass sie übersetzt ist: Ein Zitat ist
+ * das, was jemand gesagt hat, und das war Deutsch. Ohne Übersetzung steht
+ * das deutsche Original da. Das Ziel wird übersetzt, wenn es eines der
+ * bekannten Ziele ist.
+ */
+export function stimmeIn(sprache: Sprache, stimme: Stimme) {
+  const uebersetzt = sprache === "en" && !!stimme.textEn?.trim();
+  const bekannt = ZIELE.find((z) => z.label === stimme.ziel);
+  return {
+    text: uebersetzt ? stimme.textEn! : stimme.text,
+    uebersetzt,
+    ziel: sprache === "en" && bekannt ? zielLabel("en", bekannt.wert) : stimme.ziel,
+  };
+}
 
 export async function stimmenHolen(grenze?: number): Promise<Stimme[]> {
   try {
@@ -26,7 +48,7 @@ export async function stimmenHolen(grenze?: number): Promise<Stimme[]> {
       where: { aktiv: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
       take: grenze,
-      select: { id: true, name: true, text: true, ziel: true, monate: true },
+      select: { id: true, name: true, text: true, textEn: true, ziel: true, monate: true },
     });
   } catch (error) {
     console.error("Kundenstimmen konnten nicht geladen werden:", error);

@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { enText } from "@/lib/admin-englisch";
+import { revalidatePath } from "@/lib/revalidieren";
 import { prisma } from "@/lib/prisma";
 import { verlangeLeitungAktion } from "@/lib/admin-rechte";
 import { istSymbol } from "@/lib/zusatzangebote";
@@ -73,6 +74,12 @@ function tarifLesen(formData: FormData) {
     preisZusatz: feld(formData, "preisZusatz") || null,
     hinweis: feld(formData, "hinweis") || null,
     leistungen: leistungenLesen(String(formData.get("leistungen") ?? "")),
+    nameEn: enText(formData, "nameEn", GRENZEN.name),
+    untertitelEn: enText(formData, "untertitelEn", GRENZEN.untertitel),
+    preisEn: enText(formData, "preisEn", GRENZEN.preis),
+    preisZusatzEn: enText(formData, "preisZusatzEn", GRENZEN.preisZusatz),
+    hinweisEn: enText(formData, "hinweisEn", GRENZEN.hinweis),
+    leistungenEn: leistungenLesen(String(formData.get("leistungenEn") ?? "")),
     empfohlen: formData.get("empfohlen") !== null,
     aktiv: formData.get("aktiv") !== null,
     sortOrder: Number(formData.get("sortOrder") ?? 0) || 0,
@@ -142,6 +149,9 @@ function angebotLesen(formData: FormData) {
     name: feld(formData, "name"),
     text: feld(formData, "text") || null,
     preis: feld(formData, "preis") || null,
+    nameEn: enText(formData, "nameEn", GRENZEN.name),
+    textEn: enText(formData, "textEn", GRENZEN.text),
+    preisEn: enText(formData, "preisEn", GRENZEN.preis),
     // Nur bekannte Sinnbilder durchlassen - ein unbekannter Wert würde
     // als leere Fläche enden.
     symbol: istSymbol(symbol) ? symbol : "sonstiges",
@@ -198,11 +208,12 @@ export async function textSpeichern(formData: FormData) {
   if (!textDefinitionen.some((eintrag) => eintrag.key === key)) return;
 
   const wert = String(formData.get("wert") ?? "").trim().slice(0, 600);
+  const wertEn = enText(formData, "wertEn", 600);
 
   await prisma.siteText.upsert({
     where: { key },
-    create: { key: key as TextKey, wert },
-    update: { wert },
+    create: { key: key as TextKey, wert, wertEn },
+    update: { wert, wertEn },
   });
   erneuern();
 }

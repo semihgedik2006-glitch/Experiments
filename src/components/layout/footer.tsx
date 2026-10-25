@@ -1,12 +1,14 @@
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
-import { siteConfig } from "@/lib/site-config";
+import { siteConfig, siteTexte } from "@/lib/site-config";
+import type { Sprache } from "@/lib/sprache";
+import { oeffnungszeiten } from "@/lib/i18n/oeffnungszeiten";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { InstagramIcon, FacebookIcon, TikTokIcon } from "@/components/icons/social-icons";
 import { Logo } from "@/components/logo";
 import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 import { getStudios } from "@/lib/data";
-import { ZIEL_INHALTE } from "@/lib/ziel-inhalte";
+import { zielInhalte } from "@/lib/ziel-inhalte";
 import { isVisible } from "@/lib/site-toggles";
 
 const socials = [
@@ -18,10 +20,13 @@ const socials = [
 export async function Footer({
   nav,
   showNewsletter,
+  sprache = "de",
 }: {
   nav: { label: string; href: string }[];
   showNewsletter: boolean;
+  sprache?: Sprache;
 }) {
+  const en = sprache === "en";
   // Wie im Layout: Die Fußzeile steht auf jeder Seite. Wirft diese
   // Abfrage, ist nicht die Fußzeile weg, sondern die ganze Seite - und
   // zwar auch die schöne Fehlerseite, denn error.tsx fängt das Layout
@@ -36,7 +41,7 @@ export async function Footer({
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-4">
         <div>
           <Logo className="h-8 w-auto" />
-          <p className="mt-3 max-w-xs text-sm text-muted">{siteConfig.claim}</p>
+          <p className="mt-3 max-w-xs text-sm text-muted">{siteTexte[sprache].claim}</p>
           <AuszeichnungMarke className="mt-4" />
           <div className="mt-5 flex gap-3">
             {socials.map(({ href, label, Icon }) => (
@@ -91,7 +96,7 @@ export async function Footer({
                   href="/gutschein"
                   className="tastflaeche block py-1.5 text-sm text-accent hover:text-foreground"
                 >
-                  Gutschein verschenken
+                  {en ? "Give a voucher" : "Gutschein verschenken"}
                 </Link>
               </li>
             )}
@@ -103,16 +108,16 @@ export async function Footer({
                 href="/meine-termine"
                 className="tastflaeche block py-1.5 text-sm text-muted hover:text-foreground"
               >
-                Meine Termine
+                {en ? "My appointments" : "Meine Termine"}
               </Link>
             </li>
           </ul>
 
           {/* Die Zielseiten - im Menü oben ist für sie kein Platz, aber
               Google und alle, die nach unten scrollen, sollen sie finden. */}
-          <p className="mt-6 text-sm font-semibold">Deine Ziele</p>
+          <p className="mt-6 text-sm font-semibold">{en ? "Your goals" : "Deine Ziele"}</p>
           <ul className="mt-3 space-y-0">
-            {ZIEL_INHALTE.map((ziel) => (
+            {zielInhalte(sprache).map((ziel) => (
               <li key={ziel.wert}>
                 <Link
                   href={`/ziel/${ziel.wert}`}
@@ -127,7 +132,7 @@ export async function Footer({
                 href="/ziel-check"
                 className="tastflaeche block py-1.5 text-sm text-accent hover:text-foreground"
               >
-                Ziel-Check machen
+                {en ? "Take the goal check" : "Ziel-Check machen"}
               </Link>
             </li>
             <li>
@@ -135,7 +140,7 @@ export async function Footer({
                 href="/fragen"
                 className="tastflaeche block py-1.5 text-sm text-muted hover:text-foreground"
               >
-                Fragen kurz beantwortet
+                {en ? "Quick answers" : "Fragen kurz beantwortet"}
               </Link>
             </li>
           </ul>
@@ -143,7 +148,7 @@ export async function Footer({
 
         <div>
           <p className="text-sm font-semibold">
-            {studio ? studio.name : "Kontakt"}
+            {studio ? studio.name : en ? "Contact" : "Kontakt"}
           </p>
           <ul className="mt-4 space-y-3 text-sm text-muted">
             {studio && (
@@ -177,15 +182,18 @@ export async function Footer({
             {studio?.openingHours && (
               <li className="flex items-start gap-2.5">
                 <Clock size={15} className="mt-0.5 shrink-0 text-accent" />
-                <span className="whitespace-pre-line">{studio.openingHours}</span>
+                <span className="whitespace-pre-line">
+                  {oeffnungszeiten(sprache, studio)}
+                </span>
               </li>
             )}
           </ul>
 
           {studios.length > 1 && (
             <Link href="/studio" className="tastflaeche mt-4 inline-block text-sm text-accent hover:underline">
-              + {studios.length - 1} weitere{studios.length - 1 === 1 ? "r" : ""} Standort
-              {studios.length - 1 === 1 ? "" : "e"}
+              {en
+                ? `+ ${studios.length - 1} more location${studios.length - 1 === 1 ? "" : "s"}`
+                : `+ ${studios.length - 1} weitere${studios.length - 1 === 1 ? "r" : ""} Standort${studios.length - 1 === 1 ? "" : "e"}`}
             </Link>
           )}
         </div>
@@ -194,7 +202,7 @@ export async function Footer({
           <div>
             <p className="text-sm font-semibold">Newsletter</p>
             <p className="mt-4 text-sm text-muted">
-              Trainingstipps &amp; Angebote direkt ins Postfach.
+              {en ? "Training tips & offers straight to your inbox." : "Trainingstipps & Angebote direkt ins Postfach."}
             </p>
             <NewsletterForm />
           </div>
@@ -204,22 +212,22 @@ export async function Footer({
       <div className="border-t border-border px-6 py-6">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-xs text-muted sm:flex-row">
           <p>
-            © {new Date().getFullYear()} {siteConfig.name}. Alle Rechte vorbehalten.
+            © {new Date().getFullYear()} {siteConfig.name}. {en ? "All rights reserved." : "Alle Rechte vorbehalten."}
           </p>
           {/* -my-2 gleicht das py-2 wieder aus: Die Zeile bleibt optisch
               genauso hoch wie vorher, die drei Verweise sind aber 16
               statt 32 Pixel hoch antippbar. Sie stehen in einem <nav>,
               sind also Navigation und nicht Teil eines Satzes - für die
               gilt das Mindestmaß aus WCAG 2.5.8. */}
-          <nav aria-label="Rechtliches" className="-my-2 flex gap-5">
+          <nav aria-label={en ? "Legal" : "Rechtliches"} className="-my-2 flex gap-5">
             <Link href="/impressum" className="tastflaeche py-2 hover:text-foreground">
-              Impressum
+              {en ? "Imprint" : "Impressum"}
             </Link>
             <Link href="/datenschutz" className="tastflaeche py-2 hover:text-foreground">
-              Datenschutz
+              {en ? "Privacy" : "Datenschutz"}
             </Link>
             <Link href="/agb" className="tastflaeche py-2 hover:text-foreground">
-              AGB
+              {en ? "Terms" : "AGB"}
             </Link>
           </nav>
         </div>

@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useSprache } from "@/lib/i18n/use-sprache";
 import { ChevronDown } from "lucide-react";
 
 /**
@@ -20,7 +23,7 @@ import { ChevronDown } from "lucide-react";
  * Suchmaschinen lesbar.
  */
 export function MehrDazu({
-  titel = "Mehr dazu",
+  titel,
   children,
   className = "",
   ton = "hell",
@@ -41,6 +44,8 @@ export function MehrDazu({
    */
   zentriert?: boolean;
 }) {
+  const sprache = useSprache();
+  titel ??= sprache === "en" ? "More on this" : "Mehr dazu";
   return (
     <details className={`mehr-dazu group ${zentriert ? "w-full max-w-xl text-left" : ""} ${className}`}>
       <summary

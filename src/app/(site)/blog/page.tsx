@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { isVisible } from "@/lib/site-toggles";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { ArrowRight, Clock, Newspaper, SearchX } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";

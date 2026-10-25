@@ -72,3 +72,30 @@ export const trustPoints = [
     text: "Terminanfragen speichern wir in einem Rechenzentrum in Frankfurt und geben sie nicht an Dritte weiter.",
   },
 ];
+
+export const trustPointsEn: typeof trustPoints = [
+  {
+    icon: "user",
+    title: "Always personally supervised",
+    text: "No training on your own. In every session a trainer stands next to you and sets the intensity.",
+  },
+  {
+    icon: "shield",
+    title: "Try first, then decide",
+    text: "The trial session is free. Afterwards your trainer shows you which membership suits your goal.",
+  },
+  {
+    icon: "file",
+    title: "Offer in writing",
+    text: "You take the prices home in black and white - no pressure to decide on the spot.",
+  },
+  {
+    icon: "lock",
+    title: "Your data stays with us",
+    text: "We store appointment requests in a data centre in Frankfurt and do not pass them on to third parties.",
+  },
+];
+
+export function trustPointsIn(sprache: "de" | "en") {
+  return sprache === "en" ? trustPointsEn : trustPoints;
+}

@@ -2,6 +2,7 @@ import { Container } from "@/components/ui/container";
 import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { TrainerBild } from "@/components/studio/trainer-bild";
+import type { Sprache } from "@/lib/sprache";
 
 export type TrainerAnzeige = {
   id: string;
@@ -26,7 +27,10 @@ export type TrainerAnzeige = {
 export function TrainerWand({
   ort,
   trainer,
+  sprache = "de",
 }: {
+  /** Die Texte der Profile kommen schon in dieser Sprache (lokal()). */
+  sprache?: Sprache;
   /** Ortsname für die Überschrift: "in Hürth". */
   ort: string;
   trainer: TrainerAnzeige[];
@@ -34,18 +38,23 @@ export function TrainerWand({
   // Kein einziges Profil - dann auch keine Überschrift. Eine leere
   // Teamvorstellung sagt etwas anderes aus, als sie soll.
   if (trainer.length === 0) return null;
+  const en = sprache === "en";
 
   return (
     <section className="relative overflow-hidden border-t border-border bg-surface py-20">
       <ImpulsStreu anordnung="rand" />
       <Container className="relative">
         <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Wer dich in {ort} betreut
+          {en ? `Who looks after you in ${ort}` : `Wer dich in ${ort} betreut`}
         </h2>
         <p className="mt-3 max-w-2xl text-muted">
-          {trainer.length === 1
-            ? "Beim Probetraining bist du nicht allein auf der Fläche - eine Person begleitet dich die ganzen zwanzig Minuten."
-            : "Beim Probetraining bist du nicht allein auf der Fläche - eine von ihnen begleitet dich die ganzen zwanzig Minuten."}
+          {en
+            ? trainer.length === 1
+              ? "At your trial session you are not on your own - one person is with you for the whole twenty minutes."
+              : "At your trial session you are not on your own - one of them is with you for the whole twenty minutes."
+            : trainer.length === 1
+              ? "Beim Probetraining bist du nicht allein auf der Fläche - eine Person begleitet dich die ganzen zwanzig Minuten."
+              : "Beim Probetraining bist du nicht allein auf der Fläche - eine von ihnen begleitet dich die ganzen zwanzig Minuten."}
         </p>
 
         <Stagger className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { enText } from "@/lib/admin-englisch";
+import { revalidatePath } from "@/lib/revalidieren";
 import { prisma } from "@/lib/prisma";
 import { verlangeLeitungAktion, verlangeStudioRecht } from "@/lib/admin-rechte";
 import { istGueltigerSlug, studioSlug } from "@/lib/slug";
@@ -87,6 +88,9 @@ function readStudioForm(formData: FormData) {
     googleReviewUrl: String(formData.get("googleReviewUrl") ?? "").trim().slice(0, 500) || null,
     intro: String(formData.get("intro") ?? "").trim().slice(0, 600) || null,
     anfahrt: String(formData.get("anfahrt") ?? "").trim().slice(0, 800) || null,
+    openingHoursEn: enText(formData, "openingHoursEn", 600),
+    introEn: enText(formData, "introEn", 600),
+    anfahrtEn: enText(formData, "anfahrtEn", 800),
     latitude: latitude ? Number(latitude) : null,
     longitude: longitude ? Number(longitude) : null,
     sortOrder: Number(formData.get("sortOrder") ?? 0) || 0,

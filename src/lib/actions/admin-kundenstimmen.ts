@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { enText } from "@/lib/admin-englisch";
+import { revalidatePath } from "@/lib/revalidieren";
 import { prisma } from "@/lib/prisma";
 import { verlangeStudioRecht } from "@/lib/admin-rechte";
 import { protokollieren } from "@/lib/protokoll";
@@ -67,6 +68,7 @@ function lesen(formData: FormData) {
   return {
     name: feld(formData, "name"),
     text: feld(formData, "text"),
+    textEn: enText(formData, "textEn", GRENZEN.text),
     ziel: feld(formData, "ziel") || null,
     monate,
     einwilligungAm: zustimmungsDatum(String(formData.get("einwilligungAm") ?? "")),

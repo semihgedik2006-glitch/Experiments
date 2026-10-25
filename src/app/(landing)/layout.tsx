@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { Logo } from "@/components/logo";
 import { legalConfig } from "@/lib/legal-config";
 import { KlickImpuls } from "@/components/klick-impuls";

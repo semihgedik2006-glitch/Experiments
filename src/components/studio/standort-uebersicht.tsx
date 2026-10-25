@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { LocateFixed, MapPin } from "lucide-react";
 import { haversineDistanceKm, anyStudioLocatable, sortStudiosByDistance } from "@/lib/geo";
 import { ausschnittFuer } from "@/lib/karte";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 const subscribeNothing = () => () => {};
 
@@ -40,6 +41,7 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
   const [entfernungen, setEntfernungen] = useState<Record<string, number>>({});
   const [hervorgehoben, setHervorgehoben] = useState<string | null>(null);
   const isClient = useSyncExternalStore(subscribeNothing, () => true, () => false);
+  const en = useSprache() === "en";
 
   const kannOrten = studios.length > 1 && anyStudioLocatable(studios);
 
@@ -177,7 +179,7 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
         </div>
 
         <p className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-3 py-2 text-[11px] text-muted">
-          <span>Kartendaten &copy; OpenStreetMap-Mitwirkende</span>
+          <span>{en ? "Map data © OpenStreetMap contributors" : "Kartendaten © OpenStreetMap-Mitwirkende"}</span>
           <a
             href="https://www.openstreetmap.org/copyright"
             target="_blank"
@@ -188,7 +190,7 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
             // Zeile unter der Karte bleibt genauso schmal wie vorher.
             className="-my-1 py-1 underline underline-offset-2 hover:text-foreground"
           >
-            Lizenz
+            {en ? "Licence" : "Lizenz"}
           </a>
         </p>
       </div>
@@ -196,12 +198,12 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
       <div>
         <p className="flex items-center gap-2 text-sm font-semibold">
           <MapPin size={16} className="text-accent" />
-          {verortet.length} Standorte
+          {verortet.length} {en ? "studios" : "Standorte"}
         </p>
 
         {isClient && naechsteId && (
           <p className="mt-1 flex items-center gap-1.5 text-xs text-accent">
-            <LocateFixed size={13} /> Nach Entfernung zu dir sortiert
+            <LocateFixed size={13} /> {en ? "Sorted by distance from you" : "Nach Entfernung zu dir sortiert"}
           </p>
         )}
 

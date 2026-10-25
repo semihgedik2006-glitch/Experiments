@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from "@/lib/revalidieren";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
 import type { ActionResult } from "@/lib/actions/newsletter";

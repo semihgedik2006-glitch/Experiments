@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import { useZiel } from "@/components/ziel/ziel-kontext";
 import { nachZiel, zielInhalt } from "@/lib/ziel-inhalte";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 export type FaqEntry = { question: string; answer: string };
 
@@ -86,9 +87,11 @@ export function Faq({ items: alle }: { items: FaqEntry[] }) {
   // Überall sonst gibt es kein Ziel, und die Reihenfolge bleibt die aus dem
   // Adminbereich.
   const { ziel } = useZiel();
+  const sprache = useSprache();
+  const en = sprache === "en";
   const items = useMemo(
-    () => nachZiel(alle, (item) => `${item.question} ${item.answer}`, zielInhalt(ziel)),
-    [alle, ziel],
+    () => nachZiel(alle, (item) => `${item.question} ${item.answer}`, zielInhalt(ziel, sprache)),
+    [alle, ziel, sprache],
   );
 
   const begriff = suche.trim();
@@ -109,17 +112,17 @@ export function Faq({ items: alle }: { items: FaqEntry[] }) {
       <Container className="max-w-3xl">
         <Reveal>
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-            Gut zu wissen
+            {en ? "Good to know" : "Gut zu wissen"}
           </span>
           <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Häufige Fragen
+            {en ? "Frequently asked questions" : "Häufige Fragen"}
           </h2>
         </Reveal>
 
         {mitSuche && (
           <Reveal delay={0.06} className="mt-8">
             <label className="relative block">
-              <span className="sr-only">In den häufigen Fragen suchen</span>
+              <span className="sr-only">{en ? "Search the questions" : "In den häufigen Fragen suchen"}</span>
               <Search
                 size={17}
                 aria-hidden
@@ -134,7 +137,7 @@ export function Faq({ items: alle }: { items: FaqEntry[] }) {
                   // will lesen, nicht noch einmal klicken.
                   setOpenIndex(0);
                 }}
-                placeholder="Suchen, z.B. Schwangerschaft, Kosten, Kleidung"
+                placeholder={en ? "Search, e.g. pregnancy, cost, clothing" : "Suchen, z.B. Schwangerschaft, Kosten, Kleidung"}
                 className="w-full rounded-full border border-border bg-transparent py-3 pl-11 pr-4 text-sm outline-none transition-colors focus:border-lime"
               />
             </label>
@@ -143,7 +146,9 @@ export function Faq({ items: alle }: { items: FaqEntry[] }) {
                 Ansage bliebe die Änderung unbemerkt. */}
             <p aria-live="polite" className="sr-only">
               {begriff
-                ? `${gefiltert.length} von ${items.length} Fragen passen zu „${suche.trim()}“`
+                ? en
+                  ? `${gefiltert.length} of ${items.length} questions match “${suche.trim()}”`
+                  : `${gefiltert.length} von ${items.length} Fragen passen zu „${suche.trim()}“`
                 : ""}
             </p>
           </Reveal>
@@ -202,26 +207,26 @@ export function Faq({ items: alle }: { items: FaqEntry[] }) {
               <SearchX size={20} aria-hidden />
             </span>
             <p className="mt-3 font-semibold">
-              Zu „{suche.trim()}“ steht hier nichts
+              {en ? `Nothing here on “${suche.trim()}”` : `Zu „${suche.trim()}“ steht hier nichts`}
             </p>
             <p className="mx-auto mt-2 max-w-md text-sm text-muted">
-              Das heißt nicht, dass es keine Antwort gibt - nur, dass sie noch
-              nicht hier steht. Frag uns einfach direkt, wir antworten in der
-              Regel am selben Werktag.
+              {en
+                ? "That does not mean there is no answer - just that it is not here yet. Simply ask us directly; we usually reply the same working day."
+                : "Das heißt nicht, dass es keine Antwort gibt - nur, dass sie noch nicht hier steht. Frag uns einfach direkt, wir antworten in der Regel am selben Werktag."}
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-3">
               <a
-                href="/kontakt"
+                href={en ? "/en/contact" : "/kontakt"}
                 className="rounded-full bg-lime px-5 py-2.5 text-sm font-semibold text-on-lime transition-opacity hover:opacity-90"
               >
-                Frage stellen
+                {en ? "Ask a question" : "Frage stellen"}
               </a>
               <button
                 type="button"
                 onClick={() => setSuche("")}
                 className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold transition-colors hover:border-lime"
               >
-                Alle Fragen zeigen
+                {en ? "Show all questions" : "Alle Fragen zeigen"}
               </button>
             </div>
           </div>

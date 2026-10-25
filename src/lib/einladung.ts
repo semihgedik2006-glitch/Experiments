@@ -1,3 +1,4 @@
+import { nachDe } from "@/lib/i18n/pfade";
 /**
  * Wann die Einladungen zum Probetraining erscheinen dürfen.
  *
@@ -125,6 +126,8 @@ export const AUSGENOMMEN = [
 ] as const;
 
 export function seiteAusgenommen(pfad: string): boolean {
+  // Die englischen Seiten zählen wie ihre deutschen Gegenstücke.
+  pfad = nachDe(pfad);
   return AUSGENOMMEN.some((p) => pfad === p || pfad.startsWith(`${p}/`));
 }
 

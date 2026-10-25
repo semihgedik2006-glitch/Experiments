@@ -37,6 +37,7 @@ export default async function AdminKundenstimmenPage() {
         id: true,
         name: true,
         text: true,
+        textEn: true,
         ziel: true,
         monate: true,
         studioId: true,

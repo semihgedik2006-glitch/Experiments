@@ -1,10 +1,11 @@
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { UserRound, ShieldCheck, FileText, Lock, Star } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/ui/section-header";
 import { ImpulsStreu } from "@/components/ui/impuls-streu";
-import { googleReviews, studioFacts, trustPoints } from "@/lib/trust-config";
+import { googleReviews, studioFacts, trustPointsIn } from "@/lib/trust-config";
+import type { Sprache } from "@/lib/sprache";
 import { isVisible } from "@/lib/site-toggles";
 
 const icons = {
@@ -22,7 +23,9 @@ const icons = {
  * hinterlegt, fehlt der jeweilige Teil einfach, statt mit Platzhaltern
  * gefüllt zu werden.
  */
-export async function TrustSection() {
+export async function TrustSection({ sprache = "de" }: { sprache?: Sprache }) {
+  const en = sprache === "en";
+  const trustPoints = trustPointsIn(sprache);
   // Zwei Bedingungen: echte Zahlen müssen hinterlegt sein UND der Bereich
   // darf nicht im Adminbereich ausgeblendet sein.
   const showReviews = googleReviews !== null && (await isVisible("google-bewertungen"));
@@ -32,14 +35,14 @@ export async function TrustSection() {
       <ImpulsStreu anordnung="diagonal" />
       <Container className="relative">
         <SectionHeader
-          kicker="Ohne Kleingedrucktes"
-          title="Worauf du dich verlassen kannst"
+          kicker={en ? "No small print" : "Ohne Kleingedrucktes"}
+          title={en ? "What you can rely on" : "Worauf du dich verlassen kannst"}
           // Hier stand ein Absatz darüber, warum dieser Abschnitt
           // existiert ("Wir arbeiten mit Menschen, die schon einmal
           // enttäuscht wurden ... deshalb schreiben wir hier auf ..."). Was
           // gilt, steht in den vier Karten darunter - der Absatz davor hat
           // es nur angekündigt.
-          intro="Vier Zusagen, die ohne Sternchen auskommen."
+          intro={en ? "Four promises without asterisks." : "Vier Zusagen, die ohne Sternchen auskommen."}
           className="mb-16"
         />
 
@@ -78,7 +81,7 @@ export async function TrustSection() {
 
         {showReviews && (
           <div className="mt-12 flex justify-center">
-            <GoogleRatingBadge />
+            <GoogleRatingBadge sprache={sprache} />
           </div>
         )}
 
@@ -90,13 +93,13 @@ export async function TrustSection() {
             href="/agb"
             className="tastflaeche text-accent underline underline-offset-4 hover:text-foreground"
           >
-            AGB
+            {en ? "Terms" : "AGB"}
           </Link>
           <Link
             href="/datenschutz"
             className="tastflaeche text-accent underline underline-offset-4 hover:text-foreground"
           >
-            Datenschutzerklärung
+            {en ? "Privacy policy" : "Datenschutzerklärung"}
           </Link>
         </p>
       </Container>
@@ -108,7 +111,7 @@ export async function TrustSection() {
  * Bewertungshinweis - erscheint erst, wenn in trust-config echte Zahlen aus
  * dem Google-Unternehmensprofil hinterlegt sind.
  */
-export function GoogleRatingBadge({ className = "" }: { className?: string }) {
+export function GoogleRatingBadge({ className = "", sprache = "de" }: { className?: string; sprache?: Sprache }) {
   if (!googleReviews) return null;
 
   const { rating, count, url } = googleReviews;
@@ -127,8 +130,10 @@ export function GoogleRatingBadge({ className = "" }: { className?: string }) {
         ))}
       </span>
       <span>
-        <span className="font-semibold">{rating.toLocaleString("de-DE")}</span>
-        <span className="text-muted"> von 5 &middot; {count} Google-Bewertungen</span>
+        <span className="font-semibold">{rating.toLocaleString(sprache === "en" ? "en-GB" : "de-DE")}</span>
+        <span className="text-muted">
+          {sprache === "en" ? ` out of 5 · ${count} Google reviews` : ` von 5 · ${count} Google-Bewertungen`}
+        </span>
       </span>
     </a>
   );

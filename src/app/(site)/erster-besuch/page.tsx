@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { CalendarCheck, Droplets, ShieldCheck } from "lucide-react";
 import { ABLAUF_EINHEIT, GEGENANZEIGEN } from "@/lib/ablauf";
 import { Container } from "@/components/ui/container";

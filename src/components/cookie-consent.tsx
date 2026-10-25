@@ -10,6 +10,7 @@ import {
   writeConsent,
   type Consent,
 } from "@/lib/consent";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 const emptySubscribe = () => () => {};
 
@@ -28,9 +29,7 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
   // Der Hinweis ist das Erste, was ein Besucher auf der englischen Seite
   // sieht - auf Deutsch wäre er dort ein Fremdkörper und obendrein
   // unverständlich für genau die Leute, für die die Seite gemacht ist.
-  // Die Sprache steckt hier im Pfad, weil die englische Fassung unter
-  // /en liegt (siehe src/lib/sprache.ts).
-  const englisch = pathname?.startsWith("/en") ?? false;
+  const englisch = useSprache() === "en";
 
   function choose(value: Consent) {
     writeConsent(value);
@@ -63,14 +62,10 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
                     We only use cookies that are technically necessary. With your
                     consent we also use Google Analytics to improve the site. More
                     in our{" "}
-                    <a
-                      href="/datenschutz"
-                      hrefLang="de"
-                      className="text-accent underline underline-offset-2"
-                    >
+                    <a href="/en/privacy" className="text-accent underline underline-offset-2">
                       privacy policy
-                    </a>{" "}
-                    (German).
+                    </a>
+                    .
                   </>
                 ) : (
                   <>

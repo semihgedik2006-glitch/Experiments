@@ -11,7 +11,8 @@ import { ZIELE, istZiel } from "@/lib/ziel";
 import { ZIEL_EREIGNIS, ZIEL_SPEICHER } from "@/components/ziel/ziel-kontext";
 import { herkunftAusBrowser, type Herkunft } from "@/lib/herkunft";
 import { einstiegLesen } from "@/lib/einstieg";
-import { TAGESZEITEN, TAGESZEIT_SPEICHER, WOCHENTAGE, istTageszeit, tageszeitLabel, wochentagLabel, wunschzeitText } from "@/lib/wunschzeit";
+import { TAGESZEITEN, TAGESZEIT_SPEICHER, WOCHENTAGE, istTageszeit, tageszeitLabel, tageszeitSpanne, wochentagLabel, wunschzeitText } from "@/lib/wunschzeit";
+import { useSprache } from "@/lib/i18n/use-sprache";
 import type { ActionResult } from "@/lib/actions/newsletter";
 import { erreichbarkeitLabel, spanneLabel, texte, zielLabel, type Sprache } from "@/lib/sprache";
 
@@ -19,7 +20,7 @@ const initialState: ActionResult = { ok: false, message: "" };
 
 export function BookingForm({
   studioId,
-  sprache = "de",
+  sprache: spracheVorgabe,
 }: {
   /** Der oben gewählte Standort. Er wird mitgeschickt, damit die Anfrage
       auch dann bei einem Studio landet, wenn keine feste Zeit dabei ist. */
@@ -27,6 +28,9 @@ export function BookingForm({
   /** Auf der englischen Seite "en" - siehe src/lib/sprache.ts. */
   sprache?: Sprache;
 }) {
+  // Ohne Angabe die Sprache der Seite, auf der das Formular steht.
+  const spracheDerSeite = useSprache();
+  const sprache = spracheVorgabe ?? spracheDerSeite;
   const t = texte(sprache);
   // Der Wunsch statt eines festen Termins - siehe @/lib/wunschzeit.
   const [tage, setTage] = useState<string[]>([]);
@@ -232,7 +236,7 @@ export function BookingForm({
                   }`}
                 >
                   {tageszeitLabel(sprache, zeit.wert)}
-                  <span className={`ml-1.5 text-xs ${an ? "" : "text-muted"}`}>{zeit.spanne}</span>
+                  <span className={`ml-1.5 text-xs ${an ? "" : "text-muted"}`}>{tageszeitSpanne(sprache, zeit.wert)}</span>
                 </button>
               );
             })}

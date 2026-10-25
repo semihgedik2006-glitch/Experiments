@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { enText } from "@/lib/admin-englisch";
+import { revalidatePath } from "@/lib/revalidieren";
 import { prisma } from "@/lib/prisma";
 import { verlangeAdminAktion, verlangeStudioRecht } from "@/lib/admin-rechte";
 import { protokollieren } from "@/lib/protokoll";
@@ -75,6 +76,9 @@ function lesen(formData: FormData) {
     zeitraum: feld(formData, "zeitraum"),
     kontext: feld(formData, "kontext"),
     text: String(formData.get("text") ?? "").trim().slice(0, GRENZEN.text) || null,
+    zeitraumEn: enText(formData, "zeitraumEn", GRENZEN.zeitraum),
+    kontextEn: enText(formData, "kontextEn", GRENZEN.kontext),
+    textEn: enText(formData, "textEn", GRENZEN.text),
     vorherUrl: feld(formData, "vorherUrl"),
     nachherUrl: feld(formData, "nachherUrl"),
     einwilligungAm,

@@ -1,3 +1,5 @@
+import type { Sprache } from "@/lib/sprache";
+
 /**
  * Die Auszeichnung der DtGV: "Deutschlands beliebteste EMS-Studios 2026".
  *
@@ -35,3 +37,30 @@ export const auszeichnung = {
     { name: "Kundenvertrauen", score: "7,46" },
   ],
 } as const;
+
+/**
+ * Dieselbe Auszeichnung auf Englisch. Der Titel der Befragung ist
+ * übersetzt, das Original steht in `titelOriginal` - zitiert wird die
+ * Studie unter ihrem deutschen Namen.
+ */
+export const auszeichnungEn = {
+  ...auszeichnung,
+  titel: "Germany's most popular EMS studios 2026",
+  titelOriginal: auszeichnung.titel,
+  platz: "1st place overall",
+  herausgeber: "German Society for Consumer Studies (DtGV)",
+  art: "customer survey",
+  veroeffentlicht: "9 April 2026",
+  zeitraum: "February to March 2026",
+  kategorien: [
+    { name: "Support", score: "7.71" },
+    { name: "Prices & terms", score: "7.47" },
+    { name: "Effectiveness", score: "7.49" },
+    { name: "Equipment", score: "7.42" },
+    { name: "Customer trust", score: "7.46" },
+  ],
+} as const;
+
+export function auszeichnungIn(sprache: Sprache) {
+  return sprache === "en" ? auszeichnungEn : { ...auszeichnung, titelOriginal: auszeichnung.titel };
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { useState, useTransition } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { abmeldenVomNewsletter, type ActionResult } from "@/lib/actions/newsletter";

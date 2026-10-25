@@ -1,3 +1,5 @@
+import type { Sprache } from "@/lib/sprache";
+
 /**
  * Wie eine Einheit abläuft und wann wir auf EMS verzichten.
  *
@@ -68,3 +70,55 @@ export const GEGENANZEIGEN: string[] = [
   "Schwere neurologische Erkrankungen",
   "Akute Thrombose",
 ];
+
+/* ------------------------------------------------------------ Englisch */
+
+export const ABLAUF_EINHEIT_EN: Schritt[] = [
+  {
+    step: "Check-in & health check",
+    text: "On your first visit we talk about your goals and your health - so the training suits you safely.",
+    duration: "5 min",
+    foto: { src: "/bilder/studio/team-begruessung.jpg", alt: "Two Körperformen trainers welcome a client in an EMS suit at the studio." },
+  },
+  {
+    step: "Functional underwear & vest",
+    text: "We give you functional underwear. Your trainer puts the EMS vest on you and connects it to the impulse device.",
+    duration: "5 min",
+    foto: { src: "/bilder/studio/weste-angelegt.jpg", alt: "A client wearing the EMS suit gives a thumbs up, his trainer next to him." },
+  },
+  {
+    step: "Setting the impulses",
+    text: "Each muscle group is controlled and dosed individually - you have a say in what feels good.",
+    duration: "3 min",
+    foto: { src: "/bilder/studio/training-mit-trainer.jpg", alt: "A trainer demonstrates an exercise, the client in an EMS suit follows, the EMS device next to them." },
+  },
+  {
+    step: "The training",
+    text: "Simple exercises like squats or lunges - the impulses are added to every movement.",
+    duration: "20 min",
+    foto: { src: "/bilder/studio/training-ausfallschritt.jpg", alt: "A trainer and a client in an EMS suit doing a lunge." },
+  },
+  {
+    step: "Cool-down & feedback",
+    text: "A relaxed finish with gentle impulses, then quick feedback and planning your next session.",
+    duration: "5 min",
+    foto: { src: "/bilder/studio/high-five-trainer.jpg", alt: "A trainer and a client in an EMS suit high-five after the session." },
+  },
+];
+
+export const GEGENANZEIGEN_EN: string[] = [
+  "Pacemakers or other electronic implants",
+  "Pregnancy",
+  "Acute illness, fever or infections",
+  "Epilepsy",
+  "Serious neurological conditions",
+  "Acute thrombosis",
+];
+
+export function ablaufEinheit(sprache: Sprache): Schritt[] {
+  return sprache === "en" ? ABLAUF_EINHEIT_EN : ABLAUF_EINHEIT;
+}
+
+export function gegenanzeigen(sprache: Sprache): string[] {
+  return sprache === "en" ? GEGENANZEIGEN_EN : GEGENANZEIGEN;
+}

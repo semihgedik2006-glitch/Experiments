@@ -1,6 +1,7 @@
 "use client";
 
 import { ProblemAbschnitt, Legende, ab } from "@/components/problem/problem-abschnitt";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /**
  * Zeit: 20 Minuten passen auch in eine volle Woche.
@@ -44,14 +45,19 @@ const BELEGT: [tag: number, von: number, bis: number][] = [
 const EMS = { tag: 3, von: 17.5, dauer: 20 / 60 };
 
 function Kalender() {
+  const en = useSprache() === "en";
   return (
     <svg
       viewBox="0 0 360 280"
       role="img"
-      aria-label="Eine volle Arbeitswoche mit Arbeit und Terminen. Ein 20-Minuten-Training passt am Donnerstag um 17:30 Uhr in eine Lücke."
+      aria-label={
+        en
+          ? "A full working week with work and appointments. A 20-minute session fits into a gap on Thursday at 5:30 pm."
+          : "Eine volle Arbeitswoche mit Arbeit und Terminen. Ein 20-Minuten-Training passt am Donnerstag um 17:30 Uhr in eine Lücke."
+      }
       className="w-full"
     >
-      {["Mo", "Di", "Mi", "Do", "Fr"].map((tag, i) => (
+      {(en ? ["Mon", "Tue", "Wed", "Thu", "Fri"] : ["Mo", "Di", "Mi", "Do", "Fr"]).map((tag, i) => (
         <text key={tag} x={x(i) + BREITE / 2} y={26} textAnchor="middle" className="kal-tag zp-auf" style={ab(0.35 + i * 0.06)}>
           {tag}
         </text>
@@ -59,7 +65,7 @@ function Kalender() {
       {[8, 12, 16, 20].map((h) => (
         <g key={h}>
           <text x={LINKS - 8} y={y(h) + 4} textAnchor="end" className="kal-zeit">
-            {h}
+            {en ? (h === 12 ? "12" : h > 12 ? `${h - 12}p` : `${h}a`) : h}
           </text>
           <line x1={LINKS - 2} x2={x(4) + BREITE} y1={y(h)} y2={y(h)} className="kal-linie" />
         </g>
@@ -98,7 +104,7 @@ function Kalender() {
         <g className="kal-ems-schild">
           <rect width={52} height={26} rx={13} />
           <text x={26} y={17} textAnchor="middle">
-            20 Min
+            {en ? "20 min" : "20 Min"}
           </text>
         </g>
       </g>
@@ -107,6 +113,7 @@ function Kalender() {
 }
 
 export function ZeitProblem() {
+  if (useSprache() === "en") return <ZeitProblemEn />;
   return (
     <ProblemAbschnitt
       kicker="Passt in deine Woche"
@@ -135,6 +142,42 @@ export function ZeitProblem() {
       }
       alt={{ label: "Deine Woche", wert: "voll" }}
       neu={{ label: "Training", wert: "20 Min." }}
+      aufloesung={2.4}
+    >
+      <Kalender />
+    </ProblemAbschnitt>
+  );
+}
+
+function ZeitProblemEn() {
+  return (
+    <ProblemAbschnitt
+      kicker="Fits into your week"
+      titel="Your calendar is full? 20 minutes still fit in."
+      punkte={[
+        {
+          label: "One fixed appointment",
+          text: <>once a week, 20 minutes of training. It is at the same time every week and becomes a habit.</>,
+        },
+        {
+          label: "Nothing to plan",
+          text: <>your trainer sets everything up and knows what you are working on. You come, train and get on with your day.</>,
+        },
+        {
+          label: "More time for you",
+          text: <>the rest of the week belongs to your family, your job and you.</>,
+        },
+      ]}
+      knopf={{ href: "/probetermin", text: "Tell us when suits you" }}
+      kartenTitel="Your week"
+      legende={
+        <>
+          <Legende farbe="termin">Appointments</Legende>
+          <Legende farbe="neu">Your training</Legende>
+        </>
+      }
+      alt={{ label: "Your week", wert: "full" }}
+      neu={{ label: "Training", wert: "20 min" }}
       aufloesung={2.4}
     >
       <Kalender />

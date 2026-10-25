@@ -1,13 +1,14 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { probeterminHref, useZiel } from "@/components/ziel/ziel-kontext";
-import { ZIEL_INHALTE, ZONEN, zielInhalt, type ZielWert } from "@/lib/ziel-inhalte";
+import { zielInhalte, zonen, zielInhalt, type ZielWert } from "@/lib/ziel-inhalte";
+import { useSprache } from "@/lib/i18n/use-sprache";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 import { ZielUebergang } from "@/components/ui/ziel-uebergang";
 
@@ -29,7 +30,9 @@ const weich = [0.16, 1, 0.3, 1] as const;
 
 export function ZielWelt({ auswahl = true }: { auswahl?: boolean }) {
   const { ziel, waehlen } = useZiel();
-  const inhalt = zielInhalt(ziel) ?? ZIEL_INHALTE[0];
+  const sprache = useSprache();
+  const en = sprache === "en";
+  const inhalt = zielInhalt(ziel, sprache) ?? zielInhalte(sprache)[0];
   const wenigerBewegung = useReducedMotion();
 
   return (
@@ -37,19 +40,23 @@ export function ZielWelt({ auswahl = true }: { auswahl?: boolean }) {
       <Container>
         <Reveal className="max-w-2xl">
           <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Erkennst du dich wieder?
+            {en ? "Sound familiar?" : "Erkennst du dich wieder?"}
           </h2>
           <p className="mt-4 text-lg text-muted">
             {auswahl
-              ? "Wähl dein Ziel – und sieh, wie dein Training dafür aussieht."
-              : `So sieht dein Training für „${inhalt.kurz}“ aus.`}
+              ? en
+                ? "Choose your goal – and see what your training for it looks like."
+                : "Wähl dein Ziel – und sieh, wie dein Training dafür aussieht."
+              : en
+                ? `This is what your training for “${inhalt.kurz}” looks like.`
+                : `So sieht dein Training für „${inhalt.kurz}“ aus.`}
           </p>
         </Reveal>
 
         {/* Auf einer Zielseite steht das Ziel fest - dort keine Auswahl. */}
         {auswahl && (
-          <div role="tablist" aria-label="Dein Ziel" className="mt-10 flex flex-wrap gap-2">
-            {ZIEL_INHALTE.map((z) => {
+          <div role="tablist" aria-label={en ? "Your goal" : "Dein Ziel"} className="mt-10 flex flex-wrap gap-2">
+            {zielInhalte(sprache).map((z) => {
               const aktiv = z.wert === ziel;
               return (
                 <button
@@ -109,7 +116,7 @@ export function ZielWelt({ auswahl = true }: { auswahl?: boolean }) {
                 ))}
               </ul>
 
-              <p className="mt-10 text-sm font-semibold text-foreground">So trainieren wir mit dir:</p>
+              <p className="mt-10 text-sm font-semibold text-foreground">{en ? "How we train with you:" : "So trainieren wir mit dir:"}</p>
               <dl className="mt-4 grid gap-5 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
                 {inhalt.soArbeiten.map((punkt) => (
                   <div key={punkt.titel} className="border-t border-lime/40 pt-4">
@@ -125,7 +132,7 @@ export function ZielWelt({ auswahl = true }: { auswahl?: boolean }) {
                 <Button href={auswahl ? probeterminHref(ziel) : "#termin"}>
                   {/* Ohne gewähltes Ziel ist Rücken nur das Beispiel - der
                       Knopf darf es dann nicht ins Formular tragen. */}
-                  {ziel ? inhalt.knopf : "Kostenloses Probetraining"}
+                  {ziel ? inhalt.knopf : en ? "Free trial session" : "Kostenloses Probetraining"}
                   <ArrowRight size={16} aria-hidden />
                 </Button>
                 {auswahl && (
@@ -133,7 +140,7 @@ export function ZielWelt({ auswahl = true }: { auswahl?: boolean }) {
                     href={`/ziel/${inhalt.wert}`}
                     className="text-sm font-semibold text-accent underline-offset-4 hover:underline"
                   >
-                    Alles zu „{inhalt.kurz}“
+                    {en ? <>All about &ldquo;{inhalt.kurz}&rdquo;</> : <>Alles zu „{inhalt.kurz}“</>}
                   </Link>
                 )}
               </div>
@@ -165,6 +172,8 @@ function Schwerpunkt({
   uebergang: boolean;
 }) {
   const wenigerBewegung = useReducedMotion();
+  const sprache = useSprache();
+  const en = sprache === "en";
   const staerkste = new Set(
     [...profil]
       .map((wert, i) => ({ wert, i }))
@@ -190,7 +199,7 @@ function Schwerpunkt({
         </motion.div>
       </AnimatePresence>
       <div className="flex items-baseline justify-between gap-4">
-        <p className="text-sm font-semibold text-foreground">Dein Schwerpunkt</p>
+        <p className="text-sm font-semibold text-foreground">{en ? "Your focus" : "Dein Schwerpunkt"}</p>
         <AnimatePresence mode="wait" initial={false}>
           <motion.p
             key={titel}
@@ -205,8 +214,8 @@ function Schwerpunkt({
         </AnimatePresence>
       </div>
 
-      <ul className="mt-6 space-y-2.5 sm:space-y-4" aria-label={`Beispiel-Schwerpunkte für ${titel}`}>
-        {ZONEN.map((zone, i) => {
+      <ul className="mt-6 space-y-2.5 sm:space-y-4" aria-label={en ? `Example focus areas for ${titel}` : `Beispiel-Schwerpunkte für ${titel}`}>
+        {zonen(sprache).map((zone, i) => {
           const wert = profil[i] ?? 0.5;
           const stark = staerkste.has(i);
           return (
@@ -243,8 +252,9 @@ function Schwerpunkt({
       </ul>
 
       <p className="mt-6 border-t border-white/10 pt-4 text-xs leading-relaxed text-muted">
-        Ein Beispiel. Deinen echten Schwerpunkt legst du im Probetraining mit deinem Trainer fest –
-        und er stellt ihn bei jeder Einheit neu ein.
+        {en
+          ? "An example. You set your real focus with your trainer at the trial session – and they adjust it again every session."
+          : "Ein Beispiel. Deinen echten Schwerpunkt legst du im Probetraining mit deinem Trainer fest – und er stellt ihn bei jeder Einheit neu ein."}
       </p>
     </div>
   );

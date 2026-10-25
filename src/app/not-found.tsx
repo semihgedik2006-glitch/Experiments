@@ -1,12 +1,14 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { motion } from "motion/react";
 import { Logo } from "@/components/logo";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 export default function NotFound() {
+  const en = useSprache() === "en";
   return (
     // Ein <main> und kein <div>: Diese Seite bringt ihren eigenen Rahmen
     // mit, also auch das, was sonst das Layout beisteuert. Ohne gehörte
@@ -27,7 +29,7 @@ export default function NotFound() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: easeOut }}
       >
-        <Link href="/" aria-label="Zur Startseite">
+        <Link href="/" aria-label={en ? "Go to home page" : "Zur Startseite"}>
           <Logo className="h-10 w-auto" />
         </Link>
       </motion.div>
@@ -47,7 +49,7 @@ export default function NotFound() {
         transition={{ duration: 0.6, delay: 0.3, ease: easeOut }}
         className="mt-6 text-2xl font-bold tracking-tight md:text-3xl"
       >
-        Diese Seite gibt es nicht.
+        {en ? "This page does not exist." : "Diese Seite gibt es nicht."}
       </motion.h1>
 
       <motion.p
@@ -56,8 +58,9 @@ export default function NotFound() {
         transition={{ duration: 0.6, delay: 0.4, ease: easeOut }}
         className="mt-3 max-w-md text-muted"
       >
-        Der Link ist veraltet oder die Adresse wurde falsch eingegeben. Zurück
-        zur Startseite - oder direkt einen Probetermin sichern.
+        {en
+          ? "The link is out of date or the address was mistyped. Back to the home page – or book a trial session right away."
+          : "Der Link ist veraltet oder die Adresse wurde falsch eingegeben. Zurück zur Startseite - oder direkt einen Probetermin sichern."}
       </motion.p>
 
       <motion.div
@@ -70,13 +73,13 @@ export default function NotFound() {
           href="/"
           className="rounded-full bg-lime px-7 py-3 text-sm font-semibold text-on-lime transition-transform hover:scale-105 active:scale-95"
         >
-          Zur Startseite
+          {en ? "Go to home page" : "Zur Startseite"}
         </Link>
         <Link
           href="/probetermin"
           className="rounded-full border border-border px-7 py-3 text-sm font-semibold transition-colors hover:border-lime hover:text-accent"
         >
-          Probetermin buchen
+          {en ? "Book a trial session" : "Probetermin buchen"}
         </Link>
       </motion.div>
     </main>

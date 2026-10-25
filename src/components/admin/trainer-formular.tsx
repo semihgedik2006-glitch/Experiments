@@ -3,6 +3,7 @@ import { ConfirmButton } from "@/components/admin/confirm-button";
 import { adminInput } from "@/components/admin/ui";
 import { trainerAendern, trainerAnlegen, trainerLoeschen } from "@/lib/actions/admin-trainer";
 import { TrainerBild } from "@/components/studio/trainer-bild";
+import { EnglischBlock, EnglischFeld } from "@/components/admin/englisch-block";
 
 export type TrainerDaten = {
   id: string;
@@ -10,6 +11,9 @@ export type TrainerDaten = {
   rolle: string | null;
   qualifikation: string | null;
   text: string | null;
+  rolleEn: string | null;
+  qualifikationEn: string | null;
+  textEn: string | null;
   fotoUrl: string | null;
   aktiv: boolean;
   sortOrder: number;
@@ -109,6 +113,18 @@ export function TrainerFormular({
           jeder anderen Seite schon.
         </span>
       </label>
+
+      <EnglischBlock ausgefuellt={!!(trainer?.rolleEn || trainer?.qualifikationEn || trainer?.textEn)}>
+        <EnglischFeld label="Role (Rolle)">
+          <input type="text" name="rolleEn" maxLength={60} defaultValue={trainer?.rolleEn ?? ""} className={adminInput} />
+        </EnglischFeld>
+        <EnglischFeld label="Qualification (Qualifikation)">
+          <input type="text" name="qualifikationEn" maxLength={160} defaultValue={trainer?.qualifikationEn ?? ""} className={adminInput} />
+        </EnglischFeld>
+        <EnglischFeld label="Two or three sentences (Zwei, drei Sätze)">
+          <textarea name="textEn" rows={3} maxLength={600} defaultValue={trainer?.textEn ?? ""} className={adminInput} />
+        </EnglischFeld>
+      </EnglischBlock>
 
       <label className="block">
         <span className="mb-1 block text-xs text-muted">Foto (Adresse)</span>

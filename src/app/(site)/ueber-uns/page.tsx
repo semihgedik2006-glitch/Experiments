@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { MehrDazu } from "@/components/ui/mehr-dazu";
 import { ImpulsSzene } from "@/components/ui/impuls-szene";
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { Zap, ShieldCheck, Target } from "lucide-react";
 import { TrainerBild } from "@/components/studio/trainer-bild";
 import { prisma } from "@/lib/prisma";
