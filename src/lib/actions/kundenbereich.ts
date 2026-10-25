@@ -11,6 +11,7 @@ import {
   zugangErstellen,
   zugangsLink,
 } from "@/lib/kundenbereich";
+import { spracheAusText } from "@/lib/sprache";
 
 export type ActionResult = { ok: boolean; message: string };
 
@@ -26,11 +27,16 @@ export type ActionResult = { ok: boolean; message: string };
 const IMMER_GLEICH =
   "Wenn es zu dieser Adresse Termine gibt, ist der Link unterwegs. " +
   `Er gilt ${GUELTIG_MINUTEN} Minuten - schau auch im Spam-Ordner nach.`;
+const IMMER_GLEICH_EN =
+  "If there are appointments for this address, the link is on its way. " +
+  `It is valid for ${GUELTIG_MINUTEN} minutes - please also check your spam folder.`;
 
 export async function zugangAnfordern(
   _prevState: ActionResult | undefined,
   formData: FormData,
 ): Promise<ActionResult> {
+  const sprache = spracheAusText(String(formData.get("sprache") ?? ""));
+  const en = sprache === "en";
   const ip = await getClientIp();
   // Zehn Anforderungen je Stunde und Anschluss. Großzügig genug für ein
   // Büro mit gemeinsamer Leitung, eng genug gegen einen Reihenversuch.
@@ -39,12 +45,15 @@ export async function zugangAnfordern(
     // Die einzige Ausnahme von der immer gleichen Antwort - und sie
     // verrät nichts über die eingegebene Adresse, sondern nur über den
     // eigenen Anschluss.
-    return { ok: false, message: waitMessage(limit.retryAfterSeconds) };
+    return { ok: false, message: waitMessage(limit.retryAfterSeconds, sprache) };
   }
 
   const email = emailNormalisieren(String(formData.get("email") ?? ""));
   if (!emailPlausibel(email)) {
-    return { ok: false, message: "Bitte gib eine gültige E-Mail-Adresse ein." };
+    return {
+      ok: false,
+      message: en ? "Please enter a valid email address." : "Bitte gib eine gültige E-Mail-Adresse ein.",
+    };
   }
 
   // Der Versand läuft nach der Antwort weiter. Sonst hinge die Seite an
@@ -75,8 +84,9 @@ export async function zugangAnfordern(
       await sendKundenbereichEmail({
         email,
         name: buchungen[0].name.split(" ")[0] || null,
-        link: zugangsLink(schluessel),
+        link: zugangsLink(schluessel, sprache),
         gueltigMinuten: GUELTIG_MINUTEN,
+        sprache,
       });
     } catch (error) {
       // Der Besucher hat seine Antwort längst. Hier bleibt nur, den
@@ -85,5 +95,5 @@ export async function zugangAnfordern(
     }
   });
 
-  return { ok: true, message: IMMER_GLEICH };
+  return { ok: true, message: en ? IMMER_GLEICH_EN : IMMER_GLEICH };
 }

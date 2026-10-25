@@ -20,15 +20,17 @@ import { aktionscodePruefen } from "@/lib/aktionscode";
 import { einstiegAusFormular, herkunftAusFormular } from "@/lib/herkunft";
 import { passtNoch } from "@/lib/kapazitaet";
 import type { ActionResult } from "@/lib/actions/newsletter";
-import { spracheAusText, texte } from "@/lib/sprache";
+import { erreichbarkeitLabel, spanneLabel, spracheAusText, texte, zielLabel } from "@/lib/sprache";
+import { oeffnungszeitenAufEnglisch } from "@/lib/i18n/oeffnungszeiten";
 
 export async function createBooking(
   _prevState: ActionResult | undefined,
   formData: FormData,
 ): Promise<ActionResult> {
-  // Die Sprache kommt aus dem Formular und bestimmt nur, in welcher
-  // Sprache geantwortet wird - gespeichert wird sie nicht. Ein Rückruf
-  // auf Englisch ergibt sich aus dem Gespräch, nicht aus einem Feld.
+  // Die Sprache kommt aus dem Formular. Sie wird an der Anfrage
+  // gespeichert: Bestätigung, Erinnerung und Absage gehen später in
+  // derselben Sprache raus, und das Studio sieht vor dem Rückruf, dass
+  // jemand die englische Seite gelesen hat.
   const sprache = spracheAusText(String(formData.get("sprache") ?? ""));
   const t = texte(sprache);
 
@@ -145,6 +147,7 @@ export async function createBooking(
           phone,
           erreichbarkeit,
           zuZweit,
+          sprache,
         },
       });
 
@@ -166,6 +169,7 @@ export async function createBooking(
             terminZeile: `${formatDate(slot.date)} um ${slot.startTime} Uhr`,
             studioName: studioMail?.name ?? null,
             zuZweit,
+            sprache,
           });
         });
       }
@@ -200,6 +204,7 @@ export async function createBooking(
       herkunftQuelle: herkunft.quelle,
       herkunftEinstieg: einstiegAusFormular(formData),
       manageToken: neuerVerwaltungsSchluessel(),
+      sprache,
     },
     include: { slot: true, studio: { select: { name: true, email: true } } },
   });
@@ -239,6 +244,26 @@ export async function createBooking(
       herkunft: [herkunft.kampagne, herkunft.quelle, herkunft.seite]
         .filter(Boolean)
         .join(" · ") || null,
+      sprache,
+      // Für die Eingangsbestätigung an den Gast. Die Mail ans Studio
+      // bleibt deutsch.
+      englisch:
+        sprache === "en"
+          ? {
+              erreichbarkeit: [
+                erreichbarkeitLabel("en", buchung.erreichbarkeit ?? ""),
+                spanneLabel("en", buchung.erreichbarkeit ?? ""),
+              ]
+                .filter(Boolean)
+                .join(", "),
+              terminZeile: buchung.slot
+                ? `${formatDate(buchung.slot.date, "en")} at ${oeffnungszeitenAufEnglisch(buchung.slot.startTime)}`
+                : buchung.terminWunsch
+                  ? `Preferred: ${buchung.terminWunsch} - we will agree the exact time with you`
+                  : "No preference given - we will agree the time with you",
+              ziel: buchung.ziel ? zielLabel("en", buchung.ziel) : null,
+            }
+          : undefined,
     };
 
     await sendAnfrageEingangEmail(angaben);

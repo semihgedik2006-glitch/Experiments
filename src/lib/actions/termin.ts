@@ -8,6 +8,7 @@ import { terminAngaben } from "@/lib/termin-angaben";
 import { wartelisteBenachrichtigen } from "@/lib/warteliste";
 import { passtNoch } from "@/lib/kapazitaet";
 import type { ActionResult } from "@/lib/actions/newsletter";
+import { spracheAusText, type Sprache } from "@/lib/sprache";
 
 /**
  * Absagen und Verschieben durch den Gast selbst.
@@ -22,7 +23,12 @@ import type { ActionResult } from "@/lib/actions/newsletter";
  * Auswertung auf dem Kopf.
  */
 
-const NICHT_GEFUNDEN = "Dieser Link gehört zu keinem Termin mehr.";
+/** Die Antwort in der Sprache der Seite, von der abgeschickt wurde. */
+function sag(sprache: Sprache, de: string, en: string): string {
+  return sprache === "en" ? en : de;
+}
+
+const NICHT_GEFUNDEN = ["Dieser Link gehört zu keinem Termin mehr.", "This link no longer belongs to an appointment."] as const;
 
 function istVorbei(datum: Date): boolean {
   const heute = new Date();
@@ -43,19 +49,20 @@ export async function terminAbsagen(
   formData: FormData,
 ): Promise<ActionResult> {
   const token = String(formData.get("token") ?? "").trim();
+  const sprache = spracheAusText(String(formData.get("sprache") ?? ""));
 
   const ip = await getClientIp();
   const limit = checkRateLimit(`termin:${ip}`, 20, 60 * 60 * 1000);
-  if (!limit.allowed) return { ok: false, message: waitMessage(limit.retryAfterSeconds) };
+  if (!limit.allowed) return { ok: false, message: waitMessage(limit.retryAfterSeconds, sprache) };
 
   const buchung = await ladeBuchung(token);
-  if (!buchung) return { ok: false, message: NICHT_GEFUNDEN };
+  if (!buchung) return { ok: false, message: sag(sprache, ...NICHT_GEFUNDEN) };
 
   if (buchung.status === "CANCELLED") {
-    return { ok: true, message: "Dieser Termin war bereits abgesagt." };
+    return { ok: true, message: sag(sprache, "Dieser Termin war bereits abgesagt.", "This appointment had already been cancelled.") };
   }
   if (buchung.slot && istVorbei(buchung.slot.date)) {
-    return { ok: false, message: "Dieser Termin liegt in der Vergangenheit." };
+    return { ok: false, message: sag(sprache, "Dieser Termin liegt in der Vergangenheit.", "This appointment is in the past.") };
   }
 
   const abgesagt = await prisma.booking.update({
@@ -82,7 +89,14 @@ export async function terminAbsagen(
   // auf der Buchungsseite.
   revalidatePath("/", "layout");
 
-  return { ok: true, message: "Dein Termin ist abgesagt. Wir haben dir eine Bestätigung geschickt." };
+  return {
+    ok: true,
+    message: sag(
+      sprache,
+      "Dein Termin ist abgesagt. Wir haben dir eine Bestätigung geschickt.",
+      "Your appointment is cancelled. We have sent you a confirmation.",
+    ),
+  };
 }
 
 export async function terminVerschieben(
@@ -90,24 +104,29 @@ export async function terminVerschieben(
   formData: FormData,
 ): Promise<ActionResult> {
   const token = String(formData.get("token") ?? "").trim();
+  const sprache = spracheAusText(String(formData.get("sprache") ?? ""));
   const neuerSlotId = String(formData.get("slotId") ?? "").trim();
 
   const ip = await getClientIp();
   const limit = checkRateLimit(`termin:${ip}`, 20, 60 * 60 * 1000);
-  if (!limit.allowed) return { ok: false, message: waitMessage(limit.retryAfterSeconds) };
+  if (!limit.allowed) return { ok: false, message: waitMessage(limit.retryAfterSeconds, sprache) };
 
   const buchung = await ladeBuchung(token);
-  if (!buchung) return { ok: false, message: NICHT_GEFUNDEN };
-  if (!neuerSlotId) return { ok: false, message: "Bitte wähle eine neue Uhrzeit." };
+  if (!buchung) return { ok: false, message: sag(sprache, ...NICHT_GEFUNDEN) };
+  if (!neuerSlotId) return { ok: false, message: sag(sprache, "Bitte wähle eine neue Uhrzeit.", "Please choose a new time.") };
 
   if (buchung.status === "CANCELLED") {
     return {
       ok: false,
-      message: "Dieser Termin wurde abgesagt. Bitte buche einen neuen Probetermin.",
+      message: sag(
+        sprache,
+        "Dieser Termin wurde abgesagt. Bitte buche einen neuen Probetermin.",
+        "This appointment was cancelled. Please book a new trial session.",
+      ),
     };
   }
   if (buchung.slot && istVorbei(buchung.slot.date)) {
-    return { ok: false, message: "Dieser Termin liegt in der Vergangenheit." };
+    return { ok: false, message: sag(sprache, "Dieser Termin liegt in der Vergangenheit.", "This appointment is in the past.") };
   }
 
   const ziel = await prisma.availabilitySlot.findUnique({
@@ -115,9 +134,14 @@ export async function terminVerschieben(
     include: { bookings: { where: { status: { not: "CANCELLED" } } } },
   });
 
-  if (!ziel) return { ok: false, message: "Diese Zeit gibt es nicht mehr. Bitte wähle eine andere." };
+  if (!ziel) {
+    return {
+      ok: false,
+      message: sag(sprache, "Diese Zeit gibt es nicht mehr. Bitte wähle eine andere.", "This time no longer exists. Please choose another one."),
+    };
+  }
   if (istVorbei(ziel.date)) {
-    return { ok: false, message: "Diese Zeit liegt in der Vergangenheit." };
+    return { ok: false, message: sag(sprache, "Diese Zeit liegt in der Vergangenheit.", "This time is in the past.") };
   }
   // Verschieben heißt: andere Zeit, gleicher Ort. Die Seite bietet auch
   // nur Zeiten des eigenen Studios an - aber die Kennung ließe sich von
@@ -127,7 +151,11 @@ export async function terminVerschieben(
   if (eigenesStudio && ziel.studioId !== eigenesStudio) {
     return {
       ok: false,
-      message: "Diese Zeit gehört zu einem anderen Studio. Für einen Wechsel des Standorts buche bitte einen neuen Probetermin.",
+      message: sag(
+        sprache,
+        "Diese Zeit gehört zu einem anderen Studio. Für einen Wechsel des Standorts buche bitte einen neuen Probetermin.",
+        "This time belongs to a different studio. To switch location, please book a new trial session.",
+      ),
     };
   }
   // Die eigene Buchung zählt nicht gegen die Kapazität des Ziels - sie
@@ -141,8 +169,8 @@ export async function terminVerschieben(
     return {
       ok: false,
       message: buchung.zuZweit
-        ? "Für diese Zeit sind nicht mehr zwei Plätze frei. Bitte wähle eine andere."
-        : "Diese Zeit ist inzwischen ausgebucht. Bitte wähle eine andere.",
+        ? sag(sprache, "Für diese Zeit sind nicht mehr zwei Plätze frei. Bitte wähle eine andere.", "There are no longer two places free at this time. Please choose another one.")
+        : sag(sprache, "Diese Zeit ist inzwischen ausgebucht. Bitte wähle eine andere.", "This time is now fully booked. Please choose another one."),
     };
   }
 
@@ -178,5 +206,12 @@ export async function terminVerschieben(
   // auf der Buchungsseite.
   revalidatePath("/", "layout");
 
-  return { ok: true, message: "Dein Termin wurde verschoben. Die Bestätigung ist unterwegs." };
+  return {
+    ok: true,
+    message: sag(
+      sprache,
+      "Dein Termin wurde verschoben. Die Bestätigung ist unterwegs.",
+      "Your appointment has been moved. The confirmation is on its way.",
+    ),
+  };
 }

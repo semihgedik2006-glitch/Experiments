@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { formatDate } from "@/lib/format";
 import type { TerminAngaben } from "@/lib/email";
+import type { Sprache } from "@/lib/sprache";
 
 /**
  * Übersetzt eine Buchung aus der Datenbank in die Angaben, die alle
@@ -27,6 +28,8 @@ export type BuchungMitTermin = {
       (Wunschzeiten). Optional, damit ältere Aufrufe gültig bleiben. */
   terminTag?: Date | null;
   terminUhrzeit?: string | null;
+  /** Sprache der Anfrage ("de"/"en"). Fehlt sie, geht alles auf Deutsch raus. */
+  sprache?: string | null;
 };
 
 export function terminAngaben(buchung: BuchungMitTermin): TerminAngaben {
@@ -38,12 +41,17 @@ export function terminAngaben(buchung: BuchungMitTermin): TerminAngaben {
   // ohnehin derselbe: Beim Anlegen und beim Verschieben wird geprüft,
   // dass Termin und Standort zusammengehören.
   const ort = buchung.studio ?? slot?.studio ?? null;
+  const sprache: Sprache = buchung.sprache === "en" ? "en" : "de";
 
   return {
     bookingId: buchung.id,
     email: buchung.email,
     name: buchung.name,
-    dateLabel: slot ? formatDate(slot.date) : buchung.terminTag ? formatDate(buchung.terminTag) : null,
+    dateLabel: slot
+      ? formatDate(slot.date, sprache)
+      : buchung.terminTag
+        ? formatDate(buchung.terminTag, sprache)
+        : null,
     startTime: slot?.startTime ?? (buchung.terminTag ? buchung.terminUhrzeit ?? null : null),
     // Ohne festen Platz kein festes Ende - der Kalendereintrag rechnet
     // dann selbst eine Stunde dazu.
@@ -55,6 +63,7 @@ export function terminAngaben(buchung: BuchungMitTermin): TerminAngaben {
     // Fehlt sie (Studio ohne eigene Adresse, oder die Abfrage hat sie
     // nicht mitgeladen), greift beim Versand die Sammeladresse.
     antwortAn: ort?.email?.trim() || null,
+    sprache,
   };
 }
 

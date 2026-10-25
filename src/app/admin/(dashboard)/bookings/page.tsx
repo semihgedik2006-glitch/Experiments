@@ -218,6 +218,13 @@ export default async function AdminBookingsPage({
                     Kommt zu zweit &ndash; zwei Plätze
                   </p>
                 )}
+                {/* Wer die englische Seite gelesen hat, sollte nicht auf
+                    Deutsch angerufen werden. */}
+                {booking.sprache === "en" && (
+                  <p className="mt-1 text-sm font-medium text-accent">
+                    Englisch &ndash; bitte auf Englisch zurückrufen
+                  </p>
+                )}
                 {/* Das Ziel entscheidet, worüber im ersten Gespräch
                     geredet wird - deshalb steht es weit oben und nicht
                     unten bei der Nachricht. */}

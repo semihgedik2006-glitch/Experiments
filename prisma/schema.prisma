@@ -295,6 +295,8 @@ model Warteliste {
   phone    String
   erreichbarkeit String?
   zuZweit  Boolean          @default(false)
+  /// Sprache der Seite, auf der angefragt wurde - für die Mail "Platz frei".
+  sprache String @default("de")
   /// Wann Bescheid gegeben wurde, dass etwas frei ist. Einmal - wer nicht
   /// reagiert, blockiert sonst den Nächsten.
   benachrichtigtAm DateTime?
@@ -324,6 +326,10 @@ model Booking {
   // der Gast selbst absagen oder verschieben kann. Nicht erratbar und ohne
   // Bezug zur id - wer den Link hat, sieht genau diese eine Buchung.
   manageToken    String?   @unique
+  /// Sprache der Seite, auf der angefragt wurde ("de" oder "en"). Danach
+  /// richten sich die E-Mails an den Gast - und das Studio sieht, dass es
+  /// auf Englisch zurückrufen sollte.
+  sprache String @default("de")
   // Wann die Erinnerung am Vortag verschickt wurde. Verhindert, dass der
   // tägliche Lauf dieselbe Erinnerung mehrfach schickt.
   reminderSentAt DateTime?

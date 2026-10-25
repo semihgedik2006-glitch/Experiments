@@ -4,7 +4,7 @@ import { revalidatePath } from "@/lib/revalidieren";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
 import { neuerAbmeldeSchluessel } from "@/lib/newsletter";
-import { spracheAusText } from "@/lib/sprache";
+import { spracheAusText, type Sprache } from "@/lib/sprache";
 
 export type ActionResult = { ok: boolean; message: string };
 
@@ -66,23 +66,29 @@ export async function subscribeNewsletter(
  * Fehlermeldung sehen - und die Seite soll nicht ausplaudern, welche
  * Schlüssel es gibt.
  */
-export async function abmeldenVomNewsletter(token: string): Promise<ActionResult> {
+export async function abmeldenVomNewsletter(
+  token: string,
+  sprache: Sprache = "de",
+): Promise<ActionResult> {
+  const en = sprache === "en";
   const sauber = token.trim();
   if (!sauber) {
-    return { ok: false, message: "Dieser Abmeldelink ist unvollständig." };
+    return { ok: false, message: en ? "This unsubscribe link is incomplete." : "Dieser Abmeldelink ist unvollständig." };
   }
 
   try {
     await prisma.newsletterSubscriber.deleteMany({ where: { abmeldeToken: sauber } });
     revalidatePath("/admin/newsletter");
     revalidatePath("/admin");
-    return { ok: true, message: "Du bist abgemeldet." };
+    return { ok: true, message: en ? "You are unsubscribed." : "Du bist abgemeldet." };
   } catch {
     return {
       ok: false,
-      message:
-        "Die Abmeldung hat gerade nicht geklappt. Versuch es bitte gleich noch einmal - " +
-        "oder schreib uns kurz, dann machen wir es von Hand.",
+      message: en
+        ? "Unsubscribing did not work just now. Please try again in a moment - " +
+          "or send us a short message and we will do it by hand."
+        : "Die Abmeldung hat gerade nicht geklappt. Versuch es bitte gleich noch einmal - " +
+          "oder schreib uns kurz, dann machen wir es von Hand.",
     };
   }
 }
