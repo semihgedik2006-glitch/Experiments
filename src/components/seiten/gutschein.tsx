@@ -18,7 +18,7 @@ import { isVisible } from "@/lib/site-toggles";
  *
  * Öffentlich erst, wenn im Adminbereich unter "Sichtbarkeit" die
  * Gutscheine eingeschaltet sind; vorher nur für angemeldete Admins als
- * Vorschau (siehe @/lib/vorschau). Angebote und Preise: @/lib/gutschein.
+ * Vorschau (siehe @/lib/vorschau). Die Angebote: @/lib/gutschein.
  */
 
 export async function gutscheinMetadaten(sprache: Sprache): Promise<Metadata> {
@@ -133,7 +133,6 @@ export async function GutscheinSeite({ sprache }: { sprache: Sprache }) {
               >
                 <h3 className="text-lg font-semibold">{g.titel}</h3>
                 <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{g.text}</p>
-                <p className="mt-5 font-display text-2xl font-black text-accent">{g.preis ?? (en ? "Price on request" : "Preis auf Anfrage")}</p>
               </div>
             ))}
           </div>
