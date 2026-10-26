@@ -19,6 +19,9 @@ export type Reel = {
   titel: string;
   /** Eine Zeile darunter - was man im Video sieht. */
   text: string;
+  /** Dasselbe für die englische Seite. Das Video selbst bleibt deutsch. */
+  titelEn: string;
+  textEn: string;
   /** Ohne Endung: Es gibt /videos/x.webm (VP9, kleiner) und /videos/x.mp4
       (H.264, für Safari) - der Browser nimmt, was er kann. */
   src: string;
@@ -30,6 +33,8 @@ export const REELS = {
     id: "weste",
     titel: "Was macht diese Weste?",
     text: "Eine Trainerin zeigt Weste, Impulse und Gerät.",
+    titelEn: "What does this vest do?",
+    textEn: "A trainer shows the vest, the impulses and the device.",
     src: "/videos/weste",
     poster: "/videos/weste.jpg",
   },
@@ -37,6 +42,8 @@ export const REELS = {
     id: "ems-erklaert",
     titel: "EMS in 15 Sekunden",
     text: "Was beim Training passiert - kurz erklärt.",
+    titelEn: "EMS in 15 seconds",
+    textEn: "What happens during training - explained briefly.",
     src: "/videos/ems-erklaert",
     poster: "/videos/ems-erklaert.jpg",
   },
@@ -44,6 +51,8 @@ export const REELS = {
     id: "mitglieder",
     titel: "Wir kennen unsere Mitglieder",
     text: "Ankommen, begrüßt werden, loslegen.",
+    titelEn: "We know our members",
+    textEn: "Arrive, get a warm welcome, get started.",
     src: "/videos/mitglieder",
     poster: "/videos/mitglieder.jpg",
   },
@@ -51,6 +60,8 @@ export const REELS = {
     id: "keine-zeit",
     titel: "Keine Zeit für Sport?",
     text: "Ein Trainer über Training, wenn der Kalender voll ist.",
+    titelEn: "No time for exercise?",
+    textEn: "A trainer on training when your calendar is full.",
     src: "/videos/keine-zeit",
     poster: "/videos/keine-zeit.jpg",
   },
@@ -58,6 +69,8 @@ export const REELS = {
     id: "ruecken",
     titel: "Mit 20 schon Rücken?",
     text: "Ein Trainer über Sitzen, Haltung und Rumpf.",
+    titelEn: "Back trouble at 20?",
+    textEn: "A trainer on sitting, posture and your core.",
     src: "/videos/ruecken",
     poster: "/videos/ruecken.jpg",
   },

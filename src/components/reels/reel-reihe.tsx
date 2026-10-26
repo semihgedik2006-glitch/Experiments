@@ -1,7 +1,10 @@
+"use client";
+
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { ReelKarte } from "@/components/reels/reel-karte";
 import type { Reel } from "@/lib/reels";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /**
  * Mehrere Reels nebeneinander - "So sieht's bei uns aus".
@@ -13,15 +16,23 @@ import type { Reel } from "@/lib/reels";
  */
 export function ReelReihe({
   reels,
-  kicker = "Aus unseren Studios",
-  titel = "So sieht's bei uns aus",
-  intro = "Kurz erklärt von Trainerinnen und Trainern – mit Untertiteln, auch ohne Ton verständlich.",
+  kicker,
+  titel,
+  intro,
 }: {
   reels: Reel[];
   kicker?: string;
   titel?: string;
   intro?: string;
 }) {
+  // Auf Englisch ehrlich gesagt: Die Videos selbst sind deutsch, mit
+  // deutschen Untertiteln - zu sehen ist trotzdem, wie es bei uns aussieht.
+  const en = useSprache() === "en";
+  kicker ??= en ? "From our studios" : "Aus unseren Studios";
+  titel ??= en ? "This is what it looks like" : "So sieht's bei uns aus";
+  intro ??= en
+    ? "Short clips from our trainers – in German, with German subtitles. You will still see what a session looks like."
+    : "Kurz erklärt von Trainerinnen und Trainern – mit Untertiteln, auch ohne Ton verständlich.";
   return (
     <section className="relative overflow-hidden py-20 sm:py-24">
       <Container>

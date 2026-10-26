@@ -5,6 +5,9 @@ import { getToggles } from "@/lib/site-toggles";
 import { erfolgeVorhanden } from "@/lib/kundenstimmen";
 import { ZIEL_INHALTE } from "@/lib/ziel-inhalte";
 import { FRAGEN } from "@/lib/fragen";
+import { nachEn } from "@/lib/i18n/pfade";
+
+type Eintrag = { route: string; lastModified?: Date; priority?: number };
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, toggles, studios, erfolge] = await Promise.all([
@@ -28,6 +31,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...(toggles["ueber-uns"] ? ["/ueber-uns"] : []),
     "/probetermin",
     "/ziel-check",
+    // Erst, wenn die Gutscheine im Adminbereich eingeschaltet sind.
+    ...(toggles.gutschein ? ["/gutschein"] : []),
     // Der Einstieg in den eigenen Terminbereich. Nur das Formular - die
     // Seite dahinter ist von der Indizierung ausgenommen. Sie gehört
     // hierher, weil sie im Menü absichtlich nicht auftaucht und sonst
@@ -39,42 +44,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/agb",
     "/impressum",
     "/datenschutz",
-    // Die englische Einstiegsseite. Sie steht hier ausdrücklich drin:
-    // Gefunden wird sie über eine andere Suche ("EMS training Cologne")
-    // als die deutsche, und über die deutsche Navigation ist sie nur ein
-    // kleiner Link in der Kopfzeile.
-    "/en",
-  ].map((route) => ({
-    url: `${siteConfig.url}${route}`,
-    lastModified: new Date(),
-    // Die beiden Fassungen zeigen aufeinander. Ohne diese Angabe hält
-    // Google sie für zwei Seiten über dasselbe Thema und wertet eine
-    // davon ab - beide Adressen bekommen deshalb denselben Verweis auf
-    // die jeweils andere.
-    ...(route === "" || route === "/en"
-      ? {
-          alternates: {
-            languages: {
-              de: siteConfig.url,
-              en: `${siteConfig.url}/en`,
-            },
-          },
-        }
-      : {}),
-  }));
+  ].map((route): Eintrag => ({ route, lastModified: new Date() }));
 
-  const postRoutes = (toggles.blog ? posts : []).map((post) => ({
-    url: `${siteConfig.url}/blog/${post.slug}`,
-    lastModified: post.updatedAt,
-  }));
+  const postRoutes = (toggles.blog ? posts : []).map(
+    (post): Eintrag => ({ route: `/blog/${post.slug}`, lastModified: post.updatedAt }),
+  );
 
   // Die vierzehn Standortseiten. Sie sind der Grund, warum jemand nach
   // "EMS Training Rösrath" bei uns landen kann - sie gehören deshalb
   // ausdrücklich gemeldet und nicht darauf verlassen, dass Google sie über
   // die Übersicht findet. Höhere Priorität als der Rest: Auf sie zielt die
   // örtliche Suche.
-  const studioRoutes = (toggles.studio ? studios : []).map((studio) => ({
-    url: `${siteConfig.url}/studio/${studio.slug}`,
+  const studioRoutes = (toggles.studio ? studios : []).map((studio): Eintrag => ({
+    route: `/studio/${studio.slug}`,
     lastModified: studio.updatedAt,
     priority: 0.8,
   }));
@@ -83,16 +65,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Rücken Köln" - deshalb wie die Standortseiten ausdrücklich gemeldet.
   // Ohne lastModified: Die Seiten ändern sich nur mit einer neuen Fassung
   // der Website, und ein bei jedem Abruf neues Datum wäre falsch.
-  const zielRoutes = ZIEL_INHALTE.map((ziel) => ({
-    url: `${siteConfig.url}/ziel/${ziel.wert}`,
+  const zielRoutes = ZIEL_INHALTE.map((ziel): Eintrag => ({
+    route: `/ziel/${ziel.wert}`,
     priority: 0.8,
   }));
 
   // Die Fragen-Seiten (@/lib/fragen) samt Übersicht - aus demselben Grund.
-  const fragenRoutes = ["/fragen", ...FRAGEN.map((f) => `/fragen/${f.slug}`)].map((route) => ({
-    url: `${siteConfig.url}${route}`,
-    priority: 0.7,
-  }));
+  const fragenRoutes = ["/fragen", ...FRAGEN.map((f) => `/fragen/${f.slug}`)].map(
+    (route): Eintrag => ({ route, priority: 0.7 }),
+  );
 
-  return [...staticRoutes, ...zielRoutes, ...fragenRoutes, ...studioRoutes, ...postRoutes];
+  // Jede Seite gibt es zweimal: deutsch und englisch (/en/...). Beide
+  // Adressen werden gemeldet, und beide tragen denselben Verweis auf die
+  // jeweils andere. Ohne diese Angabe hält Google sie für zwei Seiten über
+  // dasselbe Thema und wertet eine davon ab. Wer keine der beiden
+  // Sprachen ausdrücklich verlangt, bekommt die deutsche (x-default).
+  const eintraege = [...staticRoutes, ...zielRoutes, ...fragenRoutes, ...studioRoutes, ...postRoutes];
+  return eintraege.flatMap(({ route, ...rest }) => {
+    const de = `${siteConfig.url}${route}`;
+    const en = `${siteConfig.url}${nachEn(route || "/")}`;
+    const alternates = { languages: { de, en, "x-default": de } };
+    return [
+      { url: de, ...rest, alternates },
+      { url: en, ...rest, alternates },
+    ];
+  });
 }

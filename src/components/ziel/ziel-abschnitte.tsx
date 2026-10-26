@@ -7,10 +7,11 @@ import { useZiel } from "@/components/ziel/ziel-kontext";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 import {
   STANDARD_REIHENFOLGE,
-  ZIEL_INHALTE,
+  zielInhalte,
   zielInhalt,
   type AbschnittKey,
 } from "@/lib/ziel-inhalte";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /**
  * Die Abschnitte der Startseite in der Reihenfolge, die zum Ziel passt.
@@ -23,7 +24,7 @@ import {
  */
 export function ZielAbschnitte({ abschnitte }: { abschnitte: Partial<Record<AbschnittKey, ReactNode>> }) {
   const { ziel } = useZiel();
-  const reihenfolge = zielInhalt(ziel)?.reihenfolge ?? STANDARD_REIHENFOLGE;
+  const reihenfolge = zielInhalt(ziel, useSprache())?.reihenfolge ?? STANDARD_REIHENFOLGE;
   return (
     <>
       {reihenfolge.map((key) =>
@@ -43,7 +44,9 @@ export function ZielAbschnitte({ abschnitte }: { abschnitte: Partial<Record<Absc
  */
 export function ZielLeiste() {
   const { ziel, waehlen } = useZiel();
-  const inhalt = zielInhalt(ziel);
+  const sprache = useSprache();
+  const en = sprache === "en";
+  const inhalt = zielInhalt(ziel, sprache);
   const [sichtbar, setSichtbar] = useState(false);
   const [offen, setOffen] = useState(false);
   const wenigerBewegung = useReducedMotion();
@@ -92,7 +95,7 @@ export function ZielLeiste() {
                   <Target size={16} />
                 </span>
               )}
-              <span className="text-muted">{inhalt ? "Dein Ziel:" : "Was ist dein Ziel?"}</span>
+              <span className="text-muted">{inhalt ? (en ? "Your goal:" : "Dein Ziel:") : en ? "What is your goal?" : "Was ist dein Ziel?"}</span>
               {inhalt && <span className="font-semibold text-foreground">{inhalt.kurz}</span>}
               <ChevronDown
                 size={16}
@@ -110,7 +113,7 @@ export function ZielLeiste() {
                   className="overflow-hidden"
                 >
                   <div className="flex max-w-xl flex-wrap justify-center gap-2 px-2 pb-2 pt-3">
-                    {ZIEL_INHALTE.map((z) => (
+                    {zielInhalte(sprache).map((z) => (
                       <button
                         key={z.wert}
                         type="button"

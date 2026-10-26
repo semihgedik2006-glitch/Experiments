@@ -83,6 +83,19 @@ ${standorte || "- Siehe " + basis + "/studio"}
 - [Wissen / Blog](${basis}/blog)
 - [Socials](${basis}/socials)
 
+## English version
+
+The whole website is also available in English under /en. The German
+legal texts are the binding ones.
+
+- [Home (English)](${basis}/en)
+- [EMS training explained](${basis}/en/ems-training)
+- [Your first visit, minute by minute](${basis}/en/first-visit)
+- [All studios](${basis}/en/studios)
+- [Prices](${basis}/en/prices)
+- [Book a free trial session](${basis}/en/book)
+- [Questions](${basis}/en/questions)
+
 ## Kontakt
 
 - E-Mail: ${siteConfig.contact.email}

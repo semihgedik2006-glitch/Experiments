@@ -65,6 +65,8 @@ enum MailArt {
   NEWSLETTER_TEST
   /// Der Zugangslink zum eigenen Terminbereich.
   KUNDENBEREICH
+  /// Einmal im Monat an das Team: die Zahlen des Vormonats.
+  MONATSBERICHT
 }
 
 /// Nachweis, dass eine E-Mail den Weg nach draußen gefunden hat.
@@ -138,6 +140,10 @@ model StudioLocation {
   /// Eingang im Hinterhof. Genau danach wird lokal gesucht, und es steht
   /// auf keiner anderen Seite.
   anfahrt       String?
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  openingHoursEn String?
+  introEn        String?
+  anfahrtEn      String?
   /// Link, unter dem man diesem Standort eine Google-Bewertung schreibt.
   /// Ohne ihn unterbleibt die Bitte um eine Bewertung - eine Mail, die
   /// jemanden auf die Suche schickt, bringt keine Bewertung.
@@ -185,6 +191,10 @@ model Trainer {
   /// Zwei, drei Sätze in eigenen Worten. Was ihn ausmacht, nicht was EMS
   /// ist - das steht auf jeder anderen Seite schon.
   text String?
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  rolleEn         String?
+  qualifikationEn String?
+  textEn          String?
 
   /// Adresse eines Fotos, wie beim Titelbild eines Blogbeitrags. Ohne Foto
   /// erscheint ein Feld mit den Anfangsbuchstaben, kein leerer Rahmen.
@@ -285,6 +295,8 @@ model Warteliste {
   phone    String
   erreichbarkeit String?
   zuZweit  Boolean          @default(false)
+  /// Sprache der Seite, auf der angefragt wurde - für die Mail "Platz frei".
+  sprache String @default("de")
   /// Wann Bescheid gegeben wurde, dass etwas frei ist. Einmal - wer nicht
   /// reagiert, blockiert sonst den Nächsten.
   benachrichtigtAm DateTime?
@@ -314,6 +326,10 @@ model Booking {
   // der Gast selbst absagen oder verschieben kann. Nicht erratbar und ohne
   // Bezug zur id - wer den Link hat, sieht genau diese eine Buchung.
   manageToken    String?   @unique
+  /// Sprache der Seite, auf der angefragt wurde ("de" oder "en"). Danach
+  /// richten sich die E-Mails an den Gast - und das Studio sieht, dass es
+  /// auf Englisch zurückrufen sollte.
+  sprache String @default("de")
   // Wann die Erinnerung am Vortag verschickt wurde. Verhindert, dass der
   // tägliche Lauf dieselbe Erinnerung mehrfach schickt.
   reminderSentAt DateTime?
@@ -331,6 +347,14 @@ model Booking {
   /// echter Text von echten Menschen steht - er wird im Adminbereich
   /// weiterhin angezeigt, nur nichts Neues mehr hineingeschrieben.
   terminWunsch   String?
+
+  /// Der vereinbarte Termin, wenn er nicht über einen festen Platz
+  /// (slot) gebucht wurde - seit den Wunschzeiten der Normalfall. Das
+  /// Studio trägt ihn beim Bestätigen ein; daran hängen die Erinnerung am
+  /// Vortag und die Bitte um eine Bewertung danach. Wie slot.date: der
+  /// Kalendertag als Mitternacht, die Uhrzeit als "18:30".
+  terminTag      DateTime?
+  terminUhrzeit  String?
 
   /// Was der Gast erreichen will - einer der Werte aus src/lib/ziel.ts.
   /// Freiwillig: Eine Anfrage darf nicht daran scheitern, dass jemand sein
@@ -409,6 +433,10 @@ model BlogPost {
   title       String
   excerpt     String
   content     String
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  titleEn     String?
+  excerptEn   String?
+  contentEn   String?
   coverImage  String?
   /// Schlagwörter zu diesem Beitrag, im Adminbereich vergeben.
   ///
@@ -539,6 +567,9 @@ model FaqItem {
   id        String   @id @default(cuid())
   question  String   @unique
   answer    String
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  questionEn String?
+  answerEn   String?
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -571,6 +602,8 @@ model SiteToggle {
 model SiteText {
   key       String   @id
   wert      String
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  wertEn    String?
   updatedAt DateTime @updatedAt
 }
 
@@ -606,6 +639,13 @@ model Tarif {
 
   /// Kleingedrucktes zu genau diesem Tarif, etwa die Mindestlaufzeit.
   hinweis String?
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  nameEn        String?
+  untertitelEn  String?
+  preisEn       String?
+  preisZusatzEn String?
+  leistungenEn  String[] @default([])
+  hinweisEn     String?
 
   aktiv     Boolean  @default(true)
   sortOrder Int      @default(0)
@@ -626,6 +666,10 @@ model Zusatzangebot {
   text String?
   /// Wie beim Tarif ein Text: "ab 49 €" oder "im Beitrag enthalten".
   preis String?
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  nameEn  String?
+  textEn  String?
+  preisEn String?
 
   /// Eines von wenigen Sinnbildern - siehe src/lib/zusatzangebote.ts.
   symbol String @default("sonstiges")
@@ -801,6 +845,10 @@ model Verwandlung {
 
   /// In eigenen Worten, freigegeben. Freiwillig.
   text String?
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  zeitraumEn String?
+  kontextEn  String?
+  textEn     String?
 
   vorherUrl  String
   nachherUrl String
@@ -900,6 +948,8 @@ model Kundenstimme {
 
   /// Das Zitat. In den eigenen Worten der Person - nicht geglättet.
   text String
+  /// Englische Fassung für /en - freiwillig; leer heißt: der deutsche Text steht da.
+  textEn String?
 
   /// "Rückengesundheit", "Abnehmen". Freiwillig.
   ziel String?

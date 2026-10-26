@@ -1,4 +1,5 @@
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
+import { EnglischBlock, EnglischFeld } from "@/components/admin/englisch-block";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { adminInput } from "@/components/admin/ui";
 import { EINWILLIGUNG_FORMEN } from "@/lib/verwandlung";
@@ -15,6 +16,9 @@ export type VerwandlungDaten = {
   zeitraum: string;
   kontext: string;
   text: string | null;
+  zeitraumEn: string | null;
+  kontextEn: string | null;
+  textEn: string | null;
   vorherUrl: string;
   nachherUrl: string;
   studioId: string | null;
@@ -207,6 +211,18 @@ export function VerwandlungFormular({
           className={adminInput}
         />
       </label>
+
+      <EnglischBlock ausgefuellt={!!(eintrag?.zeitraumEn || eintrag?.kontextEn || eintrag?.textEn)}>
+        <EnglischFeld label="Period (Zeitraum)">
+          <input type="text" name="zeitraumEn" defaultValue={eintrag?.zeitraumEn ?? ""} placeholder="6 months" className={adminInput} />
+        </EnglischFeld>
+        <EnglischFeld label="Context (Was dazu gehörte)">
+          <textarea name="kontextEn" rows={2} defaultValue={eintrag?.kontextEn ?? ""} className={adminInput} />
+        </EnglischFeld>
+        <EnglischFeld label="In their own words (In eigenen Worten) - a translation, marked as such">
+          <textarea name="textEn" rows={3} defaultValue={eintrag?.textEn ?? ""} className={adminInput} />
+        </EnglischFeld>
+      </EnglischBlock>
 
       {neu && !studioFest && studios.length > 0 && (
         <label className="block">

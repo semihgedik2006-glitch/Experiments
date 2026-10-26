@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { Phone, RotateCcw, MapPin } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /**
  * Was der Besucher sieht, wenn etwas schiefgeht.
@@ -47,6 +48,7 @@ export default function SiteError({
   }, [error]);
 
   const telefon = siteConfig.contact.phone;
+  const en = useSprache() === "en";
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-6 py-20">
@@ -63,14 +65,15 @@ export default function SiteError({
 
       <div className="w-full max-w-xl text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-          Kurz nicht erreichbar
+          {en ? "Briefly unavailable" : "Kurz nicht erreichbar"}
         </p>
         <h1 className="mt-4 font-display text-3xl font-black tracking-tight sm:text-4xl">
-          Diese Seite lädt gerade nicht.
+          {en ? "This page is not loading right now." : "Diese Seite lädt gerade nicht."}
         </h1>
         <p className="lesebreite mx-auto mt-4 text-muted">
-          Das liegt an uns, nicht an dir. Versuch es in einem Moment noch einmal
-          &ndash; oder ruf einfach an, dann klären wir es direkt.
+          {en
+            ? "That is on us, not on you. Try again in a moment – or simply call us and we will sort it out right away."
+            : "Das liegt an uns, nicht an dir. Versuch es in einem Moment noch einmal – oder ruf einfach an, dann klären wir es direkt."}
         </p>
 
         {/* Der Anruf steht vor dem Neuladen: Wer hier gelandet ist, wollte
@@ -90,7 +93,7 @@ export default function SiteError({
             className="inline-flex items-center gap-2.5 rounded-full border border-border px-6 py-3 text-sm font-semibold transition-colors hover:border-lime"
           >
             <RotateCcw size={16} aria-hidden />
-            Nochmal versuchen
+            {en ? "Try again" : "Nochmal versuchen"}
           </button>
         </div>
 
@@ -102,20 +105,20 @@ export default function SiteError({
             href="/"
             className="tastflaeche text-accent underline underline-offset-4 hover:text-foreground"
           >
-            Zur Startseite
+            {en ? "Go to home page" : "Zur Startseite"}
           </Link>
           <Link
             href="/studio"
             className="tastflaeche inline-flex items-center gap-1.5 text-accent underline underline-offset-4 hover:text-foreground"
           >
             <MapPin size={14} aria-hidden />
-            Alle Standorte
+            {en ? "All studios" : "Alle Standorte"}
           </Link>
         </div>
 
         {error.digest && (
           <p className="mt-10 text-xs text-muted">
-            Kennung für Rückfragen: <span className="font-mono">{error.digest}</span>
+            {en ? "Reference for enquiries:" : "Kennung für Rückfragen:"} <span className="font-mono">{error.digest}</span>
           </p>
         )}
       </div>

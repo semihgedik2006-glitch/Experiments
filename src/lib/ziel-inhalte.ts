@@ -1,3 +1,6 @@
+import type { Sprache } from "@/lib/sprache";
+import { GOALS_EN } from "@/lib/ziel-inhalte-en";
+
 /**
  * Was die Startseite zu jedem Ziel sagt.
  *
@@ -26,6 +29,21 @@ export const ZONEN = [
   "Po",
   "Beine",
 ] as const;
+
+export const ZONEN_EN = [
+  "Chest",
+  "Abs",
+  "Arms",
+  "Shoulders",
+  "Upper back",
+  "Lower back",
+  "Glutes",
+  "Legs",
+] as const;
+
+export function zonen(sprache: Sprache): readonly string[] {
+  return sprache === "en" ? ZONEN_EN : ZONEN;
+}
 
 /** Die Abschnitte der Startseite, die sich je Ziel umsortieren lassen. */
 export type AbschnittKey =
@@ -234,8 +252,26 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
   },
 ];
 
-export function zielInhalt(wert: string | null | undefined): ZielInhalt | undefined {
-  return ZIEL_INHALTE.find((z) => z.wert === wert);
+/**
+ * Dieselben Ziele auf Englisch. Reihenfolge der Abschnitte und das
+ * Zonenprofil sind dieselben - übersetzt sind nur die Texte (und die
+ * Stichworte, weil Fragen und Artikel auf /en englisch sind).
+ */
+export const ZIEL_INHALTE_EN: readonly ZielInhalt[] = ZIEL_INHALTE.map((de) => {
+  const en = GOALS_EN.find((g) => g.wert === de.wert);
+  if (!en) return de;
+  return { ...de, ...en, reihenfolge: en.reihenfolge ?? de.reihenfolge };
+});
+
+export function zielInhalte(sprache: Sprache): readonly ZielInhalt[] {
+  return sprache === "en" ? ZIEL_INHALTE_EN : ZIEL_INHALTE;
+}
+
+export function zielInhalt(
+  wert: string | null | undefined,
+  sprache: Sprache = "de",
+): ZielInhalt | undefined {
+  return zielInhalte(sprache).find((z) => z.wert === wert);
 }
 
 /**
@@ -261,7 +297,8 @@ export function nachZiel<T>(liste: T[], text: (eintrag: T) => string, ziel: Ziel
 }
 
 /** Die Seitenbeschreibung mit der aktuellen Zahl der Studios. */
-export function seitenBeschreibung(ziel: ZielInhalt, anzahlStudios: number): string {
-  const studios = anzahlStudios > 1 ? `${anzahlStudios} Studios` : "Studios";
+export function seitenBeschreibung(ziel: ZielInhalt, anzahlStudios: number, sprache: Sprache = "de"): string {
+  const wort = sprache === "en" ? "studios" : "Studios";
+  const studios = anzahlStudios > 1 ? `${anzahlStudios} ${wort}` : wort;
   return ziel.seite.beschreibung.replace("{studios}", studios);
 }

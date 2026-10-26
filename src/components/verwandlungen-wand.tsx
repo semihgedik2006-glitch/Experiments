@@ -2,7 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { Container } from "@/components/ui/container";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { isVisible } from "@/lib/site-toggles";
-import { darfErscheinen, ERGEBNIS_HINWEIS } from "@/lib/verwandlung";
+import { darfErscheinen, ERGEBNIS_HINWEIS, ERGEBNIS_HINWEIS_EN } from "@/lib/verwandlung";
+import type { Sprache } from "@/lib/sprache";
+import { lokal } from "@/lib/i18n/lokal";
 
 /**
  * Die Vorher-Nachher-Bilder auf der Seite „Erfolgsgeschichten“.
@@ -34,6 +36,9 @@ async function freigegebene() {
       zeitraum: true,
       kontext: true,
       text: true,
+      zeitraumEn: true,
+      kontextEn: true,
+      textEn: true,
       vorherUrl: true,
       nachherUrl: true,
       einwilligungAm: true,
@@ -48,7 +53,8 @@ async function freigegebene() {
   return eintraege.filter(darfErscheinen);
 }
 
-export async function VerwandlungenWand() {
+export async function VerwandlungenWand({ sprache = "de" }: { sprache?: Sprache }) {
+  const en = sprache === "en";
   if (!(await isVisible("verwandlungen"))) return null;
 
   const eintraege = await freigegebene();
@@ -59,13 +65,12 @@ export async function VerwandlungenWand() {
       <Container>
         <Reveal>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Vorher und nachher
+            {en ? "Before and after" : "Vorher und nachher"}
           </h2>
           <p className="mt-4 max-w-2xl text-muted">
-            Alle abgebildeten Personen haben der Veröffentlichung ihrer Bilder
-            ausdrücklich zugestimmt. Unter jedem Paar steht, über welchen
-            Zeitraum es geht und was dabei sonst noch eine Rolle gespielt hat -
-            ohne diese beiden Angaben zeigen wir kein Bild.
+            {en
+              ? "Everyone pictured has expressly agreed to their photos being published. Under each pair it says over what period and what else played a part - we do not show a photo without these two details."
+              : "Alle abgebildeten Personen haben der Veröffentlichung ihrer Bilder ausdrücklich zugestimmt. Unter jedem Paar steht, über welchen Zeitraum es geht und was dabei sonst noch eine Rolle gespielt hat - ohne diese beiden Angaben zeigen wir kein Bild."}
           </p>
         </Reveal>
 
@@ -81,8 +86,8 @@ export async function VerwandlungenWand() {
             <StaggerItem key={eintrag.id}>
               <figure className="karte-hebt h-full overflow-hidden rounded-2xl border border-border bg-surface-raised">
                 <div className="grid grid-cols-2 gap-px bg-border">
-                  <Bild url={eintrag.vorherUrl} marke="Vorher" name={eintrag.name} />
-                  <Bild url={eintrag.nachherUrl} marke="Nachher" name={eintrag.name} />
+                  <Bild url={eintrag.vorherUrl} marke={en ? "Before" : "Vorher"} name={eintrag.name} />
+                  <Bild url={eintrag.nachherUrl} marke={en ? "After" : "Nachher"} name={eintrag.name} />
                 </div>
 
                 <figcaption className="p-6">
@@ -98,18 +103,25 @@ export async function VerwandlungenWand() {
                       sie nicht. */}
                   <dl className="mt-3 space-y-1 text-sm">
                     <div className="flex gap-2">
-                      <dt className="shrink-0 text-muted">Zeitraum:</dt>
-                      <dd>{eintrag.zeitraum}</dd>
+                      <dt className="shrink-0 text-muted">{en ? "Period:" : "Zeitraum:"}</dt>
+                      <dd>{lokal(sprache, eintrag.zeitraum, eintrag.zeitraumEn)}</dd>
                     </div>
                     <div className="flex gap-2">
-                      <dt className="shrink-0 text-muted">Dabei:</dt>
-                      <dd>{eintrag.kontext}</dd>
+                      <dt className="shrink-0 text-muted">{en ? "Also:" : "Dabei:"}</dt>
+                      <dd>{lokal(sprache, eintrag.kontext, eintrag.kontextEn)}</dd>
                     </div>
                   </dl>
 
                   {eintrag.text && (
                     <blockquote className="mt-4 border-l-2 border-lime pl-4 text-sm leading-relaxed text-foreground/90">
-                      &bdquo;{eintrag.text}&ldquo;
+                      {en && eintrag.textEn?.trim() ? (
+                        <>
+                          &ldquo;{eintrag.textEn}&rdquo;
+                          <span className="mt-1 block text-xs text-muted">(translated from German)</span>
+                        </>
+                      ) : (
+                        <>&bdquo;{eintrag.text}&ldquo;</>
+                      )}
                     </blockquote>
                   )}
                 </figcaption>
@@ -121,7 +133,7 @@ export async function VerwandlungenWand() {
         {/* Der Pflichthinweis. Er steht am Ende des Abschnitts und nicht
             in der Fußzeile: Dort läse ihn niemand, der die Bilder
             angesehen hat. */}
-        <p className="mt-10 max-w-3xl text-xs leading-relaxed text-muted">{ERGEBNIS_HINWEIS}</p>
+        <p className="mt-10 max-w-3xl text-xs leading-relaxed text-muted">{en ? ERGEBNIS_HINWEIS_EN : ERGEBNIS_HINWEIS}</p>
       </Container>
     </section>
   );

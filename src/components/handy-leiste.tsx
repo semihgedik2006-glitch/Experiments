@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Phone } from "lucide-react";
 import { schonGebucht, seiteAusgenommen } from "@/lib/einladung";
 import { siteConfig } from "@/lib/site-config";
+import { useSprache } from "@/lib/i18n/use-sprache";
+import { nachDe } from "@/lib/i18n/pfade";
 
 /**
  * Die feste Leiste unten auf dem Handy: ein Knopf zum Probetraining und
@@ -23,13 +25,14 @@ import { siteConfig } from "@/lib/site-config";
  */
 export function HandyLeiste() {
   const pfad = usePathname();
+  const en = useSprache() === "en";
   const still = useReducedMotion();
   const [gescrollt, setGescrollt] = useState(false);
   const [verdeckt, setVerdeckt] = useState(false);
   const [gebucht, setGebucht] = useState(false);
   const [ziel, setZiel] = useState("/probetermin");
 
-  const aus = seiteAusgenommen(pfad) || pfad === "/ziel-check" || pfad.startsWith("/en");
+  const aus = seiteAusgenommen(pfad) || nachDe(pfad) === "/ziel-check";
 
   useEffect(() => {
     if (aus) return;
@@ -85,12 +88,12 @@ export function HandyLeiste() {
               data-einstieg="Handy-Leiste"
               className="knopf-glanz flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-lime px-5 text-sm font-bold text-on-lime"
             >
-              Kostenloses Probetraining
+              {en ? "Free trial session" : "Kostenloses Probetraining"}
               <ArrowRight size={16} aria-hidden />
             </Link>
             <a
               href={`tel:${telefon}`}
-              aria-label="Anrufen"
+              aria-label={en ? "Call us" : "Anrufen"}
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border text-accent"
             >
               <Phone size={18} aria-hidden />

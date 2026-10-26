@@ -1,7 +1,7 @@
 "use server";
 
 import { after } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from "@/lib/revalidieren";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { verlangeLeitungAktion } from "@/lib/admin-rechte";

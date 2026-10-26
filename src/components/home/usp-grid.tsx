@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/container";
 import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/ui/section-header";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /**
  * Vier Tatsachen über das Training selbst.
@@ -19,6 +20,39 @@ import { SectionHeader } from "@/components/ui/section-header";
  * Kein Wirkungsversprechen ("sichtbare Erfolge"): Ob jemand abnimmt,
  * hängt an seiner Ernährung, nicht an unserem Text.
  */
+function kartenEn(standorte: number, zeitspanne: string | null) {
+  return [
+    {
+      icon: Clock,
+      title: "Just 20 minutes",
+      text: "Once a week, a fixed appointment - it fits even into a full calendar.",
+    },
+    {
+      icon: SlidersHorizontal,
+      title: "Every muscle group on its own",
+      text: "Eight zones, eight settings - stronger where you want to get stronger, gentler where you need to be careful.",
+    },
+    {
+      icon: HeartPulse,
+      title: "No heavy weights",
+      text: "The impulses are added to your own movement - with no extra load from dumbbells or machines.",
+    },
+    standorte > 1
+      ? {
+          icon: MapPin,
+          title: `${standorte} studios in and around Cologne`,
+          text: zeitspanne
+            ? `Train wherever you happen to be - before work or after. Appointments are available from ${zeitspanne}.`
+            : "Train wherever you happen to be - in the morning next to the office, in the evening around the corner.",
+        }
+      : {
+          icon: Sparkles,
+          title: "Fixed time, familiar face",
+          text: "Your appointment is at the same time every week, and you know in advance who will be expecting you.",
+        },
+  ];
+}
+
 function karten(standorte: number, zeitspanne: string | null) {
   return [
     {
@@ -60,7 +94,8 @@ export function UspGrid({
   /** "07:00 bis 21:00 Uhr", sofern aus den Terminen ableitbar. */
   zeitspanne: string | null;
 }) {
-  const items = karten(standorte, zeitspanne);
+  const en = useSprache() === "en";
+  const items = en ? kartenEn(standorte, zeitspanne) : karten(standorte, zeitspanne);
 
   return (
     // Das Streufeld liegt hinter der Liste. Anordnung "rand": Die Liste
@@ -70,9 +105,13 @@ export function UspGrid({
       <ImpulsStreu anordnung="rand" />
       <Container className="relative">
         <SectionHeader
-          kicker="Deine Vorteile"
-          title="Was du bei uns bekommst"
-          intro="Kurze Einheiten, ein Trainer an deiner Seite und ein Training, das auf dich eingestellt ist - nicht auf den Durchschnitt."
+          kicker={en ? "Your benefits" : "Deine Vorteile"}
+          title={en ? "What you get with us" : "Was du bei uns bekommst"}
+          intro={
+            en
+              ? "Short sessions, a trainer at your side and training that is set up for you - not for the average."
+              : "Kurze Einheiten, ein Trainer an deiner Seite und ein Training, das auf dich eingestellt ist - nicht auf den Durchschnitt."
+          }
           className="mb-16"
         />
 

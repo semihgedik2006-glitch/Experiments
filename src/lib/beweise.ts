@@ -1,3 +1,4 @@
+import type { Sprache } from "@/lib/sprache";
 import { siteConfig } from "@/lib/site-config";
 import { prisma } from "@/lib/prisma";
 import { freiePlaetze } from "@/lib/kapazitaet";
@@ -157,15 +158,19 @@ export type Kennzahl = {
 };
 
 
-export function kennzahlen(b: Beweise): Kennzahl[] {
+export function kennzahlen(b: Beweise, sprache: Sprache = "de"): Kennzahl[] {
+  const en = sprache === "en";
   // Keine Abfrage, sondern das Angebot selbst - und die Zahl, wegen der
   // die meisten überhaupt hier sind.
   const liste: Kennzahl[] = [
-    { wert: "20", label: "Minuten Training pro Woche" },
+    { wert: "20", label: en ? "minutes of training a week" : "Minuten Training pro Woche" },
   ];
 
   if (b.standorte > 0) {
-    liste.push({ wert: String(b.standorte), label: b.standorte === 1 ? "Studio in Köln und Umgebung" : "Studios in Köln und Umgebung" });
+    const label = en
+      ? b.standorte === 1 ? "studio in and around Cologne" : "studios in and around Cologne"
+      : b.standorte === 1 ? "Studio in Köln und Umgebung" : "Studios in Köln und Umgebung";
+    liste.push({ wert: String(b.standorte), label });
   }
 
   // Die dritte Stelle: das Körperformen-Netz. Vorher stand hier "220 Min.
@@ -174,7 +179,9 @@ export function kennzahlen(b: Beweise): Kennzahl[] {
   // pflegt die Zentrale, sie steht in site-config.
   liste.push({
     wert: String(siteConfig.netzwerk.studiosGesamt),
-    label: "Körperformen-Studios – wir sind der größte Partner",
+    label: en
+      ? "Körperformen studios – we are the largest partner"
+      : "Körperformen-Studios – wir sind der größte Partner",
   });
   return liste.slice(0, 3);
 }

@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { animate, motion, useInView, useMotionValue, useReducedMotion, useTransform } from "motion/react";
 import { ArrowUpRight, Award } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { auszeichnung } from "@/lib/auszeichnung";
+import { auszeichnungIn } from "@/lib/auszeichnung";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /**
  * Die DtGV-Auszeichnung als eigener Abschnitt.
@@ -25,6 +26,9 @@ export function AuszeichnungAbschnitt() {
   const imBild = useInView(ref, { once: true, margin: "0px 0px -20% 0px" });
   const still = useReducedMotion();
   const an = still || imBild;
+  const sprache = useSprache();
+  const en = sprache === "en";
+  const auszeichnung = auszeichnungIn(sprache);
 
   return (
     <section id="auszeichnung" className="on-ink relative scroll-mt-20 overflow-hidden py-20 sm:py-24 md:py-28">
@@ -34,15 +38,27 @@ export function AuszeichnungAbschnitt() {
           <div className="text-center lg:text-left">
             <Kranz an={an} still={!!still} />
             <p className="mt-6 text-sm font-semibold text-accent">
-              {auszeichnung.herausgeberKurz}-{auszeichnung.art} 2026
+              {en
+                ? `${auszeichnung.herausgeberKurz} ${auszeichnung.art} 2026`
+                : `${auszeichnung.herausgeberKurz}-${auszeichnung.art} 2026`}
             </p>
             <h2 className="mt-3 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
               {auszeichnung.titel}
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-foreground/80">
-              <strong className="text-foreground">Körperformen</strong> erreichte den{" "}
-              <strong className="text-foreground">{auszeichnung.platz}</strong> – und in allen fünf
-              Teilkategorien die beste Bewertung.
+              {en ? (
+                <>
+                  <strong className="text-foreground">Körperformen</strong> took{" "}
+                  <strong className="text-foreground">{auszeichnung.platz}</strong> – and the best rating in
+                  all five sub-categories.
+                </>
+              ) : (
+                <>
+                  <strong className="text-foreground">Körperformen</strong> erreichte den{" "}
+                  <strong className="text-foreground">{auszeichnung.platz}</strong> – und in allen fünf
+                  Teilkategorien die beste Bewertung.
+                </>
+              )}
             </p>
           </div>
 
@@ -57,26 +73,37 @@ export function AuszeichnungAbschnitt() {
                   className="grid grid-cols-[1fr_auto_auto] items-center gap-4 px-5 py-4 sm:px-6"
                 >
                   <span className="font-semibold">{k.name}</span>
-                  <span className="rounded-full bg-lime px-3 py-1 text-xs font-bold text-on-lime">Platz 1</span>
+                  <span className="rounded-full bg-lime px-3 py-1 text-xs font-bold text-on-lime">{en ? "1st place" : "Platz 1"}</span>
                   <span className="w-14 text-right">
                     <span className="block text-[10px] uppercase tracking-widest text-muted">Score</span>
-                    <Zahl wert={k.score} start={an} />
+                    <Zahl wert={k.score} start={an} en={en} />
                   </span>
                 </motion.li>
               ))}
             </ul>
             <p className="mt-5 text-xs leading-relaxed text-muted">
-              Quelle: {auszeichnung.herausgeber}, {auszeichnung.art} „{auszeichnung.titel}“,
-              veröffentlicht am {auszeichnung.veroeffentlicht}. Befragungszeitraum {auszeichnung.zeitraum},{" "}
-              {auszeichnung.bewertungen} Bewertungen zu {auszeichnung.anbieter} EMS-Studio-Ketten. Ausgezeichnet
-              ist die Marke Körperformen.{" "}
+              {en ? (
+                <>
+                  Source: {auszeichnung.herausgeber}, {auszeichnung.art} &ldquo;{auszeichnung.titelOriginal}&rdquo;
+                  ({auszeichnung.titel}), published {auszeichnung.veroeffentlicht}. Survey period{" "}
+                  {auszeichnung.zeitraum}, {auszeichnung.bewertungen} ratings of {auszeichnung.anbieter} EMS
+                  studio chains. The award goes to the Körperformen brand.{" "}
+                </>
+              ) : (
+                <>
+                  Quelle: {auszeichnung.herausgeber}, {auszeichnung.art} „{auszeichnung.titel}“,
+                  veröffentlicht am {auszeichnung.veroeffentlicht}. Befragungszeitraum {auszeichnung.zeitraum},{" "}
+                  {auszeichnung.bewertungen} Bewertungen zu {auszeichnung.anbieter} EMS-Studio-Ketten.
+                  Ausgezeichnet ist die Marke Körperformen.{" "}
+                </>
+              )}
               <a
                 href={auszeichnung.quelle}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-0.5 font-semibold text-accent underline-offset-4 hover:underline"
               >
-                Zur Studie <ArrowUpRight size={12} aria-hidden />
+                {en ? "View the study" : "Zur Studie"} <ArrowUpRight size={12} aria-hidden />
               </a>
             </p>
           </div>
@@ -108,6 +135,7 @@ function aufZweig(t: number) {
  * sprießen nacheinander ab - abwechselnd nach außen und nach innen.
  */
 function Kranz({ an, still }: { an: boolean; still: boolean }) {
+  const en = useSprache() === "en";
   const blaetter = Array.from({ length: 9 }, (_, i) => {
     const t = 0.12 + (i / 8) * 0.86;
     const { x, y, winkel } = aufZweig(t);
@@ -168,17 +196,17 @@ function Kranz({ an, still }: { an: boolean; still: boolean }) {
         className="absolute inset-0 flex flex-col items-center justify-center"
       >
         <span className="font-display text-5xl font-black leading-none text-foreground">1.</span>
-        <span className="mt-1 text-xs font-bold uppercase tracking-widest text-accent">Platz</span>
+        <span className="mt-1 text-xs font-bold uppercase tracking-widest text-accent">{en ? "Place" : "Platz"}</span>
       </motion.div>
     </div>
   );
 }
 
 /** Zählt einmal auf den Wert hoch ("7,71"). Steht ohne Bewegung sofort da. */
-function Zahl({ wert, start }: { wert: string; start: boolean }) {
+function Zahl({ wert, start, en }: { wert: string; start: boolean; en: boolean }) {
   const ziel = Number(wert.replace(",", "."));
   const v = useMotionValue(ziel);
-  const text = useTransform(v, (x) => x.toFixed(2).replace(".", ","));
+  const text = useTransform(v, (x) => (en ? x.toFixed(2) : x.toFixed(2).replace(".", ",")));
   const still = useReducedMotion();
   useEffect(() => {
     if (!start || still) return;
@@ -194,9 +222,11 @@ function Zahl({ wert, start }: { wert: string; start: boolean }) {
  * Startseite (oder, wo es ihn nicht gibt, auf die Studie).
  */
 export function AuszeichnungMarke({ className = "", aufStartseite = true }: { className?: string; aufStartseite?: boolean }) {
+  const sprache = useSprache();
+  const auszeichnung = auszeichnungIn(sprache);
   return (
     <a
-      href={aufStartseite ? "/#auszeichnung" : auszeichnung.quelle}
+      href={aufStartseite ? (sprache === "en" ? "/en#auszeichnung" : "/#auszeichnung") : auszeichnung.quelle}
       {...(aufStartseite ? {} : { target: "_blank", rel: "noopener noreferrer" })}
       className={`group inline-flex max-w-full items-center gap-2.5 rounded-full border border-lime/40 bg-lime/10 py-1.5 pl-1.5 pr-4 text-xs transition-colors hover:border-lime ${className}`}
     >
@@ -204,7 +234,7 @@ export function AuszeichnungMarke({ className = "", aufStartseite = true }: { cl
         <Award size={14} aria-hidden />
       </span>
       <span className="min-w-0 leading-tight">
-        <span className="font-semibold text-foreground">1. Platz</span>
+        <span className="font-semibold text-foreground">{sprache === "en" ? "1st place" : "1. Platz"}</span>
         <span className="text-foreground/75"> · {auszeichnung.titel}</span>
         <span className="text-muted"> ({auszeichnung.herausgeberKurz})</span>
       </span>

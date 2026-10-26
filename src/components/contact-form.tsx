@@ -5,11 +5,19 @@ import { motion } from "motion/react";
 import { CheckCircle2 } from "lucide-react";
 import { sendContactMessage } from "@/lib/actions/contact";
 import type { ActionResult } from "@/lib/actions/newsletter";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 const initialState: ActionResult = { ok: false, message: "" };
 
-export function ContactForm() {
+export function ContactForm({
+  vorbelegt,
+}: {
+  /** Betreff und Nachricht schon ausgefüllt - etwa für Gutschein-Anfragen. */
+  vorbelegt?: { subject: string; message: string };
+} = {}) {
   const [state, formAction, pending] = useActionState(sendContactMessage, initialState);
+  const sprache = useSprache();
+  const en = sprache === "en";
 
   // Die Eingaben liegen in React, nicht nur im Formular: Nach einer
   // Serveraktion setzt React das Formular zurück. Ohne diesen Zustand
@@ -20,8 +28,8 @@ export function ContactForm() {
     name: "",
     email: "",
     phone: "",
-    subject: "",
-    message: "",
+    subject: vorbelegt?.subject ?? "",
+    message: vorbelegt?.message ?? "",
   });
 
   const aendern =
@@ -45,7 +53,7 @@ export function ContactForm() {
         >
           <CheckCircle2 size={30} />
         </motion.div>
-        <h3 className="mt-5 text-xl font-semibold text-accent">Nachricht gesendet!</h3>
+        <h3 className="mt-5 text-xl font-semibold text-accent">{en ? "Message sent!" : "Nachricht gesendet!"}</h3>
         <p className="mt-3 text-muted">{state.message}</p>
       </motion.div>
     );
@@ -53,6 +61,7 @@ export function ContactForm() {
 
   return (
     <form action={formAction} className="space-y-4">
+      <input type="hidden" name="sprache" value={sprache} />
       {/* Bot-Falle: für echte Besucher unsichtbar, Bots füllen sie oft aus. */}
       <input
         type="text"
@@ -71,7 +80,7 @@ export function ContactForm() {
           autoComplete="name"
           value={felder.name}
           onChange={aendern("name")}
-          placeholder="Vor- und Nachname"
+          placeholder={en ? "First and last name" : "Vor- und Nachname"}
           className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime sm:col-span-2"
         />
         <input
@@ -81,7 +90,7 @@ export function ContactForm() {
           autoComplete="email"
           value={felder.email}
           onChange={aendern("email")}
-          placeholder="E-Mail-Adresse"
+          placeholder={en ? "Email address" : "E-Mail-Adresse"}
           className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
         />
         <input
@@ -90,7 +99,7 @@ export function ContactForm() {
           autoComplete="tel"
           value={felder.phone}
           onChange={aendern("phone")}
-          placeholder="Telefonnummer (optional)"
+          placeholder={en ? "Phone number (optional)" : "Telefonnummer (optional)"}
           className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
         />
         <input
@@ -99,7 +108,7 @@ export function ContactForm() {
           required
           value={felder.subject}
           onChange={aendern("subject")}
-          placeholder="Betreff"
+          placeholder={en ? "Subject" : "Betreff"}
           className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime sm:col-span-2"
         />
         <textarea
@@ -108,7 +117,7 @@ export function ContactForm() {
           rows={5}
           value={felder.message}
           onChange={aendern("message")}
-          placeholder="Deine Nachricht"
+          placeholder={en ? "Your message" : "Deine Nachricht"}
           className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime sm:col-span-2"
         />
       </div>
@@ -130,7 +139,7 @@ export function ContactForm() {
         disabled={pending}
         className="knopf-glanz w-full rounded-full bg-lime px-7 py-3 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-50 sm:w-auto"
       >
-        {pending ? "Wird gesendet..." : "Nachricht senden"}
+        {en ? (pending ? "Sending..." : "Send message") : pending ? "Wird gesendet..." : "Nachricht senden"}
       </button>
     </form>
   );

@@ -1,13 +1,14 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/ui/section-header";
 import { PostThumb } from "@/components/blog/post-thumb";
 import { useZiel } from "@/components/ziel/ziel-kontext";
-import { ZIEL_INHALTE, nachZiel, passung, zielInhalt } from "@/lib/ziel-inhalte";
+import { zielInhalte, nachZiel, passung, zielInhalt } from "@/lib/ziel-inhalte";
+import { useSprache } from "@/lib/i18n/use-sprache";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
 
 export type BlogKarte = {
@@ -22,23 +23,33 @@ export type BlogKarte = {
 /** Die drei Karten - ohne Ziel die neuesten, mit Ziel die passendsten. */
 export function BlogKarten({ posts }: { posts: BlogKarte[] }) {
   const { ziel } = useZiel();
-  const inhalt = zielInhalt(ziel);
+  const sprache = useSprache();
+  const en = sprache === "en";
+  const inhalt = zielInhalt(ziel, sprache);
   const auswahl = nachZiel(posts, (p) => `${p.slug} ${p.title} ${p.excerpt}`, inhalt).slice(0, 3);
 
   return (
     <section className="border-t border-border py-20 sm:py-24 md:py-32">
       <Container>
         <SectionHeader
-          kicker="Wissen"
-          title={inhalt ? `Lesestoff zu „${inhalt.kurz}“` : "Aus dem Blog"}
-          intro="Trainingstipps, EMS-Wissen und Neuigkeiten aus dem Studio."
+          kicker={en ? "Knowledge" : "Wissen"}
+          title={
+            en
+              ? inhalt
+                ? `Reading on “${inhalt.kurz}”`
+                : "From the blog"
+              : inhalt
+                ? `Lesestoff zu „${inhalt.kurz}“`
+                : "Aus dem Blog"
+          }
+          intro={en ? "Training tips, EMS knowledge and news from the studio." : "Trainingstipps, EMS-Wissen und Neuigkeiten aus dem Studio."}
           className="mb-16"
           action={
             <Link
               href="/blog"
               className="hidden items-center gap-1 text-sm font-medium text-accent hover:underline md:flex"
             >
-              Alle Artikel <ArrowRight size={14} />
+              {en ? "All articles" : "Alle Artikel"} <ArrowRight size={14} />
             </Link>
           }
         />
@@ -59,7 +70,7 @@ export function BlogKarten({ posts }: { posts: BlogKarte[] }) {
                   <h3 className="mt-3 text-lg font-semibold">{post.title}</h3>
                   <p className="mt-2 flex-1 text-sm text-muted">{post.excerpt}</p>
                   <span className="mt-4 inline-flex items-center gap-1 text-sm text-accent">
-                    Weiterlesen <ArrowRight size={14} className="karte-pfeil" aria-hidden />
+                    {en ? "Read more" : "Weiterlesen"} <ArrowRight size={14} className="karte-pfeil" aria-hidden />
                   </span>
                 </div>
               </Link>
@@ -78,7 +89,7 @@ export function BlogKarten({ posts }: { posts: BlogKarte[] }) {
  * Motive nebeneinander wären Unruhe, keine Information.
  */
 function ThemaMarke({ text }: { text: string }) {
-  const treffer = ZIEL_INHALTE.map((z) => ({ z, p: passung(text, z) }))
+  const treffer = zielInhalte(useSprache()).map((z) => ({ z, p: passung(text, z) }))
     .filter((t) => t.p > 0)
     .sort((a, b) => b.p - a.p)[0];
   if (!treffer) return null;

@@ -74,8 +74,13 @@ export function resetRateLimit(key: string) {
 }
 
 /** Formuliert eine verständliche Wartemeldung für Besucher. */
-export function waitMessage(retryAfterSeconds: number): string {
+export function waitMessage(retryAfterSeconds: number, sprache: "de" | "en" = "de"): string {
   const minutes = Math.ceil(retryAfterSeconds / 60);
+  if (sprache === "en") {
+    return minutes <= 1
+      ? "Too many attempts. Please wait a minute and try again."
+      : `Too many attempts. Please wait about ${minutes} minutes and try again.`;
+  }
   return minutes <= 1
     ? "Zu viele Versuche. Bitte warte eine Minute und versuch es dann erneut."
     : `Zu viele Versuche. Bitte warte etwa ${minutes} Minuten und versuch es dann erneut.`;

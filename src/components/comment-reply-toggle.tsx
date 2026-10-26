@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CommentForm } from "@/components/comment-form";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 export function CommentReplyToggle({
   postId,
@@ -13,6 +14,7 @@ export function CommentReplyToggle({
   parentId: string;
 }) {
   const [open, setOpen] = useState(false);
+  const en = useSprache() === "en";
 
   if (open) {
     return (
@@ -28,7 +30,7 @@ export function CommentReplyToggle({
       onClick={() => setOpen(true)}
       className="mt-3 text-xs font-semibold text-accent hover:underline"
     >
-      Antworten
+      {en ? "Reply" : "Antworten"}
     </button>
   );
 }

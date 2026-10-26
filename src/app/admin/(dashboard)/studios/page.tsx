@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { EnglischBlock, EnglischFeld } from "@/components/admin/englisch-block";
 import { createStudio, updateStudio, deleteStudio } from "@/lib/actions/admin-studios";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AlertTriangle, Building2, ChevronRight } from "lucide-react";
@@ -29,6 +30,9 @@ function StudioFields({
     googleReviewUrl: string | null;
     intro: string | null;
     anfahrt: string | null;
+    openingHoursEn: string | null;
+    introEn: string | null;
+    anfahrtEn: string | null;
     latitude: number | null;
     longitude: number | null;
     sortOrder: number;
@@ -151,6 +155,27 @@ function StudioFields({
           className={`${inputClass} mt-1`}
         />
       </label>
+
+      <EnglischBlock
+        className="sm:col-span-2"
+        ausgefuellt={!!(defaults?.openingHoursEn || defaults?.introEn || defaults?.anfahrtEn)}
+      >
+        <EnglischFeld label="Opening hours (Öffnungszeiten)">
+          <textarea
+            name="openingHoursEn"
+            rows={3}
+            defaultValue={defaults?.openingHoursEn ?? ""}
+            placeholder={"Monday - Friday: 8 am - 9 pm\nSaturday: 10 am - 4 pm"}
+            className={inputClass}
+          />
+        </EnglischFeld>
+        <EnglischFeld label="Text about this studio (Text über diesen Standort)">
+          <textarea name="introEn" rows={3} maxLength={600} defaultValue={defaults?.introEn ?? ""} className={inputClass} />
+        </EnglischFeld>
+        <EnglischFeld label="Getting here (Anfahrt)">
+          <textarea name="anfahrtEn" rows={3} maxLength={800} defaultValue={defaults?.anfahrtEn ?? ""} className={inputClass} />
+        </EnglischFeld>
+      </EnglischBlock>
       <div className="sm:col-span-2">
         <p className="mb-1.5 text-xs text-muted">
           Koordinaten (für &bdquo;nächstes Studio&ldquo; bei der Probetermin-Buchung) - in

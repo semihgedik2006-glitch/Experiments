@@ -6,7 +6,8 @@ import { motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring, us
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import { useZiel } from "@/components/ziel/ziel-kontext";
-import { ZIEL_INHALTE, ZONEN, zielInhalt } from "@/lib/ziel-inhalte";
+import { zielInhalte, zonen, zielInhalt } from "@/lib/ziel-inhalte";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /**
  * "Dein Training ist nur deins" - wie aus einem Gespräch ein eigener Plan
@@ -39,6 +40,25 @@ const SCHRITTE = [
   },
 ];
 
+const SCHRITTE_EN: typeof SCHRITTE = [
+  {
+    titel: "Getting to know you",
+    text: "At the trial session you talk to your trainer about your goal, your everyday life and your history.",
+  },
+  {
+    titel: "Your plan",
+    text: "That becomes your training plan – not a standard package, but your own focus areas.",
+  },
+  {
+    titel: "Every session set up",
+    text: "In every session your trainer sets the intensity for each muscle group – to suit you and your day.",
+  },
+  {
+    titel: "Moving on together",
+    text: "Your trainer knows where you are. If you get stronger or your goal changes, your plan changes with it.",
+  },
+];
+
 export function Individuell() {
   const ref = useRef<HTMLElement>(null);
   const wenigerBewegung = useReducedMotion();
@@ -54,17 +74,20 @@ export function Individuell() {
   });
 
   const sichtbar = wenigerBewegung ? SCHRITTE.length : stufe;
+  const en = useSprache() === "en";
+  const schritte = en ? SCHRITTE_EN : SCHRITTE;
 
   return (
     <section ref={ref} className="relative overflow-hidden border-y border-border bg-surface py-20 sm:py-24 md:py-32">
       <Container>
         <Reveal className="max-w-2xl">
           <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Dein Training ist nur deins.
+            {en ? "Your training is yours alone." : "Dein Training ist nur deins."}
           </h2>
           <p className="mt-4 text-lg text-muted">
-            Kein Kurs, kein Gerätepark, kein Plan von der Stange. Jedes Training wird auf dich
-            eingestellt – auf deinen Körper, dein Ziel und deinen Tag.
+            {en
+              ? "No class, no rows of machines, no off-the-shelf plan. Every session is set up for you – for your body, your goal and your day."
+              : "Kein Kurs, kein Gerätepark, kein Plan von der Stange. Jedes Training wird auf dich eingestellt – auf deinen Körper, dein Ziel und deinen Tag."}
           </p>
         </Reveal>
 
@@ -77,7 +100,7 @@ export function Individuell() {
               className="absolute left-[11px] top-2 bottom-2 w-0.5 origin-top rounded-full bg-lime"
               style={{ scaleY: wenigerBewegung ? 1 : linie }}
             />
-            {SCHRITTE.map((schritt, i) => {
+            {schritte.map((schritt, i) => {
               const an = i < sichtbar;
               return (
                 <li key={schritt.titel} className="relative">
@@ -111,7 +134,11 @@ export function Individuell() {
           <div className="overflow-hidden rounded-3xl sm:hidden">
             <Image
               src="/bilder/studio/training-kniebeuge.jpg"
-              alt="Eine Trainerin macht eine Kniebeuge mit einem Kunden im EMS-Anzug, daneben das EMS-Gerät."
+              alt={
+                en
+                  ? "A trainer does a squat with a client in an EMS suit, the EMS device next to them."
+                  : "Eine Trainerin macht eine Kniebeuge mit einem Kunden im EMS-Anzug, daneben das EMS-Gerät."
+              }
               width={1600}
               height={1067}
               sizes="100vw"
@@ -126,26 +153,35 @@ export function Individuell() {
 
 function PlanKarte({ stufe }: { stufe: number }) {
   const { ziel } = useZiel();
-  const inhalt = zielInhalt(ziel) ?? ZIEL_INHALTE[0];
+  const sprache = useSprache();
+  const en = sprache === "en";
+  const inhalt = zielInhalt(ziel, sprache) ?? zielInhalte(sprache)[0];
   const schwerpunkte = inhalt.profil
-    .map((wert, i) => ({ wert, zone: ZONEN[i] }))
+    .map((wert, i) => ({ wert, zone: zonen(sprache)[i] }))
     .sort((a, b) => b.wert - a.wert)
     .slice(0, 3)
     .map((z) => z.zone)
     .join(", ");
 
-  const zeilen = [
-    { label: "Ziel", wert: ziel ? inhalt.kurz : "deins – z. B. " + inhalt.kurz },
-    { label: "Schwerpunkte", wert: schwerpunkte },
-    { label: "Intensität", wert: "je Muskelgruppe eingestellt" },
-    { label: "Trainer", wert: "bei jeder Einheit dabei" },
-  ];
+  const zeilen = en
+    ? [
+        { label: "Goal", wert: ziel ? inhalt.kurz : "yours – e.g. " + inhalt.kurz },
+        { label: "Focus", wert: schwerpunkte },
+        { label: "Intensity", wert: "set for each muscle group" },
+        { label: "Trainer", wert: "with you every session" },
+      ]
+    : [
+        { label: "Ziel", wert: ziel ? inhalt.kurz : "deins – z. B. " + inhalt.kurz },
+        { label: "Schwerpunkte", wert: schwerpunkte },
+        { label: "Intensität", wert: "je Muskelgruppe eingestellt" },
+        { label: "Trainer", wert: "bei jeder Einheit dabei" },
+      ];
 
   return (
     // Erst ab sm: Auf dem Handy stünde die Karte unter den vier Schritten
     // und wiederholte sie nur - neben ihnen zeigt sie, wie sie sich füllen.
     <div className="on-ink kal-karte relative hidden rounded-3xl p-6 sm:block sm:p-8 lg:sticky lg:top-24">
-      <p className="text-sm font-semibold text-foreground">Dein Plan</p>
+      <p className="text-sm font-semibold text-foreground">{en ? "Your plan" : "Dein Plan"}</p>
       <dl className="mt-6 divide-y divide-white/10">
         {zeilen.map((zeile, i) => {
           const da = i < stufe;
@@ -180,7 +216,7 @@ function PlanKarte({ stufe }: { stufe: number }) {
         animate={stufe >= SCHRITTE.length ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
       >
-        Nur für dich gemacht
+        {en ? "Made just for you" : "Nur für dich gemacht"}
       </motion.p>
     </div>
   );

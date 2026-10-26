@@ -2,6 +2,7 @@ import "server-only";
 import { createHash, randomBytes, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { siteConfig } from "@/lib/site-config";
+import type { Sprache } from "@/lib/sprache";
 
 /**
  * Der eigene Terminbereich - ohne Konto, ohne Passwort.
@@ -65,8 +66,10 @@ function abdruck(schluessel: string): string {
   return createHash("sha256").update(schluessel).digest("hex");
 }
 
-export function zugangsLink(schluessel: string): string {
-  return `${siteConfig.url}/meine-termine/${schluessel}`;
+export function zugangsLink(schluessel: string, sprache: Sprache = "de"): string {
+  return sprache === "en"
+    ? `${siteConfig.url}/en/my-appointments/${schluessel}`
+    : `${siteConfig.url}/meine-termine/${schluessel}`;
 }
 
 /**

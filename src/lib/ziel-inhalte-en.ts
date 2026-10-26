@@ -1,4 +1,4 @@
-import type { ZielWert } from "@/lib/ziel-inhalte";
+import type { AbschnittKey, ZielWert } from "@/lib/ziel-inhalte";
 
 /**
  * Die Ziele auf Englisch - für /en.
@@ -11,6 +11,13 @@ import type { ZielWert } from "@/lib/ziel-inhalte";
 
 export type GoalContent = {
   wert: ZielWert;
+  titel: [string, string];
+  knopf: string;
+  seite: { titel: string; beschreibung: string };
+  /** Englische Stichworte - die Fragen und Artikel auf /en sind englisch. */
+  stichworte: string[];
+  /** Nur wenn sie von der deutschen abweichen soll - sonst dieselbe. */
+  reihenfolge?: AbschnittKey[];
   kurz: string;
   antwort: string;
   erkennst: string[];
@@ -21,6 +28,14 @@ export type GoalContent = {
 export const GOALS_EN: readonly GoalContent[] = [
   {
     wert: "ruecken",
+    titel: ["A back that keeps up", "with your day."],
+    knopf: "Trial session for your back",
+    seite: {
+      titel: "EMS training for a strong back in Cologne",
+      beschreibung:
+        "Strengthen your back with EMS training: 20 minutes a week, a personal trainer, focus on back and core. {studios} in and around Cologne - free trial session.",
+    },
+    stichworte: ["back", "joint", "complaint", "safe", "suitable"],
     kurz: "Strengthen my back",
     antwort: "Your trainer puts the focus on your back and core – at an intensity that suits your back.",
     erkennst: [
@@ -37,6 +52,14 @@ export const GOALS_EN: readonly GoalContent[] = [
   },
   {
     wert: "straffen",
+    titel: ["More shape. More tone.", "More you."],
+    knopf: "Trial session for more shape",
+    seite: {
+      titel: "EMS training to tone and shape in Cologne",
+      beschreibung:
+        "Tone and shape with EMS training: your trainer sets tummy, glutes, legs and arms individually. 20 minutes a week at {studios} in and around Cologne.",
+    },
+    stichworte: ["result", "tone", "defin", "muscle", "shape"],
     kurz: "Tone and shape",
     antwort: "Your trainer turns up the intensity where you want more tone – tummy, glutes, legs or arms.",
     erkennst: [
@@ -53,6 +76,14 @@ export const GOALS_EN: readonly GoalContent[] = [
   },
   {
     wert: "abnehmen",
+    titel: ["Sticking with it has never", "been this easy."],
+    knopf: "Trial session to lose weight",
+    seite: {
+      titel: "Lose weight with EMS training in Cologne",
+      beschreibung:
+        "Lose weight with EMS training: one fixed appointment a week, a trainer who keeps you on track, nutrition advice on request. {studios} in and around Cologne.",
+    },
+    stichworte: ["weight", "nutrition", "result", "cost"],
     kurz: "Lose weight",
     antwort: "A fixed appointment, a trainer who expects you – and nutrition advice if you want it.",
     erkennst: [
@@ -69,6 +100,14 @@ export const GOALS_EN: readonly GoalContent[] = [
   },
   {
     wert: "muskelaufbau",
+    titel: ["Getting stronger,", "week by week."],
+    knopf: "Trial session for more strength",
+    seite: {
+      titel: "Build muscle with EMS training in Cologne",
+      beschreibung:
+        "Build muscle with EMS training: every muscle group set individually, clean technique with a trainer, 20 minutes a week. {studios} in and around Cologne.",
+    },
+    stichworte: ["muscle", "often", "result", "beginner"],
     kurz: "Build muscle",
     antwort: "Your trainer sets each muscle group individually and raises the intensity with you – week by week.",
     erkennst: [
@@ -85,6 +124,14 @@ export const GOALS_EN: readonly GoalContent[] = [
   },
   {
     wert: "fitness",
+    titel: ["Stairs, shopping, kids –", "easy again."],
+    knopf: "Trial session for more fitness",
+    seite: {
+      titel: "Fitter in everyday life with EMS training in Cologne",
+      beschreibung:
+        "Fitter in everyday life with EMS training: 20 minutes a week, whole body, your trainer plans everything. {studios} in and around Cologne - try it free now.",
+    },
+    stichworte: ["often", "beginner", "time", "work", "bring"],
     kurz: "Fitter in everyday life",
     antwort: "20 minutes once a week, set up by your trainer – so everyday life feels easier again.",
     erkennst: [
@@ -100,3 +147,19 @@ export const GOALS_EN: readonly GoalContent[] = [
     hinweis: "Not sure what your goal is? Your trainer works it out with you at the trial session.",
   },
 ];
+
+/**
+ * Die englischen Kennungen der Zielseiten (/en/goal/back statt
+ * /en/goal/ruecken). Dieselben stehen in @/lib/i18n/pfade.
+ */
+export const ZIEL_SLUG_EN: Record<ZielWert, string> = {
+  ruecken: "back",
+  straffen: "toning",
+  abnehmen: "weight-loss",
+  muskelaufbau: "muscle",
+  fitness: "fitness",
+};
+
+export function zielAusSlugEn(slug: string): ZielWert | undefined {
+  return (Object.keys(ZIEL_SLUG_EN) as ZielWert[]).find((wert) => ZIEL_SLUG_EN[wert] === slug);
+}

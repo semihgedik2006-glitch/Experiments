@@ -14,6 +14,7 @@ import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import { MehrDazu, Herkunft } from "@/components/ui/mehr-dazu";
 import type { Kennzahl } from "@/lib/beweise";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 // Hier stand als erste Zahl eine hochzählende "90 %" für die
 // aktivierten Muskelfasern. Die steht in jedem zweiten EMS-Prospekt,
@@ -72,6 +73,7 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 }
 
 export function StatsStrip({ zahlen }: { zahlen: Kennzahl[] }) {
+  const en = useSprache() === "en";
   const sectionRef = useRef<HTMLElement>(null);
   const wenigerBewegung = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
@@ -103,15 +105,15 @@ export function StatsStrip({ zahlen }: { zahlen: Kennzahl[] }) {
       <Container className="relative">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-            Warum EMS
+            {en ? "Why EMS" : "Warum EMS"}
           </span>
           {/* Hier stand ein Satz darüber, woher die Zahlen kommen. Das ist
               eine Auskunft über die Website, keine Ansage an den, der sie
               liest - sie steht jetzt im Aufklapper unter den Zahlen. */}
           <h2 className="mt-4 font-display text-3xl font-black leading-tight tracking-tight sm:text-4xl">
-            Ein Termin die Woche.
+            {en ? "One appointment a week." : "Ein Termin die Woche."}
             <br className="hidden sm:block" />{" "}
-            <span className="text-accent">Den Plan macht dein Trainer.</span>
+            <span className="text-accent">{en ? "Your trainer makes the plan." : "Den Plan macht dein Trainer."}</span>
           </h2>
         </Reveal>
 
@@ -149,7 +151,23 @@ export function StatsStrip({ zahlen }: { zahlen: Kennzahl[] }) {
             hat -, sah einen halb durchsichtigen Kasten. Ein Bedienelement
             darf nicht davon abhängen, wie man auf die Seite gekommen ist. */}
         <div className="mt-12 flex justify-center">
-          <MehrDazu titel="Woher diese Zahlen kommen" ton="dunkel" zentriert>
+          <MehrDazu titel={en ? "Where these numbers come from" : "Woher diese Zahlen kommen"} ton="dunkel" zentriert>
+            {en ? (
+              <dl className="space-y-3">
+                <Herkunft begriff="20 minutes a week">
+                  The length of one session. In the calendar an appointment is booked for 30 minutes
+                  &ndash; that includes arriving, putting on the vest and the follow-up chat.
+                </Herkunft>
+                <Herkunft begriff="Studios">
+                  The locations managed in our admin area. When one is added, it shows up here the
+                  same day.
+                </Herkunft>
+                <Herkunft begriff="Körperformen studios">
+                  All Körperformen studios together. With our studios in and around Cologne, no other
+                  partner in the Körperformen network runs more locations.
+                </Herkunft>
+              </dl>
+            ) : (
             <dl className="space-y-3">
               <Herkunft begriff="20 Minuten pro Woche">
                 Die Dauer einer Einheit. Im Kalender ist ein Termin mit 30 Minuten
@@ -166,6 +184,7 @@ export function StatsStrip({ zahlen }: { zahlen: Kennzahl[] }) {
                 Standorte.
               </Herkunft>
             </dl>
+            )}
           </MehrDazu>
         </div>
       </Container>

@@ -57,10 +57,9 @@ export const metadata: Metadata = {
   // Startseite.
   alternates: {
     canonical: "/",
-    // Verweis auf die englische Fassung. Sie ist keine Übersetzung dieser
-    // Seite, sondern ein eigener Einstieg - für Google sind es trotzdem
-    // zwei Sprachfassungen desselben Angebots.
-    languages: { de: "/", en: "/en" },
+    // Verweis auf die englische Fassung. Jede Seite mit eigener Angabe
+    // (seitenMetadaten) setzt ihr eigenes Paar.
+    languages: { de: "/", en: "/en", "x-default": "/" },
   },
   openGraph: {
     type: "website",
@@ -75,6 +74,12 @@ export const metadata: Metadata = {
     title: `${siteConfig.name} - ${siteConfig.tagline}`,
     description: siteConfig.description,
   },
+  // Bestätigung für die Google Search Console ("HTML-Tag"): Den Code aus
+  // der Search Console in Vercel als GOOGLE_SITE_VERIFICATION eintragen,
+  // neu bereitstellen, dann dort auf "Bestätigen". Ohne Code kein Tag.
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 export const viewport: Viewport = {

@@ -4,6 +4,8 @@ import { useActionState, useState } from "react";
 import { CalendarClock, CalendarX, Check, Loader2 } from "lucide-react";
 import { terminAbsagen, terminVerschieben } from "@/lib/actions/termin";
 import type { ActionResult } from "@/lib/actions/newsletter";
+import { useSprache } from "@/lib/i18n/use-sprache";
+import Link from "@/components/sprach-link";
 
 const leer: ActionResult = { ok: false, message: "" };
 
@@ -31,6 +33,8 @@ export function TerminVerwaltung({
   );
 
   const [modus, setModus] = useState<"nichts" | "absagen" | "verschieben">("nichts");
+  const sprache = useSprache();
+  const en = sprache === "en";
 
   const erledigt = absageStatus.ok && absageStatus.message;
   const verschoben = verschiebeStatus.ok && verschiebeStatus.message;
@@ -40,16 +44,24 @@ export function TerminVerwaltung({
       <div className="card mt-8 flex items-start gap-3 p-6">
         <Check size={20} className="mt-0.5 shrink-0 text-accent" />
         <div>
-          <p className="font-semibold">{erledigt ? "Abgesagt" : "Verschoben"}</p>
+          <p className="font-semibold">
+            {erledigt ? (en ? "Cancelled" : "Abgesagt") : en ? "Moved" : "Verschoben"}
+          </p>
           <p className="mt-1 text-sm text-muted">
             {erledigt ? absageStatus.message : verschiebeStatus.message}
           </p>
-          <a
+          <Link
             href="/probetermin"
             className="mt-4 inline-block rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime transition-opacity hover:opacity-90"
           >
-            {erledigt ? "Neuen Termin buchen" : "Zur Terminübersicht"}
-          </a>
+            {erledigt
+              ? en
+                ? "Book a new appointment"
+                : "Neuen Termin buchen"
+              : en
+                ? "To the appointment overview"
+                : "Zur Terminübersicht"}
+          </Link>
         </div>
       </div>
     );
@@ -66,7 +78,7 @@ export function TerminVerwaltung({
               className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold transition-colors hover:border-lime"
             >
               <CalendarClock size={16} className="text-accent" />
-              Auf eine andere Zeit legen
+              {en ? "Move to another time" : "Auf eine andere Zeit legen"}
             </button>
           )}
           <button
@@ -75,7 +87,7 @@ export function TerminVerwaltung({
             className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-danger transition-colors hover:border-danger"
           >
             <CalendarX size={16} />
-            Termin absagen
+            {en ? "Cancel appointment" : "Termin absagen"}
           </button>
         </div>
       )}
@@ -83,10 +95,12 @@ export function TerminVerwaltung({
       {modus === "absagen" && (
         <form action={absagen} className="card p-6">
           <input type="hidden" name="token" value={token} />
-          <p className="font-semibold">Termin wirklich absagen?</p>
+          <input type="hidden" name="sprache" value={sprache} />
+          <p className="font-semibold">{en ? "Really cancel the appointment?" : "Termin wirklich absagen?"}</p>
           <p className="mt-1 text-sm text-muted">
-            Die Zeit wird dann wieder für andere frei. Du bekommst eine kurze
-            Bestätigung per E-Mail.
+            {en
+              ? "The time then becomes free for others again. You will get a short confirmation by email."
+              : "Die Zeit wird dann wieder für andere frei. Du bekommst eine kurze Bestätigung per E-Mail."}
           </p>
           {absageStatus.message && !absageStatus.ok && (
             <p className="mt-3 text-sm text-danger">{absageStatus.message}</p>
@@ -99,7 +113,13 @@ export function TerminVerwaltung({
               className="bg-danger inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90 disabled:cursor-progress disabled:opacity-60"
             >
               {absagePending && <Loader2 size={15} className="animate-spin" aria-hidden />}
-              {absagePending ? "Wird abgesagt..." : "Ja, Termin absagen"}
+              {absagePending
+                ? en
+                  ? "Cancelling..."
+                  : "Wird abgesagt..."
+                : en
+                  ? "Yes, cancel appointment"
+                  : "Ja, Termin absagen"}
             </button>
             <button
               type="button"
@@ -107,7 +127,7 @@ export function TerminVerwaltung({
               disabled={absagePending}
               className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold transition-colors hover:border-lime disabled:opacity-50"
             >
-              Doch nicht
+              {en ? "Keep it" : "Doch nicht"}
             </button>
           </div>
         </form>
@@ -116,9 +136,12 @@ export function TerminVerwaltung({
       {modus === "verschieben" && (
         <form action={verschieben} className="card p-6">
           <input type="hidden" name="token" value={token} />
-          <p className="font-semibold">Neue Zeit wählen</p>
+          <input type="hidden" name="sprache" value={sprache} />
+          <p className="font-semibold">{en ? "Choose a new time" : "Neue Zeit wählen"}</p>
           <p className="mt-1 text-sm text-muted">
-            Alle freien Zeiten in deinem Studio in den nächsten Wochen.
+            {en
+              ? "All free times at your studio in the coming weeks."
+              : "Alle freien Zeiten in deinem Studio in den nächsten Wochen."}
           </p>
 
           <div className="mt-4 max-h-72 space-y-1.5 overflow-y-auto pr-1">
@@ -152,7 +175,13 @@ export function TerminVerwaltung({
               className="inline-flex items-center gap-2 rounded-full bg-lime px-5 py-2.5 text-sm font-semibold text-on-lime transition-opacity hover:opacity-90 disabled:cursor-progress disabled:opacity-60"
             >
               {verschiebePending && <Loader2 size={15} className="animate-spin" aria-hidden />}
-              {verschiebePending ? "Wird verschoben..." : "Auf diese Zeit legen"}
+              {verschiebePending
+                ? en
+                  ? "Moving..."
+                  : "Wird verschoben..."
+                : en
+                  ? "Move to this time"
+                  : "Auf diese Zeit legen"}
             </button>
             <button
               type="button"
@@ -160,7 +189,7 @@ export function TerminVerwaltung({
               disabled={verschiebePending}
               className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold transition-colors hover:border-lime disabled:opacity-50"
             >
-              Abbrechen
+              {en ? "Cancel" : "Abbrechen"}
             </button>
           </div>
         </form>

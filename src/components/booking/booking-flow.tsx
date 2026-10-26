@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { BookingForm } from "@/components/booking/booking-form";
 import { allStudiosLocatable, anyStudioLocatable, sortStudiosByDistance } from "@/lib/geo";
 import { texte, type Sprache } from "@/lib/sprache";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /** Der Zustand ändert sich nie - useSyncExternalStore dient hier nur dazu,
  *  Server und Browser sauber zu unterscheiden. */
@@ -26,7 +27,7 @@ const SICHTBAR = 4;
 
 export function BookingFlow({
   studios,
-  sprache = "de",
+  sprache: spracheVorgabe,
   standortErstImBild = false,
 }: {
   studios: StudioOption[];
@@ -42,6 +43,9 @@ export function BookingFlow({
    */
   standortErstImBild?: boolean;
 }) {
+  // Ohne Angabe die Sprache der Seite, auf der das Formular steht.
+  const spracheDerSeite = useSprache();
+  const sprache = spracheVorgabe ?? spracheDerSeite;
   const t = texte(sprache);
   const englisch = sprache === "en";
   const [selectedStudioId, setSelectedStudioId] = useState(studios[0]?.id ?? "");

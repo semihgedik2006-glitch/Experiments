@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { legalConfig } from "@/lib/legal-config";
+import { seitenMetadaten } from "@/lib/i18n/metadaten";
 
-export const metadata: Metadata = {
-  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
-  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
-  alternates: { canonical: "/agb" },
+export const metadata: Metadata = seitenMetadaten("de", "/agb", {
   title: "AGB",
   description: "Allgemeine Geschäftsbedingungen von Körperformen.",
-};
+});
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (

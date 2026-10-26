@@ -1,5 +1,7 @@
 import { Apple, Activity, HeartPulse, UserRound, Sparkles } from "lucide-react";
 import type { SymbolTyp } from "@/components/admin/ui";
+import type { Sprache } from "@/lib/sprache";
+import { lokal } from "@/lib/i18n/lokal";
 
 /**
  * Sinnbilder für die Zusatzangebote.
@@ -54,4 +56,18 @@ export type AngebotAnzeige = {
  */
 export function giltAn(angebot: { nurStudios: string[] }, studioId: string): boolean {
   return angebot.nurStudios.length === 0 || angebot.nurStudios.includes(studioId);
+}
+
+/** Ein Angebot mit den Texten in der gewünschten Sprache (englisch, wo eingetragen). */
+export function angebotIn<
+  T extends AngebotAnzeige & { nameEn?: string | null; textEn?: string | null; preisEn?: string | null },
+>(sprache: Sprache, angebot: T): AngebotAnzeige {
+  return {
+    id: angebot.id,
+    symbol: angebot.symbol,
+    nurStudios: angebot.nurStudios,
+    name: lokal(sprache, angebot.name, angebot.nameEn),
+    text: lokal(sprache, angebot.text, angebot.textEn),
+    preis: lokal(sprache, angebot.preis, angebot.preisEn),
+  };
 }

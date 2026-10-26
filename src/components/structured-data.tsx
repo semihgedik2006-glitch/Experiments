@@ -1,7 +1,10 @@
 import { getStudios, getFaqItems } from "@/lib/data";
-import { siteConfig } from "@/lib/site-config";
+import { siteConfig, siteTexte } from "@/lib/site-config";
 import { legalConfig } from "@/lib/legal-config";
 import type { Frage } from "@/lib/fragen";
+import type { Sprache } from "@/lib/sprache";
+import { pfad as sprachPfad } from "@/lib/i18n/pfade";
+import { lokal } from "@/lib/i18n/lokal";
 
 /**
  * Strukturierte Daten (JSON-LD).
@@ -141,8 +144,11 @@ export async function StudioJsonLd() {
  */
 export function StandortJsonLd({
   studio,
+  sprache = "de",
 }: {
+  sprache?: Sprache;
   studio: {
+    introEn?: string | null;
     id: string;
     slug: string;
     name: string;
@@ -157,7 +163,11 @@ export function StandortJsonLd({
     longitude: number | null;
   };
 }) {
+  // Kennung und Adresse bleiben die der deutschen Standortseite: Es ist
+  // derselbe Ort, nur die Seite darüber gibt es zweimal.
   const url = `${siteConfig.url}/studio/${studio.slug}`;
+  const seite = `${siteConfig.url}${sprachPfad(sprache, `/studio/${studio.slug}`)}`;
+  const en = sprache === "en";
 
   return (
     <JsonLd
@@ -167,7 +177,7 @@ export function StandortJsonLd({
           "@type": "HealthClub",
           "@id": `${url}#studio`,
           name: studio.name,
-          description: studio.intro?.trim() || siteConfig.description,
+          description: lokal(sprache, studio.intro, studio.introEn)?.trim() || siteTexte[sprache].description,
           url,
           telephone: studio.phone,
           email: studio.email,
@@ -196,9 +206,9 @@ export function StandortJsonLd({
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Startseite", item: siteConfig.url },
-            { "@type": "ListItem", position: 2, name: "Standorte", item: `${siteConfig.url}/studio` },
-            { "@type": "ListItem", position: 3, name: studio.name, item: url },
+            { "@type": "ListItem", position: 1, name: en ? "Home" : "Startseite", item: `${siteConfig.url}${en ? "/en" : ""}` },
+            { "@type": "ListItem", position: 2, name: en ? "Studios" : "Standorte", item: `${siteConfig.url}${sprachPfad(sprache, "/studio")}` },
+            { "@type": "ListItem", position: 3, name: studio.name, item: seite },
           ],
         },
       ]}
@@ -215,15 +225,15 @@ export function StandortJsonLd({
  * zu melden, würde Besucher auf eine Seite schicken, die den Suchbegriff
  * ignoriert.
  */
-export function WebsiteJsonLd() {
+export function WebsiteJsonLd({ sprache = "de" }: { sprache?: Sprache }) {
   return (
     <JsonLd
       data={{
         "@context": "https://schema.org",
         "@type": "WebSite",
         name: siteConfig.name,
-        url: siteConfig.url,
-        inLanguage: "de-DE",
+        url: sprache === "en" ? `${siteConfig.url}/en` : siteConfig.url,
+        inLanguage: sprache === "en" ? "en" : "de-DE",
         publisher: { "@id": ORGANISATION_ID },
       }}
     />
@@ -267,18 +277,28 @@ export async function OrganisationJsonLd() {
 }
 
 /** Brotkrumen - im Suchergebnis steht dann der Pfad statt der nackten Adresse. */
-export function BrotkrumenJsonLd({ pfad }: { pfad: { name: string; href: string }[] }) {
+export function BrotkrumenJsonLd({
+  pfad,
+  sprache = "de",
+}: {
+  /** Deutsche Adressen - auf Englisch werden sie übersetzt. */
+  pfad: { name: string; href: string }[];
+  sprache?: Sprache;
+}) {
+  const start = sprache === "en" ? { name: "Home", href: "/en" } : { name: "Startseite", href: "" };
   return (
     <JsonLd
       data={{
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
-        itemListElement: [{ name: "Startseite", href: "" }, ...pfad].map((p, i) => ({
-          "@type": "ListItem",
-          position: i + 1,
-          name: p.name,
-          item: `${siteConfig.url}${p.href}`,
-        })),
+        itemListElement: [start, ...pfad.map((p) => ({ ...p, href: p.href && sprachPfad(sprache, p.href) }))].map(
+          (p, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: p.name,
+            item: `${siteConfig.url}${p.href}`,
+          }),
+        ),
       }}
     />
   );
@@ -310,7 +330,7 @@ export function FrageJsonLd({ frage }: { frage: Frage }) {
  * Die häufigen Fragen. Sie stehen ohnehin schon auf mehreren Seiten - so
  * können sie zusätzlich aufklappbar im Suchergebnis erscheinen.
  */
-export async function FaqJsonLd() {
+export async function FaqJsonLd({ sprache = "de" }: { sprache?: Sprache }) {
   const items = await getFaqItems();
   if (items.length === 0) return null;
 
@@ -321,8 +341,8 @@ export async function FaqJsonLd() {
         "@type": "FAQPage",
         mainEntity: items.map((item) => ({
           "@type": "Question",
-          name: item.question,
-          acceptedAnswer: { "@type": "Answer", text: item.answer },
+          name: lokal(sprache, item.question, item.questionEn),
+          acceptedAnswer: { "@type": "Answer", text: lokal(sprache, item.answer, item.answerEn) },
         })),
       }}
     />
@@ -336,7 +356,9 @@ export function ArticleJsonLd({
   slug,
   publishedAt,
   updatedAt,
+  sprache = "de",
 }: {
+  sprache?: Sprache;
   title: string;
   description: string;
   slug: string;
@@ -350,8 +372,8 @@ export function ArticleJsonLd({
         "@type": "BlogPosting",
         headline: title,
         description,
-        inLanguage: "de-DE",
-        mainEntityOfPage: `${siteConfig.url}/blog/${slug}`,
+        inLanguage: sprache === "en" ? "en" : "de-DE",
+        mainEntityOfPage: `${siteConfig.url}${sprachPfad(sprache, `/blog/${slug}`)}`,
         ...(publishedAt ? { datePublished: publishedAt.toISOString() } : {}),
         dateModified: updatedAt.toISOString(),
         author: { "@id": ORGANISATION_ID },

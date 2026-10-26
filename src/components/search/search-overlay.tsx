@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Search, X } from "lucide-react";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 type SearchResult = { type: string; title: string; description: string; href: string };
 
@@ -14,6 +15,8 @@ export function SearchOverlay() {
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const sprache = useSprache();
+  const en = sprache === "en";
 
   useEffect(() => {
     if (!open) return;
@@ -35,7 +38,7 @@ export function SearchOverlay() {
     const timeout = setTimeout(async () => {
       setLoading(true);
       try {
-        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&sprache=${sprache}`);
         const data = await response.json();
         setResults(data.results ?? []);
       } finally {
@@ -43,7 +46,7 @@ export function SearchOverlay() {
       }
     }, 250);
     return () => clearTimeout(timeout);
-  }, [query]);
+  }, [query, sprache]);
 
   function close() {
     setOpen(false);
@@ -63,7 +66,7 @@ export function SearchOverlay() {
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setOpen(true)}
-        aria-label="Suche öffnen"
+        aria-label={en ? "Open search" : "Suche öffnen"}
         className="tastflaeche flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-lime hover:text-accent"
       >
         <Search size={16} />
@@ -82,7 +85,7 @@ export function SearchOverlay() {
             <motion.div
               role="dialog"
               aria-modal="true"
-              aria-label="Website durchsuchen"
+              aria-label={en ? "Search the website" : "Website durchsuchen"}
               initial={{ opacity: 0, y: -30, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.96 }}
@@ -96,13 +99,13 @@ export function SearchOverlay() {
                   ref={inputRef}
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Seiten, Blog oder FAQ durchsuchen..."
+                  placeholder={en ? "Search pages, blog or FAQ..." : "Seiten, Blog oder FAQ durchsuchen..."}
                   className="w-full bg-transparent text-sm outline-none placeholder:text-muted"
                 />
                 <button
                   type="button"
                   onClick={close}
-                  aria-label="Suche schließen"
+                  aria-label={en ? "Close search" : "Suche schließen"}
                   className="shrink-0 text-muted hover:text-foreground"
                 >
                   <X size={18} />
@@ -111,13 +114,15 @@ export function SearchOverlay() {
 
               <div className="max-h-96 overflow-y-auto p-2">
                 {query.trim().length < 2 && (
-                  <p className="px-3 py-4 text-sm text-muted">Mindestens 2 Zeichen eingeben.</p>
+                  <p className="px-3 py-4 text-sm text-muted">{en ? "Type at least 2 characters." : "Mindestens 2 Zeichen eingeben."}</p>
                 )}
                 {loading && query.trim().length >= 2 && (
-                  <p className="px-3 py-4 text-sm text-muted">Suche...</p>
+                  <p className="px-3 py-4 text-sm text-muted">{en ? "Searching..." : "Suche..."}</p>
                 )}
                 {!loading && query.trim().length >= 2 && results.length === 0 && (
-                  <p className="px-3 py-4 text-sm text-muted">Keine Ergebnisse für &bdquo;{query}&ldquo;.</p>
+                  <p className="px-3 py-4 text-sm text-muted">
+                    {en ? <>No results for &ldquo;{query}&rdquo;.</> : <>Keine Ergebnisse für &bdquo;{query}&ldquo;.</>}
+                  </p>
                 )}
                 {!loading &&
                   query.trim().length >= 2 &&

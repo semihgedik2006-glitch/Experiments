@@ -10,6 +10,7 @@ import {
   writeConsent,
   type Consent,
 } from "@/lib/consent";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 const emptySubscribe = () => () => {};
 
@@ -17,6 +18,10 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const consent = useSyncExternalStore(subscribeConsent, readConsent, serverConsent);
   const pathname = usePathname();
+  // Der Hinweis ist das Erste, was ein Besucher auf der englischen Seite
+  // sieht - auf Deutsch wäre er dort ein Fremdkörper und obendrein
+  // unverständlich für genau die Leute, für die die Seite gemacht ist.
+  const englisch = useSprache() === "en";
 
   // Im Adminbereich hat der Hinweis nichts verloren: Dort arbeitet nur das
   // Studio selbst, es ist von Suchmaschinen ausgenommen, und der Balken
@@ -24,13 +29,6 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
   // innerhalb dieser Komponente steckt, wird dort auch nichts geladen.
   const inAdmin = pathname?.startsWith("/admin") ?? false;
   if (inAdmin) return null;
-
-  // Der Hinweis ist das Erste, was ein Besucher auf der englischen Seite
-  // sieht - auf Deutsch wäre er dort ein Fremdkörper und obendrein
-  // unverständlich für genau die Leute, für die die Seite gemacht ist.
-  // Die Sprache steckt hier im Pfad, weil die englische Fassung unter
-  // /en liegt (siehe src/lib/sprache.ts).
-  const englisch = pathname?.startsWith("/en") ?? false;
 
   function choose(value: Consent) {
     writeConsent(value);
@@ -63,14 +61,10 @@ export function CookieConsent({ children }: { children?: ReactNode }) {
                     We only use cookies that are technically necessary. With your
                     consent we also use Google Analytics to improve the site. More
                     in our{" "}
-                    <a
-                      href="/datenschutz"
-                      hrefLang="de"
-                      className="text-accent underline underline-offset-2"
-                    >
+                    <a href="/en/privacy" className="text-accent underline underline-offset-2">
                       privacy policy
-                    </a>{" "}
-                    (German).
+                    </a>
+                    .
                   </>
                 ) : (
                   <>

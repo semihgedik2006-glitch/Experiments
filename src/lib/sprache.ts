@@ -223,7 +223,7 @@ const en: Woerterbuch = {
   absendenLaeuft: "Sending...",
   zusagen: [
     "Free, no strings attached",
-    "No membership, no notice period",
+    "Afterwards, the membership that suits you",
     "We call you back to confirm",
   ],
   gesendet: "Request sent!",

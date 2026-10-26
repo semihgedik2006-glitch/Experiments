@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import {
   AnimatePresence,
   motion,
@@ -13,7 +13,8 @@ import {
 } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { ABLAUF_EINHEIT } from "@/lib/ablauf";
+import { ABLAUF_EINHEIT, ablaufEinheit } from "@/lib/ablauf";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /**
  * "Dein Termin, Minute für Minute" - eine Geschichte, die beim Scrollen
@@ -46,6 +47,9 @@ export function EinheitStory() {
 }
 
 function Geschichte() {
+  const sprache = useSprache();
+  const en = sprache === "en";
+  const ABLAUF = ablaufEinheit(sprache);
   const ref = useRef<HTMLDivElement>(null);
   const n = ABLAUF_EINHEIT.length;
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
@@ -61,7 +65,7 @@ function Geschichte() {
   useMotionValueEvent(scrollYProgress, "change", (p) => {
     setAktiv(Math.min(n - 1, Math.max(0, Math.floor(p * n))));
   });
-  const schritt = ABLAUF_EINHEIT[aktiv];
+  const schritt = ABLAUF[aktiv];
 
   return (
     <section ref={ref} className="on-ink relative" style={{ height: `${n * 45 + 60}vh` }}>
@@ -73,7 +77,7 @@ function Geschichte() {
             nichts nachlädt. Am Computer rechte Hälfte, auf dem Handy
             gedämpft hinter dem Text; der Verlauf hält den Text lesbar. */}
         <div aria-hidden className="absolute inset-0 -z-20 lg:left-[42%]">
-          {ABLAUF_EINHEIT.map((s, i) =>
+          {ABLAUF.map((s, i) =>
             s.foto ? (
               <motion.div
                 key={s.foto.src}
@@ -97,15 +101,15 @@ function Geschichte() {
         <Container className="w-full">
           {/* Ab lg nur die linke Hälfte - rechts steht das Foto. */}
           <div className="lg:max-w-[50%]">
-            <p className="text-sm font-semibold text-accent">Dein Termin, Minute für Minute</p>
+            <p className="text-sm font-semibold text-accent">{en ? "Your appointment, minute by minute" : "Dein Termin, Minute für Minute"}</p>
             <h2 className="mt-3 max-w-2xl text-balance text-3xl font-bold tracking-tight sm:text-5xl">
-              Dein erster Termin: rund 40 Minuten. 20 davon Training.
+              {en ? "Your first appointment: about 40 minutes. 20 of them training." : "Dein erster Termin: rund 40 Minuten. 20 davon Training."}
             </h2>
 
             <div className="mt-8 grid gap-6 sm:mt-10">
               <p className="font-display text-7xl font-black leading-none tabular-nums sm:text-9xl" aria-hidden>
                 <motion.span>{anzeige}</motion.span>
-                <span className="ml-2 text-2xl font-bold text-muted sm:text-3xl">Min</span>
+                <span className="ml-2 text-2xl font-bold text-muted sm:text-3xl">{en ? "min" : "Min"}</span>
               </p>
 
               <div className="min-h-36 sm:min-h-32" aria-live="polite">
@@ -118,7 +122,7 @@ function Geschichte() {
                     transition={{ duration: 0.35, ease: weich }}
                   >
                     <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-                      Station {aktiv + 1} von {n} · {schritt.duration}
+                      {en ? `Step ${aktiv + 1} of ${n}` : `Station ${aktiv + 1} von ${n}`} · {schritt.duration}
                     </p>
                     <h3 className="mt-2 text-2xl font-bold sm:text-3xl">{schritt.step}</h3>
                     <p className="mt-2 max-w-xl leading-relaxed text-foreground/80">{schritt.text}</p>
@@ -143,7 +147,7 @@ function Geschichte() {
                 />
               </div>
               <div className="mt-3 flex gap-1 text-[11px] text-muted" aria-hidden>
-                {ABLAUF_EINHEIT.map((s, i) => (
+                {ABLAUF.map((s, i) => (
                   <span
                     key={s.step}
                     className={`min-w-0 whitespace-nowrap transition-colors ${i === aktiv ? "text-foreground" : ""}`}
@@ -160,7 +164,7 @@ function Geschichte() {
               href="/erster-besuch"
               className="mt-10 inline-flex items-center gap-1.5 text-sm font-semibold text-accent underline-offset-4 hover:underline"
             >
-              Der erste Besuch im Detail <ArrowRight size={14} aria-hidden />
+              {en ? "Your first visit in detail" : "Der erste Besuch im Detail"} <ArrowRight size={14} aria-hidden />
             </Link>
           </div>
         </Container>
@@ -170,18 +174,20 @@ function Geschichte() {
 }
 
 function Liste() {
+  const sprache = useSprache();
+  const en = sprache === "en";
   return (
     <section className="on-ink py-20 sm:py-24">
       <Container>
-        <p className="text-sm font-semibold text-accent">Dein Termin, Minute für Minute</p>
+        <p className="text-sm font-semibold text-accent">{en ? "Your appointment, minute by minute" : "Dein Termin, Minute für Minute"}</p>
         <h2 className="mt-3 max-w-2xl text-balance text-3xl font-bold tracking-tight sm:text-5xl">
-          Dein erster Termin: rund 40 Minuten. 20 davon Training.
+          {en ? "Your first appointment: about 40 minutes. 20 of them training." : "Dein erster Termin: rund 40 Minuten. 20 davon Training."}
         </h2>
         <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-          {ABLAUF_EINHEIT.map((s, i) => (
+          {ablaufEinheit(sprache).map((s, i) => (
             <li key={s.step}>
               <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-                {grenzen[i]}. Minute · {s.duration}
+                {en ? `Minute ${grenzen[i]}` : `${grenzen[i]}. Minute`} · {s.duration}
               </p>
               <h3 className="mt-2 font-bold">{s.step}</h3>
               <p className="mt-1 text-sm leading-relaxed text-foreground/80">{s.text}</p>
@@ -192,7 +198,7 @@ function Liste() {
           href="/erster-besuch"
           className="mt-10 inline-flex items-center gap-1.5 text-sm font-semibold text-accent underline-offset-4 hover:underline"
         >
-          Der erste Besuch im Detail <ArrowRight size={14} aria-hidden />
+          {en ? "Your first visit in detail" : "Der erste Besuch im Detail"} <ArrowRight size={14} aria-hidden />
         </Link>
       </Container>
     </section>

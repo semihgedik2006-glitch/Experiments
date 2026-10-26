@@ -1,8 +1,9 @@
-export function formatDate(date: Date | string) {
+export function formatDate(date: Date | string, sprache: "de" | "en" = "de") {
   const parsed = new Date(date);
-  if (Number.isNaN(parsed.getTime())) return "Ungültiges Datum";
+  if (Number.isNaN(parsed.getTime())) return sprache === "en" ? "Invalid date" : "Ungültiges Datum";
 
-  return new Intl.DateTimeFormat("de-DE", {
+  // en-GB: "12 September 2026" - eindeutig für Leser aus beiden Sprachräumen.
+  return new Intl.DateTimeFormat(sprache === "en" ? "en-GB" : "de-DE", {
     day: "2-digit",
     month: "long",
     year: "numeric",

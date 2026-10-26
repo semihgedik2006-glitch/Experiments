@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import type { Schritt } from "@/lib/ablauf";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /**
  * Der erste Besuch als Geschichte, die beim Scrollen weiterläuft.
@@ -45,9 +46,20 @@ const PLAN: Schritt = {
   },
 };
 
+const PLAN_EN: Schritt = {
+  step: "Your plan & your membership",
+  text: "Finally you talk about what comes next: your training plan and the membership that suits your goal. If you enjoyed it, you can get started right away.",
+  duration: "",
+  foto: {
+    src: "/bilder/studio/team-jubel.jpg",
+    alt: "Two Körperformen trainers and a client in an EMS suit cheering together in the studio.",
+  },
+};
+
 export function AblaufGeschichte({ schritte }: { schritte: Schritt[] }) {
   const ref = useRef<HTMLDivElement>(null);
-  const alle = [...schritte, PLAN];
+  const en = useSprache() === "en";
+  const alle = [...schritte, en ? PLAN_EN : PLAN];
   const n = alle.length;
 
   // Minuten bis zum Beginn jeder Station: 0, 5, 10, 13, 33, 38.
@@ -89,15 +101,17 @@ export function AblaufGeschichte({ schritte }: { schritte: Schritt[] }) {
                 </svg>
                 <div className="absolute inset-0 hidden flex-col items-center justify-center lg:flex" aria-hidden>
                   <motion.span className="text-6xl font-black tabular-nums tracking-tight">{anzeige}</motion.span>
-                  <span className="text-sm text-muted">von {gesamt} Minuten</span>
+                  <span className="text-sm text-muted">{en ? `of ${gesamt} minutes` : `von ${gesamt} Minuten`}</span>
                 </div>
               </div>
               <p className="text-sm lg:hidden" aria-hidden>
                 Minute <motion.span className="font-bold tabular-nums">{anzeige}</motion.span>
-                <span className="text-muted"> von {gesamt}</span>
+                <span className="text-muted">{en ? ` of ${gesamt}` : ` von ${gesamt}`}</span>
               </p>
               <p className="hidden max-w-[16rem] text-sm text-muted lg:block">
-                So lange dauert dein erster Besuch – von der Begrüßung bis zum Feedback.
+                {en
+                  ? "That is how long your first visit takes – from the welcome to the feedback."
+                  : "So lange dauert dein erster Besuch – von der Begrüßung bis zum Feedback."}
               </p>
             </div>
           </div>
@@ -131,7 +145,7 @@ export function AblaufGeschichte({ schritte }: { schritte: Schritt[] }) {
                   </motion.span>
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-                      {schritt.duration ? `Minute ${grenzen[i]}–${grenzen[i + 1]}` : "Danach"}
+                      {schritt.duration ? `Minute ${grenzen[i]}–${grenzen[i + 1]}` : en ? "Afterwards" : "Danach"}
                     </p>
                     <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">{schritt.step}</h2>
                     <p className="mt-3 max-w-xl leading-relaxed text-muted">{schritt.text}</p>

@@ -186,6 +186,11 @@ export default async function AdminWartelistePage({
                             Kommt zu zweit &ndash; braucht zwei Plätze
                           </p>
                         )}
+                        {eintrag.sprache === "en" && (
+                          <p className="mt-1 text-sm font-medium text-accent">
+                            Englisch &ndash; bitte auf Englisch zurückrufen
+                          </p>
+                        )}
                         <p className="mt-1 text-xs text-muted">
                           Eingetragen am {zeitpunkt(eintrag.createdAt)}
                         </p>

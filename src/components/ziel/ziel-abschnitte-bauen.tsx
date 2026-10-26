@@ -14,6 +14,8 @@ import { FaqSection } from "@/components/faq-section";
 import { ImpulsTrenner } from "@/components/ui/impuls-trenner";
 import type { Toggles } from "@/lib/site-toggles";
 import type { AbschnittKey } from "@/lib/ziel-inhalte";
+import type { Sprache } from "@/lib/sprache";
+import { oeffnungszeitenAufEnglisch } from "@/lib/i18n/oeffnungszeiten";
 
 /**
  * Die Abschnitte, aus denen Startseite und Zielseiten bestehen - an einer
@@ -29,7 +31,9 @@ export function zielAbschnitteBauen({
   zeitspanne,
   auswahl,
   studioListe,
+  sprache = "de",
 }: {
+  sprache?: Sprache;
   anzahlStudios: number;
   toggles: Toggles;
   /** "07:00 bis 21:00 Uhr", sofern aus den Terminen ableitbar. */
@@ -50,21 +54,27 @@ export function zielAbschnitteBauen({
     ablauf: <EinheitStory />,
     reels: <ZielReels />,
     vorteile: <UspGrid standorte={anzahlStudios} zeitspanne={zeitspanne} />,
-    studio: studioListe && toggles.studio ? <StudioTeaser /> : null,
-    erfolge: toggles.erfolgsgeschichten ? <TestimonialsTeaser /> : null,
-    vertrauen: <TrustSection />,
-    blog: toggles.blog ? <BlogTeaser /> : null,
+    studio: studioListe && toggles.studio ? <StudioTeaser sprache={sprache} /> : null,
+    erfolge: toggles.erfolgsgeschichten ? <TestimonialsTeaser sprache={sprache} /> : null,
+    vertrauen: <TrustSection sprache={sprache} />,
+    blog: toggles.blog ? <BlogTeaser sprache={sprache} /> : null,
     faq: (
       <>
         <ImpulsTrenner variante="c" className="mx-auto max-w-6xl px-6" />
-        <FaqSection />
+        <FaqSection sprache={sprache} />
       </>
     ),
   };
 }
 
 /** "07:00 bis 21:00 Uhr" aus den frühesten und spätesten Terminen. */
-export function zeitspanneAus(frueheste: string | null, spaeteste: string | null): string | null {
-  return frueheste && spaeteste ? `${frueheste} bis ${spaeteste} Uhr` : null;
+export function zeitspanneAus(
+  frueheste: string | null,
+  spaeteste: string | null,
+  sprache: Sprache = "de",
+): string | null {
+  if (!frueheste || !spaeteste) return null;
+  if (sprache === "en") return oeffnungszeitenAufEnglisch(`${frueheste} to ${spaeteste}`);
+  return `${frueheste} bis ${spaeteste} Uhr`;
 }
 

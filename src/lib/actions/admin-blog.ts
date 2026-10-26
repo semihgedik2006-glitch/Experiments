@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { enText } from "@/lib/admin-englisch";
+import { revalidatePath } from "@/lib/revalidieren";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { protokollieren } from "@/lib/protokoll";
@@ -25,6 +26,9 @@ export async function createPost(
   const title = String(formData.get("title") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
+  const titleEn = enText(formData, "titleEn", 300);
+  const excerptEn = enText(formData, "excerptEn", 1000);
+  const contentEn = enText(formData, "contentEn");
   // Freiwillig - ein Beitrag ohne Themen erscheint weiterhin, nur ohne
   // Filterzuordnung. Aufbereitet wird zentral (siehe blog-themen.ts):
   // Doppelte raus, Länge begrenzt, höchstens acht.
@@ -42,7 +46,7 @@ export async function createPost(
   }
 
   await prisma.blogPost.create({
-    data: { title, slug, excerpt, content, themen, published, publishedAt: published ? new Date() : null },
+    data: { title, slug, excerpt, content, titleEn, excerptEn, contentEn, themen, published, publishedAt: published ? new Date() : null },
   });
 
   revalidatePath("/admin/blog");
@@ -60,6 +64,9 @@ export async function updatePost(
   const title = String(formData.get("title") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
+  const titleEn = enText(formData, "titleEn", 300);
+  const excerptEn = enText(formData, "excerptEn", 1000);
+  const contentEn = enText(formData, "contentEn");
   // Freiwillig - ein Beitrag ohne Themen erscheint weiterhin, nur ohne
   // Filterzuordnung. Aufbereitet wird zentral (siehe blog-themen.ts):
   // Doppelte raus, Länge begrenzt, höchstens acht.
@@ -79,6 +86,9 @@ export async function updatePost(
       title,
       excerpt,
       content,
+      titleEn,
+      excerptEn,
+      contentEn,
       themen,
       published,
       publishedAt: published ? (existing.publishedAt ?? new Date()) : existing.publishedAt,

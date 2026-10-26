@@ -3,9 +3,11 @@ import { prisma } from "@/lib/prisma";
 import {
   sendBewertungEmail,
   sendNachfassInternEmail,
+  sendMonatsberichtEmail,
   sendReminderEmail,
   TEAM_EMAIL,
 } from "@/lib/email";
+import { monatsberichtFaellig } from "@/lib/monatsbericht";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { zielText } from "@/lib/ziel";
 import { formatDate } from "@/lib/format";
@@ -27,7 +29,8 @@ const MAIL_PROTOKOLL_TAGE = 90;
 /**
  * Der tägliche Lauf.
  *
- * Vier Dinge, alle einmal am Tag (siehe vercel.json):
+ * Vier Dinge, alle einmal am Tag (siehe vercel.json), dazu einmal im
+ * Monat der Monatsbericht (@/lib/monatsbericht):
  *
  * 1. Erinnerung am Vortag an alle, deren bestätigter Termin morgen ansteht.
  * 2. Erinnerung an das Studio, wenn eine Anfrage zu lange offen liegt.
@@ -83,7 +86,11 @@ export async function GET(request: NextRequest) {
     where: {
       status: "CONFIRMED",
       reminderSentAt: null,
-      slot: { is: { date: { gte: morgen, lt: uebermorgen } } },
+      // Mit festem Platz oder mit eingetragenem Termin (Wunschzeiten).
+      OR: [
+        { slot: { is: { date: { gte: morgen, lt: uebermorgen } } } },
+        { slotId: null, terminTag: { gte: morgen, lt: uebermorgen } },
+      ],
     },
     include: { slot: { include: { studio: true } }, studio: true },
   });
@@ -121,6 +128,8 @@ export async function GET(request: NextRequest) {
   // wirkungslos - hier verschwindet nur die Zeile, die noch die E-Mail-
   // Adresse enthält.
   const zugaengeAufgeraeumt = await alteZugaengeLoeschen();
+  // Einmal im Monat die Zahlen des Vormonats ans Team (@/lib/monatsbericht).
+  const monatsbericht = await monatsberichtFaellig(sendMonatsberichtEmail, TEAM_EMAIL);
 
   return NextResponse.json({
     ok: true,
@@ -133,6 +142,7 @@ export async function GET(request: NextRequest) {
     protokollGeloescht: aufgeraeumt,
     aenderungsprotokollGeloescht: protokollAufgeraeumt,
     zugaengeGeloescht: zugaengeAufgeraeumt,
+    monatsbericht,
   });
 }
 
@@ -157,7 +167,10 @@ async function umBewertungBitten(morgen: Date) {
     where: {
       status: "CONFIRMED",
       bewertungGesendetAm: null,
-      slot: { is: { date: { gte: gestern, lt: heute } } },
+      OR: [
+        { slot: { is: { date: { gte: gestern, lt: heute } } } },
+        { slotId: null, terminTag: { gte: gestern, lt: heute } },
+      ],
       // Ohne Bewertungslink hat die Mail kein Ziel.
       studio: { is: { googleReviewUrl: { not: null } } },
     },

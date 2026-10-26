@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { animate, motion, useInView, useMotionValue, useReducedMotion, useTransform } from "motion/react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /**
  * Das Körperformen-Netz - und unser Teil davon.
@@ -27,6 +28,7 @@ export function Netzwerk({ gesamt, eigene }: { gesamt: number; eigene: number })
   const imBild = useInView(ref, { once: true, margin: "0px 0px -20% 0px" });
   const wenigerBewegung = useReducedMotion();
   const fertig = wenigerBewegung || imBild;
+  const en = useSprache() === "en";
 
   const zeilen = Math.ceil(gesamt / SPALTEN);
   const breite = RAND * 2 + (SPALTEN - 1) * ABSTAND;
@@ -51,17 +53,17 @@ export function Netzwerk({ gesamt, eigene }: { gesamt: number; eigene: number })
         <div ref={ref} className="grid items-center gap-12 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
           <div>
             <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              <Zaehler bis={gesamt} start={fertig} /> Körperformen-Studios.
+              <Zaehler bis={gesamt} start={fertig} /> {en ? "Körperformen studios." : "Körperformen-Studios."}
               <br />
-              <span className="text-accent">{eigene} davon sind unsere.</span>
+              <span className="text-accent">{en ? `${eigene} of them are ours.` : `${eigene} davon sind unsere.`}</span>
             </h2>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted">
-              Damit sind wir der größte Partner im Körperformen-Netz – Marktführer unter den
-              Körperformen-Studios. Für dich heißt das: ein Ablauf, ein Anspruch an die Betreuung
-              und ein Studio in deiner Nähe, ganz gleich, wo in Köln und Umgebung du gerade bist.
+              {en
+                ? "That makes us the largest partner in the Körperformen network – the market leader among Körperformen studios. For you, that means one way of working, one standard of supervision and a studio near you, wherever you happen to be in and around Cologne."
+                : "Damit sind wir der größte Partner im Körperformen-Netz – Marktführer unter den Körperformen-Studios. Für dich heißt das: ein Ablauf, ein Anspruch an die Betreuung und ein Studio in deiner Nähe, ganz gleich, wo in Köln und Umgebung du gerade bist."}
             </p>
             <Button href="/studio" variant="secondary" className="mt-8 border-white/25">
-              Studio in deiner Nähe finden
+              {en ? "Find a studio near you" : "Studio in deiner Nähe finden"}
             </Button>
           </div>
 
@@ -69,7 +71,11 @@ export function Netzwerk({ gesamt, eigene }: { gesamt: number; eigene: number })
             <svg
               viewBox={`0 0 ${breite} ${hoehe}`}
               role="img"
-              aria-label={`${gesamt} Punkte für alle Körperformen-Studios, ${eigene} davon hervorgehoben: unsere Studios in Köln und Umgebung.`}
+              aria-label={
+                en
+                  ? `${gesamt} dots for all Körperformen studios, ${eigene} of them highlighted: our studios in and around Cologne.`
+                  : `${gesamt} Punkte für alle Körperformen-Studios, ${eigene} davon hervorgehoben: unsere Studios in Köln und Umgebung.`
+              }
               className="w-full"
             >
               <defs>
@@ -124,10 +130,10 @@ export function Netzwerk({ gesamt, eigene }: { gesamt: number; eigene: number })
             </svg>
             <div className="mt-4 flex items-center justify-between gap-4 border-t border-white/10 pt-4 text-sm text-muted">
               <span className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-white/20" aria-hidden /> Körperformen-Studio
+                <span className="h-2.5 w-2.5 rounded-full bg-white/20" aria-hidden /> {en ? "Körperformen studio" : "Körperformen-Studio"}
               </span>
               <span className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-[var(--ink-lime)]" aria-hidden /> unsere Studios
+                <span className="h-2.5 w-2.5 rounded-full bg-[var(--ink-lime)]" aria-hidden /> {en ? "our studios" : "unsere Studios"}
               </span>
             </div>
           </div>
