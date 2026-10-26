@@ -36,6 +36,12 @@ const artText: Record<MailArt, string> = {
   NEWSLETTER: "Newsletter-Ausgabe an einen Abonnenten",
   NEWSLETTER_TEST: "Newsletter-Probeversand an den eigenen Zugang",
   KUNDENBEREICH: "Zugangslink zu den eigenen Terminen",
+  MITGLIED_WILLKOMMEN: "Willkommensmail an ein neues Mitglied",
+  MITGLIED_JUBILAEUM: "Glückwunsch zum Jubiläum der Mitgliedschaft",
+  MITGLIED_UMFRAGE: "Zufriedenheitsumfrage an ein Mitglied",
+  MITGLIEDER_INTERN: "Wochenübersicht Mitgliederpflege ans Studio",
+  GUTSCHEIN_EINGANG: "Eingangsbestätigung einer Gutscheinanfrage",
+  GUTSCHEIN_INTERN: "Neue Gutscheinanfrage ans Studio",
 };
 
 const ablaeufe: { titel: string; wann: string; an: string }[] = [
@@ -101,6 +107,21 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
     titel: "Zugangslink zu den eigenen Terminen",
     wann: "wenn jemand auf „Meine Termine“ seine Adresse einträgt - und nur, wenn es zu dieser Adresse tatsächlich Termine gibt",
     an: "an den Gast. Der Link gilt 30 Minuten",
+  },
+  {
+    titel: "Gutscheinanfrage",
+    wann: "sofort nach dem Absenden des Gutscheinformulars",
+    an: "an den Käufer (Bestätigung) und an das gewählte Studio",
+  },
+  {
+    titel: "Mitglieder-Mails",
+    wann: "nur wenn unter Sichtbarkeit eingeschaltet: Willkommen in Woche 1, 3 und 6, Umfrage nach vier Wochen, Jubiläum nach 6 und 12 Monaten",
+    an: "an Mitglieder mit Vertragsbeginn und E-Mail-Adresse, die nicht abbestellt haben - Umfrage und Jubiläum nur mit Einwilligung in Werbung",
+  },
+  {
+    titel: "Mitgliederpflege",
+    wann: "montags, nur wenn es etwas zu tun gibt (ebenfalls über den Schalter Mitglieder-Mails)",
+    an: "an die E-Mail-Adresse des Studios",
   },
 ];
 

@@ -701,3 +701,280 @@ Viele Grüße
 Dein Körperformen-Team`,
   });
 }
+
+/* ------------------------------------------------------------------ */
+/* Mitglieder                                                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Der Fuß unter jeder Mitglieder-Mail.
+ *
+ * Unter jeder Mitglieder-Mail steht, warum sie kommt und wie man sie
+ * abbestellt. Wer das nicht findet,
+ * drückt auf "Spam", und das trifft dann auch die Terminbestätigungen.
+ */
+function mitgliedFuss(bereichLink: string): string {
+  return `--
+Du bekommst diese Mail als Mitglied bei Körperformen.
+Dein Mitgliederbereich (dort kannst du diese Mails auch abbestellen):
+${bereichLink}`;
+}
+
+function studioKurz(studioName: string | null): string {
+  return studioName ? studioName.replace(/^Körperformen\s+/i, "") : "";
+}
+
+export type MitgliedMailAngaben = {
+  email: string;
+  vorname: string;
+  studioName: string | null;
+  /** Antworten gehen ans Studio, nicht an die Versandadresse. */
+  antwortAn: string | null;
+  bereichLink: string;
+};
+
+/**
+ * Die Mails in den ersten Wochen.
+ *
+ * Kein Verkauf, keine Angebote, keine Versprechen über Ergebnisse: Die
+ * ersten Wochen entscheiden, ob jemand eine Gewohnheit aufbaut. Diese
+ * Mails sollen dabei helfen und zeigen, dass jemand an ihn denkt - nicht
+ * die nächste Rechnung vorbereiten.
+ */
+export async function sendMitgliedWillkommenEmail(
+  woche: 1 | 3 | 6,
+  angaben: MitgliedMailAngaben,
+) {
+  const ort = studioKurz(angaben.studioName);
+  const texte = {
+    1: {
+      betreff: `Willkommen bei Körperformen${ort ? ` ${ort}` : ""}!`,
+      text: `schön, dass du dabei bist!
+
+Damit deine ersten Wochen rund laufen, drei Dinge, die oft gefragt werden:
+
+- Komm ein paar Minuten vor deinem Termin. Dann bleibt Zeit zum Umziehen,
+  und die 20 Minuten Training gehören ganz dir.
+- Dein Trainer stellt die Intensität jedes Mal neu mit dir ein. Sag ruhig,
+  wenn es sich zu viel oder zu wenig anfühlt - genau dafür ist er da.
+- Passt ein Termin nicht? Verschieben geht über die Online-Terminbuchung
+  oder einen kurzen Anruf im Studio.
+
+Fragen? Antworte einfach auf diese Mail - sie landet direkt bei uns im Studio.`,
+    },
+    3: {
+      betreff: "Drei Wochen dabei - wie läuft's?",
+      text: `drei Wochen bist du jetzt bei uns. Zeit für eine kurze Zwischenfrage:
+Hast du deinen festen Trainingstag gefunden?
+
+Was vielen hilft: immer derselbe Wochentag, dieselbe Uhrzeit. Dann wird aus
+dem Termin eine Gewohnheit, über die man nicht mehr nachdenken muss.
+
+Und falls mal etwas dazwischenkommt: Ausgefallene Einheiten kannst du
+nachholen - frag einfach im Studio, wann es passt.
+
+Wenn dir etwas auffällt, das wir besser machen können, schreib uns.
+Antworten auf diese Mail gehen direkt ans Studio.`,
+    },
+    6: {
+      betreff: "Sechs Wochen - Zeit für einen kurzen Blick zurück",
+      text: `sechs Wochen Training liegen hinter dir. Ein guter Moment, um mit deinem
+Trainer kurz auf dein Ziel zu schauen: Was hat sich verändert, was soll
+als Nächstes kommen?
+
+Sprich ihn beim nächsten Termin einfach darauf an - fünf Minuten reichen.`,
+    },
+  }[woche];
+
+  return verschicken("MITGLIED_WILLKOMMEN", {
+    to: angaben.email,
+    replyTo: angaben.antwortAn,
+    subject: texte.betreff,
+    text: `Hallo ${angaben.vorname},
+
+${texte.text}
+
+Viele Grüße
+Dein Körperformen-Team${ort ? ` ${ort}` : ""}
+
+${mitgliedFuss(angaben.bereichLink)}`,
+  });
+}
+
+/**
+ * Die Frage nach der Zufriedenheit, nach etwa vier Wochen.
+ *
+ * Ein Klick statt eines Fragebogens: Fünf Links, jeder führt auf eine
+ * Seite, auf der die Note schon gewählt ist. Gespeichert wird erst beim
+ * Absenden dort - Postfächer rufen Links vorab auf, und eine Note, die
+ * niemand vergeben hat, wäre schlimmer als keine.
+ *
+ * Gefragt werden alle, nicht nur die, von denen man Gutes erwartet. Der
+ * Zweck ist, die Unzufriedenen zu finden, solange man noch etwas ändern
+ * kann.
+ */
+export async function sendMitgliedUmfrageEmail(
+  angaben: MitgliedMailAngaben & { notenLinks: { note: number; text: string; link: string }[] },
+) {
+  const ort = studioKurz(angaben.studioName);
+  return verschicken("MITGLIED_UMFRAGE", {
+    to: angaben.email,
+    replyTo: angaben.antwortAn,
+    subject: "Eine Frage, ein Klick: Wie zufrieden bist du?",
+    text: `Hallo ${angaben.vorname},
+
+seit ein paar Wochen trainierst du bei uns${ort ? ` in ${ort}` : ""}. Wie zufrieden bist du bisher?
+Ein Klick genügt:
+
+${angaben.notenLinks.map((n) => `${n.text}:\n${n.link}`).join("\n\n")}
+
+Ehrlich ist uns lieber als nett. Wenn etwas nicht passt, wollen wir es
+wissen, solange wir es noch ändern können.
+
+Viele Grüße
+Dein Körperformen-Team${ort ? ` ${ort}` : ""}
+
+${mitgliedFuss(angaben.bereichLink)}`,
+  });
+}
+
+/** Glückwunsch zum Jubiläum. Ohne Angebot - ein Dank ist ein Dank. */
+export async function sendMitgliedJubilaeumEmail(
+  angaben: MitgliedMailAngaben & { dauer: string },
+) {
+  const ort = studioKurz(angaben.studioName);
+  return verschicken("MITGLIED_JUBILAEUM", {
+    to: angaben.email,
+    replyTo: angaben.antwortAn,
+    subject: `${angaben.dauer} bei Körperformen - danke!`,
+    text: `Hallo ${angaben.vorname},
+
+heute vor ${angaben.dauer.replace(/^1 Jahr$/, "einem Jahr").replace(/Monate$/, "Monaten").replace(/Jahre$/, "Jahren")} hast du bei uns angefangen. Danke, dass du dabei bist!
+
+Wenn du magst, schau beim nächsten Termin mit deinem Trainer zurück: Was
+hat sich seit dem Start verändert - und was ist dein nächstes Ziel?
+
+Viele Grüße
+Dein Körperformen-Team${ort ? ` ${ort}` : ""}
+
+${mitgliedFuss(angaben.bereichLink)}`,
+  });
+}
+
+/**
+ * Die Wochenübersicht "Mitgliederpflege" an ein Studio.
+ *
+ * Montags, und nur wenn es etwas zu tun gibt. Eine Liste, die jede Woche
+ * kommt, auch wenn sie leer ist, liest nach drei Wochen niemand mehr.
+ */
+export async function sendMitgliederInternEmail(
+  an: string,
+  angaben: {
+    studioName: string;
+    anrufen: { name: string; note: number; kommentar: string | null }[];
+    gespraeche: { name: string; ende: string }[];
+  },
+) {
+  const teile: string[] = [];
+  if (angaben.anrufen.length > 0) {
+    teile.push(`BITTE ANRUFEN - unzufrieden in der Umfrage (${angaben.anrufen.length})
+${angaben.anrufen
+  .map((a) => `- ${a.name}: Note ${a.note} von 5${a.kommentar ? ` - „${a.kommentar}“` : ""}`)
+  .join("\n")}`);
+  }
+  if (angaben.gespraeche.length > 0) {
+    teile.push(`GESPRÄCH VEREINBAREN - Erstlaufzeit endet bald (${angaben.gespraeche.length})
+${angaben.gespraeche.map((g) => `- ${g.name}: endet am ${g.ende}`).join("\n")}`);
+  }
+
+  return verschicken("MITGLIEDER_INTERN", {
+    to: an,
+    subject: `Mitgliederpflege diese Woche - ${angaben.studioName}`,
+    text: `Guten Morgen,
+
+das steht diese Woche in ${angaben.studioName} an:
+
+${teile.join("\n\n")}
+
+Und wie jeden Montag: In LogX unter Aktionen/Aufgaben die Nichtanwesenheit
+abrufen (mehr als 14, weniger als 60 Tage) und kurz durchtelefonieren.
+
+Alles im Überblick:
+${siteConfig.url}/admin/mitgliederpflege`,
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Gutscheine                                                          */
+/* ------------------------------------------------------------------ */
+
+export type GutscheinAngaben = {
+  kaeuferName: string;
+  kaeuferEmail: string | null;
+  kaeuferTelefon: string | null;
+  bezeichnung: string;
+  fuer: string | null;
+  widmung: string | null;
+  studioName: string | null;
+  studioAdresse: string | null;
+  studioTelefon: string | null;
+  antwortAn: string | null;
+};
+
+/**
+ * Eingangsbestätigung an den, der einen Gutschein angefragt hat.
+ *
+ * Steht ausdrücklich drin, dass noch nichts bezahlt ist und wie es
+ * weitergeht - sonst wartet jemand auf eine Rechnung, die nie kommt.
+ */
+export async function sendGutscheinEingangEmail(angaben: GutscheinAngaben) {
+  if (!angaben.kaeuferEmail) return false;
+  return verschicken("GUTSCHEIN_EINGANG", {
+    to: angaben.kaeuferEmail,
+    replyTo: angaben.antwortAn,
+    subject: "Deine Gutscheinanfrage ist angekommen",
+    text: `Hallo ${angaben.kaeuferName},
+
+danke für deine Anfrage! Das haben wir notiert:
+
+${angaben.bezeichnung}${angaben.fuer ? `\nFür: ${angaben.fuer}` : ""}${angaben.widmung ? `\nWidmung: „${angaben.widmung}“` : ""}
+${angaben.studioName ? `Studio: ${angaben.studioName}` : ""}
+
+So geht es weiter: Das Studio meldet sich bei dir. Bezahlt und abgeholt
+wird vor Ort - online zahlst du nichts. Der Gutschein gilt erst, wenn er
+bezahlt ist.${
+      angaben.studioAdresse
+        ? `\n\n${angaben.studioName}\n${angaben.studioAdresse}${angaben.studioTelefon ? `\nTelefon ${angaben.studioTelefon}` : ""}`
+        : ""
+    }
+
+Viele Grüße
+Dein Körperformen-Team`,
+  });
+}
+
+/** Neue Gutscheinanfrage - ans Studio. */
+export async function sendGutscheinInternEmail(an: string, angaben: GutscheinAngaben) {
+  const zeilen = [
+    `Gutschein:   ${angaben.bezeichnung}`,
+    angaben.fuer ? `Für:         ${angaben.fuer}` : null,
+    angaben.widmung ? `Widmung:     „${angaben.widmung}“` : null,
+    `Käufer:      ${angaben.kaeuferName}`,
+    angaben.kaeuferTelefon ? `Telefon:     ${angaben.kaeuferTelefon}` : null,
+    angaben.kaeuferEmail ? `E-Mail:      ${angaben.kaeuferEmail}` : null,
+  ].filter(Boolean);
+
+  return verschicken("GUTSCHEIN_INTERN", {
+    to: an,
+    replyTo: angaben.kaeuferEmail,
+    subject: `Gutscheinanfrage: ${angaben.bezeichnung} für ${angaben.kaeuferName}`,
+    text: `Jemand möchte einen Gutschein kaufen.
+
+${zeilen.join("\n")}
+
+Bitte melden, Termin zum Bezahlen und Abholen ausmachen. Nach dem Bezahlen
+im Adminbereich auf „Bezahlt - ausstellen“ klicken; dann gilt der Code und
+der Gutschein kann gedruckt werden:
+${siteConfig.url}/admin/gutscheine`,
+  });
+}

@@ -16,9 +16,12 @@ const socials = [
 export async function Footer({
   nav,
   showNewsletter,
+  showGutschein = false,
 }: {
   nav: { label: string; href: string }[];
   showNewsletter: boolean;
+  /** Erst sichtbar, wenn die Gutscheinseite eingeschaltet ist. */
+  showGutschein?: boolean;
 }) {
   // Wie im Layout: Die Fußzeile steht auf jeder Seite. Wirft diese
   // Abfrage, ist nicht die Fußzeile weg, sondern die ganze Seite - und
@@ -92,6 +95,16 @@ export async function Footer({
                 Meine Termine
               </Link>
             </li>
+            {showGutschein && (
+              <li>
+                <Link
+                  href="/gutschein"
+                  className="tastflaeche block py-1.5 text-sm text-muted hover:text-foreground"
+                >
+                  Gutschein verschenken
+                </Link>
+              </li>
+            )}
           </ul>
 
           {/* Die Zielseiten - im Menü oben ist für sie kein Platz, aber

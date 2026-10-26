@@ -21,7 +21,7 @@ export default function robots(): MetadataRoute.Robots {
       // aber gelangt er einmal in eine Verweisliste oder in ein Formular,
       // soll ihn wenigstens kein Suchdienst einsammeln.
       // /meine-termine/... ist derselbe Fall.
-      disallow: ["/admin", "/termin", "/meine-termine/"],
+      disallow: ["/admin", "/termin", "/meine-termine/", "/mitglied/", "/umfrage/"],
     },
     sitemap: `${siteConfig.url}/sitemap.xml`,
   };

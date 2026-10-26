@@ -21,6 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/erster-besuch",
     ...(toggles.studio ? ["/studio"] : []),
     ...(toggles.preise ? ["/preise"] : []),
+    ...(toggles.gutscheine ? ["/gutschein"] : []),
     // Nur wenn die Seite auch Inhalt hat - sonst meldet die Sitemap
     // Google eine Adresse, die mit 404 antwortet.
     ...(toggles.erfolgsgeschichten && erfolge ? ["/erfolgsgeschichten"] : []),

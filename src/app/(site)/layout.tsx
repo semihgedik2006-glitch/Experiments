@@ -82,7 +82,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <main id="main-content" className="flex-1">
         {children}
       </main>
-      <Footer nav={nav} showNewsletter={toggles.newsletter} />
+      <Footer nav={nav} showNewsletter={toggles.newsletter} showGutschein={toggles.gutscheine} />
 
       {/* Wann sie erscheinen darf, entscheidet sie selbst - die Regeln
           stehen in lib/einladung.ts. Hier steht sie nur bereit. */}
