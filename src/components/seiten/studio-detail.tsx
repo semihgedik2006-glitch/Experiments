@@ -24,6 +24,7 @@ import { lokal } from "@/lib/i18n/lokal";
 import { oeffnungszeiten } from "@/lib/i18n/oeffnungszeiten";
 import { seitenMetadaten } from "@/lib/i18n/metadaten";
 import { angebotIn } from "@/lib/zusatzangebote";
+import { ortsname } from "@/lib/ortsname";
 
 /**
  * Eine eigene Seite je Standort.
@@ -78,19 +79,6 @@ export async function studioMetadaten(sprache: Sprache, slug: string): Promise<M
         ? `EMS training at Körperformen in ${ort}: ${studio.street}, ${studio.postalCode} ${studio.city}. 20 minutes a week, appointment by arrangement - book your free trial session now.`
         : `EMS-Training bei Körperformen in ${ort}: ${studio.street}, ${studio.postalCode} ${studio.city}. 20 Minuten pro Woche, Termin nach Absprache - jetzt kostenlosen Probetermin sichern.`),
   });
-}
-
-/**
- * Der Ort, wie ihn jemand tippt.
- *
- * Der Studioname trägt den Markennamen ("Körperformen Köln Nippes"); für
- * eine Überschrift "EMS Training in Körperformen Köln Nippes" wäre das
- * Unsinn. Bleibt nach dem Abziehen nichts übrig, tut es der Ort aus der
- * Anschrift.
- */
-function ortsname(name: string, city: string): string {
-  const ohneMarke = name.replace(/^\s*Körperformen\s+/i, "").trim();
-  return ohneMarke || city;
 }
 
 export async function StudioDetailSeite({ sprache, slug }: { sprache: Sprache; slug: string }) {
@@ -167,8 +155,8 @@ export async function StudioDetailSeite({ sprache, slug }: { sprache: Sprache; s
         intro={
           intro ||
           (en
-            ? `Your Körperformen studio in ${studio.city}: 20 minutes of training a week, with a trainer by your side the whole time. Your first appointment is free and without obligation.`
-            : `Dein Körperformen-Studio in ${studio.city}: 20 Minuten Training pro Woche, dabei steht die ganze Zeit ein Trainer neben dir. Der erste Termin ist kostenlos und unverbindlich.`)
+            ? `Your Körperformen studio in ${ort}: 20 minutes of training a week, with a trainer by your side the whole time. Your first appointment is free and without obligation.`
+            : `Dein Körperformen-Studio in ${ort}: 20 Minuten Training pro Woche, dabei steht die ganze Zeit ein Trainer neben dir. Der erste Termin ist kostenlos und unverbindlich.`)
         }
       >
         <div className="mt-8 flex flex-wrap gap-3">

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { LocateFixed, MapPin } from "lucide-react";
 import { haversineDistanceKm, anyStudioLocatable, sortStudiosByDistance } from "@/lib/geo";
 import { ausschnittFuer } from "@/lib/karte";
+import { ortsname } from "@/lib/ortsname";
 import { useSprache } from "@/lib/i18n/use-sprache";
 
 const subscribeNothing = () => () => {};
@@ -234,7 +235,7 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
                   {nummer}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium">{studio.city}</span>
+                  <span className="block truncate font-medium">{ortsname(studio.name, studio.city)}</span>
                   <span className="block truncate text-xs text-muted">{studio.street}</span>
                 </span>
                 {entfernungen[studio.id] !== undefined && (
