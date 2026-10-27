@@ -16,7 +16,7 @@ import { GOALS_EN } from "@/lib/ziel-inhalte-en";
  * keine Diagnosen.
  */
 
-export type ZielWert = "ruecken" | "straffen" | "abnehmen" | "muskelaufbau" | "fitness";
+export type ZielWert = "ruecken" | "straffen" | "abnehmen" | "muskelaufbau" | "fitness" | "gelenke";
 
 /** Die acht Zonen der Weste, in dieser Reihenfolge. */
 export const ZONEN = [
@@ -66,7 +66,7 @@ export type AbschnittKey =
  * Gekürzt von 13 auf 9 Abschnitte (auf dem Handy von 26 auf rund 15
  * Bildschirme): Gelesen werden vor allem die ersten zwei Bildschirme
  * (Nielsen Norman Group, "Scrolling and Attention", 2018), und vier
- * Abschnitte sagten, was anderswo schon stand. "277 Studios" steht im
+ * Abschnitte sagten, was anderswo schon stand. "270+ Studios" steht im
  * Zahlenband und auf /studio, "20 Minuten" in Zahlenband, Scroll-Story
  * und Vorteilen, Blog und Instagram sind über das Menü erreichbar.
  */
@@ -249,6 +249,36 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     ],
     profil: [0.65, 0.65, 0.6, 0.65, 0.65, 0.55, 0.7, 0.7],
     hinweis: "Du weißt noch nicht genau, was dein Ziel ist? Auch das klärt dein Trainer im Probetraining mit dir.",
+
+  },
+  {
+    // Wunsch Marcel (22.10.): Gelenke als eigenes Ziel - gerade für die
+    // Zielgruppe ab 40. Beschrieben wird, WIE trainiert wird (ohne Last
+    // auf den Gelenken), nicht dass Beschwerden verschwinden.
+    wert: "gelenke",
+    seite: {
+      titel: "Gelenkschonendes EMS-Training in Köln",
+      beschreibung:
+        "Gelenkschonend trainieren mit EMS: ohne schwere Gewichte, ohne Sprünge, mit persönlichem Trainer und 20 Minuten pro Woche. {studios} in Köln und Umgebung - jetzt kostenlos testen.",
+    },
+    titel: ["Kräftig werden,", "ohne Last auf den Gelenken."],
+    knopf: "Probetraining gelenkschonend",
+    reihenfolge: ["zielwelt", "auszeichnung", "individuell", "vorteile", "ablauf", "reels", "studio", "vertrauen", "faq"],
+    stichworte: ["gelenk", "knie", "hüft", "sicher", "geeignet", "beschwerde", "gewicht"],
+    kurz: "Gelenke schonen",
+    antwort: "Kein Gewicht, keine Sprünge: Dein Trainer kräftigt die Muskeln rund um deine Gelenke – mit Bewegungen, die sich für dich gut anfühlen.",
+    erkennst: [
+      "Knie oder Hüfte melden sich, wenn du an Hanteln oder Joggen denkst.",
+      "Du willst kräftiger werden, aber deine Gelenke nicht zusätzlich belasten.",
+      "Du bist über 40 und suchst ein Training, das zu deinem Körper passt.",
+    ],
+    soArbeiten: [
+      { titel: "Ohne Zusatzlast", text: "Keine Hantel, keine Sprünge. Die Muskeln arbeiten über den Impuls – die Gelenke tragen kein Extragewicht." },
+      { titel: "Muskeln, die stützen", text: "Beine, Po und Rumpf werden gezielt eingestellt – die Muskulatur, die deine Gelenke im Alltag führt." },
+      { titel: "Langsam gesteigert", text: "Dein Trainer startet sanft und steigert erst, wenn es sich für dich gut anfühlt." },
+    ],
+    profil: [0.55, 0.7, 0.55, 0.6, 0.65, 0.6, 0.85, 0.9],
+    hinweis: "Hast du Arthrose, ein künstliches Gelenk oder akute Beschwerden? Dann klär das Training bitte vorher mit deinem Arzt ab – im Gesundheitscheck fragt dein Trainer ohnehin danach.",
   },
 ];
 

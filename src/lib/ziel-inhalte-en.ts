@@ -145,6 +145,31 @@ export const GOALS_EN: readonly GoalContent[] = [
       { titel: "Nothing to plan", text: "Your trainer knows where you are and sets everything up. You come and train." },
     ],
     hinweis: "Not sure what your goal is? Your trainer works it out with you at the trial session.",
+
+  },
+  {
+    wert: "gelenke",
+    titel: ["Get stronger without", "loading your joints."],
+    knopf: "Joint-friendly trial session",
+    seite: {
+      titel: "Joint-friendly EMS training in Cologne",
+      beschreibung:
+        "Joint-friendly training with EMS: no heavy weights, no jumping, a personal trainer and 20 minutes a week. {studios} in and around Cologne - try it free now.",
+    },
+    stichworte: ["joint", "knee", "hip", "safe", "suitable", "complaint", "weight"],
+    kurz: "Go easy on my joints",
+    antwort: "No weights, no jumping: your trainer strengthens the muscles around your joints – with movements that feel right for you.",
+    erkennst: [
+      "Your knees or hips complain when you think of dumbbells or jogging.",
+      "You want to get stronger without putting extra load on your joints.",
+      "You are over 40 and looking for training that suits your body.",
+    ],
+    soArbeiten: [
+      { titel: "No extra load", text: "No dumbbells, no jumping. Your muscles work through the impulse – your joints carry no extra weight." },
+      { titel: "Muscles that support", text: "Legs, glutes and core are targeted – the muscles that guide your joints in everyday life." },
+      { titel: "Built up slowly", text: "Your trainer starts gently and only increases once it feels right for you." },
+    ],
+    hinweis: "Do you have arthritis, an artificial joint or acute complaints? Please clear the training with your doctor first – your trainer asks about this in the health check anyway.",
   },
 ];
 
@@ -158,6 +183,7 @@ export const ZIEL_SLUG_EN: Record<ZielWert, string> = {
   abnehmen: "weight-loss",
   muskelaufbau: "muscle",
   fitness: "fitness",
+  gelenke: "joints",
 };
 
 export function zielAusSlugEn(slug: string): ZielWert | undefined {

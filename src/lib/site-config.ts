@@ -74,7 +74,9 @@ export const siteConfig = {
    * nachgezogen werden.
    */
   netzwerk: {
-    studiosGesamt: 277,
+    // Stand Oktober 2026 laut Geschäftsleitung (Marcel): "270 Studios
+    // insgesamt". Angezeigt als "270+", weil die Zahl laufend wächst.
+    studiosGesamt: 270,
   },
   social: {
     instagram: "https://instagram.com/koerperformen_huerth",

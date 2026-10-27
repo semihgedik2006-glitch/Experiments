@@ -21,6 +21,8 @@ import type { Sprache } from "@/lib/sprache";
 export const auszeichnung = {
   titel: "Deutschlands beliebteste EMS-Studios 2026",
   platz: "1. Platz Gesamtwertung",
+  /** Gesamtscore auf der 10er-Skala; Platz 2 (Bodystreet) lag bei 7,39. */
+  gesamtScore: "7,54",
   herausgeber: "Deutsche Gesellschaft für Verbraucherstudien (DtGV)",
   herausgeberKurz: "DtGV",
   art: "Kundenbefragung",
