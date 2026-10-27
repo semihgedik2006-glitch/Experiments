@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Gift, Mail, Store } from "lucide-react";
+import { Check, CreditCard, Gift, Mail, Store } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { ContactForm } from "@/components/contact-form";
 import { Logo } from "@/components/logo";
 import { VorschauHinweis } from "@/components/vorschau-hinweis";
-import { GUTSCHEINE, GUTSCHEINE_EN } from "@/lib/gutschein";
+import { GUTSCHEINE, GUTSCHEINE_EN, WEIHNACHTSAKTION, WEIHNACHTSAKTION_EN, gutscheinKaufUrl } from "@/lib/gutschein";
 import type { Sprache } from "@/lib/sprache";
 import { seitenMetadaten } from "@/lib/i18n/metadaten";
 import { sichtbarkeit } from "@/lib/vorschau";
 import { isVisible } from "@/lib/site-toggles";
 
 /**
- * "Gutschein verschenken" - für Weihnachten vorbereitet.
+ * "Gutschein verschenken" - mit der Weihnachtsaktion 2026 (4 Wochen / 90 €,
+ * Kauf über Digistore24, siehe @/lib/gutschein).
  *
  * Öffentlich erst, wenn im Adminbereich unter "Sichtbarkeit" die
  * Gutscheine eingeschaltet sind; vorher nur für angemeldete Admins als
@@ -28,12 +29,12 @@ export async function gutscheinMetadaten(sprache: Sprache): Promise<Metadata> {
       ? {
           title: "Give a voucher",
           description:
-            "Give EMS training as a gift: vouchers for Körperformen in and around Cologne – request one, pay at the studio, print it or pick it up.",
+            "Christmas offer: 4 weeks of EMS training with a personal trainer for €90 – buy online, give it as a gift or use it yourself. Körperformen in and around Cologne.",
         }
       : {
           title: "Gutschein verschenken",
           description:
-            "EMS-Training verschenken: Gutscheine für Körperformen in Köln und Umgebung – anfragen, im Studio bezahlen, ausdrucken oder abholen.",
+            "Weihnachtsaktion: 4 Wochen EMS-Training mit persönlichem Trainer für 90 € – online kaufen, verschenken oder selbst nutzen. Körperformen in Köln und Umgebung.",
         }),
     // Solange die Seite nur Vorschau ist, soll sie nirgends auftauchen.
     ...(live ? {} : { robots: { index: false, follow: false } }),
@@ -55,6 +56,43 @@ const ABLAUF = [
     icon: Gift,
     titel: "Verschenken",
     text: "Du bekommst den Gutschein zum Ausdrucken – oder holst ihn schön verpackt im Studio ab.",
+  },
+];
+
+/** Der Ablauf, wenn online über Digistore24 gekauft wird. */
+const ABLAUF_ONLINE: typeof ABLAUF = [
+  {
+    icon: CreditCard,
+    titel: "Kaufen",
+    text: "Über den Knopf oben sicher online bezahlen.",
+  },
+  {
+    icon: Mail,
+    titel: "PDF bekommen",
+    text: "Der Gutschein kommt direkt per E-Mail zum Ausdrucken oder Weiterleiten.",
+  },
+  {
+    icon: Gift,
+    titel: "Einlösen",
+    text: "Die beschenkte Person meldet sich im Studio und vereinbart ihren ersten Termin.",
+  },
+];
+
+const ABLAUF_ONLINE_EN: typeof ABLAUF = [
+  {
+    icon: CreditCard,
+    titel: "Buy",
+    text: "Pay securely online with the button above.",
+  },
+  {
+    icon: Mail,
+    titel: "Get the PDF",
+    text: "The voucher arrives by email, ready to print or forward.",
+  },
+  {
+    icon: Gift,
+    titel: "Redeem",
+    text: "The recipient contacts the studio and books their first session.",
   },
 ];
 
@@ -80,6 +118,9 @@ export async function GutscheinSeite({ sprache }: { sprache: Sprache }) {
   const en = sprache === "en";
   const stand = await sichtbarkeit("gutschein");
   if (stand === "aus") notFound();
+  const kaufUrl = gutscheinKaufUrl();
+  const aktion = en ? WEIHNACHTSAKTION_EN : WEIHNACHTSAKTION;
+  const ablauf = kaufUrl ? (en ? ABLAUF_ONLINE_EN : ABLAUF_ONLINE) : en ? ABLAUF_EN : ABLAUF;
 
   return (
     <>
@@ -111,7 +152,7 @@ export async function GutscheinSeite({ sprache }: { sprache: Sprache }) {
             <span className="rounded-full bg-lime px-3 py-1 text-xs font-bold text-on-lime">{en ? "Voucher" : "Gutschein"}</span>
           </div>
           <p className="mt-10 font-display text-3xl font-black leading-tight">
-            {en ? "20 minutes" : "20 Minuten"}
+              {en ? "4 weeks of EMS" : "4 Wochen EMS"}
             <br />
             <span className="text-[var(--ink-lime)]">{en ? "just for you." : "nur für dich."}</span>
           </p>
@@ -122,10 +163,61 @@ export async function GutscheinSeite({ sprache }: { sprache: Sprache }) {
         </div>
       </PageHeader>
 
+      {/* Die Weihnachtsaktion - das, worauf die Anzeigen führen. */}
+      <section id="aktion" className="scroll-mt-20 border-t border-border py-16 sm:py-20">
+        <Container>
+          <div className="on-ink grid gap-8 rounded-3xl bg-[var(--ink)] p-7 text-white sm:p-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ink-lime)]">{aktion.kicker}</p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+                {aktion.titel} <span className="whitespace-nowrap text-[var(--ink-lime)]">{en ? "for" : "für"} {aktion.preis}</span>
+              </h2>
+              <p className="mt-4 max-w-lg text-lg leading-relaxed text-white/80">{aktion.text}</p>
+              <ul className="mt-6 space-y-2">
+                {aktion.punkte.map((punkt) => (
+                  <li key={punkt} className="flex items-start gap-2 text-white/85">
+                    <Check size={18} className="mt-0.5 shrink-0 text-[var(--ink-lime)]" aria-hidden />
+                    {punkt}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
+              <p className="font-display text-5xl font-black text-[var(--ink-lime)]">{aktion.preis}</p>
+              <p className="mt-1 text-sm text-white/70">{en ? "one-off, incl. VAT" : "einmalig, inkl. MwSt."}</p>
+              {kaufUrl ? (
+                <a
+                  href={kaufUrl}
+                  target="_blank"
+                  rel="noopener"
+                  className="mt-6 flex w-full items-center justify-center rounded-full bg-lime px-6 py-3.5 font-semibold text-on-lime transition-transform hover:scale-[1.02]"
+                >
+                  {aktion.kaufen}
+                </a>
+              ) : (
+                <a
+                  href="#anfrage"
+                  className="mt-6 flex w-full items-center justify-center rounded-full bg-lime px-6 py-3.5 font-semibold text-on-lime transition-transform hover:scale-[1.02]"
+                >
+                  {en ? "Request the voucher" : "Gutschein anfragen"}
+                </a>
+              )}
+              <p className="mt-3 text-xs leading-relaxed text-white/60">
+                {kaufUrl
+                  ? aktion.hinweisKauf
+                  : en
+                    ? "Online purchase coming soon – until then we arrange everything personally."
+                    : "Online-Kauf folgt in Kürze – bis dahin klären wir alles persönlich mit dir."}
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
+
       <section className="border-t border-border py-16 sm:py-20">
         <Container>
-          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{en ? "What you can give" : "Das kannst du verschenken"}</h2>
-          <div className="mt-8 grid gap-5 sm:grid-cols-3">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{en ? "Other vouchers" : "Weitere Gutscheine"}</h2>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2">
             {(en ? GUTSCHEINE_EN : GUTSCHEINE).map((g) => (
               <div
                 key={g.titel}
@@ -144,7 +236,7 @@ export async function GutscheinSeite({ sprache }: { sprache: Sprache }) {
         <Container>
           <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{en ? "It is that easy" : "So einfach geht's"}</h2>
           <ol className="mt-8 grid gap-6 sm:grid-cols-3">
-            {(en ? ABLAUF_EN : ABLAUF).map((s, i) => (
+            {ablauf.map((s, i) => (
               <li key={s.titel} className="flex gap-4">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-lime/15 text-accent">
                   <s.icon size={20} aria-hidden />
@@ -163,7 +255,9 @@ export async function GutscheinSeite({ sprache }: { sprache: Sprache }) {
       <section id="anfrage" className="scroll-mt-20 border-t border-border py-16 sm:py-20">
         <Container className="max-w-2xl">
           <Reveal>
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{en ? "Request a voucher" : "Gutschein anfragen"}</h2>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              {kaufUrl ? (en ? "Questions or another voucher?" : "Fragen oder ein anderer Gutschein?") : en ? "Request a voucher" : "Gutschein anfragen"}
+            </h2>
             <p className="mt-3 text-muted">
               {en ? "We will get back to you within one or two working days." : "Wir melden uns innerhalb von ein, zwei Werktagen."}
             </p>

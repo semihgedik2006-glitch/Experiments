@@ -54,7 +54,7 @@ export async function GET() {
 
 ## Über uns
 
-- ${siteConfig.claim}: ${studios.length > 1 ? `${studios.length} eigene Studios` : "eigene Studios"}, Teil des Körperformen-Netzes mit ${siteConfig.netzwerk.studiosGesamt} Studios.
+- ${siteConfig.claim}: ${studios.length > 1 ? `${studios.length} eigene Studios` : "eigene Studios"}, Teil des Körperformen-Netzes mit über ${siteConfig.netzwerk.studiosGesamt} Studios.
 - Auszeichnung der Marke Körperformen: Platz 1 der Gesamtwertung bei „${auszeichnung.titel}“, ${auszeichnung.art} der ${auszeichnung.herausgeberKurz} (Deutsche Gesellschaft für Verbraucherstudien; ${auszeichnung.zeitraum}, ${auszeichnung.bewertungen} Bewertungen, ${auszeichnung.anbieter} EMS-Studio-Ketten). Quelle: ${auszeichnung.quelle}
 
 ## Training nach Ziel
