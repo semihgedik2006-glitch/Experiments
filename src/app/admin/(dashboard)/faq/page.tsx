@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { EnglischBlock, EnglischFeld } from "@/components/admin/englisch-block";
 import { createFaqItem, updateFaqItem, deleteFaqItem } from "@/lib/actions/admin-faq";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
@@ -44,6 +45,14 @@ export default async function AdminFaqPage() {
             placeholder="Antwort"
             className={adminInput}
           />
+          <EnglischBlock>
+            <EnglischFeld label="Question (Frage)">
+              <input type="text" name="questionEn" maxLength={200} className={adminInput} />
+            </EnglischFeld>
+            <EnglischFeld label="Answer (Antwort)">
+              <textarea name="answerEn" rows={3} maxLength={2000} className={adminInput} />
+            </EnglischFeld>
+          </EnglischBlock>
         </div>
         <div className="mt-4">
           <SubmitButton variant="primary" pendingLabel="Wird angelegt..." savedLabel="Angelegt">
@@ -85,6 +94,14 @@ export default async function AdminFaqPage() {
                 defaultValue={item.answer}
                 className={adminInput}
               />
+              <EnglischBlock ausgefuellt={!!(item.questionEn || item.answerEn)}>
+                <EnglischFeld label="Question (Frage)">
+                  <input type="text" name="questionEn" maxLength={200} defaultValue={item.questionEn ?? ""} className={adminInput} />
+                </EnglischFeld>
+                <EnglischFeld label="Answer (Antwort)">
+                  <textarea name="answerEn" rows={3} maxLength={2000} defaultValue={item.answerEn ?? ""} className={adminInput} />
+                </EnglischFeld>
+              </EnglischBlock>
               <div className="flex gap-2">
                 <SubmitButton pendingLabel="Wird gespeichert...">Speichern</SubmitButton>
               </div>

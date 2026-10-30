@@ -1,84 +1,107 @@
-import { randomInt } from "crypto";
-import type { GutscheinStatus } from "@/generated/prisma/enums";
-
 /**
- * Gutscheine - was es gibt, wie der Code aussieht, wie lange er gilt.
+ * Gutscheine zum Verschenken (Seite /gutschein).
  *
- * Zwei Arten:
+ * Zwei Wege:
+ *   1. Die WEIHNACHTSAKTION (unten) wird online über Digistore24 gekauft -
+ *      Wunsch Marcel, 26.10.2026: "4 Wochen für 90 €", ab 1. Dezember,
+ *      zum Verschenken oder selbst nutzen. Digistore24 übernimmt Zahlung,
+ *      Rechnung und Widerrufsbelehrung; der Kunde bekommt den Gutschein
+ *      als PDF.
+ *   2. Alle anderen Gutscheine: Anfrage über das Formular, bezahlt wird im
+ *      Studio oder per Überweisung.
  *
- * WERT - ein Betrag, einlösbar für alles im Studio. Die Beträge sind
- * feste Stufen statt eines freien Feldes: Wer verschenkt, will nicht
- * rechnen, und im Studio soll niemand einen Gutschein über 37 € erklären.
- *
- * STARTPAKET - das Startpaket aus dem Anmeldeformular (Trainingsplanung,
- * Chipkarte, Verwaltung) geschenkt. Es ist die größte Einmalzahlung beim
- * Einstieg; wer es geschenkt bekommt, hat einen Grund weniger zu zögern.
- * Der Wert steht hier und nicht in der Datenbank, damit eine Preisänderung
- * an einer Stelle passiert - bereits ausgestellte Gutscheine behalten ihren
- * Betrag, weil er am Gutschein gespeichert ist.
+ * PREISE TRAGT IHR HIER EIN. Solange "preis" null ist, steht dort
+ * "Preis auf Anfrage" - eine erfundene Zahl wäre schlimmer als keine.
  */
 
-export const WERT_STUFEN = [25, 50, 100] as const;
-
-export const STARTPAKET_WERT = 99.9;
-
-export type GutscheinArt = "wert" | "startpaket";
-
-export function artText(art: string, betrag: number): string {
-  if (art === "startpaket") return "Startpaket geschenkt";
-  return `Wertgutschein über ${betrag} €`;
-}
-
-/** Der Betrag für die Anzeige: "99,90 €" oder "50 €". */
-export function betragText(art: string, betrag: number): string {
-  if (art === "startpaket") return `${STARTPAKET_WERT.toFixed(2).replace(".", ",")} €`;
-  return `${betrag} €`;
-}
-
-/**
- * Ein Code wie "KF-7K2M-Q9P4".
- *
- * Ohne 0/O, 1/I/L und 5/S: Der Code wird am Tresen vorgelesen oder von
- * einem Zettel abgetippt, und genau diese Zeichen werden verwechselt.
- * 29 Zeichen hoch acht Stellen sind rund 500 Milliarden Möglichkeiten -
- * genug, dass niemand einen gültigen Code errät.
- */
-const ZEICHEN = "ABCDEFGHJKMNPQRTUVWXYZ2346789";
-
-export function neuerGutscheinCode(): string {
-  const teil = () =>
-    Array.from({ length: 4 }, () => ZEICHEN[randomInt(ZEICHEN.length)]).join("");
-  return `KF-${teil()}-${teil()}`;
-}
-
-/** Was jemand eintippt - klein, mit Leerzeichen - in die gespeicherte Form. */
-export function gutscheinCodeNormalisieren(roh: string): string {
-  const rein = roh.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  if (rein.length !== 10 || !rein.startsWith("KF")) return roh.trim().toUpperCase();
-  return `KF-${rein.slice(2, 6)}-${rein.slice(6)}`;
-}
-
-/**
- * Gültig bis zum Ende des dritten Jahres nach dem Ausstellen.
- *
- * Das ist die gesetzliche Verjährung (§§ 195, 199 BGB). Eine kürzere
- * Frist auf einen Wertgutschein zu drucken, ist in der Regel unwirksam -
- * und am Tresen ein Streit, den man nicht gewinnt.
- */
-export function gueltigBisAb(ausgestellt: Date): Date {
-  return new Date(Date.UTC(ausgestellt.getUTCFullYear() + 3, 11, 31, 23, 59, 59));
-}
-
-export const STATUS_TEXT: Record<GutscheinStatus, string> = {
-  ANGEFRAGT: "angefragt",
-  AUSGESTELLT: "gültig",
-  EINGELOEST: "eingelöst",
-  STORNIERT: "storniert",
+export type GutscheinArt = {
+  titel: string;
+  text: string;
+  /** z. B. "149 €" - null, solange noch nicht festgelegt. */
+  preis: string | null;
+  hervorgehoben?: boolean;
 };
 
-export const STATUS_TON = {
-  ANGEFRAGT: "open",
-  AUSGESTELLT: "ok",
-  EINGELOEST: "idle",
-  STORNIERT: "off",
-} as const;
+// "Ein Monat EMS-Training" ist jetzt die Weihnachtsaktion (unten) - mit Preis.
+export const GUTSCHEINE: GutscheinArt[] = [
+  {
+    titel: "Wertgutschein",
+    text: "Ein Betrag eurer Wahl – einlösbar für Training und Mitgliedschaft, in der Regel in allen unseren Studios.",
+    preis: null,
+  },
+  {
+    titel: "Zehnerkarte",
+    text: "Zehn Einheiten, frei über das Jahr verteilt – für alle, die erst einmal reinschnuppern wollen.",
+    preis: null,
+  },
+];
+
+/** Dieselben Gutscheine auf Englisch (Seite /en/voucher). Preise wie oben. */
+export const GUTSCHEINE_EN: GutscheinArt[] = [
+  {
+    titel: "Gift voucher",
+    text: "An amount of your choice – redeemable for training and membership, usually at all of our studios.",
+    preis: GUTSCHEINE[0].preis,
+  },
+  {
+    titel: "10-session card",
+    text: "Ten sessions, spread freely over the year – for anyone who wants to give it a try first.",
+    preis: GUTSCHEINE[1].preis,
+  },
+];
+
+/**
+ * Die Weihnachtsaktion 2026 (Wunsch Marcel, 26.10.2026).
+ *
+ * KAUF-LINK: Die Adresse der Digistore24-Bestellseite steht NICHT im Code,
+ * sondern in der Umgebungsvariable DIGISTORE_GUTSCHEIN_URL (bei Vercel
+ * unter Settings -> Environment Variables). Solange sie fehlt, zeigt die
+ * Seite statt "Jetzt kaufen" den Weg über das Anfrageformular - es gibt
+ * also nie einen toten Knopf.
+ *
+ * SICHTBAR wird das Ganze wie bisher erst über den Schalter "Gutscheine"
+ * im Adminbereich (Sichtbarkeit) - geplant zum 1. Dezember.
+ */
+export type Aktion = {
+  kicker: string;
+  titel: string;
+  preis: string;
+  text: string;
+  punkte: string[];
+  kaufen: string;
+  hinweisKauf: string;
+};
+
+export const WEIHNACHTSAKTION: Aktion = {
+  kicker: "Weihnachtsaktion",
+  titel: "4 Wochen EMS-Training",
+  preis: "90 €",
+  text: "Zum Verschenken oder selbst nutzen: vier Einheiten à 20 Minuten, jede mit persönlichem Trainer.",
+  punkte: [
+    "4 Einheiten à 20 Minuten mit deinem Trainer",
+    "Gutschein als PDF – sofort nach dem Kauf per E-Mail",
+    "Einlösbar in unseren Studios in Köln und Umgebung",
+  ],
+  kaufen: "Jetzt Gutschein kaufen",
+  hinweisKauf: "Sichere Bezahlung über Digistore24. Den Termin vereinbart die beschenkte Person direkt mit dem Studio.",
+};
+
+export const WEIHNACHTSAKTION_EN: Aktion = {
+  kicker: "Christmas offer",
+  titel: "4 weeks of EMS training",
+  preis: "€90",
+  text: "Give it as a gift or use it yourself: four 20-minute sessions, each with a personal trainer.",
+  punkte: [
+    "4 sessions of 20 minutes with your trainer",
+    "Voucher as a PDF – sent by email right after purchase",
+    "Redeemable at our studios in and around Cologne",
+  ],
+  kaufen: "Buy the voucher now",
+  hinweisKauf: "Secure payment via Digistore24. The recipient books their appointment directly with the studio.",
+};
+
+/** Die Bestellseite bei Digistore24 - oder null, solange nicht eingetragen. */
+export function gutscheinKaufUrl(): string | null {
+  const url = process.env.DIGISTORE_GUTSCHEIN_URL?.trim();
+  return url && /^https:\/\//.test(url) ? url : null;
+}

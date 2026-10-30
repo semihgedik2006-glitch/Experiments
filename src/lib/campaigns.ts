@@ -22,6 +22,7 @@
  */
 
 import type { ZielWert } from "@/lib/ziel-inhalte";
+import type { ToggleKey } from "@/lib/site-toggles";
 
 export type Campaign = {
   /** Kleiner Hinweis über der Überschrift. */
@@ -44,6 +45,11 @@ export type Campaign = {
    * im Formular schon angekreuzt.
    */
   ziel?: ZielWert;
+  /**
+   * Schalter im Adminbereich, ohne den die Seite noch nicht öffentlich ist
+   * (siehe @/lib/vorschau) - für vorbereitete Aktionen wie "neues-jahr".
+   */
+  schalter?: ToggleKey;
 };
 
 // Keine Vergleiche mit anderen Trainingsformen und keine Wirkversprechen
@@ -155,6 +161,28 @@ export const campaigns: Record<string, Campaign> = {
     metaTitle: "Wiedereinstieg ins Training mit EMS - kostenlos testen",
     metaDescription:
       "Nach langer Pause wieder anfangen: EMS-Training startet auf deinem Niveau, ohne schwere Gewichte und persönlich betreut. Jetzt kostenloses Probetraining sichern.",
+  },
+
+  // Für Januar vorbereitet - öffentlich erst, wenn im Adminbereich unter
+  // "Sichtbarkeit" die Aktion "Neues Jahr" eingeschaltet ist. Einen
+  // Aktionscode dazu legt ihr unter "Aktionen" an (z. B. NEUJAHR27) und
+  // schreibt ihn in die Anzeige: Dann zeigt die Auswertung, was sie bringt.
+  "neues-jahr": {
+    schalter: "aktion-neues-jahr",
+    kicker: "Neues Jahr, neuer Rhythmus",
+    headline: "Ein Vorsatz, der",
+    highlight: "in deinen Kalender passt",
+    subline:
+      "Ein Termin pro Woche, 20 Minuten Training, ein Trainer an deiner Seite. Starte mit einem kostenlosen Probetraining - danach entscheidest du in Ruhe.",
+    bullets: [
+      "Ein fester Termin pro Woche statt eines Plans, der im Februar endet",
+      "Bei jeder Einheit ein Trainer, der die Intensität mit dir einstellt",
+      "Kostenlos und unverbindlich ausprobieren",
+    ],
+    formTitle: "Dein Probetraining fürs neue Jahr",
+    metaTitle: "Neues Jahr, neuer Rhythmus - EMS-Probetraining kostenlos",
+    metaDescription:
+      "Ein Vorsatz, der in den Kalender passt: 20 Minuten EMS-Training pro Woche, persönlich betreut. Jetzt kostenloses Probetraining anfragen.",
   },
 
   "zu-zweit": {

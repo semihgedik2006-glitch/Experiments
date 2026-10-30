@@ -85,7 +85,7 @@ export default async function MitgliederbereichSeite({
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
       select: { id: true, name: true, text: true, preis: true, nurStudios: true },
     }),
-    isVisible("gutscheine"),
+    isVisible("gutschein"),
   ]);
 
   const heute = new Date();

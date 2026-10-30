@@ -11,6 +11,7 @@ import {
   textSpeichern,
 } from "@/lib/actions/admin-preise";
 import { SYMBOLE } from "@/lib/zusatzangebote";
+import { EnglischBlock, EnglischFeld } from "@/components/admin/englisch-block";
 
 export type TarifDaten = {
   id: string;
@@ -21,6 +22,12 @@ export type TarifDaten = {
   leistungen: string[];
   empfohlen: boolean;
   hinweis: string | null;
+  nameEn: string | null;
+  untertitelEn: string | null;
+  preisEn: string | null;
+  preisZusatzEn: string | null;
+  leistungenEn: string[];
+  hinweisEn: string | null;
   aktiv: boolean;
   sortOrder: number;
 };
@@ -31,6 +38,9 @@ export type AngebotDaten = {
   text: string | null;
   preis: string | null;
   symbol: string;
+  nameEn: string | null;
+  textEn: string | null;
+  preisEn: string | null;
   nurStudios: string[];
   aktiv: boolean;
   sortOrder: number;
@@ -129,6 +139,34 @@ export function TarifFormular({ tarif }: { tarif?: TarifDaten }) {
           className={adminInput}
         />
       </label>
+
+      <EnglischBlock
+        ausgefuellt={
+          !!(tarif?.nameEn || tarif?.untertitelEn || tarif?.preisEn || tarif?.preisZusatzEn || tarif?.hinweisEn) ||
+          (tarif?.leistungenEn.length ?? 0) > 0
+        }
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
+          <EnglischFeld label="Name">
+            <input type="text" name="nameEn" defaultValue={tarif?.nameEn ?? ""} className={adminInput} />
+          </EnglischFeld>
+          <EnglischFeld label="Subtitle (Untertitel)">
+            <input type="text" name="untertitelEn" defaultValue={tarif?.untertitelEn ?? ""} className={adminInput} />
+          </EnglischFeld>
+          <EnglischFeld label="Price, if it contains words (Preis, falls mit Text)">
+            <input type="text" name="preisEn" defaultValue={tarif?.preisEn ?? ""} placeholder="on request" className={adminInput} />
+          </EnglischFeld>
+          <EnglischFeld label="Price note (Zusatz zum Preis)">
+            <input type="text" name="preisZusatzEn" defaultValue={tarif?.preisZusatzEn ?? ""} placeholder="per month" className={adminInput} />
+          </EnglischFeld>
+        </div>
+        <EnglischFeld label="What is included, one per line (Leistungen, eine je Zeile)">
+          <textarea name="leistungenEn" rows={4} defaultValue={tarif?.leistungenEn.join("\n") ?? ""} className={adminInput} />
+        </EnglischFeld>
+        <EnglischFeld label="Small print (Kleingedrucktes)">
+          <input type="text" name="hinweisEn" defaultValue={tarif?.hinweisEn ?? ""} className={adminInput} />
+        </EnglischFeld>
+      </EnglischBlock>
 
       <div className="flex flex-wrap items-end gap-5">
         <label className="block w-28">
@@ -236,6 +274,18 @@ export function AngebotFormular({
         />
       </label>
 
+      <EnglischBlock ausgefuellt={!!(angebot?.nameEn || angebot?.textEn || angebot?.preisEn)}>
+        <EnglischFeld label="Name">
+          <input type="text" name="nameEn" defaultValue={angebot?.nameEn ?? ""} className={adminInput} />
+        </EnglischFeld>
+        <EnglischFeld label="Description (Beschreibung)">
+          <textarea name="textEn" rows={3} defaultValue={angebot?.textEn ?? ""} className={adminInput} />
+        </EnglischFeld>
+        <EnglischFeld label="Price, if it contains words (Preis, falls mit Text)">
+          <input type="text" name="preisEn" defaultValue={angebot?.preisEn ?? ""} placeholder="included in your membership" className={adminInput} />
+        </EnglischFeld>
+      </EnglischBlock>
+
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1 block text-xs text-muted">Preis</span>
@@ -319,10 +369,12 @@ export function AngebotLoeschen({ id, name }: { id: string; name: string }) {
 export function TextFormular({
   schluessel,
   wert,
+  wertEn = "",
   zeilen,
 }: {
   schluessel: string;
   wert: string;
+  wertEn?: string;
   zeilen: number;
 }) {
   return (
@@ -335,6 +387,9 @@ export function TextFormular({
         className={adminInput}
         aria-label="Hinweis unter den Tarifen"
       />
+      <EnglischBlock ausgefuellt={!!wertEn}>
+        <textarea name="wertEn" rows={zeilen} defaultValue={wertEn} className={adminInput} aria-label="Note below the prices (English)" />
+      </EnglischBlock>
       <SubmitButton>Hinweis speichern</SubmitButton>
     </AdminForm>
   );

@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { terminDatei } from "@/lib/ics";
 import { siteConfig } from "@/lib/site-config";
 import type { MailArt } from "@/generated/prisma/enums";
+import type { Sprache } from "@/lib/sprache";
+import { oeffnungszeitenAufEnglisch } from "@/lib/i18n/oeffnungszeiten";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -145,11 +147,22 @@ export type TerminAngaben = {
   manageToken: string | null;
   /** Adresse des Studios - dorthin gehen Antworten des Kunden. */
   antwortAn?: string | null;
+  /**
+   * Sprache der Anfrage. Wer auf der englischen Seite angefragt hat,
+   * bekommt die Mails auf Englisch und die Links auf die englischen Seiten.
+   */
+  sprache?: Sprache;
 };
 
 /** Der persönliche Link, über den der Gast selbst absagen kann. */
-export function verwaltungsLink(token: string | null): string | null {
-  return token ? `${siteConfig.url}/termin/${token}` : null;
+export function verwaltungsLink(token: string | null, sprache: Sprache = "de"): string | null {
+  if (!token) return null;
+  return sprache === "en" ? `${siteConfig.url}/en/appointment/${token}` : `${siteConfig.url}/termin/${token}`;
+}
+
+/** "18:30" -> "6:30 pm" für die englischen Mails. */
+function zeitEn(zeit: string): string {
+  return oeffnungszeitenAufEnglisch(zeit);
 }
 
 /**
@@ -157,9 +170,16 @@ export function verwaltungsLink(token: string | null): string | null {
  * eine Absage nicht am Telefon hängen bleibt - und damit eine Zeit, die
  * doch nicht passt, wieder frei wird, statt ungenutzt zu verfallen.
  */
-function verwaltungsAbsatz(token: string | null): string {
-  const link = verwaltungsLink(token);
+function verwaltungsAbsatz(token: string | null, sprache: Sprache = "de"): string {
+  const link = verwaltungsLink(token, sprache);
   if (!link) return "";
+  if (sprache === "en") {
+    return `
+
+Does the time not work after all? You can cancel it or move it to another
+time yourself here - no phone call needed, around the clock:
+${link}`;
+  }
   return `
 
 Passt der Termin doch nicht? Hier kannst du ihn selbst absagen oder auf eine
@@ -175,20 +195,30 @@ function termindateiFuer(
   if (!angaben.datum || !angaben.startTime) return null;
 
   const ort = [angaben.studioName, angaben.studioAdresse].filter(Boolean).join(", ");
-  const link = verwaltungsLink(angaben.manageToken);
+  const en = angaben.sprache === "en";
+  const link = verwaltungsLink(angaben.manageToken, angaben.sprache);
 
   const inhalt = terminDatei({
     id: angaben.bookingId,
     // Der Studioname trägt die Marke bereits ("Körperformen Hürth") -
     // ohne diese Fallunterscheidung stünde sie doppelt im Kalender.
-    titel: angaben.studioName
-      ? `Probetraining bei ${angaben.studioName}`
-      : "Probetraining bei Körperformen",
-    beschreibung: [
-      "Dein kostenloses EMS-Probetraining.",
-      "Komm bitte ein paar Minuten früher - Trainingskleidung stellen wir.",
-      link ? `Absagen oder verschieben: ${link}` : "",
-    ]
+    titel: en
+      ? `Trial session at ${angaben.studioName ?? "Körperformen"}`
+      : angaben.studioName
+        ? `Probetraining bei ${angaben.studioName}`
+        : "Probetraining bei Körperformen",
+    beschreibung: (en
+      ? [
+          "Your free EMS trial session.",
+          "Please arrive a few minutes early - we provide the training clothes.",
+          link ? `Cancel or reschedule: ${link}` : "",
+        ]
+      : [
+          "Dein kostenloses EMS-Probetraining.",
+          "Komm bitte ein paar Minuten früher - Trainingskleidung stellen wir.",
+          link ? `Absagen oder verschieben: ${link}` : "",
+        ]
+    )
       .filter(Boolean)
       .join("\n"),
     ort: ort || "Körperformen",
@@ -202,7 +232,7 @@ function termindateiFuer(
   });
 
   return {
-    filename: "probetermin.ics",
+    filename: en ? "trial-session.ics" : "probetermin.ics",
     content: Buffer.from(inhalt, "utf8"),
     contentType: "text/calendar; charset=utf-8; method=PUBLISH",
   };
@@ -214,6 +244,12 @@ function plusEineStunde(zeit: string): string {
 }
 
 function terminZeile(angaben: TerminAngaben): string {
+  if (angaben.sprache === "en") {
+    if (!angaben.dateLabel || !angaben.startTime) return "your trial session";
+    return `your trial session on ${angaben.dateLabel} at ${zeitEn(angaben.startTime)}${
+      angaben.studioName ? ` at ${angaben.studioName}` : ""
+    }`;
+  }
   if (!angaben.dateLabel || !angaben.startTime) return "dein Probetermin";
   return `dein Probetermin am ${angaben.dateLabel} um ${angaben.startTime} Uhr${
     angaben.studioName ? ` im Studio ${angaben.studioName}` : ""
@@ -222,6 +258,23 @@ function terminZeile(angaben: TerminAngaben): string {
 
 export async function sendBookingConfirmedEmail(angaben: TerminAngaben) {
   const datei = termindateiFuer(angaben);
+
+  if (angaben.sprache === "en") {
+    return verschicken("BESTAETIGUNG", {
+      to: angaben.email,
+      replyTo: angaben.antwortAn,
+      subject: "Your trial session at Körperformen is confirmed",
+      text: `Hello ${angaben.name},
+
+${terminZeile(angaben)} is confirmed.${angaben.studioAdresse ? `\n\nAddress: ${angaben.studioAdresse}` : ""}
+
+${datei ? "Attached is a calendar file - tap it to add the appointment to your calendar.\n" : ""}Please allow a little time and arrive a few minutes early. We provide the training clothes.${verwaltungsAbsatz(angaben.manageToken, "en")}
+
+See you soon!
+Your Körperformen team`,
+      ...(datei ? { attachments: [datei] } : {}),
+    });
+  }
 
   return verschicken("BESTAETIGUNG", {
     to: angaben.email,
@@ -248,6 +301,23 @@ Dein Körperformen-Team`,
  * Termin erinnern und den Weg zum Absagen zeigen, nicht noch einmal werben.
  */
 export async function sendReminderEmail(angaben: TerminAngaben) {
+  if (angaben.sprache === "en") {
+    return verschicken("ERINNERUNG", {
+      to: angaben.email,
+      replyTo: angaben.antwortAn,
+      subject: `Reminder: ${angaben.dateLabel ? `your trial session on ${angaben.dateLabel}` : "your trial session"}`,
+      text: `Hello ${angaben.name},
+
+a quick reminder: ${terminZeile(angaben)} is coming up - tomorrow.${
+        angaben.studioAdresse ? `\n\nAddress: ${angaben.studioAdresse}` : ""
+      }
+
+Please arrive a few minutes early. We provide the training clothes.${verwaltungsAbsatz(angaben.manageToken, "en")}
+
+See you tomorrow!
+Your Körperformen team`,
+    });
+  }
   return verschicken("ERINNERUNG", {
     to: angaben.email,
     replyTo: angaben.antwortAn,
@@ -269,6 +339,24 @@ Dein Körperformen-Team`,
 export async function sendCancelledByGuestEmail(angaben: TerminAngaben) {
   const datei = termindateiFuer(angaben, { abgesagt: true, fassung: 1 });
 
+  if (angaben.sprache === "en") {
+    return verschicken("ABSAGE_GAST", {
+      to: angaben.email,
+      replyTo: angaben.antwortAn,
+      subject: "Your trial session has been cancelled",
+      text: `Hello ${angaben.name},
+
+${terminZeile(angaben)} is cancelled. There is nothing else you need to do.
+
+If you would like a new appointment, you can request one here:
+${siteConfig.url}/en/book
+
+Best wishes
+Your Körperformen team`,
+      ...(datei ? { attachments: [datei] } : {}),
+    });
+  }
+
   return verschicken("ABSAGE_GAST", {
     to: angaben.email,
     replyTo: angaben.antwortAn,
@@ -289,6 +377,23 @@ Dein Körperformen-Team`,
 /** Bestätigung an den Gast, nachdem er den Termin selbst verlegt hat. */
 export async function sendMovedByGuestEmail(angaben: TerminAngaben) {
   const datei = termindateiFuer(angaben, { fassung: 2 });
+
+  if (angaben.sprache === "en") {
+    return verschicken("VERSCHOBEN_GAST", {
+      to: angaben.email,
+      replyTo: angaben.antwortAn,
+      subject: "Your trial session has been moved",
+      text: `Hello ${angaben.name},
+
+all set - ${terminZeile(angaben)}.${angaben.studioAdresse ? `\n\nAddress: ${angaben.studioAdresse}` : ""}
+
+${datei ? "The attached calendar file updates the entry in your calendar.\n" : ""}${verwaltungsAbsatz(angaben.manageToken, "en").trimStart()}
+
+See you soon!
+Your Körperformen team`,
+      ...(datei ? { attachments: [datei] } : {}),
+    });
+  }
 
   return verschicken("VERSCHOBEN_GAST", {
     to: angaben.email,
@@ -335,6 +440,10 @@ export type AnfrageAngaben = {
   herkunft: string | null;
   /** Adresse des Studios - dorthin gehen Antworten des Kunden. */
   antwortAn?: string | null;
+  /** Sprache der Anfrage - für die Eingangsbestätigung und als Hinweis ans Studio. */
+  sprache?: Sprache;
+  /** Für die englische Eingangsbestätigung: dieselben Angaben auf Englisch. */
+  englisch?: { erreichbarkeit: string; terminZeile: string; ziel: string | null };
 };
 
 /**
@@ -346,6 +455,29 @@ export type AnfrageAngaben = {
  * Sache für nicht angekommen und fragt beim nächsten Studio an.
  */
 export async function sendAnfrageEingangEmail(angaben: AnfrageAngaben) {
+  if (angaben.sprache === "en" && angaben.englisch) {
+    const e = angaben.englisch;
+    return verschicken("ANFRAGE_EINGANG", {
+      to: angaben.email,
+      replyTo: angaben.antwortAn,
+      subject: "We have received your request",
+      text: `Hello ${angaben.name},
+
+thank you for your request - we have it.
+
+What happens next: we will call you to fix the appointment. You told us
+the best time to reach you is ${e.erreichbarkeit.toLowerCase()} - we will stick to that.
+
+This is what we noted:
+- ${e.terminZeile}${angaben.studioName ? `\n- Studio: ${angaben.studioName}` : ""}${e.ziel ? `\n- Your goal: ${e.ziel}` : ""}
+- Phone: ${angaben.phone}
+
+If anything is not right, simply reply to this email.
+
+See you soon!
+Your Körperformen team`,
+    });
+  }
   return verschicken("ANFRAGE_EINGANG", {
     to: angaben.email,
     replyTo: angaben.antwortAn,
@@ -390,12 +522,15 @@ export async function sendAnfrageInternEmail(an: string, angaben: AnfrageAngaben
     angaben.ziel ? `Ziel:        ${angaben.ziel}` : null,
     angaben.aktionsCode ? `Aktionscode: ${angaben.aktionsCode}` : null,
     angaben.herkunft ? `Kam über:    ${angaben.herkunft}` : null,
+    // Damit niemand auf Deutsch zurückruft, wenn jemand die englische
+    // Seite gelesen hat.
+    angaben.sprache === "en" ? "Sprache:     ENGLISCH - bitte auf Englisch zurückrufen" : null,
   ].filter(Boolean);
 
   return verschicken("ANFRAGE_INTERN", {
     to: an,
     replyTo: angaben.email,
-    subject: `Neue Probetermin-Anfrage: ${angaben.name}${angaben.studioName ? ` (${angaben.studioName})` : ""}`,
+    subject: `${angaben.sprache === "en" ? "[Englisch] " : ""}Neue Probetermin-Anfrage: ${angaben.name}${angaben.studioName ? ` (${angaben.studioName})` : ""}`,
     text: `Es ist eine neue Anfrage eingegangen.
 
 ${zeilen.join("\n")}${angaben.nachricht ? `\n\nNachricht:\n${angaben.nachricht}` : ""}
@@ -469,6 +604,11 @@ ${siteConfig.url}/admin/bookings?status=PENDING`,
   });
 }
 
+/** Der Monatsbericht an das Team (@/lib/monatsbericht). */
+export async function sendMonatsberichtEmail(an: string, betreff: string, text: string) {
+  return verschicken("MONATSBERICHT", { to: an, subject: betreff, text });
+}
+
 /** Benachrichtigung über eine neue Kontaktnachricht. */
 export async function sendKontaktInternEmail(
   an: string,
@@ -514,6 +654,27 @@ ${siteConfig.url}/admin/nachrichten?gelesen=neu`,
 export async function sendBewertungEmail(
   angaben: TerminAngaben & { bewertungsLink: string },
 ) {
+  if (angaben.sprache === "en") {
+    return verschicken("BEWERTUNG", {
+      to: angaben.email,
+      replyTo: angaben.antwortAn,
+      subject: "How was your trial session?",
+      text: `Hello ${angaben.name},
+
+yesterday you came to us${angaben.studioName ? ` in ${angaben.studioName.replace(/^Körperformen\s+/i, "")}` : ""} for a trial session.
+
+If you have two minutes: a short review on Google helps us more than any
+ad - and it helps the next person who is wondering whether EMS is for them.
+
+${angaben.bewertungsLink}
+
+We prefer honest to nice. If something did not work for you, feel free to
+simply tell us - then we can change it.
+
+Best wishes
+Your Körperformen team`,
+    });
+  }
   return verschicken("BEWERTUNG", {
     to: angaben.email,
     replyTo: angaben.antwortAn,
@@ -552,7 +713,29 @@ export async function sendWartelisteFreiEmail(angaben: {
   studioAdresse: string | null;
   link: string;
   antwortAn?: string | null;
+  sprache?: Sprache;
 }) {
+  if (angaben.sprache === "en") {
+    return verschicken("WARTELISTE_FREI", {
+      to: angaben.email,
+      replyTo: angaben.antwortAn,
+      subject: `A spot is free: ${angaben.terminZeile}`,
+      text: `Hello ${angaben.name},
+
+you wanted to know when something became free at ${angaben.terminZeile} - now it has.${
+        angaben.studioAdresse ? `\n\n${angaben.studioName}\n${angaben.studioAdresse}` : ""
+      }
+
+You can book the time here:
+${angaben.link}
+
+To be honest: we do not hold the spot for you. Whoever books first gets it -
+so sooner rather than later.
+
+Best wishes
+Your Körperformen team`,
+    });
+  }
   return verschicken("WARTELISTE_FREI", {
     to: angaben.email,
     replyTo: angaben.antwortAn,
@@ -628,6 +811,7 @@ export async function sendWartelisteInternEmail(
     terminZeile: string;
     studioName: string | null;
     zuZweit: boolean;
+    sprache?: Sprache;
   },
 ) {
   const zeilen = [
@@ -638,6 +822,7 @@ export async function sendWartelisteInternEmail(
     `Wunschzeit:  ${angaben.terminZeile} (belegt)`,
     angaben.studioName ? `Studio:      ${angaben.studioName}` : null,
     angaben.zuZweit ? "Personen:    2 (kommt zu zweit)" : null,
+    angaben.sprache === "en" ? "Sprache:     ENGLISCH - bitte auf Englisch zurückrufen" : null,
   ].filter(Boolean);
 
   return verschicken("WARTELISTE_INTERN", {
@@ -678,7 +863,29 @@ export async function sendKundenbereichEmail(angaben: {
   name: string | null;
   link: string;
   gueltigMinuten: number;
+  sprache?: Sprache;
 }) {
+  if (angaben.sprache === "en") {
+    return verschicken("KUNDENBEREICH", {
+      to: angaben.email,
+      subject: "Your appointments at Körperformen",
+      text: `${angaben.name ? `Hello ${angaben.name},` : "Hello,"}
+
+here is your link to your appointments:
+
+${angaben.link}
+
+It is valid for ${angaben.gueltigMinuten} minutes. After that, simply request a new one - as
+often as you like.
+
+You did not request this link? Then someone typed your address into our
+form. Nothing has happened: without the link above, nobody can get to your
+appointments. You can simply delete this email.
+
+Best wishes
+Your Körperformen team`,
+    });
+  }
   const anrede = angaben.name ? `Hallo ${angaben.name},` : "Hallo,";
 
   return verschicken("KUNDENBEREICH", {

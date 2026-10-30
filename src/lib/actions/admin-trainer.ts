@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { enText } from "@/lib/admin-englisch";
+import { revalidatePath } from "@/lib/revalidieren";
 import { prisma } from "@/lib/prisma";
 import { verlangeStudioRecht } from "@/lib/admin-rechte";
 
@@ -36,6 +37,9 @@ function lesen(formData: FormData) {
     rolle: kuerzen(formData, "rolle") || null,
     qualifikation: kuerzen(formData, "qualifikation") || null,
     text: kuerzen(formData, "text") || null,
+    rolleEn: enText(formData, "rolleEn", GRENZEN.rolle),
+    qualifikationEn: enText(formData, "qualifikationEn", GRENZEN.qualifikation),
+    textEn: enText(formData, "textEn", GRENZEN.text),
     fotoUrl: kuerzen(formData, "fotoUrl") || null,
     aktiv: formData.get("aktiv") !== null,
     sortOrder: Number(formData.get("sortOrder") ?? 0) || 0,

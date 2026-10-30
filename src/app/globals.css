@@ -1980,13 +1980,6 @@ summary::-webkit-details-marker {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
-/* Das Büro-Foto: kühl und etwas entsättigt - der Moment davor. */
-.hero-buero img {
-  filter: saturate(0.55) brightness(0.85);
-}
-.hero-familie img {
-  filter: saturate(1.05);
-}
 .hero-linie {
   background: linear-gradient(to right, rgb(255 255 255 / 0.35), var(--ink-lime));
 }
@@ -2469,5 +2462,39 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .weg-hier {
     animation: none;
+  }
+}
+
+/* ==========================================================================
+   Klick-Impuls auf den Buchungsknöpfen (components/klick-impuls.tsx):
+   Ein Lime-Ring läuft einmal vom Knopf nach außen - wie der Impuls im
+   Logo. Über box-shadow, weil ::before schon den Glanz trägt.
+   ========================================================================== */
+@keyframes klick-impuls {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-lime) 75%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 16px color-mix(in oklab, var(--color-lime) 0%, transparent);
+  }
+}
+.klick-impuls {
+  animation: klick-impuls 0.55s ease-out;
+}
+
+/* Das Ziel-Motiv beim Seitenwechsel (components/ui/ziel-uebergang.tsx). */
+::view-transition-group(ziel-motiv) {
+  animation-duration: 0.55s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .klick-impuls {
+    animation: none;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

@@ -1,3 +1,6 @@
+import type { Sprache } from "@/lib/sprache";
+import { GOALS_EN } from "@/lib/ziel-inhalte-en";
+
 /**
  * Was die Startseite zu jedem Ziel sagt.
  *
@@ -13,7 +16,7 @@
  * keine Diagnosen.
  */
 
-export type ZielWert = "ruecken" | "straffen" | "abnehmen" | "muskelaufbau" | "fitness";
+export type ZielWert = "ruecken" | "straffen" | "abnehmen" | "muskelaufbau" | "fitness" | "gelenke";
 
 /** Die acht Zonen der Weste, in dieser Reihenfolge. */
 export const ZONEN = [
@@ -27,32 +30,56 @@ export const ZONEN = [
   "Beine",
 ] as const;
 
+export const ZONEN_EN = [
+  "Chest",
+  "Abs",
+  "Arms",
+  "Shoulders",
+  "Upper back",
+  "Lower back",
+  "Glutes",
+  "Legs",
+] as const;
+
+export function zonen(sprache: Sprache): readonly string[] {
+  return sprache === "en" ? ZONEN_EN : ZONEN;
+}
+
 /** Die Abschnitte der Startseite, die sich je Ziel umsortieren lassen. */
 export type AbschnittKey =
   | "zielwelt"
+  | "auszeichnung"
   | "individuell"
   | "zeit"
+  | "ablauf"
+  | "reels"
   | "vorteile"
-  | "netzwerk"
   | "studio"
   | "erfolge"
   | "vertrauen"
   | "blog"
-  | "instagram"
   | "faq";
 
-/** Ohne gewähltes Ziel: die Reihenfolge, wie sie immer war. */
+/**
+ * Ohne gewähltes Ziel.
+ *
+ * Gekürzt von 13 auf 9 Abschnitte (auf dem Handy von 26 auf rund 15
+ * Bildschirme): Gelesen werden vor allem die ersten zwei Bildschirme
+ * (Nielsen Norman Group, "Scrolling and Attention", 2018), und vier
+ * Abschnitte sagten, was anderswo schon stand. "270+ Studios" steht im
+ * Zahlenband und auf /studio, "20 Minuten" in Zahlenband, Scroll-Story
+ * und Vorteilen, Blog und Instagram sind über das Menü erreichbar.
+ */
 export const STANDARD_REIHENFOLGE: AbschnittKey[] = [
   "zielwelt",
+  "auszeichnung",
   "individuell",
-  "zeit",
+  "ablauf",
+  "reels",
   "vorteile",
-  "netzwerk",
   "studio",
   "erfolge",
   "vertrauen",
-  "blog",
-  "instagram",
   "faq",
 ];
 
@@ -102,7 +129,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     },
     titel: ["Ein Rücken, der deinen", "Tag mitmacht."],
     knopf: "Probetraining für deinen Rücken",
-    reihenfolge: ["zielwelt", "individuell", "vorteile", "studio", "erfolge", "blog", "vertrauen", "netzwerk", "faq"],
+    reihenfolge: ["zielwelt", "auszeichnung", "individuell", "ablauf", "reels", "vorteile", "erfolge", "vertrauen", "faq"],
     stichworte: ["rücken", "gelenk", "beschwerden", "sicher", "geeignet"],
     kurz: "Rücken stärken",
     antwort: "Dein Trainer legt den Schwerpunkt auf Rücken und Rumpf – mit einer Intensität, die zu deinem Rücken passt.",
@@ -128,7 +155,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     },
     titel: ["Mehr Form. Mehr Spannung.", "Mehr du."],
     knopf: "Probetraining für mehr Form",
-    reihenfolge: ["zielwelt", "individuell", "erfolge", "vorteile", "zeit", "studio", "blog", "vertrauen", "netzwerk", "faq"],
+    reihenfolge: ["zielwelt", "auszeichnung", "individuell", "erfolge", "ablauf", "reels", "vorteile", "studio", "faq"],
     stichworte: ["ergebnis", "straff", "definier", "muskel", "form"],
     kurz: "Straffen und formen",
     antwort: "Dein Trainer setzt die Intensität dort höher, wo du mehr Spannung und Form willst – Bauch, Po, Beine oder Arme.",
@@ -154,7 +181,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     },
     titel: ["Dranbleiben war noch", "nie so einfach."],
     knopf: "Probetraining zum Abnehmen",
-    reihenfolge: ["zielwelt", "zeit", "individuell", "erfolge", "vorteile", "blog", "studio", "vertrauen", "netzwerk", "faq"],
+    reihenfolge: ["zielwelt", "auszeichnung", "zeit", "individuell", "erfolge", "ablauf", "reels", "vorteile", "faq"],
     stichworte: ["abnehm", "ernährung", "ergebnis", "kosten"],
     kurz: "Abnehmen",
     antwort: "Ein fester Termin, ein Trainer, der dich erwartet – und auf Wunsch Ernährungsberatung dazu.",
@@ -180,7 +207,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     },
     titel: ["Stärker werden,", "Woche für Woche."],
     knopf: "Probetraining für mehr Kraft",
-    reihenfolge: ["zielwelt", "individuell", "vorteile", "erfolge", "studio", "blog", "vertrauen", "netzwerk", "faq"],
+    reihenfolge: ["zielwelt", "auszeichnung", "individuell", "ablauf", "reels", "vorteile", "erfolge", "studio", "faq"],
     stichworte: ["muskel", "oft", "ergebnis", "anfänger"],
     kurz: "Muskeln aufbauen",
     antwort: "Dein Trainer stellt jede Muskelgruppe einzeln ein und steigert die Intensität mit dir – Woche für Woche.",
@@ -206,7 +233,7 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     },
     titel: ["Treppen, Einkäufe, Kinder –", "wieder leicht."],
     knopf: "Probetraining für mehr Fitness",
-    reihenfolge: ["zielwelt", "zeit", "vorteile", "individuell", "studio", "netzwerk", "erfolge", "blog", "vertrauen", "faq"],
+    reihenfolge: ["zielwelt", "auszeichnung", "zeit", "ablauf", "reels", "vorteile", "individuell", "studio", "faq"],
     stichworte: ["oft", "anfänger", "zeit", "berufstätig", "mitbringen"],
     kurz: "Fitter im Alltag",
     antwort: "Einmal pro Woche 20 Minuten, alles eingestellt von deinem Trainer – damit du dich im Alltag wieder leichter fühlst.",
@@ -222,11 +249,59 @@ export const ZIEL_INHALTE: readonly ZielInhalt[] = [
     ],
     profil: [0.65, 0.65, 0.6, 0.65, 0.65, 0.55, 0.7, 0.7],
     hinweis: "Du weißt noch nicht genau, was dein Ziel ist? Auch das klärt dein Trainer im Probetraining mit dir.",
+
+  },
+  {
+    // Wunsch Marcel (22.10.): Gelenke als eigenes Ziel - gerade für die
+    // Zielgruppe ab 40. Beschrieben wird, WIE trainiert wird (ohne Last
+    // auf den Gelenken), nicht dass Beschwerden verschwinden.
+    wert: "gelenke",
+    seite: {
+      titel: "Gelenkschonendes EMS-Training in Köln",
+      beschreibung:
+        "Gelenkschonend trainieren mit EMS: ohne schwere Gewichte, ohne Sprünge, mit persönlichem Trainer und 20 Minuten pro Woche. {studios} in Köln und Umgebung - jetzt kostenlos testen.",
+    },
+    titel: ["Kräftig werden,", "ohne Last auf den Gelenken."],
+    knopf: "Probetraining gelenkschonend",
+    reihenfolge: ["zielwelt", "auszeichnung", "individuell", "vorteile", "ablauf", "reels", "studio", "vertrauen", "faq"],
+    stichworte: ["gelenk", "knie", "hüft", "sicher", "geeignet", "beschwerde", "gewicht"],
+    kurz: "Gelenke schonen",
+    antwort: "Kein Gewicht, keine Sprünge: Dein Trainer kräftigt die Muskeln rund um deine Gelenke – mit Bewegungen, die sich für dich gut anfühlen.",
+    erkennst: [
+      "Knie oder Hüfte melden sich, wenn du an Hanteln oder Joggen denkst.",
+      "Du willst kräftiger werden, aber deine Gelenke nicht zusätzlich belasten.",
+      "Du bist über 40 und suchst ein Training, das zu deinem Körper passt.",
+    ],
+    soArbeiten: [
+      { titel: "Ohne Zusatzlast", text: "Keine Hantel, keine Sprünge. Die Muskeln arbeiten über den Impuls – die Gelenke tragen kein Extragewicht." },
+      { titel: "Muskeln, die stützen", text: "Beine, Po und Rumpf werden gezielt eingestellt – die Muskulatur, die deine Gelenke im Alltag führt." },
+      { titel: "Langsam gesteigert", text: "Dein Trainer startet sanft und steigert erst, wenn es sich für dich gut anfühlt." },
+    ],
+    profil: [0.55, 0.7, 0.55, 0.6, 0.65, 0.6, 0.85, 0.9],
+    hinweis: "Hast du Arthrose, ein künstliches Gelenk oder akute Beschwerden? Dann klär das Training bitte vorher mit deinem Arzt ab – im Gesundheitscheck fragt dein Trainer ohnehin danach.",
   },
 ];
 
-export function zielInhalt(wert: string | null | undefined): ZielInhalt | undefined {
-  return ZIEL_INHALTE.find((z) => z.wert === wert);
+/**
+ * Dieselben Ziele auf Englisch. Reihenfolge der Abschnitte und das
+ * Zonenprofil sind dieselben - übersetzt sind nur die Texte (und die
+ * Stichworte, weil Fragen und Artikel auf /en englisch sind).
+ */
+export const ZIEL_INHALTE_EN: readonly ZielInhalt[] = ZIEL_INHALTE.map((de) => {
+  const en = GOALS_EN.find((g) => g.wert === de.wert);
+  if (!en) return de;
+  return { ...de, ...en, reihenfolge: en.reihenfolge ?? de.reihenfolge };
+});
+
+export function zielInhalte(sprache: Sprache): readonly ZielInhalt[] {
+  return sprache === "en" ? ZIEL_INHALTE_EN : ZIEL_INHALTE;
+}
+
+export function zielInhalt(
+  wert: string | null | undefined,
+  sprache: Sprache = "de",
+): ZielInhalt | undefined {
+  return zielInhalte(sprache).find((z) => z.wert === wert);
 }
 
 /**
@@ -252,7 +327,8 @@ export function nachZiel<T>(liste: T[], text: (eintrag: T) => string, ziel: Ziel
 }
 
 /** Die Seitenbeschreibung mit der aktuellen Zahl der Studios. */
-export function seitenBeschreibung(ziel: ZielInhalt, anzahlStudios: number): string {
-  const studios = anzahlStudios > 1 ? `${anzahlStudios} Studios` : "Studios";
+export function seitenBeschreibung(ziel: ZielInhalt, anzahlStudios: number, sprache: Sprache = "de"): string {
+  const wort = sprache === "en" ? "studios" : "Studios";
+  const studios = anzahlStudios > 1 ? `${anzahlStudios} ${wort}` : wort;
   return ziel.seite.beschreibung.replace("{studios}", studios);
 }

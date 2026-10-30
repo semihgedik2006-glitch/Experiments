@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { MapPin } from "lucide-react";
 import { subscribeConsent, readConsent, serverConsent } from "@/lib/consent";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /**
  * Google-Maps-Einbettung mit vorgeschalteter Einwilligung.
@@ -31,6 +32,7 @@ export function MapEmbed({
   const [loadedOnce, setLoadedOnce] = useState(false);
   const [nahAmBildschirm, setNahAmBildschirm] = useState(false);
   const platzRef = useRef<HTMLDivElement>(null);
+  const en = useSprache() === "en";
 
   useEffect(() => {
     const el = platzRef.current;
@@ -76,12 +78,13 @@ export function MapEmbed({
       className={`flex flex-col items-center justify-center gap-3 bg-surface px-6 py-10 text-center ${className}`}
     >
       <MapPin size={24} className="text-accent" />
-      <p className="text-sm font-semibold">Karte von Google Maps</p>
+      <p className="text-sm font-semibold">{en ? "Google Maps map" : "Karte von Google Maps"}</p>
       <p className="max-w-xs text-xs text-muted">
-        Beim Laden der Karte wird eine Verbindung zu Google hergestellt und deine
-        IP-Adresse übertragen. Mehr dazu in unserer{" "}
-        <a href="/datenschutz" className="text-accent underline underline-offset-2">
-          Datenschutzerklärung
+        {en
+          ? "Loading the map connects to Google and transmits your IP address. More in our "
+          : "Beim Laden der Karte wird eine Verbindung zu Google hergestellt und deine IP-Adresse übertragen. Mehr dazu in unserer "}
+        <a href={en ? "/en/privacy" : "/datenschutz"} className="text-accent underline underline-offset-2">
+          {en ? "privacy policy" : "Datenschutzerklärung"}
         </a>
         .
       </p>
@@ -90,7 +93,7 @@ export function MapEmbed({
         onClick={() => setLoadedOnce(true)}
         className="mt-1 rounded-full bg-lime px-5 py-2 text-xs font-semibold text-on-lime transition-opacity hover:opacity-90"
       >
-        Karte laden
+        {en ? "Load map" : "Karte laden"}
       </button>
     </div>
   );

@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/format";
 import { freiePlaetze } from "@/lib/kapazitaet";
 import { sendWartelisteFreiEmail } from "@/lib/email";
 import { siteConfig } from "@/lib/site-config";
+import { oeffnungszeitenAufEnglisch } from "@/lib/i18n/oeffnungszeiten";
 
 /**
  * Wird ein Platz frei, rückt der Nächste nach.
@@ -57,18 +58,22 @@ export async function wartelisteBenachrichtigen(slotId: string | null | undefine
       const braucht = eintrag.zuZweit ? 2 : 1;
       if (braucht > frei) continue;
 
+      const en = eintrag.sprache === "en";
       const ok = await sendWartelisteFreiEmail({
         email: eintrag.email,
         name: eintrag.name,
-        terminZeile,
+        terminZeile: en
+          ? `${formatDate(slot.date, "en")} at ${oeffnungszeitenAufEnglisch(slot.startTime)}`
+          : terminZeile,
+        sprache: en ? "en" : "de",
         studioName: slot.studio?.name ?? null,
         studioAdresse: slot.studio
           ? `${slot.studio.street}, ${slot.studio.postalCode} ${slot.studio.city}`
           : null,
         antwortAn: slot.studio?.email ?? null,
         link: slot.studio
-          ? `${siteConfig.url}/studio/${slot.studio.slug}#termin`
-          : `${siteConfig.url}/probetermin`,
+          ? `${siteConfig.url}${en ? "/en/studios" : "/studio"}/${slot.studio.slug}#termin`
+          : `${siteConfig.url}${en ? "/en/book" : "/probetermin"}`,
       });
 
       // Auch ein gescheiterter Versuch wird vermerkt: Sonst bekäme dieselbe

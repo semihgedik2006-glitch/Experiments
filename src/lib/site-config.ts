@@ -20,6 +20,22 @@ import { basisadresseErmitteln } from "@/lib/basisadresse";
  * sehen, welche Adresse gerade gilt und woher sie kommt.
  */
 
+/** Was sich je Sprache ändert - der Rest von siteConfig gilt für beide. */
+export const siteTexte = {
+  de: {
+    tagline: "EMS-Training in Köln und Umgebung",
+    claim: "Der größte Körperformen-Partner in Köln und Umgebung",
+    description:
+      "EMS-Training mit persönlichem Trainer: 20 Minuten pro Woche, in Studios in Köln und Umgebung. Jetzt kostenloses Probetraining buchen.",
+  },
+  en: {
+    tagline: "EMS training in and around Cologne",
+    claim: "The largest Körperformen partner in and around Cologne",
+    description:
+      "EMS training with a personal trainer: 20 minutes a week, at studios in and around Cologne. Book your free trial session now.",
+  },
+} as const;
+
 export const siteConfig = {
   name: "Körperformen",
   // Steht im Seitentitel ("Körperformen - EMS-Training in Köln und
@@ -58,7 +74,9 @@ export const siteConfig = {
    * nachgezogen werden.
    */
   netzwerk: {
-    studiosGesamt: 277,
+    // Stand Oktober 2026 laut Geschäftsleitung (Marcel): "270 Studios
+    // insgesamt". Angezeigt als "270+", weil die Zahl laufend wächst.
+    studiosGesamt: 270,
   },
   social: {
     instagram: "https://instagram.com/koerperformen_huerth",
@@ -72,12 +90,15 @@ export const siteConfig = {
 // Logo da, und der Platz geht an "Erster Besuch". Im Handymenü steht die
 // Startseite trotzdem, siehe header.tsx.
 export const mainNav = [
-  { label: "EMS-Training", href: "/ems-training" },
-  { label: "Erster Besuch", href: "/erster-besuch" },
-  { label: "Studio", href: "/studio" },
-  { label: "Preise", href: "/preise" },
-  { label: "Erfolge", href: "/erfolgsgeschichten" },
-  { label: "Wissen", href: "/blog" },
-  { label: "Über uns", href: "/ueber-uns" },
-  { label: "Kontakt", href: "/kontakt" },
+  { label: "EMS-Training", labelEn: "EMS training", href: "/ems-training" },
+  { label: "Erster Besuch", labelEn: "First visit", href: "/erster-besuch" },
+  { label: "Studio", labelEn: "Studios", href: "/studio" },
+  { label: "Preise", labelEn: "Prices", href: "/preise" },
+  { label: "Erfolge", labelEn: "Success stories", href: "/erfolgsgeschichten" },
+  { label: "Wissen", labelEn: "Knowledge", href: "/blog" },
+  // In der Kopfzeile am Computer nicht mehr: Sieben Punkte plus Englisch,
+  // Suche und Hell/Dunkel waren zu viel. Beide stehen im Handy-Menü und in
+  // der Fußzeile - dort sucht man sie.
+  { label: "Über uns", labelEn: "About us", href: "/ueber-uns", nurUnten: true },
+  { label: "Kontakt", labelEn: "Contact", href: "/kontakt", nurUnten: true },
 ];

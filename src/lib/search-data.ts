@@ -60,3 +60,67 @@ export const staticSearchEntries = [
     keywords: ["faq", "fragen", "hilfe"],
   },
 ];
+
+/** Dieselben Einträge auf Englisch - die Adressen sind die deutschen, übersetzt werden sie in der Suche. */
+export const staticSearchEntriesEn: typeof staticSearchEntries = [
+  {
+    title: "Home",
+    description: "EMS training in and around Cologne - 20 minutes a week.",
+    href: "/",
+    keywords: ["home", "start", "ems", "training"],
+  },
+  {
+    title: "Find a studio",
+    description: "Address, directions and opening hours of our studios.",
+    href: "/studio",
+    keywords: ["location", "address", "directions", "opening hours", "hürth", "cologne", "köln", "brühl"],
+  },
+  {
+    title: "Prices",
+    description: "Individual training packages - discussed at your personal trial session.",
+    href: "/preise",
+    keywords: ["cost", "price", "membership", "package"],
+  },
+  {
+    title: "About us",
+    description: "The team and the philosophy of Körperformen.",
+    href: "/ueber-uns",
+    keywords: ["team", "trainer", "philosophy"],
+  },
+  {
+    title: "Book a trial session",
+    description: "Request a free, no-obligation trial session.",
+    href: "/probetermin",
+    keywords: ["appointment", "book", "free", "trial"],
+  },
+  {
+    title: "Knowledge (blog)",
+    description: "Training tips, EMS knowledge and news from the studio.",
+    href: "/blog",
+    keywords: ["article", "news", "tips", "blog", "knowledge"],
+  },
+  {
+    title: "Your first visit",
+    description: "How the free trial session works - minute by minute.",
+    href: "/erster-besuch",
+    keywords: ["process", "trial", "first time", "bring", "towel", "suit"],
+  },
+  {
+    title: "Socials",
+    description: "Körperformen on Instagram, TikTok and Facebook.",
+    href: "/socials",
+    keywords: ["instagram", "tiktok", "facebook", "social media", "follow"],
+  },
+  {
+    title: "Contact",
+    description: "Questions? Get in touch with us.",
+    href: "/kontakt",
+    keywords: ["email", "phone", "message"],
+  },
+  {
+    title: "Frequently asked questions",
+    description: "Answers to the most important questions about EMS training.",
+    href: "/#faq",
+    keywords: ["faq", "questions", "help"],
+  },
+];

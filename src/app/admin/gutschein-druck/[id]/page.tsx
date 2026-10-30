@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
 import { DruckKnopf } from "@/components/admin/druck-knopf";
 import { formatDate } from "@/lib/format";
-import { artText, betragText } from "@/lib/gutschein";
+import { artText, betragText } from "@/lib/gutschein-verwaltung";
 
 export const metadata: Metadata = {
   title: "Gutschein drucken",

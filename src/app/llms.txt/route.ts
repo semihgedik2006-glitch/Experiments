@@ -1,5 +1,8 @@
 import { getStudios } from "@/lib/data";
 import { siteConfig } from "@/lib/site-config";
+import { ZIEL_INHALTE } from "@/lib/ziel-inhalte";
+import { FRAGEN } from "@/lib/fragen";
+import { auszeichnung } from "@/lib/auszeichnung";
 
 /**
  * /llms.txt - die Website in Kurzform für KI-Assistenten.
@@ -32,6 +35,9 @@ export async function GET() {
     )
     .join("\n");
 
+  const ziele = ZIEL_INHALTE.map((z) => `- [${z.seite.titel}](${basis}/ziel/${z.wert})`).join("\n");
+  const fragen = FRAGEN.map((f) => `- [${f.frage}](${basis}/fragen/${f.slug}): ${f.antwort}`).join("\n");
+
   const text = `# ${siteConfig.name}
 
 > EMS-Training (Elektromuskelstimulation) mit persönlichem Trainer: eine Einheit pro Woche, 20 Minuten Training, in ${studios.length > 1 ? `${studios.length} Studios in Köln und Umgebung` : "unserem Studio"}. Das erste Probetraining ist kostenlos und unverbindlich.
@@ -44,6 +50,21 @@ export async function GET() {
 - Kostenloses, unverbindliches Probetraining, buchbar online: ${basis}/probetermin. Danach Mitgliedschaft passend zum Ziel.
 - Preise und Tarife: ${basis}/preise
 - Wann EMS nicht geeignet ist (z. B. Herzschrittmacher, Schwangerschaft): ${basis}/ems-training
+- Kein fester Online-Kalender: Man nennt bei der Anfrage Wunschtage und Tageszeit, das Studio meldet sich mit einem passenden Termin.
+
+## Über uns
+
+- ${siteConfig.claim}: ${studios.length > 1 ? `${studios.length} eigene Studios` : "eigene Studios"}, Teil des Körperformen-Netzes mit über ${siteConfig.netzwerk.studiosGesamt} Studios.
+- Auszeichnung der Marke Körperformen: Platz 1 der Gesamtwertung bei „${auszeichnung.titel}“, ${auszeichnung.art} der ${auszeichnung.herausgeberKurz} (Deutsche Gesellschaft für Verbraucherstudien; ${auszeichnung.zeitraum}, ${auszeichnung.bewertungen} Bewertungen, ${auszeichnung.anbieter} EMS-Studio-Ketten). Quelle: ${auszeichnung.quelle}
+
+## Training nach Ziel
+
+${ziele}
+- [Ziel-Check: drei Fragen, danach ein persönlicher Startplan](${basis}/ziel-check)
+
+## Häufige Fragen, kurz beantwortet
+
+${fragen}
 
 ## Standorte
 
@@ -61,6 +82,19 @@ ${standorte || "- Siehe " + basis + "/studio"}
 - [Kontakt](${basis}/kontakt)
 - [Wissen / Blog](${basis}/blog)
 - [Socials](${basis}/socials)
+
+## English version
+
+The whole website is also available in English under /en. The German
+legal texts are the binding ones.
+
+- [Home (English)](${basis}/en)
+- [EMS training explained](${basis}/en/ems-training)
+- [Your first visit, minute by minute](${basis}/en/first-visit)
+- [All studios](${basis}/en/studios)
+- [Prices](${basis}/en/prices)
+- [Book a free trial session](${basis}/en/book)
+- [Questions](${basis}/en/questions)
 
 ## Kontakt
 

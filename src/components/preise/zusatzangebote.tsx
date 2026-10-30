@@ -2,6 +2,7 @@ import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { symbolFuer, type AngebotAnzeige } from "@/lib/zusatzangebote";
+import type { Sprache } from "@/lib/sprache";
 
 /**
  * Was es zusätzlich zum Training gibt.
@@ -19,11 +20,15 @@ export function Zusatzangebote({
   angebote,
   /** Auf einer Standortseite: dort ist der Zusammenhang enger. */
   kompakt = false,
+  sprache = "de",
 }: {
+  /** Name, Text und Preis schon in dieser Sprache (lokal()). */
   angebote: AngebotAnzeige[];
   kompakt?: boolean;
+  sprache?: Sprache;
 }) {
   if (angebote.length === 0) return null;
+  const en = sprache === "en";
 
   return (
     <section
@@ -35,12 +40,24 @@ export function Zusatzangebote({
     >
       <Container>
         <SectionHeader
-          kicker="Dazu buchbar"
-          title={kompakt ? "Mehr als nur Training" : "Was es zusätzlich gibt"}
+          kicker={en ? "Optional extras" : "Dazu buchbar"}
+          title={
+            en
+              ? kompakt
+                ? "More than just training"
+                : "What else is available"
+              : kompakt
+                ? "Mehr als nur Training"
+                : "Was es zusätzlich gibt"
+          }
           intro={
-            kompakt
-              ? "Diese Angebote gibt es an diesem Standort - alle freiwillig, keines Voraussetzung für das Training."
-              : "Alles davon ist freiwillig. Nichts davon ist Voraussetzung dafür, dass das Training wirkt - wer nur trainieren will, trainiert nur."
+            en
+              ? kompakt
+                ? "These extras are available at this studio - all optional, none of them required for the training."
+                : "All of it is optional. None of it is a requirement for the training to work - if you only want to train, you only train."
+              : kompakt
+                ? "Diese Angebote gibt es an diesem Standort - alle freiwillig, keines Voraussetzung für das Training."
+                : "Alles davon ist freiwillig. Nichts davon ist Voraussetzung dafür, dass das Training wirkt - wer nur trainieren will, trainiert nur."
           }
           className="mb-12"
         />

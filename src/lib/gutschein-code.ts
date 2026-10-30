@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import { neuerGutscheinCode } from "@/lib/gutschein";
+import { neuerGutscheinCode } from "@/lib/gutschein-verwaltung";
 
 /**
  * Einen Code finden, den es noch nicht gibt.

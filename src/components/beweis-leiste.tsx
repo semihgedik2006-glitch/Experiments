@@ -1,7 +1,6 @@
 import { CalendarClock, MapPin, Clock3 } from "lucide-react";
-import { beweiseHolen, freieTermineJeStudio } from "@/lib/beweise";
-import { getStudios, getUpcomingSlots } from "@/lib/data";
-import { formatDateShort } from "@/lib/format";
+import { beweiseHolen } from "@/lib/beweise";
+import type { Sprache } from "@/lib/sprache";
 
 /**
  * Drei Tatsachen in einer Zeile.
@@ -12,97 +11,68 @@ import { formatDateShort } from "@/lib/format";
  * nicht, ob und wann man hinkommt. Genau das ist aber die Frage, die
  * zwischen "interessant" und "ich trag mich ein" steht.
  *
- * Alle Angaben kommen aus der Datenbank. Fehlt eine, entfällt sie.
- * Bleibt über alle Standorte hinweg nur eine übrig, erscheint die Leiste
- * gar nicht - "irgendwo ist etwas frei" ist keine Auskunft. Auf einer
- * Standortseite genügt dagegen eine einzelne Angabe, weil sie sich auf
- * genau diesen Ort bezieht.
- *
- * Bewusst keine Verknappung ("nur noch 3 Plätze!"): Die Zahl stimmt so,
- * wie sie ist, und wirkt gerade deshalb. Sobald daraus ein Druckmittel
- * wird, glaubt sie niemand mehr - und bei zwanzig freien Terminen wäre
- * sie auch albern.
+ * Bewusst keine Verknappung ("nur noch 3 Plätze!").
  */
 export async function BeweisLeiste({
   className = "",
-  /**
-   * Auf einen Standort eingeschränkt - für die vierzehn Standortseiten.
-   * Dort ist "irgendwo bei uns ist etwas frei" die falsche Auskunft:
-   * Wer nach "EMS Hürth" sucht, will wissen, was in Hürth frei ist.
-   */
+  /** Auf einen Standort eingeschränkt - für die Standortseiten. */
   studioId,
+  sprache = "de",
 }: {
   className?: string;
   studioId?: string;
+  sprache?: Sprache;
 }) {
-  const [beweise, alleSlots, studios, jeStudio] = await Promise.all([
-    beweiseHolen(),
-    getUpcomingSlots(studioId),
-    getStudios(),
-    studioId ? freieTermineJeStudio() : Promise.resolve(null),
-  ]);
+  const en = sprache === "en";
+  const beweise = await beweiseHolen();
 
-  const naechster = alleSlots[0];
-  const studioName = naechster
-    ? (studios.find((s) => s.id === naechster.studioId)?.name ?? null)
-    : null;
-
-  const freieTermine = studioId
-    ? (jeStudio?.get(studioId) ?? null)
-    : beweise.freieTermine7Tage;
-
-  const punkte: { icon: typeof MapPin; text: React.ReactNode }[] = [];
-
-  if (naechster) {
-    punkte.push({
+  // Keine freien Termine mehr: Das Team wird nach den Anfragen eingeteilt
+  // (siehe @/lib/wunschzeit). Statt "Nächster freier Termin" steht hier,
+  // wie es stattdessen läuft - Wunschzeit nennen, Rückmeldung bekommen.
+  const punkte: { icon: typeof MapPin; text: React.ReactNode }[] = [
+    {
       icon: CalendarClock,
       text: (
         <>
-          <span className="text-muted">Nächster freier Termin: </span>
-          <span className="font-semibold">
-            {formatDateShort(naechster.date)} um {naechster.startTime} Uhr
+          <span className="font-semibold">{en ? "Tell us when suits you" : "Wunschzeit nennen"}</span>
+          <span className="text-muted">
+            {en ? " - we will get back to you with a matching time" : " - wir melden uns mit einem passenden Termin"}
           </span>
-          {/* Auf einer Standortseite steht der Name des Studios schon in
-              der Überschrift - ihn hier zu wiederholen wäre Füllmaterial. */}
-          {!studioId && studioName && <span className="text-muted"> · {studioName}</span>}
         </>
       ),
-    });
-  }
-
-  if (freieTermine) {
-    punkte.push({
+    },
+    {
       icon: Clock3,
       text: (
         <>
-          <span className="font-semibold">{freieTermine}</span>
-          <span className="text-muted">
-            {freieTermine === 1 ? " freier Termin" : " freie Termine"}
-            {studioId ? " hier" : ""} in den nächsten 7 Tagen
-          </span>
+          <span className="font-semibold">{en ? "20 minutes" : "20 Minuten"}</span>
+          <span className="text-muted">{en ? " of training, free and no strings attached" : " Training, kostenlos und unverbindlich"}</span>
         </>
       ),
-    });
-  }
+    },
+  ];
 
   if (!studioId && beweise.standorte > 1) {
     punkte.push({
       icon: MapPin,
       text: (
         <>
-          <span className="font-semibold">{beweise.standorte} Studios</span>
+          <span className="font-semibold">
+            {beweise.standorte} {en ? "studios" : "Studios"}
+          </span>
           <span className="text-muted">
-            {beweise.orte > 1 ? ` in ${beweise.orte} Orten in Köln und Umgebung` : " in Köln und Umgebung"}
+            {en
+              ? beweise.orte > 1
+                ? ` in ${beweise.orte} towns in and around Cologne`
+                : " in and around Cologne"
+              : beweise.orte > 1
+                ? ` in ${beweise.orte} Orten in Köln und Umgebung`
+                : " in Köln und Umgebung"}
           </span>
         </>
       ),
     });
   }
-
-  // Auf der Standortseite bleiben höchstens zwei Angaben übrig - dort
-  // ist auch eine allein noch eine Auskunft, weil sie sich auf genau
-  // diesen Ort bezieht.
-  if (punkte.length < (studioId ? 1 : 2)) return null;
 
   return (
     <div

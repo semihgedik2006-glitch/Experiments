@@ -150,6 +150,7 @@ const de: Woerterbuch = {
     muskelaufbau: "Muskeln aufbauen",
     ruecken: "Rücken stärken",
     fitness: "Fitter im Alltag",
+    gelenke: "Gelenke schonen",
     unsicher: "Weiß ich noch nicht",
   },
   erreichbarkeiten: {
@@ -223,7 +224,7 @@ const en: Woerterbuch = {
   absendenLaeuft: "Sending...",
   zusagen: [
     "Free, no strings attached",
-    "No membership, no notice period",
+    "Afterwards, the membership that suits you",
     "We call you back to confirm",
   ],
   gesendet: "Request sent!",
@@ -239,6 +240,7 @@ const en: Woerterbuch = {
     muskelaufbau: "Build muscle",
     ruecken: "Strengthen my back",
     fitness: "Fitter in everyday life",
+    gelenke: "Go easy on my joints",
     unsicher: "Not sure yet",
   },
   erreichbarkeiten: {

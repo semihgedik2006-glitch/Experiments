@@ -4,11 +4,13 @@ import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { AnimatePresence, motion } from "motion/react";
 import { Moon, Sun } from "lucide-react";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 const emptySubscribe = () => () => {};
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
+  const sprache = useSprache();
   const mounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -20,6 +22,7 @@ export function ThemeToggle() {
   }
 
   const isDark = resolvedTheme === "dark";
+  const en = sprache === "en";
 
   return (
     <motion.button
@@ -27,7 +30,11 @@ export function ThemeToggle() {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.92 }}
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label={isDark ? "Zu hellem Design wechseln" : "Zu dunklem Design wechseln"}
+      aria-label={
+        en
+          ? isDark ? "Switch to light mode" : "Switch to dark mode"
+          : isDark ? "Zu hellem Design wechseln" : "Zu dunklem Design wechseln"
+      }
       className="tastflaeche flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border text-foreground transition-colors hover:border-lime hover:text-accent"
     >
       <AnimatePresence mode="wait" initial={false}>

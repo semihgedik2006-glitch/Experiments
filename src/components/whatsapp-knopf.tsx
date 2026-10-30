@@ -38,7 +38,9 @@ export function WhatsappKnopf({
   text,
   className = "",
   variante = "voll",
+  sprache = "de",
 }: {
+  sprache?: "de" | "en";
   /** Die Nummer, wie sie im Adminbereich steht. */
   nummer: string;
   /** Vorbereiteter erster Satz. */
@@ -66,7 +68,7 @@ export function WhatsappKnopf({
       className={`${stil} ${className}`}
     >
       <MessageCircle size={16} aria-hidden />
-      Per WhatsApp schreiben
+      {sprache === "en" ? "Message us on WhatsApp" : "Per WhatsApp schreiben"}
     </a>
   );
 }

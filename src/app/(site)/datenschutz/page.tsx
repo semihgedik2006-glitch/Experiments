@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { legalConfig } from "@/lib/legal-config";
+import { seitenMetadaten } from "@/lib/i18n/metadaten";
 
-export const metadata: Metadata = {
-  // Kanonische Adresse: Sonst kann Google dieselbe Seite unter mehreren
-  // Adressen als mehrere Seiten werten und die Bewertung aufteilen.
-  alternates: { canonical: "/datenschutz" },
+export const metadata: Metadata = seitenMetadaten("de", "/datenschutz", {
   title: "Datenschutzerklärung",
-  description:
-    "Informationen zur Verarbeitung personenbezogener Daten bei KörperFormen Köln Rondorf.",
-};
+  description: "Informationen zur Verarbeitung personenbezogener Daten bei KörperFormen Köln Rondorf.",
+});
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -160,6 +157,33 @@ export default function DatenschutzPage() {
               internen Verwaltungsbereich, das ausschließlich Mitarbeitende betrifft.
             </p>
             <p>
+              Zusätzlich nutzen wir den Sitzungsspeicher Ihres Browsers
+              („sessionStorage“). Er wird beim Schließen des Tabs automatisch gelöscht und
+              nicht an uns übertragen. Darin liegen:
+            </p>
+            <ul className="list-disc space-y-1 pl-6">
+              <li>
+                das Trainingsziel, das Sie auf der Startseite oder im Ziel-Check gewählt
+                haben, und die dort gewählte Tageszeit – damit die Seite zu Ihrem Ziel passt
+                und das Anfrageformular schon ausgefüllt ist;
+              </li>
+              <li>
+                ob und wann Ihnen die Einladung zum Probetraining (Pop-up) bereits gezeigt
+                wurde, wie viele Seiten Sie in diesem Besuch aufgerufen haben und wie lange
+                Sie aktiv gelesen haben – damit die Einladung nicht zu früh und nicht
+                mehrfach erscheint;
+              </li>
+              <li>
+                ob Sie in diesem Besuch bereits ein Probetraining angefragt haben – dann
+                erscheint die Einladung nicht mehr.
+              </li>
+            </ul>
+            <p>
+              Nur wenn Sie im Cookie-Hinweis „Alle akzeptieren“ wählen, merken wir uns dort
+              außerdem, welchen Knopf zum Probetraining Sie zuletzt angeklickt haben
+              (siehe Abschnitt 7).
+            </p>
+            <p>
               Die Speicherung beziehungsweise der Zugriff auf Informationen auf Ihrem
               Endgerät erfolgt bei technisch notwendigen Funktionen auf Grundlage von § 25
               Abs. 2 TDDDG. Soweit hierbei personenbezogene Daten verarbeitet werden, erfolgt
@@ -226,6 +250,22 @@ export default function DatenschutzPage() {
               Technische Daten wie IP-Adresse, Datum und Uhrzeit der Übermittlung können
               zusätzlich verarbeitet werden, um Missbrauch des Formulars zu verhindern und
               die Sicherheit unserer Systeme zu gewährleisten.
+            </p>
+            <p>
+              Bei einer Probetraining-Anfrage übermitteln Sie außerdem Ihre Wunschzeit
+              (Wochentage und Tageszeit), auf Wunsch Ihr Trainingsziel, wann wir Sie am
+              besten erreichen und ob Sie zu zweit kommen. Mit der Anfrage speichern wir
+              zudem, woher sie kam: die Seite, auf der das Formular stand, eine
+              Kampagnenkennung aus der aufgerufenen Adresse (etwa aus einer Anzeige) und
+              nur den Namen der Website, von der Sie zu uns gekommen sind (z. B.
+              „google.com“) – nicht die vollständige Adresse. Haben Sie im Cookie-Hinweis
+              „Alle akzeptieren“ gewählt, speichern wir zusätzlich, welchen Knopf zum
+              Probetraining Sie zuvor angeklickt haben (z. B. „Handy-Leiste“). Diese
+              Angaben werten wir nur zusammengefasst aus, um zu erkennen, welche Seiten und
+              Anzeigen Anfragen bringen; es werden dafür keine Cookies gesetzt und keine
+              Dritten eingebunden. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO, für den
+              angeklickten Knopf Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO in
+              Verbindung mit § 25 Abs. 1 TDDDG.
             </p>
           </Section>
 
@@ -588,7 +628,16 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="26. Aktualität und Änderung dieser Datenschutzerklärung">
+          <Section title="26. Videos auf dieser Website">
+            <p>
+              Die Videos auf dieser Website liegen auf unserem eigenen Webspace und werden
+              von dort abgespielt. Es werden keine Videodienste wie YouTube, Instagram oder
+              TikTok eingebunden, und beim Abspielen werden keine Daten an solche Dienste
+              übertragen. Die Videos laden erst, wenn Sie zu ihnen scrollen.
+            </p>
+          </Section>
+
+          <Section title="27. Aktualität und Änderung dieser Datenschutzerklärung">
             <p>
               Wir behalten uns vor, diese Datenschutzerklärung anzupassen, wenn sich
               gesetzliche Vorgaben, unsere Website, die eingesetzten technischen Dienste oder

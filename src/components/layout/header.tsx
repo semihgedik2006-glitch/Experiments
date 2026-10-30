@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
@@ -9,12 +9,14 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { SearchOverlay } from "@/components/search/search-overlay";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { Logo } from "@/components/logo";
+import { useSprache } from "@/lib/i18n/use-sprache";
+import { nachDe, nachEn } from "@/lib/i18n/pfade";
 
 export function Header({
   nav,
   studioLabel,
 }: {
-  nav: { label: string; href: string }[];
+  nav: { label: string; href: string; nurUnten?: boolean }[];
   /** Beschriftung für den Standort-Knopf, z.B. "14 Studios". Fehlt sie,
       ist die Studio-Seite ausgeblendet und der Knopf entfällt. */
   studioLabel?: string;
@@ -22,6 +24,9 @@ export function Header({
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const en = useSprache() === "en";
+  // Der Umschalter führt auf dieselbe Seite in der anderen Sprache.
+  const anderePfad = en ? nachDe(pathname) : nachEn(pathname);
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -40,8 +45,8 @@ export function Header({
           <Logo className="h-8 w-auto" />
         </Link>
 
-        <nav aria-label="Hauptnavigation" className="hidden items-center gap-5 lg:flex xl:gap-8">
-          {nav.map((item) => {
+        <nav aria-label={en ? "Main navigation" : "Hauptnavigation"} className="hidden items-center gap-5 lg:flex xl:gap-8">
+          {nav.filter((item) => !item.nurUnten).map((item) => {
             const active = pathname === item.href;
             return (
               <Link
@@ -68,21 +73,23 @@ export function Header({
 
         <div className="hidden shrink-0 items-center gap-3 lg:flex xl:gap-4">
           <SearchOverlay />
-          {/* Der Weg zur englischen Seite. Auf Englisch beschriftet: Wer
-              ihn sucht, sucht "English" - nicht "Englisch". */}
+          {/* Der Weg zur anderen Sprache, auf dieselbe Seite. In der
+              Zielsprache beschriftet: Wer ihn sucht, sucht "English" -
+              nicht "Englisch" - und umgekehrt "Deutsch". */}
           <Link
-            href="/en"
-            hrefLang="en"
+            href={anderePfad}
+            sprache={en ? "de" : "en"}
+            hrefLang={en ? "de" : "en"}
             className="whitespace-nowrap text-sm text-muted transition-colors hover:text-foreground"
           >
-            English
+            {en ? "Deutsch" : "English"}
           </Link>
           <ThemeToggle />
           <Link
             href="/probetermin"
             className="knopf-glanz whitespace-nowrap rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime transition-transform hover:scale-105 active:scale-95"
           >
-            Probetermin buchen
+            {en ? "Book a trial" : "Probetermin buchen"}
           </Link>
         </div>
 
@@ -94,7 +101,7 @@ export function Header({
           {studioLabel && (
             <Link
               href="/studio"
-              aria-label={`Standorte ansehen: ${studioLabel}`}
+              aria-label={`${en ? "View studios" : "Standorte ansehen"}: ${studioLabel}`}
               className="tastflaeche flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold transition-colors hover:border-lime"
             >
               <MapPin size={14} className="text-accent" />
@@ -114,7 +121,7 @@ export function Header({
             type="button"
             className="-mr-2 flex h-11 w-11 items-center justify-center"
             onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Menü schließen" : "Menü öffnen"}
+            aria-label={en ? (open ? "Close menu" : "Open menu") : open ? "Menü schließen" : "Menü öffnen"}
             aria-expanded={open}
           >
             <AnimatePresence mode="wait" initial={false}>
@@ -142,10 +149,10 @@ export function Header({
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden border-t border-border lg:hidden"
           >
-            <nav aria-label="Navigation für kleine Bildschirme" className="flex flex-col gap-4 px-6 py-4">
+            <nav aria-label={en ? "Navigation for small screens" : "Navigation für kleine Bildschirme"} className="flex flex-col gap-4 px-6 py-4">
               {/* Oben steht das Logo als Weg zur Startseite - im Handymenü
                   sucht man sie trotzdem als Eintrag. */}
-              {[{ label: "Startseite", href: "/" }, ...nav].map((item) => (
+              {[{ label: en ? "Home" : "Startseite", href: en ? "/en" : "/" }, ...nav].map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -161,7 +168,7 @@ export function Header({
                   onClick={() => setOpen(false)}
                   className="w-fit rounded-full bg-lime px-5 py-2 text-sm font-semibold text-on-lime"
                 >
-                  Probetermin buchen
+                  {en ? "Book a trial" : "Probetermin buchen"}
                 </Link>
                 {studioLabel && (
                   <Link
@@ -170,19 +177,20 @@ export function Header({
                     className="flex w-fit items-center gap-1.5 rounded-full border border-border px-5 py-2 text-sm font-semibold transition-colors hover:border-lime"
                   >
                     <MapPin size={15} className="text-accent" />
-                    Studio in deiner Nähe
+                    {en ? "A studio near you" : "Studio in deiner Nähe"}
                   </Link>
                 )}
               </div>
               <div className="flex items-center gap-4 pt-2">
                 <ThemeToggle />
                 <Link
-                  href="/en"
-                  hrefLang="en"
+                  href={anderePfad}
+                  sprache={en ? "de" : "en"}
+                  hrefLang={en ? "de" : "en"}
                   onClick={() => setOpen(false)}
                   className="text-sm text-muted hover:text-foreground"
                 >
-                  English
+                  {en ? "Deutsch" : "English"}
                 </Link>
               </div>
             </nav>

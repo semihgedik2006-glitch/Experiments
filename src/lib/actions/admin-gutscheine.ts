@@ -11,7 +11,7 @@ import {
   artText,
   gueltigBisAb,
   gutscheinCodeNormalisieren,
-} from "@/lib/gutschein";
+} from "@/lib/gutschein-verwaltung";
 import { freierGutscheinCode } from "@/lib/gutschein-code";
 import type { GutscheinStatus } from "@/generated/prisma/enums";
 

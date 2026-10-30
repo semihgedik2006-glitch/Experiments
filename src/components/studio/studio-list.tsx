@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { MapPin, Phone, Clock, LocateFixed, CalendarCheck } from "lucide-react";
+import { MapPin, Phone, Clock, LocateFixed } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,8 @@ import {
   haversineDistanceKm,
   sortStudiosByDistance,
 } from "@/lib/geo";
+import { useSprache } from "@/lib/i18n/use-sprache";
+import { oeffnungszeiten } from "@/lib/i18n/oeffnungszeiten";
 
 const subscribeNothing = () => () => {};
 
@@ -30,15 +32,9 @@ export type StudioEntry = {
   email: string;
   mapEmbedUrl: string;
   openingHours: string;
+  openingHoursEn?: string | null;
   latitude: number | null;
   longitude: number | null;
-  /**
-   * Freie Plätze in den nächsten sieben Tagen. Ist nichts frei, steht
-   * hier null und die Zeile entfällt - "0 freie Termine" liest sich wie
-   * "brauchst du gar nicht erst zu fragen", dabei ergibt ein Anruf
-   * häufig trotzdem eine Zeit.
-   */
-  freieTermine: number | null;
 };
 
 /**
@@ -63,6 +59,8 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
   const settledRef = useRef(false);
 
   const isClient = useSyncExternalStore(subscribeNothing, () => true, () => false);
+  const sprache = useSprache();
+  const en = sprache === "en";
 
   const canLocate = studios.length > 1 && anyStudioLocatable(studios);
   const canName = allStudiosLocatable(studios);
@@ -132,17 +130,17 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
             {locating && (
               <>
                 <LocateFixed size={14} className="animate-pulse text-accent" />
-                Standort wird ermittelt...
+                {en ? "Finding your location..." : "Standort wird ermittelt..."}
               </>
             )}
             {!locating && nearestId && (
               <>
                 <LocateFixed size={14} className="text-accent" />
-                Nach Entfernung zu deinem Standort sortiert.
+                {en ? "Sorted by distance from your location." : "Nach Entfernung zu deinem Standort sortiert."}
               </>
             )}
             {!locating && !nearestId && settled && failure === "denied" && (
-              <>Standort nicht freigegeben - die Studios stehen in fester Reihenfolge.</>
+              <>{en ? "Location not shared - the studios are listed in a fixed order." : "Standort nicht freigegeben - die Studios stehen in fester Reihenfolge."}</>
             )}
             {!locating && !nearestId && settled && failure !== "denied" && (
               <button
@@ -155,7 +153,7 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
                 }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 transition-colors hover:border-lime hover:text-foreground"
               >
-                <LocateFixed size={14} /> Studio in meiner Nähe zuerst
+                <LocateFixed size={14} /> {en ? "Studio near me first" : "Studio in meiner Nähe zuerst"}
               </button>
             )}
           </p>
@@ -178,7 +176,7 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
           oben auf dieser Seite, der schon interaktiv ist.
 
           Geblieben ist alles, wonach hier gesucht wird: Name, Adresse,
-          Entfernung, Telefon, Öffnungszeiten und die freien Termine.
+          Entfernung, Telefon und Öffnungszeiten.
           ------------------------------------------------------------------ */}
       <section className="py-16 sm:py-20">
         <Container>
@@ -200,7 +198,7 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
                     {studio.name}
                     {studio.id === nearestId && (
                       <span className="rounded-full bg-lime px-2.5 py-0.5 text-[11px] font-semibold text-on-lime">
-                        Am nächsten
+                        {en ? "Closest" : "Am nächsten"}
                       </span>
                     )}
                   </h2>
@@ -214,7 +212,9 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
                         {studio.postalCode} {studio.city}
                         {distances[studio.id] !== undefined && (
                           <span className="mt-0.5 block text-muted">
-                            rund {Math.round(distances[studio.id])} km Luftlinie von dir
+                            {en
+                              ? `about ${Math.round(distances[studio.id])} km from you as the crow flies`
+                              : `rund ${Math.round(distances[studio.id])} km Luftlinie von dir`}
                           </span>
                         )}
                       </span>
@@ -232,22 +232,10 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
                     <li className="flex items-start gap-2.5">
                       <Clock size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
                       <span className="whitespace-pre-line text-muted">
-                        {studio.openingHours}
+                        {oeffnungszeiten(sprache, studio)}
                       </span>
                     </li>
 
-                    {/* Die Zahl, die auf dieser Seite tatsächlich gesucht
-                        wird: Kann ich da diese Woche überhaupt hin? */}
-                    {studio.freieTermine !== null && (
-                      <li className="flex items-start gap-2.5">
-                        <CalendarCheck size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
-                        <span>
-                          <strong className="font-semibold">{studio.freieTermine}</strong>{" "}
-                          {studio.freieTermine === 1 ? "freier Termin" : "freie Termine"} in
-                          den nächsten 7 Tagen
-                        </span>
-                      </li>
-                    )}
                   </ul>
 
                   {/* Zur Standortseite statt zur allgemeinen Terminseite:
@@ -262,7 +250,7 @@ export function StudioList({ studios }: { studios: StudioEntry[] }) {
                       darüber - der Knopf muss nur sagen, was dahinter
                       kommt. */}
                   <Button href={`/studio/${studio.slug}`} className="mt-6 w-full">
-                    Details &amp; Anfahrt
+                    {en ? "Details & directions" : "Details & Anfahrt"}
                   </Button>
                 </div>
               </li>

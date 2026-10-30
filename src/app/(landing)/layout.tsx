@@ -1,6 +1,7 @@
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { Logo } from "@/components/logo";
 import { legalConfig } from "@/lib/legal-config";
+import { KlickImpuls } from "@/components/klick-impuls";
 
 /**
  * Reduzierter Rahmen für Kampagnenseiten: keine Navigation, keine
@@ -49,6 +50,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
           </nav>
         </div>
       </footer>
+      <KlickImpuls />
     </>
   );
 }

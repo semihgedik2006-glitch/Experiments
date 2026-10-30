@@ -22,7 +22,8 @@ export type ToggleKey =
   | "newsletter"
   | "kommentare"
   | "instagram"
-  | "gutscheine"
+  | "gutschein"
+  | "aktion-neues-jahr"
   | "mitglieder-mails";
 
 export const toggleDefinitions: {
@@ -97,23 +98,30 @@ export const toggleDefinitions: {
     defaultVisible: true,
   },
   {
+    key: "gutschein",
+    label: "Gutscheine (Weihnachten)",
+    description:
+      "Die Seite „Gutschein verschenken“ samt Hinweis in der Fußzeile. Ausgeschaltet sehen sie nur angemeldete Admins - als Vorschau.",
+    href: "/gutschein",
+    defaultVisible: false,
+  },
+  {
+    key: "aktion-neues-jahr",
+    label: "Aktion „Neues Jahr“",
+    description:
+      "Die Kampagnenseite für den Januar. Ausgeschaltet sehen sie nur angemeldete Admins - als Vorschau. Einschalten, sobald die Anzeigen laufen sollen.",
+    href: "/aktion/neues-jahr",
+    defaultVisible: false,
+  },
+  {
     key: "kommentare",
     label: "Kommentare im Blog",
     description:
       "Kommentarformular und Kommentarliste unter den Beiträgen. Ausgeblendet bleiben bereits vorhandene Kommentare erhalten.",
     defaultVisible: true,
   },
-  // Die beiden folgenden sind neu und stehen deshalb auf aus: Sie gehen
-  // erst live, wenn jemand sie bewusst einschaltet - nicht schon dadurch,
-  // dass der Code veröffentlicht wird.
-  {
-    key: "gutscheine",
-    label: "Gutscheine",
-    description:
-      "Die Seite „Gutschein verschenken“ mit dem Anfrageformular. Bezahlt und abgeholt wird im Studio. Die Verwaltung im Adminbereich funktioniert auch, wenn die Seite aus ist - etwa für Gutscheine, die im Studio verkauft werden.",
-    href: "/gutschein",
-    defaultVisible: false,
-  },
+  // Neu und deshalb auf aus: geht erst live, wenn jemand ihn bewusst
+  // einschaltet - nicht schon dadurch, dass der Code veröffentlicht wird.
   {
     key: "mitglieder-mails",
     label: "Mitglieder-Mails",

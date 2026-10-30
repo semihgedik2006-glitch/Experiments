@@ -18,7 +18,7 @@ import {
   artText,
   betragText,
   gutscheinCodeNormalisieren,
-} from "@/lib/gutschein";
+} from "@/lib/gutschein-verwaltung";
 import type { GutscheinStatus } from "@/generated/prisma/enums";
 
 const STATUS_FILTER: { wert: string; label: string }[] = [
@@ -71,7 +71,7 @@ export default async function AdminGutscheinePage({
         })
       : null,
     prisma.gutschein.count({ where: { ...wo, status: "ANGEFRAGT" } }),
-    isVisible("gutscheine"),
+    isVisible("gutschein"),
   ]);
 
   return (

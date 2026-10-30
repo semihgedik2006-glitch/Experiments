@@ -57,10 +57,9 @@ export const metadata: Metadata = {
   // Startseite.
   alternates: {
     canonical: "/",
-    // Verweis auf die englische Fassung. Sie ist keine Übersetzung dieser
-    // Seite, sondern ein eigener Einstieg - für Google sind es trotzdem
-    // zwei Sprachfassungen desselben Angebots.
-    languages: { de: "/", en: "/en" },
+    // Verweis auf die englische Fassung. Jede Seite mit eigener Angabe
+    // (seitenMetadaten) setzt ihr eigenes Paar.
+    languages: { de: "/", en: "/en", "x-default": "/" },
   },
   openGraph: {
     type: "website",
@@ -74,6 +73,22 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${siteConfig.name} - ${siteConfig.tagline}`,
     description: siteConfig.description,
+  },
+  // Bestätigung für die Google Search Console ("HTML-Tag"): Den Code aus
+  // der Search Console in Vercel als GOOGLE_SITE_VERIFICATION eintragen,
+  // neu bereitstellen, dann dort auf "Bestätigen". Ohne Code kein Tag.
+  //
+  // Dasselbe für die Bing Webmaster Tools (Methode "Meta-Tag") als
+  // BING_SITE_VERIFICATION. Bing lohnt sich doppelt: Seine Suche speist
+  // auch die Websuche in ChatGPT und Copilot - wer bei Bing fehlt, fehlt
+  // dort ebenfalls.
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+      : {}),
+    ...(process.env.BING_SITE_VERIFICATION
+      ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } }
+      : {}),
   },
 };
 

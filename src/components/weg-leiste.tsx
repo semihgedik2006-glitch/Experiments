@@ -1,11 +1,13 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { STATIONEN, type StationsSchluessel } from "@/lib/weg";
+import { stationen, type StationsSchluessel } from "@/lib/weg";
+import { useSprache } from "@/lib/i18n/use-sprache";
+import { nachDe } from "@/lib/i18n/pfade";
 
 /**
  * Die Weg-Leiste am Ende einer Seite: wo stehe ich, wohin geht es weiter.
@@ -17,21 +19,26 @@ import { STATIONEN, type StationsSchluessel } from "@/lib/weg";
  * Die Stationen sind Links: Wer eine überspringen will, kann das.
  */
 export function WegLeiste({ aktuell }: { aktuell: StationsSchluessel }) {
-  const pfad = usePathname();
+  // Verglichen wird mit der deutschen Adresse - die Stationen nennen die
+  // deutschen, und auf Englisch übersetzt sie der Verweis von selbst.
+  const pfad = nachDe(usePathname());
+  const sprache = useSprache();
+  const en = sprache === "en";
+  const STATIONEN = stationen(sprache);
   const index = STATIONEN.findIndex((s) => s.schluessel === aktuell);
   // "Auch hier" zeigt die anderen Seiten der Station, nicht die, auf der
   // man gerade steht - auf /preise also /studio und nicht /preise.
   const station = STATIONEN[index];
-  const auch = [{ label: station.name === "Entscheiden" ? "Studios" : "Wissen", href: station.href }, ...(station.auch ?? [])].filter(
+  const auch = [{ label: station.schluessel === "entscheiden" ? "Studios" : en ? "Knowledge" : "Wissen", href: station.href }, ...(station.auch ?? [])].filter(
     (s) => s.href !== pfad,
   );
   const naechste = STATIONEN[index + 1];
   const anteil = index / (STATIONEN.length - 1);
 
   return (
-    <section aria-label="Dein Weg zu Körperformen" className="border-t border-border py-16 sm:py-20">
+    <section aria-label={en ? "Your path to Körperformen" : "Dein Weg zu Körperformen"} className="border-t border-border py-16 sm:py-20">
       <Container>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Dein Weg</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">{en ? "Your path" : "Dein Weg"}</p>
 
         <div className="relative mt-8">
           {/* Die Linie liegt auf Höhe der Punkte: Mitte des ersten bis
@@ -102,10 +109,10 @@ export function WegLeiste({ aktuell }: { aktuell: StationsSchluessel }) {
           >
             <span>
               <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-                {naechste ? `Weiter zu Station ${index + 2}` : "Bereit?"}
+                {naechste ? (en ? `On to step ${index + 2}` : `Weiter zu Station ${index + 2}`) : en ? "Ready?" : "Bereit?"}
               </span>
               <span className="mt-2 block text-xl font-bold tracking-tight sm:text-2xl">
-                {naechste ? naechste.frage : "Erlebe es selbst – kostenloses Probetraining"}
+                {naechste ? naechste.frage : en ? "Experience it yourself – free trial session" : "Erlebe es selbst – kostenloses Probetraining"}
               </span>
             </span>
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-lime text-on-lime">
@@ -114,7 +121,7 @@ export function WegLeiste({ aktuell }: { aktuell: StationsSchluessel }) {
           </Link>
           {station.auch && auch.length > 0 && (
             <p className="mt-4 text-sm text-muted">
-              Auch hier:{" "}
+              {en ? "Also here:" : "Auch hier:"}{" "}
               {auch.map((s, i) => (
                 <span key={s.href}>
                   {i > 0 && " · "}

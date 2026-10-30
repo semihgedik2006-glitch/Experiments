@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useActionState, useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/sprach-link";
 import { usePathname } from "next/navigation";
 import { X, CalendarClock, ArrowRight, Zap } from "lucide-react";
 import { ImpulsSzene } from "@/components/ui/impuls-szene";
@@ -21,6 +21,69 @@ import {
   RUHE_NACH_SEKUNDEN,
   seiteZaehlen,
 } from "@/lib/einladung";
+import { useSprache } from "@/lib/i18n/use-sprache";
+import { erreichbarkeitLabel, type Sprache } from "@/lib/sprache";
+
+const TEXT = {
+  de: {
+    schliessen: "Einladung schließen",
+    bevor: "Bevor du gehst",
+    titel1: "20 Minuten.",
+    titel2: "Einmal spüren?",
+    wunsch1: "Nenn uns deine Wunschzeit -",
+    wunsch2: "wir melden uns mit einem passenden Termin.",
+    sichern: "Kostenlosen Probetermin sichern",
+    unverbindlich: "Kostenlos und unverbindlich",
+    nicht: "Gerade nicht",
+    region: "Probetraining anfragen",
+    karteZu: "Karte schließen",
+    angefragt: "Angefragt!",
+    gratis: "Probetraining gratis",
+    sekunden: "In 30 Sekunden angefragt",
+    los: "Los geht's",
+    formTitel: "Probetraining",
+    formTitel2: "anfragen",
+    anruf: "Wir rufen dich an und machen den Termin fest.",
+    name: "Vor- und Nachname",
+    telefon: "Telefonnummer",
+    email: "E-Mail-Adresse",
+    welchesStudio: "Welches Studio?",
+    wann: "Wann erreichen wir dich?",
+    sendet: "Wird gesendet …",
+    anfragen: "Kostenlos anfragen",
+    fuss: "Kostenlos · unverbindlich ·",
+    datenschutz: "Datenschutz",
+  },
+  en: {
+    schliessen: "Close invitation",
+    bevor: "Before you go",
+    titel1: "20 minutes.",
+    titel2: "Want to feel it once?",
+    wunsch1: "Tell us when suits you -",
+    wunsch2: "we will get back to you with a matching time.",
+    sichern: "Book your free trial session",
+    unverbindlich: "Free, no strings attached",
+    nicht: "Not right now",
+    region: "Request a trial session",
+    karteZu: "Close card",
+    angefragt: "Request sent!",
+    gratis: "Free trial session",
+    sekunden: "Requested in 30 seconds",
+    los: "Let's go",
+    formTitel: "Request a",
+    formTitel2: "trial session",
+    anruf: "We will call you and fix the appointment.",
+    name: "First and last name",
+    telefon: "Phone number",
+    email: "Email address",
+    welchesStudio: "Which studio?",
+    wann: "When can we reach you?",
+    sendet: "Sending …",
+    anfragen: "Request for free",
+    fuss: "Free · no strings attached ·",
+    datenschutz: "Privacy",
+  },
+} satisfies Record<Sprache, Record<string, string>>;
 
 /**
  * Die beiden Einladungen zum Probetraining.
@@ -39,15 +102,7 @@ import {
 
 type StudioWahl = { id: string; name: string };
 
-export function ProbeterminEinladung({
-  naechsterTermin,
-  freieDieseWoche,
-  studios,
-}: {
-  naechsterTermin: string | null;
-  freieDieseWoche: number | null;
-  studios: StudioWahl[];
-}) {
+export function ProbeterminEinladung({ studios }: { studios: StudioWahl[] }) {
   const pfad = usePathname();
   const [ausstiegOffen, setAusstiegOffen] = useState(false);
 
@@ -55,8 +110,6 @@ export function ProbeterminEinladung({
     <>
       <AusstiegEinladung
         pfad={pfad}
-        naechsterTermin={naechsterTermin}
-        freieDieseWoche={freieDieseWoche}
         onOffen={setAusstiegOffen}
       />
       <MitteEinladung pfad={pfad} studios={studios} gesperrt={ausstiegOffen} />
@@ -76,17 +129,14 @@ const WISCH_SCHWELLE = 55;
 
 function AusstiegEinladung({
   pfad,
-  naechsterTermin,
-  freieDieseWoche,
   onOffen,
 }: {
   pfad: string;
-  naechsterTermin: string | null;
-  freieDieseWoche: number | null;
   onOffen: (offen: boolean) => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [offen, setOffen] = useState(false);
+  const t = TEXT[useSprache()];
   const bereit = useRef(false);
   const fertig = useRef(false);
 
@@ -204,7 +254,7 @@ function AusstiegEinladung({
           <button
             type="button"
             onClick={schliessen}
-            aria-label="Einladung schließen"
+            aria-label={t.schliessen}
             className="tastflaeche absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <X size={18} aria-hidden />
@@ -214,7 +264,7 @@ function AusstiegEinladung({
           <ImpulsSzene name="termin" className="relative mx-auto w-full max-w-[132px]" />
 
           <p className="einladung-stufe mt-1 text-center text-xs font-semibold uppercase tracking-[0.22em] text-accent" style={stufe(1)}>
-            Bevor du gehst
+            {t.bevor}
           </p>
           {/* Beim Öffnen landet der Fokus auf der Überschrift - nicht auf
               dem Buchungsknopf (Enter darf niemanden aus Versehen auf eine
@@ -229,41 +279,37 @@ function AusstiegEinladung({
             className="mt-3 text-balance text-center font-display text-3xl font-black leading-[1.05] tracking-tight outline-none sm:text-4xl"
           >
             <span className="einladung-stufe block" style={stufe(2)}>
-              20 Minuten.
+              {t.titel1}
             </span>
             <span className="einladung-stufe einladung-leuchten block text-accent" style={stufe(3)}>
-              Einmal spüren?
+              {t.titel2}
             </span>
           </h2>
 
-          {/* Der nächste echte Termin aus dem Kalender. Keine erfundene
-              Dringlichkeit, kein Countdown - die Zahl stimmt, und genau
-              das ist ihre Wirkung. */}
-          {naechsterTermin && (
-            <p
-              className="einladung-stufe mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-2xl border border-border bg-surface px-4 py-3 text-sm"
-              style={stufe(4)}
-            >
-              <span className="einladung-live" aria-hidden />
-              <CalendarClock size={16} className="shrink-0 text-accent" aria-hidden />
-              <span className="text-muted">Nächster freier Termin:</span>
-              <span className="text-balance text-center font-semibold">{naechsterTermin}</span>
-            </p>
-          )}
+          {/* Statt eines festen Termins: wie es läuft. Die Studios planen
+              ihr Team nach den Anfragen (siehe @/lib/wunschzeit). */}
+          <p
+            className="einladung-stufe mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-2xl border border-border bg-surface px-4 py-3 text-center text-sm"
+            style={stufe(4)}
+          >
+            <CalendarClock size={16} className="shrink-0 text-accent" aria-hidden />
+            <span className="text-muted">{t.wunsch1}</span>
+            <span className="font-semibold">{t.wunsch2}</span>
+          </p>
 
           <Link
             href="/probetermin"
+            data-einstieg="Pop-up"
             onClick={schliessen}
             className="einladung-stufe einladung-knopf mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-lime px-6 py-4 text-sm font-bold text-on-lime"
             style={stufe(5)}
           >
-            <span className="relative">Kostenlosen Probetermin sichern</span>
+            <span className="relative">{t.sichern}</span>
             <ArrowRight size={17} className="einladung-pfeil relative" aria-hidden />
           </Link>
 
           <p className="einladung-stufe mt-3 text-center text-xs text-muted" style={stufe(6)}>
-            Kostenlos und unverbindlich
-            {freieDieseWoche ? ` · ${freieDieseWoche} freie Termine diese Woche` : ""}
+            {t.unverbindlich}
           </p>
 
           <button
@@ -272,7 +318,7 @@ function AusstiegEinladung({
             className="einladung-stufe tastflaeche mx-auto mt-1 block rounded-full px-3 py-2 text-xs text-muted underline underline-offset-4 hover:text-foreground"
             style={stufe(6)}
           >
-            Gerade nicht
+            {t.nicht}
           </button>
         </div>
       )}
@@ -310,6 +356,8 @@ function MitteEinladung({
   gesperrt: boolean;
 }) {
   const [sichtbar, setSichtbar] = useState(false);
+  const sprache = useSprache();
+  const t = TEXT[sprache];
   const [aufgeklappt, setAufgeklappt] = useState(false);
   const [state, formAction, pending] = useActionState(createBooking, leer);
   const fertig = useRef(false);
@@ -357,12 +405,13 @@ function MitteEinladung({
     daten.set("herkunftSeite", pfad);
     daten.set("herkunftKampagne", "Einladung Mitte");
     daten.set("herkunftQuelle", "");
-    daten.set("sprache", "de");
+    daten.set("herkunftEinstieg", `Pop-up (Formular) · ${pfad}`);
+    daten.set("sprache", sprache);
     startTransition(() => formAction(daten));
   }
 
   return (
-    <aside aria-label="Probetraining anfragen" className={`einladung-karte on-ink ${aufgeklappt ? "ist-offen" : ""}`}>
+    <aside aria-label={t.region} className={`einladung-karte on-ink ${aufgeklappt ? "ist-offen" : ""}`}>
       <svg className="einladung-karte-impuls" viewBox="0 0 400 20" preserveAspectRatio="none" aria-hidden>
         <path d="M0 12 H170 l8-10 10 18 8-10 H400" />
       </svg>
@@ -370,7 +419,7 @@ function MitteEinladung({
       <button
         type="button"
         onClick={() => setSichtbar(false)}
-        aria-label="Karte schließen"
+        aria-label={t.karteZu}
         className="tastflaeche absolute right-2.5 top-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         <X size={16} aria-hidden />
@@ -379,7 +428,7 @@ function MitteEinladung({
       {state.ok ? (
         <div className="px-5 pb-5 pt-4 text-center" role="status">
           <ImpulsSzene name="bestaetigt" className="mx-auto w-full max-w-[110px]" />
-          <p className="font-display text-xl font-black">Angefragt!</p>
+          <p className="font-display text-xl font-black">{t.angefragt}</p>
           <p className="mt-1.5 text-sm text-muted">{state.message}</p>
         </div>
       ) : !aufgeklappt ? (
@@ -388,23 +437,23 @@ function MitteEinladung({
             <Zap size={18} />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold leading-tight">Probetraining gratis</p>
-            <p className="text-xs text-muted">In 30 Sekunden angefragt</p>
+            <p className="text-sm font-bold leading-tight">{t.gratis}</p>
+            <p className="text-xs text-muted">{t.sekunden}</p>
           </div>
           <button
             type="button"
             onClick={() => setAufgeklappt(true)}
             className="einladung-knopf shrink-0 rounded-full bg-lime px-4 py-2.5 text-xs font-bold text-on-lime"
           >
-            <span className="relative">Los geht&apos;s</span>
+            <span className="relative">{t.los}</span>
           </button>
         </div>
       ) : (
         <form onSubmit={absenden} className="einladung-formular px-5 pb-5 pt-4">
           <p className="pr-8 font-display text-xl font-black leading-tight">
-            Probetraining <span className="text-accent">anfragen</span>
+            {t.formTitel} <span className="text-accent">{t.formTitel2}</span>
           </p>
-          <p className="mt-1 text-xs text-muted">Wir rufen dich an und machen den Termin fest.</p>
+          <p className="mt-1 text-xs text-muted">{t.anruf}</p>
 
           {/* Bot-Falle wie im großen Formular. */}
           <input
@@ -417,13 +466,13 @@ function MitteEinladung({
           />
 
           <div className="mt-4 space-y-2.5">
-            <input name="name" required autoComplete="name" placeholder="Vor- und Nachname" aria-label="Vor- und Nachname" className="einladung-feld" />
-            <input name="phone" type="tel" required autoComplete="tel" placeholder="Telefonnummer" aria-label="Telefonnummer" className="einladung-feld" />
-            <input name="email" type="email" required autoComplete="email" placeholder="E-Mail-Adresse" aria-label="E-Mail-Adresse" className="einladung-feld" />
+            <input name="name" required autoComplete="name" placeholder={t.name} aria-label={t.name} className="einladung-feld" />
+            <input name="phone" type="tel" required autoComplete="tel" placeholder={t.telefon} aria-label={t.telefon} className="einladung-feld" />
+            <input name="email" type="email" required autoComplete="email" placeholder={t.email} aria-label={t.email} className="einladung-feld" />
             {studios.length > 0 && (
               <select name="studioId" required defaultValue="" aria-label="Studio" className="einladung-feld">
                 <option value="" disabled>
-                  Welches Studio?
+                  {t.welchesStudio}
                 </option>
                 {studios.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -435,12 +484,12 @@ function MitteEinladung({
           </div>
 
           <fieldset className="mt-3">
-            <legend className="text-xs text-muted">Wann erreichen wir dich?</legend>
+            <legend className="text-xs text-muted">{t.wann}</legend>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               {ERREICHBARKEITEN.map((e, i) => (
                 <label key={e.wert} className="einladung-chip">
                   <input type="radio" name="erreichbarkeit" value={e.wert} required={i === 0} className="sr-only" />
-                  <span>{e.kurz}</span>
+                  <span>{erreichbarkeitLabel(sprache, e.wert)}</span>
                 </label>
               ))}
             </div>
@@ -457,13 +506,13 @@ function MitteEinladung({
             disabled={pending}
             className="einladung-knopf mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-lime px-5 py-3 text-sm font-bold text-on-lime disabled:opacity-60"
           >
-            <span className="relative">{pending ? "Wird gesendet …" : "Kostenlos anfragen"}</span>
+            <span className="relative">{pending ? t.sendet : t.anfragen}</span>
             {!pending && <ArrowRight size={16} className="einladung-pfeil relative" aria-hidden />}
           </button>
           <p className="mt-2 text-center text-[11px] text-muted">
-            Kostenlos &middot; unverbindlich &middot;{" "}
+            {t.fuss}{" "}
             <Link href="/datenschutz" className="underline underline-offset-2 hover:text-foreground">
-              Datenschutz
+              {t.datenschutz}
             </Link>
           </p>
         </form>

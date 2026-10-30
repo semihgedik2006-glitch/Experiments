@@ -12,7 +12,7 @@ import {
   type TarifDaten,
 } from "@/components/admin/preis-formulare";
 import { verlangeLeitung } from "@/lib/admin-rechte";
-import { getTexte, textDefinitionen } from "@/lib/site-texte";
+import { getTexte, getTexteEnGespeichert, textDefinitionen } from "@/lib/site-texte";
 import { symbolFuer } from "@/lib/zusatzangebote";
 
 /**
@@ -31,7 +31,7 @@ import { symbolFuer } from "@/lib/zusatzangebote";
 export default async function AdminPreisePage() {
   await verlangeLeitung();
 
-  const [tarife, angebote, studios, texte] = await Promise.all([
+  const [tarife, angebote, studios, texte, texteEn] = await Promise.all([
     prisma.tarif.findMany({ orderBy: [{ sortOrder: "asc" }, { name: "asc" }] }),
     prisma.zusatzangebot.findMany({ orderBy: [{ sortOrder: "asc" }, { name: "asc" }] }),
     prisma.studioLocation.findMany({
@@ -39,6 +39,7 @@ export default async function AdminPreisePage() {
       orderBy: { sortOrder: "asc" },
     }),
     getTexte(),
+    getTexteEnGespeichert(),
   ]);
 
   const sichtbareTarife = tarife.filter((t) => t.aktiv);
@@ -130,6 +131,7 @@ export default async function AdminPreisePage() {
           <TextFormular
             schluessel={preisText.key}
             wert={texte["preis-hinweis"]}
+            wertEn={texteEn["preis-hinweis"] ?? ""}
             zeilen={preisText.zeilen}
           />
         </Panel>

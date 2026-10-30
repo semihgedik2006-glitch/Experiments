@@ -4,8 +4,22 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { LocateFixed, MapPin } from "lucide-react";
 import { haversineDistanceKm, anyStudioLocatable, sortStudiosByDistance } from "@/lib/geo";
 import { ausschnittFuer } from "@/lib/karte";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 const subscribeNothing = () => () => {};
+
+/** So viele Studios zeigt die Liste, wenn sie nach Entfernung sortiert ist. */
+const NAECHSTE_ANZAHL = 7;
+
+/**
+ * Der Standort so, wie man ihn sucht: "Köln Nippes" statt nur "Köln".
+ * Der Studioname trägt den Stadtteil schon ("Körperformen Köln Nippes") -
+ * ohne Markennamen bleibt genau der übrig. Fehlt er, steht die Stadt da.
+ */
+function standortName(studio: { name: string; city: string }) {
+  const ohneMarke = studio.name.replace(/^Körperformen\s+/i, "").trim();
+  return ohneMarke || studio.city;
+}
 
 export type UebersichtStudio = {
   id: string;
@@ -39,7 +53,11 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
   const [naechsteId, setNaechsteId] = useState<string | null>(null);
   const [entfernungen, setEntfernungen] = useState<Record<string, number>>({});
   const [hervorgehoben, setHervorgehoben] = useState<string | null>(null);
+  // Mit freigegebenem Standort zeigt die Liste zuerst nur die nächsten
+  // Studios (Wunsch vom 22.10.) - wer weiter sucht, klappt alle auf.
+  const [alleZeigen, setAlleZeigen] = useState(false);
   const isClient = useSyncExternalStore(subscribeNothing, () => true, () => false);
+  const en = useSprache() === "en";
 
   const kannOrten = studios.length > 1 && anyStudioLocatable(studios);
 
@@ -101,6 +119,9 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
           (entfernungen[a.studio.id] ?? Infinity) - (entfernungen[b.studio.id] ?? Infinity),
       )
     : punkte;
+
+  const gekuerzt = Boolean(naechsteId) && !alleZeigen && sortiertePunkte.length > NAECHSTE_ANZAHL;
+  const sichtbarePunkte = gekuerzt ? sortiertePunkte.slice(0, NAECHSTE_ANZAHL) : sortiertePunkte;
 
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_320px]">
@@ -177,7 +198,7 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
         </div>
 
         <p className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-3 py-2 text-[11px] text-muted">
-          <span>Kartendaten &copy; OpenStreetMap-Mitwirkende</span>
+          <span>{en ? "Map data © OpenStreetMap contributors" : "Kartendaten © OpenStreetMap-Mitwirkende"}</span>
           <a
             href="https://www.openstreetmap.org/copyright"
             target="_blank"
@@ -188,7 +209,7 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
             // Zeile unter der Karte bleibt genauso schmal wie vorher.
             className="-my-1 py-1 underline underline-offset-2 hover:text-foreground"
           >
-            Lizenz
+            {en ? "Licence" : "Lizenz"}
           </a>
         </p>
       </div>
@@ -196,17 +217,17 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
       <div>
         <p className="flex items-center gap-2 text-sm font-semibold">
           <MapPin size={16} className="text-accent" />
-          {verortet.length} Standorte
+          {verortet.length} {en ? "studios" : "Standorte"}
         </p>
 
         {isClient && naechsteId && (
           <p className="mt-1 flex items-center gap-1.5 text-xs text-accent">
-            <LocateFixed size={13} /> Nach Entfernung zu dir sortiert
+            <LocateFixed size={13} /> {en ? "Sorted by distance from you" : "Nach Entfernung zu dir sortiert"}
           </p>
         )}
 
         <ol className="mt-3 max-h-[26rem] space-y-1 overflow-y-auto pr-1 text-sm">
-          {sortiertePunkte.map(({ studio, nummer }) => (
+          {sichtbarePunkte.map(({ studio, nummer }) => (
             <li key={studio.id}>
               <a
                 href={`#studio-${studio.id}`}
@@ -232,7 +253,7 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
                   {nummer}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium">{studio.city}</span>
+                  <span className="block truncate font-medium">{standortName(studio)}</span>
                   <span className="block truncate text-xs text-muted">{studio.street}</span>
                 </span>
                 {entfernungen[studio.id] !== undefined && (
@@ -244,6 +265,18 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
             </li>
           ))}
         </ol>
+
+        {gekuerzt && (
+          <button
+            type="button"
+            onClick={() => setAlleZeigen(true)}
+            className="mt-2 w-full rounded-lg border border-border px-3 py-2 text-sm font-medium transition-colors hover:border-lime"
+          >
+            {en
+              ? `Show all ${sortiertePunkte.length} studios`
+              : `Alle ${sortiertePunkte.length} Standorte anzeigen`}
+          </button>
+        )}
       </div>
     </div>
   );

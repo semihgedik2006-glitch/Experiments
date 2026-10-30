@@ -5,8 +5,8 @@ import { MapPin, LocateFixed } from "lucide-react";
 import { motion } from "motion/react";
 import { BookingForm } from "@/components/booking/booking-form";
 import { allStudiosLocatable, anyStudioLocatable, sortStudiosByDistance } from "@/lib/geo";
-import type { TerminTag as DayGroup } from "@/lib/termin-tage";
 import { texte, type Sprache } from "@/lib/sprache";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 /** Der Zustand ändert sich nie - useSyncExternalStore dient hier nur dazu,
  *  Server und Browser sauber zu unterscheiden. */
@@ -22,14 +22,15 @@ type StudioOption = {
   longitude: number | null;
 };
 
+/** So viele Studios stehen zuerst da (nach Entfernung sortiert, sobald bekannt). */
+const SICHTBAR = 4;
+
 export function BookingFlow({
   studios,
-  slotsByStudio,
-  sprache = "de",
+  sprache: spracheVorgabe,
   standortErstImBild = false,
 }: {
   studios: StudioOption[];
-  slotsByStudio: Record<string, DayGroup[]>;
   /** Auf der englischen Seite "en" - siehe src/lib/sprache.ts. */
   sprache?: Sprache;
   /**
@@ -42,6 +43,9 @@ export function BookingFlow({
    */
   standortErstImBild?: boolean;
 }) {
+  // Ohne Angabe die Sprache der Seite, auf der das Formular steht.
+  const spracheDerSeite = useSprache();
+  const sprache = spracheVorgabe ?? spracheDerSeite;
   const t = texte(sprache);
   const englisch = sprache === "en";
   const [selectedStudioId, setSelectedStudioId] = useState(studios[0]?.id ?? "");
@@ -50,6 +54,10 @@ export function BookingFlow({
   // Studio soll auch tatsächlich obenstehen und nicht nur ausgewählt sein.
   const [orderedStudios, setOrderedStudios] = useState(studios);
   const [userPicked, setUserPicked] = useState(false);
+  // Erst die nächsten vier, der Rest auf Knopfdruck: Vierzehn Kacheln
+  // untereinander waren auf dem Handy anderthalb Bildschirme vor dem
+  // eigentlichen Formular.
+  const [alleZeigen, setAlleZeigen] = useState(false);
 
   // Sortiert wird, sobald wenigstens ein Studio Koordinaten hat. Studios
   // ohne hängen hinten an.
@@ -202,56 +210,62 @@ export function BookingFlow({
             )}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
-            {orderedStudios.map((studio) => {
-              const isSelected = selectedStudioId === studio.id;
-              const isRecommended = recommendedStudioId === studio.id;
-              return (
-                <motion.button
-                  key={studio.id}
-                  type="button"
-                  onClick={() => {
-                    setUserPicked(true);
-                    setSelectedStudioId(studio.id);
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                  // karte-hebt gibt derselben Kachel dieselbe Rückmeldung
-                  // wie überall sonst auf der Seite. Die ausgewählte hebt
-                  // sich nicht mit: Sie ist schon hervorgehoben, und eine
-                  // zweite Hervorhebung darüber macht die Auswahl unklar.
-                  className={`rounded-xl border p-4 text-left transition-colors ${
-                    isSelected
-                      ? "border-lime bg-lime/10"
-                      : "karte-hebt border-border"
-                  }`}
-                >
-                  <span className="flex items-center gap-2 font-semibold">
-                    <MapPin size={15} className="shrink-0 text-accent" />
-                    {studio.name}
-                    {isRecommended && (
-                      <span className="rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-on-lime">
-                        {englisch ? "Closest" : "Am nächsten"}
-                      </span>
-                    )}
-                  </span>
-                  <span className="mt-1 block text-xs text-muted">
-                    {studio.street}, {studio.postalCode} {studio.city}
-                  </span>
-                </motion.button>
-              );
-            })}
+            {orderedStudios
+              .filter((studio, i) => alleZeigen || i < SICHTBAR || studio.id === selectedStudioId)
+              .map((studio) => {
+                const isSelected = selectedStudioId === studio.id;
+                const isRecommended = recommendedStudioId === studio.id;
+                return (
+                  <motion.button
+                    key={studio.id}
+                    type="button"
+                    onClick={() => {
+                      setUserPicked(true);
+                      setSelectedStudioId(studio.id);
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    // karte-hebt gibt derselben Kachel dieselbe Rückmeldung
+                    // wie überall sonst auf der Seite. Die ausgewählte hebt
+                    // sich nicht mit: Sie ist schon hervorgehoben, und eine
+                    // zweite Hervorhebung darüber macht die Auswahl unklar.
+                    className={`rounded-xl border p-4 text-left transition-colors ${
+                      isSelected
+                        ? "border-lime bg-lime/10"
+                        : "karte-hebt border-border"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2 font-semibold">
+                      <MapPin size={15} className="shrink-0 text-accent" />
+                      {studio.name}
+                      {isRecommended && (
+                        <span className="rounded-full bg-lime px-2 py-0.5 text-[10px] font-semibold text-on-lime">
+                          {englisch ? "Closest" : "Am nächsten"}
+                        </span>
+                      )}
+                    </span>
+                    <span className="mt-1 block text-xs text-muted">
+                      {studio.street}, {studio.postalCode} {studio.city}
+                    </span>
+                  </motion.button>
+                );
+              })}
           </div>
+          {!alleZeigen && orderedStudios.length > SICHTBAR && (
+            <button
+              type="button"
+              onClick={() => setAlleZeigen(true)}
+              className="mt-3 text-sm font-semibold text-accent underline-offset-4 hover:underline"
+            >
+              {englisch ? `Show all ${orderedStudios.length} studios` : `Alle ${orderedStudios.length} Studios anzeigen`}
+            </button>
+          )}
         </div>
       )}
 
-      {/* Der Standort geht als verstecktes Feld mit ins Formular. Ohne ihn
-          hing eine Anfrage nur dann an einem Studio, wenn zusätzlich eine
-          feste Zeit angeklickt wurde. */}
+      {/* Der Standort geht als verstecktes Feld mit ins Formular - so landet
+          die Anfrage beim gewählten Studio. */}
       <BookingForm
-        days={slotsByStudio[selectedStudioId] ?? []}
         studioId={selectedStudioId}
-        studioName={
-          orderedStudios.find((studio) => studio.id === selectedStudioId)?.name ?? ""
-        }
         sprache={sprache}
       />
     </div>

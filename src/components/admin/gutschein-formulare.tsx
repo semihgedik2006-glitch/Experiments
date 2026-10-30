@@ -11,7 +11,7 @@ import {
   gutscheinStornieren,
   gutscheinVorOrtVerkaufen,
 } from "@/lib/actions/admin-gutscheine";
-import { STARTPAKET_WERT, WERT_STUFEN } from "@/lib/gutschein";
+import { STARTPAKET_WERT, WERT_STUFEN } from "@/lib/gutschein-verwaltung";
 import type { GutscheinStatus } from "@/generated/prisma/enums";
 
 /** Die Knöpfe zu einem Gutschein - je nach Stand nur die, die passen. */

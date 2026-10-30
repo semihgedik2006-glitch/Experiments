@@ -42,6 +42,7 @@ const artText: Record<MailArt, string> = {
   MITGLIEDER_INTERN: "Wochenübersicht Mitgliederpflege ans Studio",
   GUTSCHEIN_EINGANG: "Eingangsbestätigung einer Gutscheinanfrage",
   GUTSCHEIN_INTERN: "Neue Gutscheinanfrage ans Studio",
+  MONATSBERICHT: "Monatsbericht mit den Zahlen des Vormonats",
 };
 
 const ablaeufe: { titel: string; wann: string; an: string }[] = [
@@ -67,8 +68,13 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
   },
   {
     titel: "Erinnerung am Vortag",
-    wann: "täglich, für alle bestätigten Termine des Folgetags",
+    wann: "täglich, für alle bestätigten Termine des Folgetags - auch für Anfragen mit Wunschzeit, sobald ihr beim Bestätigen Tag und Uhrzeit eingetragen habt",
     an: "an den Gast",
+  },
+  {
+    titel: "Monatsbericht",
+    wann: "am 1. jedes Monats mit dem täglichen Lauf, mit den Zahlen des Vormonats",
+    an: "an die Sammeladresse",
   },
   {
     titel: "Erinnerung an offene Anfragen",

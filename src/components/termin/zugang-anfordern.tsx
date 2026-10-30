@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Mail } from "lucide-react";
 import { zugangAnfordern } from "@/lib/actions/kundenbereich";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 const anfang = { ok: false, message: "" };
 
@@ -19,17 +20,22 @@ const anfang = { ok: false, message: "" };
  */
 export function ZugangAnfordern() {
   const [zustand, absenden, laeuft] = useActionState(zugangAnfordern, anfang);
+  const sprache = useSprache();
+  const en = sprache === "en";
 
   return (
     <form action={absenden} className="mt-8 max-w-md">
+      <input type="hidden" name="sprache" value={sprache} />
       <label className="block">
-        <span className="mb-2 block text-sm font-medium">Deine E-Mail-Adresse</span>
+        <span className="mb-2 block text-sm font-medium">
+          {en ? "Your email address" : "Deine E-Mail-Adresse"}
+        </span>
         <input
           type="email"
           name="email"
           required
           autoComplete="email"
-          placeholder="deine@email.de"
+          placeholder={en ? "you@example.com" : "deine@email.de"}
           suppressHydrationWarning
           className="w-full rounded-xl border border-border bg-surface-raised px-4 py-3 text-sm outline-none transition-colors focus:border-lime"
         />
@@ -41,7 +47,7 @@ export function ZugangAnfordern() {
         className="mt-4 inline-flex items-center gap-2 rounded-full bg-lime px-6 py-3 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-60"
       >
         <Mail size={16} aria-hidden />
-        {laeuft ? "Wird verschickt..." : "Link schicken"}
+        {laeuft ? (en ? "Sending..." : "Wird verschickt...") : en ? "Send link" : "Link schicken"}
       </button>
 
       {/* aria-live, weil die Antwort nach dem Absenden erscheint und

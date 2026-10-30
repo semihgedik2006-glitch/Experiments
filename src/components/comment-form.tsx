@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { submitComment } from "@/lib/actions/comments";
 import type { ActionResult } from "@/lib/actions/newsletter";
+import { useSprache } from "@/lib/i18n/use-sprache";
 
 const initialState: ActionResult = { ok: false, message: "" };
 
@@ -18,11 +19,13 @@ export function CommentForm({
   compact?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(submitComment, initialState);
+  const sprache = useSprache();
+  const en = sprache === "en";
 
   if (state.ok) {
     return (
       <div className={`rounded-2xl border border-lime bg-surface text-center ${compact ? "p-4" : "p-6"}`}>
-        <p className="font-semibold text-accent">Danke für deinen Kommentar!</p>
+        <p className="font-semibold text-accent">{en ? "Thank you for your comment!" : "Danke für deinen Kommentar!"}</p>
         <p className="mt-2 text-sm text-muted">{state.message}</p>
       </div>
     );
@@ -32,6 +35,7 @@ export function CommentForm({
     <form action={formAction} className="space-y-3">
       <input type="hidden" name="postId" value={postId} />
       <input type="hidden" name="slug" value={slug} />
+      <input type="hidden" name="sprache" value={sprache} />
       {parentId && <input type="hidden" name="parentId" value={parentId} />}
 
       {/* Honeypot - hidden from real users, catches simple bots */}
@@ -49,7 +53,7 @@ export function CommentForm({
         name="authorName"
         required
         maxLength={80}
-        placeholder="Dein Name"
+        placeholder={en ? "Your name" : "Dein Name"}
         className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
       />
       <textarea
@@ -57,7 +61,7 @@ export function CommentForm({
         required
         maxLength={2000}
         rows={compact ? 3 : 4}
-        placeholder={parentId ? "Deine Antwort" : "Dein Kommentar"}
+        placeholder={en ? (parentId ? "Your reply" : "Your comment") : parentId ? "Deine Antwort" : "Dein Kommentar"}
         className="w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
       />
 
@@ -68,7 +72,17 @@ export function CommentForm({
         disabled={pending}
         className="rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-on-lime transition-opacity disabled:opacity-50"
       >
-        {pending ? "Wird gesendet..." : parentId ? "Antwort absenden" : "Kommentar absenden"}
+        {en
+          ? pending
+            ? "Sending..."
+            : parentId
+              ? "Send reply"
+              : "Post comment"
+          : pending
+            ? "Wird gesendet..."
+            : parentId
+              ? "Antwort absenden"
+              : "Kommentar absenden"}
       </button>
     </form>
   );

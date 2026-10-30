@@ -1,11 +1,10 @@
+import Image from "next/image";
 import { ArrowRight, CalendarClock, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import { ImpulsMotiv } from "@/components/ui/impuls-motiv";
-import { beweiseHolen } from "@/lib/beweise";
-import { getUpcomingSlots, getStudios } from "@/lib/data";
-import { formatDateShort } from "@/lib/format";
+import type { Sprache } from "@/lib/sprache";
 
 /**
  * Der Aufruf am Seitenende.
@@ -19,27 +18,27 @@ import { formatDateShort } from "@/lib/format";
  * jedem Seitenkopf: Wer bis hierher gescrollt hat, hat es dreimal gesehen -
  * beim vierten Mal gehört es zur Marke.
  *
- * NEU: Über dem Knopf steht, wann der nächste Termin tatsächlich frei
- * ist. Vorher stand dort "Sichere dir jetzt deinen kostenlosen
- * Probetermin" - ein Satz, der auf jeder Fitnessseite steht und deshalb
- * keine Entscheidung auslöst. "Nächster freier Termin: Do., 18.09. um
- * 07:00 in Hürth" ist derselbe Aufruf, nur als Verabredung. Die Angabe
- * kommt aus den echten Terminen; gibt es keinen, entfällt sie ersatzlos.
+ * Über dem Knopf stand eine Zeit lang der nächste freie Termin. Die
+ * Studios planen ihr Team aber nach den Anfragen, nicht nach festen
+ * Terminen - deshalb steht dort jetzt, wie es läuft: Wunschzeit nennen,
+ * Rückmeldung bekommen.
  */
-export async function CtaBanner() {
-  const [slots, studios, beweise] = await Promise.all([
-    getUpcomingSlots(),
-    getStudios(),
-    beweiseHolen(),
-  ]);
-
-  const naechster = slots[0];
-  const studioName = naechster
-    ? (studios.find((s) => s.id === naechster.studioId)?.name ?? null)
-    : null;
-
+export function CtaBanner({ sprache = "de" }: { sprache?: Sprache }) {
+  const en = sprache === "en";
   return (
-    <section className="on-ink relative overflow-hidden pt-24 pb-24 sm:pt-28 md:pt-36">
+    <section className="on-ink relative isolate overflow-hidden pt-24 pb-24 sm:pt-28 md:pt-36">
+      {/* Das Team im Hintergrund, stark gedämpft: Gesichter statt Leere,
+          ohne dass der Text dagegen ankämpfen muss. */}
+      <div aria-hidden className="absolute inset-0 -z-10">
+        <Image
+          src="/bilder/studio/team-jubel.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-[50%_30%] opacity-35"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--ink)] via-[var(--ink)]/60 to-[var(--ink)]" />
+      </div>
       {/* Erst ab md: Auf dem Handy nimmt der Text die volle Breite ein, und
           das Motiv läge direkt hinter der Überschrift. */}
       <div
@@ -59,26 +58,28 @@ export async function CtaBanner() {
       <Container className="relative">
         <Reveal className="flex flex-col items-center text-center">
           <h2 className="max-w-2xl text-balance text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Bereit für deine <span className="einladung-leuchten text-accent">erste Einheit?</span>
+            {en ? (
+              <>
+                Ready for your <span className="einladung-leuchten text-accent">first session?</span>
+              </>
+            ) : (
+              <>
+                Bereit für deine <span className="einladung-leuchten text-accent">erste Einheit?</span>
+              </>
+            )}
           </h2>
 
-          {naechster ? (
-            <p className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm">
-              <CalendarClock size={17} className="text-accent" aria-hidden />
-              <span className="text-muted">Nächster freier Termin:</span>
-              <span className="font-semibold">
-                {formatDateShort(naechster.date)} um {naechster.startTime} Uhr
-                {studioName && <span className="font-normal text-muted"> · {studioName}</span>}
-              </span>
-            </p>
-          ) : (
-            <p className="mt-4 max-w-md text-muted">
-              Sichere dir deinen kostenlosen und unverbindlichen Probetermin.
-            </p>
-          )}
+          <p className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm">
+            <CalendarClock size={17} className="text-accent" aria-hidden />
+            <span className="text-muted">
+              {en
+                ? "Tell us when suits you - we will get back to you with a matching time."
+                : "Nenn uns deine Wunschzeit - wir melden uns mit einem passenden Termin."}
+            </span>
+          </p>
 
           <Button href="/probetermin" className="knopf-glanz-dauer group mt-7 px-8 py-3.5">
-            Kostenlosen Probetermin buchen
+            {en ? "Book your free trial session" : "Kostenlosen Probetermin buchen"}
             <ArrowRight size={16} aria-hidden className="transition-transform group-hover:translate-x-1" />
           </Button>
 
@@ -88,13 +89,10 @@ export async function CtaBanner() {
               nicht hier, wo entschieden wird. Alles drei sind Zusagen,
               keine Behauptungen über Wirkung. */}
           <ul className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted">
-            {[
-              "0 € und unverbindlich",
-              "Danach die Mitgliedschaft, die zu dir passt",
-              beweise.freieTermine7Tage
-                ? `${beweise.freieTermine7Tage} freie Termine in den nächsten 7 Tagen`
-                : "Ausrüstung stellen wir",
-            ].map((punkt) => (
+            {(en
+              ? ["€0, no strings attached", "Afterwards, the membership that suits you", "We provide the equipment"]
+              : ["0 € und unverbindlich", "Danach die Mitgliedschaft, die zu dir passt", "Ausrüstung stellen wir"]
+            ).map((punkt) => (
               <li key={punkt} className="flex items-center gap-1.5">
                 <Check size={13} className="shrink-0 text-accent" aria-hidden />
                 {punkt}

@@ -1,3 +1,4 @@
+import type { Sprache } from "@/lib/sprache";
 import { siteConfig } from "@/lib/site-config";
 import { prisma } from "@/lib/prisma";
 import { freiePlaetze } from "@/lib/kapazitaet";
@@ -157,15 +158,19 @@ export type Kennzahl = {
 };
 
 
-export function kennzahlen(b: Beweise): Kennzahl[] {
+export function kennzahlen(b: Beweise, sprache: Sprache = "de"): Kennzahl[] {
+  const en = sprache === "en";
   // Keine Abfrage, sondern das Angebot selbst - und die Zahl, wegen der
   // die meisten überhaupt hier sind.
   const liste: Kennzahl[] = [
-    { wert: "20", label: "Minuten Training pro Woche" },
+    { wert: "20", label: en ? "minutes of training a week" : "Minuten Training pro Woche" },
   ];
 
   if (b.standorte > 0) {
-    liste.push({ wert: String(b.standorte), label: b.standorte === 1 ? "Studio in Köln und Umgebung" : "Studios in Köln und Umgebung" });
+    const label = en
+      ? b.standorte === 1 ? "studio in and around Cologne" : "studios in and around Cologne"
+      : b.standorte === 1 ? "Studio in Köln und Umgebung" : "Studios in Köln und Umgebung";
+    liste.push({ wert: String(b.standorte), label });
   }
 
   // Die dritte Stelle: das Körperformen-Netz. Vorher stand hier "220 Min.
@@ -174,54 +179,10 @@ export function kennzahlen(b: Beweise): Kennzahl[] {
   // pflegt die Zentrale, sie steht in site-config.
   liste.push({
     wert: String(siteConfig.netzwerk.studiosGesamt),
-    label: "Körperformen-Studios – wir sind der größte Partner",
+    einheit: "+",
+    label: en
+      ? "Körperformen studios – we are the largest partner"
+      : "Körperformen-Studios – wir sind der größte Partner",
   });
   return liste.slice(0, 3);
-}
-
-/**
- * Freie Plätze je Standort in den nächsten sieben Tagen.
- *
- * Für die Standortliste: Neben einer Adresse steht damit nicht nur, wo
- * das Studio ist, sondern ob dort diese Woche überhaupt etwas frei ist.
- * Das ist die Frage, die jemand auf dieser Seite tatsächlich hat - und
- * die Antwort steht sonst erst zwei Klicks weiter.
- *
- * Standorte ohne freien Platz stehen nicht in der Karte: Der Aufrufer
- * bekommt dann undefined und lässt die Zeile weg, statt "0 freie
- * Termine" hinzuschreiben. Wer das liest, klickt nicht weiter - dabei
- * kann ein Anruf trotzdem eine Zeit ergeben.
- */
-export async function freieTermineJeStudio(): Promise<Map<string, number>> {
-  const ergebnis = new Map<string, number>();
-
-  try {
-    const heute = new Date();
-    heute.setHours(0, 0, 0, 0);
-    const inEinerWoche = new Date(heute);
-    inEinerWoche.setDate(inEinerWoche.getDate() + 7);
-
-    const slots = await prisma.availabilitySlot.findMany({
-      where: { date: { gte: heute, lt: inEinerWoche } },
-      select: {
-        studioId: true,
-        capacity: true,
-        bookings: {
-          where: { status: { not: "CANCELLED" } },
-          select: { zuZweit: true },
-        },
-      },
-    });
-
-    for (const slot of slots) {
-      const offen = freiePlaetze(slot.capacity, slot.bookings);
-      if (offen > 0) {
-        ergebnis.set(slot.studioId, (ergebnis.get(slot.studioId) ?? 0) + offen);
-      }
-    }
-  } catch (error) {
-    console.error("Freie Termine je Standort nicht ermittelbar:", error);
-  }
-
-  return ergebnis;
 }

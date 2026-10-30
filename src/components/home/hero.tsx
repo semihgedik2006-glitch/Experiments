@@ -2,14 +2,15 @@
 
 import { Fragment, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { ArrowRight, ChevronDown, MapPin } from "lucide-react";
+import { ArrowRight, Briefcase, ChevronDown, House, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { probeterminHref, useZiel } from "@/components/ziel/ziel-kontext";
-import { ZIEL_INHALTE, zielInhalt } from "@/lib/ziel-inhalte";
+import { zielInhalte, zielInhalt } from "@/lib/ziel-inhalte";
+import { useSprache } from "@/lib/i18n/use-sprache";
 import { ZielMotiv } from "@/components/ziel/ziel-motiv";
+import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 
 /**
  * Der erste Bildschirm.
@@ -19,7 +20,7 @@ import { ZielMotiv } from "@/components/ziel/ziel-motiv";
  * Gefühle an, sagte aber nicht, WOFÜR jemand trainiert. Diese Fassung
  * führt über das Ziel:
  *
- *   "Fühl dich wieder wohl in deinem Körper."
+ *   "Für mehr Lebensqualität." (Wunsch Marcel, 22.10.)
  *   + "Was willst du erreichen?" mit fünf Zielen zum Antippen
  *
  * Lebensqualität als Überschrift, das Ziel als erste Handlung. Wer ein
@@ -40,8 +41,9 @@ import { ZielMotiv } from "@/components/ziel/ziel-motiv";
  * spiegelverkehrt - und ist zurückgedreht. Weil der Kunde links im Bild
  * steht, liegt es nicht mehr vollflächig hinter dem Text, sondern als
  * gerahmte Karte rechts daneben: So verdeckt die Überschrift niemanden.
- * Die zwei Mini-Fotos der Abend-Geschichte bleiben Symbolbilder von
- * Pexels (siehe public/bilder/start/QUELLEN.md).
+ * Die Abend-Geschichte zeigt Symbole statt Fotos: Vorher standen dort
+ * zwei Stockfotos von Pexels - die einzigen Fremdbilder der Seite, seit
+ * es echte Studio-Fotos gibt.
  *
  * Ladezeit: Die Eingangsanimation läuft weiter über CSS (.hero-anim in
  * globals.css), nicht über Motion - sonst stünde der Text bis zur
@@ -81,27 +83,19 @@ function StaggeredLine({
   );
 }
 
-export type NaechsterTermin = {
-  label: string;
-  studio: string;
-  href: string;
-  /** Wie viele Plätze in den nächsten sieben Tagen noch frei sind. */
-  freieDieseWoche: number | null;
-};
 
 const verz = (s: number) => ({ "--hero-delay": `${s}s` }) as React.CSSProperties;
 
 export function Hero({
   standorte,
   anzahlStudios,
-  naechsterTermin,
 }: {
   standorte: string;
   anzahlStudios: number;
-  naechsterTermin: NaechsterTermin | null;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const wenigerBewegung = useReducedMotion();
+  const en = useSprache() === "en";
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
 
   // Drei Ebenen, drei Tempi: Das Foto zieht am langsamsten mit, der Text
@@ -128,7 +122,11 @@ export function Hero({
               <div className="hero-foto-bild relative aspect-[16/11] lg:aspect-[4/3]">
                 <Image
                   src="/bilder/start/studio-high-five.jpg"
-                  alt="Ein Körperformen-Trainer gibt einem Kunden im EMS-Anzug ein High Five, daneben das EMS-Gerät."
+                  alt={
+                    en
+                      ? "A Körperformen trainer high-fives a client in an EMS suit, the EMS device next to them."
+                      : "Ein Körperformen-Trainer gibt einem Kunden im EMS-Anzug ein High Five, daneben das EMS-Gerät."
+                  }
                   fill
                   priority
                   sizes="(min-width: 1024px) 55vw, 100vw"
@@ -146,27 +144,27 @@ export function Hero({
               aria-hidden
             >
               <div className="hero-anim hero-geschichte flex items-center gap-2.5 rounded-2xl py-2 pl-2 pr-4" style={verz(1.15)}>
-                <div className="hero-buero h-11 w-11 overflow-hidden rounded-xl">
-                  <Image src="/bilder/start/spaet-im-buero.jpg" alt="" width={88} height={88} sizes="44px" className="h-full w-full object-cover object-[50%_25%]" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-foreground/80">
+                  <Briefcase size={18} />
                 </div>
                 <p className="whitespace-nowrap text-xs leading-tight text-foreground/80">
-                  <span className="block font-semibold tabular-nums text-foreground">18:40</span>
-                  noch im Büro
+                  <span className="block font-semibold tabular-nums text-foreground">{en ? "6:40 pm" : "18:40"}</span>
+                  {en ? "still at the office" : "noch im Büro"}
                 </p>
               </div>
               <div className="hero-linie hero-anim h-px w-6" style={verz(1.35)} />
               <div className="hero-anim hero-chip flex items-center gap-2 whitespace-nowrap rounded-full bg-lime py-2 pl-2 pr-4 text-sm font-semibold text-on-lime" style={verz(1.5)}>
-                <span className="rounded-full bg-black/15 px-2 py-1 text-[11px] tabular-nums">19:00</span>
-                Deine 20 Minuten
+                <span className="rounded-full bg-black/15 px-2 py-1 text-[11px] tabular-nums">{en ? "7:00 pm" : "19:00"}</span>
+                {en ? "Your 20 minutes" : "Deine 20 Minuten"}
               </div>
               <div className="hero-linie hero-anim h-px w-6" style={verz(1.65)} />
               <div className="hero-anim hero-geschichte flex items-center gap-2.5 rounded-2xl py-2 pl-2 pr-4" style={verz(1.8)}>
-                <div className="hero-familie h-11 w-11 overflow-hidden rounded-xl">
-                  <Image src="/bilder/start/familie-umarmung.jpg" alt="" width={88} height={88} sizes="44px" className="h-full w-full object-cover object-[50%_35%]" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-foreground/80">
+                  <House size={18} />
                 </div>
                 <p className="whitespace-nowrap text-xs leading-tight text-foreground/80">
-                  <span className="block font-semibold tabular-nums text-foreground">19:40</span>
-                  bei deinen Liebsten
+                  <span className="block font-semibold tabular-nums text-foreground">{en ? "7:40 pm" : "19:40"}</span>
+                  {en ? "back with your loved ones" : "bei deinen Liebsten"}
                 </p>
               </div>
             </motion.div>
@@ -179,49 +177,25 @@ export function Hero({
               style={verz(0.15)}
             >
               <MapPin size={13} className="text-accent" aria-hidden />
-              {anzahlStudios > 1 ? `${anzahlStudios} Studios in Köln und Umgebung` : standorte}
+              {anzahlStudios > 1
+                ? en
+                  ? `${anzahlStudios} studios in and around Cologne`
+                  : `${anzahlStudios} Studios in Köln und Umgebung`
+                : standorte}
             </span>
+            <div className="hero-anim mt-3" style={verz(0.2)}>
+              <AuszeichnungMarke />
+            </div>
 
             <Ueberschrift />
 
             <p className="hero-anim mt-6 max-w-lg text-lg leading-relaxed text-foreground/80" style={verz(0.7)}>
-              EMS-Training mit deinem persönlichen Trainer: 20 Minuten pro Woche, abgestimmt auf
-              dein Ziel, deinen Körper und deinen Alltag.
+              {en
+                ? "Whether you want to strengthen your back, lose weight, build muscle or tone your body: we design every EMS session around your goals – 20 minutes a week with your personal trainer."
+                : "Egal ob du deinen Rücken stärken, abnehmen, Muskeln aufbauen oder deinen Körper straffen möchtest: Wir gestalten jedes EMS-Training individuell auf deine Ziele – 20 Minuten pro Woche, mit deinem persönlichen Trainer."}
             </p>
 
             <ZielWahl />
-
-            {/* Echte Daten statt eines weiteren Versprechens. Fehlt der
-                Termin, entfällt der Block. */}
-            {naechsterTermin && (
-              <Link
-                href={naechsterTermin.href}
-                className="hero-anim group mt-7 inline-flex max-w-full items-center gap-4 rounded-2xl border border-lime/40 bg-lime/5 px-5 py-4 transition-colors hover:border-lime"
-                style={verz(1.05)}
-              >
-                <span aria-hidden className="relative flex h-2.5 w-2.5 shrink-0">
-                  <span className="puls-welle absolute inset-0 rounded-full bg-lime" />
-                  <span className="relative h-2.5 w-2.5 rounded-full bg-lime" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-widest text-muted">
-                    Nächster freier Termin
-                  </span>
-                  <span className="mt-0.5 block text-base font-semibold">
-                    {naechsterTermin.label}
-                    {naechsterTermin.studio && (
-                      <span className="font-normal text-muted"> · {naechsterTermin.studio}</span>
-                    )}
-                  </span>
-                  {naechsterTermin.freieDieseWoche && (
-                    <span className="mt-1 block text-xs text-muted">
-                      {naechsterTermin.freieDieseWoche} freie Termine in den nächsten 7 Tagen
-                    </span>
-                  )}
-                </span>
-                <ArrowRight size={17} aria-hidden className="shrink-0 text-accent transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            )}
           </motion.div>
         </Container>
       </motion.div>
@@ -254,16 +228,18 @@ export function Hero({
  */
 function ZielWahl() {
   const { ziel, waehlen } = useZiel();
-  const inhalt = zielInhalt(ziel);
+  const sprache = useSprache();
+  const en = sprache === "en";
+  const inhalt = zielInhalt(ziel, sprache);
   const wenigerBewegung = useReducedMotion();
 
   return (
     <div className="hero-anim mt-8" style={verz(0.85)}>
       <p id="ziel-frage" className="text-sm font-semibold text-foreground">
-        Was willst du erreichen?
+        {en ? "What do you want to achieve?" : "Was willst du erreichen?"}
       </p>
       <div role="radiogroup" aria-labelledby="ziel-frage" className="mt-3 flex flex-wrap gap-2">
-        {ZIEL_INHALTE.map((z) => {
+        {zielInhalte(sprache).map((z) => {
           const aktiv = z.wert === ziel;
           return (
             <button
@@ -306,7 +282,7 @@ function ZielWahl() {
                   <ArrowRight size={16} aria-hidden />
                 </Button>
                 <a href="#dein-ziel" className="text-sm font-semibold text-accent underline-offset-4 hover:underline">
-                  So trainierst du dafür
+                  {en ? "How you train for it" : "So trainierst du dafür"}
                 </a>
               </div>
             </motion.div>
@@ -320,11 +296,11 @@ function ZielWahl() {
               className="flex flex-col gap-3 sm:flex-row sm:items-center"
             >
               <Button href="/probetermin" className="knopf-glanz-dauer px-8 py-3.5">
-                Kostenloses Probetraining
+                {en ? "Free trial session" : "Kostenloses Probetraining"}
                 <ArrowRight size={16} aria-hidden />
               </Button>
               <Button href="/ziel-check" variant="secondary" className="border-white/25">
-                Unsicher? Ziel-Check machen
+                {en ? "Not sure? Take the goal check" : "Unsicher? Ziel-Check machen"}
               </Button>
             </motion.div>
           )}
@@ -341,14 +317,18 @@ function ZielWahl() {
  * Zeile steigen (CSS-Animation, siehe .hero-anim-word). Beim ersten Laden
  * mit kurzer Verzögerung, beim Wechsel sofort.
  */
-const ALLGEMEIN: [string, string] = ["Fühl dich wieder\u00a0wohl", "in\u00a0deinem\u00a0Körper."];
+// Marcels Vorschlag (22.10.): "für mehr Lebensqualität" als Überschrift.
+// Vorher: "Fühl dich wieder wohl in deinem Körper."
+const ALLGEMEIN: [string, string] = ["Für mehr", "Lebensqualität."];
+const ALLGEMEIN_EN: [string, string] = ["For a better", "quality\u00a0of\u00a0life."];
 
 function Ueberschrift() {
   const { ziel, wechsel } = useZiel();
-  const inhalt = zielInhalt(ziel);
+  const sprache = useSprache();
+  const inhalt = zielInhalt(ziel, sprache);
   // Geschütztes Leerzeichen vor dem letzten Wort: Es darf nie allein in
   // einer Zeile stehen.
-  const [eins, zwei] = (inhalt?.titel ?? ALLGEMEIN).map((zeile) => zeile.replace(/ (\S+)$/, "\u00a0$1"));
+  const [eins, zwei] = (inhalt?.titel ?? (sprache === "en" ? ALLGEMEIN_EN : ALLGEMEIN)).map((zeile) => zeile.replace(/ (\S+)$/, "\u00a0$1"));
   const start = wechsel > 0 ? 0 : 0.25;
   return (
     <h1
@@ -365,7 +345,8 @@ function Ueberschrift() {
 /** Kleine Karte oben links auf dem Foto: das Motiv zum gewählten Ziel. */
 function ZielKarte() {
   const { ziel } = useZiel();
-  const inhalt = zielInhalt(ziel);
+  const sprache = useSprache();
+  const inhalt = zielInhalt(ziel, sprache);
   const wenigerBewegung = useReducedMotion();
   return (
     <AnimatePresence mode="wait">
@@ -383,7 +364,7 @@ function ZielKarte() {
             <ZielMotiv ziel={inhalt.wert} className="h-full w-full" />
           </div>
           <p className="text-xs leading-tight text-foreground/80">
-            <span className="block text-[10px] uppercase tracking-widest text-muted">Dein Fokus</span>
+            <span className="block text-[10px] uppercase tracking-widest text-muted">{sprache === "en" ? "Your focus" : "Dein Fokus"}</span>
             <span className="mt-0.5 block text-sm font-semibold text-foreground">{inhalt.kurz}</span>
           </p>
         </motion.div>

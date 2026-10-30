@@ -4,6 +4,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Button } from "@/components/ui/button";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { Reveal } from "@/components/ui/reveal";
+import type { Sprache } from "@/lib/sprache";
 
 export type TarifAnzeige = {
   id: string;
@@ -32,8 +33,11 @@ export type TarifAnzeige = {
 export function TarifVergleich({
   tarife,
   hinweis,
+  sprache = "de",
 }: {
+  /** Texte schon in dieser Sprache (lokal()). */
   tarife: TarifAnzeige[];
+  sprache?: Sprache;
   /** Der Pflichthinweis unter der Übersicht. */
   hinweis: string;
 }) {
@@ -41,6 +45,7 @@ export function TarifVergleich({
   // weiterhin, warum dort keine Preisliste steht - und das ist eine
   // Haltung, keine Lücke.
   if (tarife.length === 0) return null;
+  const en = sprache === "en";
 
   const spalten =
     tarife.length >= 3 ? "lg:grid-cols-3" : tarife.length === 2 ? "sm:grid-cols-2" : "";
@@ -49,9 +54,13 @@ export function TarifVergleich({
     <section className="border-t border-border py-20 sm:py-24">
       <Container>
         <SectionHeader
-          kicker="Tarife"
-          title="Was das Training kostet"
-          intro="Die Übersicht zeigt, was in welchem Tarif steckt. Welcher zu dir passt, klären wir beim Probetermin - dort bekommst du das Angebot schriftlich."
+          kicker={en ? "Plans" : "Tarife"}
+          title={en ? "What the training costs" : "Was das Training kostet"}
+          intro={
+            en
+              ? "The overview shows what each plan includes. Which one suits you, we work out at your trial session - where you get the offer in writing."
+              : "Die Übersicht zeigt, was in welchem Tarif steckt. Welcher zu dir passt, klären wir beim Probetermin - dort bekommst du das Angebot schriftlich."
+          }
           align="center"
           className="mb-14"
         />
@@ -70,7 +79,7 @@ export function TarifVergleich({
                     nach unten. */}
                 {tarif.empfohlen && (
                   <span className="mb-3 self-start rounded-full bg-lime px-3 py-1 text-xs font-semibold text-on-lime">
-                    Unsere Empfehlung
+                    {en ? "Our recommendation" : "Unsere Empfehlung"}
                   </span>
                 )}
 
@@ -110,7 +119,7 @@ export function TarifVergleich({
                     variant={tarif.empfohlen ? "primary" : "secondary"}
                     className="w-full"
                   >
-                    Probetermin buchen
+                    {en ? "Book a trial session" : "Probetermin buchen"}
                   </Button>
                 </div>
               </div>
