@@ -15,6 +15,7 @@ import { isVisible } from "@/lib/site-toggles";
 import {
   STATUS_TEXT,
   STATUS_TON,
+  ZAHLWEG_TEXT,
   artText,
   betragText,
   gutscheinCodeNormalisieren,
@@ -205,6 +206,7 @@ function GutscheinZeile({
     kaeuferTelefon: string | null;
     fuer: string | null;
     vorOrt: boolean;
+    zahlweg: string | null;
     createdAt: Date;
     gueltigBis: Date | null;
     eingeloestAm: Date | null;
@@ -218,7 +220,11 @@ function GutscheinZeile({
         <span className="font-semibold">{artText(g.art, g.betrag)}</span>
         <span className="text-sm text-muted">{betragText(g.art, g.betrag)}</span>
         <StatusBadge ton={STATUS_TON[g.status]}>{STATUS_TEXT[g.status]}</StatusBadge>
-        {g.vorOrt && <StatusBadge ton="idle">im Studio verkauft</StatusBadge>}
+        {g.zahlweg ? (
+          <StatusBadge ton="idle">{ZAHLWEG_TEXT[g.zahlweg] ?? g.zahlweg}</StatusBadge>
+        ) : (
+          g.vorOrt && <StatusBadge ton="idle">im Studio verkauft</StatusBadge>
+        )}
       </div>
       <dl className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
         <div>

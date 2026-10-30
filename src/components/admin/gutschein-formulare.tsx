@@ -11,7 +11,7 @@ import {
   gutscheinStornieren,
   gutscheinVorOrtVerkaufen,
 } from "@/lib/actions/admin-gutscheine";
-import { STARTPAKET_WERT, WERT_STUFEN } from "@/lib/gutschein-verwaltung";
+import { STARTPAKET_WERT, WEIHNACHTEN_WERT, WERT_STUFEN } from "@/lib/gutschein-verwaltung";
 import type { GutscheinStatus } from "@/generated/prisma/enums";
 
 /** Die Knöpfe zu einem Gutschein - je nach Stand nur die, die passen. */
@@ -135,7 +135,21 @@ export function VorOrtFormular({
           <option value="startpaket">
             Startpaket geschenkt ({STARTPAKET_WERT.toFixed(2).replace(".", ",")} €)
           </option>
+          <option value="weihnachten">Weihnachtsaktion: 4 Wochen EMS-Training ({WEIHNACHTEN_WERT} €)</option>
         </select>
+      </label>
+
+      <label className="block">
+        <span className="mb-1 block text-xs text-muted">Bezahlt</span>
+        <select name="zahlweg" defaultValue="studio" className={adminInput}>
+          <option value="studio">im Studio</option>
+          <option value="digistore">über Digistore24 (Gutschein-PDF von dort)</option>
+          <option value="ueberweisung">per Überweisung</option>
+        </select>
+        <span className="mt-1 block text-xs text-muted">
+          Digistore24-Gutscheine hier eintragen, sobald jemand damit ins Studio kommt - dann zählen
+          sie in den Kennzahlen mit und lassen sich als eingelöst markieren.
+        </span>
       </label>
 
       <div className="grid gap-3 sm:grid-cols-2">

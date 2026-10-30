@@ -27,10 +27,21 @@ export const WERT_STUFEN = [25, 50, 100] as const;
 
 export const STARTPAKET_WERT = 99.9;
 
-export type GutscheinArt = "wert" | "startpaket";
+export type GutscheinArt = "wert" | "startpaket" | "weihnachten";
+
+/** Die Weihnachtsaktion als ausgegebener Gutschein - vier Einheiten. */
+export const WEIHNACHTEN_WERT = 90;
+
+export const ZAHLWEG_TEXT: Record<string, string> = {
+  studio: "im Studio bezahlt",
+  stripe: "online bezahlt (Stripe)",
+  digistore: "über Digistore24 gekauft",
+  ueberweisung: "per Überweisung",
+};
 
 export function artText(art: string, betrag: number): string {
   if (art === "startpaket") return "Startpaket geschenkt";
+  if (art === "weihnachten") return "4 Wochen EMS-Training (Weihnachtsaktion)";
   return `Wertgutschein über ${betrag} €`;
 }
 

@@ -1115,73 +1115,60 @@ ${siteConfig.url}/admin/mitgliederpflege`,
 /* Gutscheine                                                          */
 /* ------------------------------------------------------------------ */
 
-export type GutscheinAngaben = {
+export type GutscheinKaufAngaben = {
   kaeuferName: string;
-  kaeuferEmail: string | null;
-  kaeuferTelefon: string | null;
+  kaeuferEmail: string;
   bezeichnung: string;
+  betrag: string;
+  code: string;
   fuer: string | null;
-  widmung: string | null;
-  studioName: string | null;
-  studioAdresse: string | null;
-  studioTelefon: string | null;
-  antwortAn: string | null;
+  gueltigBis: string;
+  karteLink: string;
 };
 
 /**
- * Eingangsbestätigung an den, der einen Gutschein angefragt hat.
+ * Nach dem Online-Kauf: der Gutschein an den Käufer.
  *
- * Steht ausdrücklich drin, dass noch nichts bezahlt ist und wie es
- * weitergeht - sonst wartet jemand auf eine Rechnung, die nie kommt.
+ * Mit Code und Link zur Karte zum Ausdrucken. Die Zahlungsbestätigung
+ * selbst schickt Stripe - diese Mail ist der Gutschein, nicht die Quittung.
  */
-export async function sendGutscheinEingangEmail(angaben: GutscheinAngaben) {
-  if (!angaben.kaeuferEmail) return false;
+export async function sendGutscheinGekauftEmail(angaben: GutscheinKaufAngaben) {
   return verschicken("GUTSCHEIN_EINGANG", {
     to: angaben.kaeuferEmail,
-    replyTo: angaben.antwortAn,
-    subject: "Deine Gutscheinanfrage ist angekommen",
+    subject: `Dein Gutschein: ${angaben.bezeichnung}`,
     text: `Hallo ${angaben.kaeuferName},
 
-danke für deine Anfrage! Das haben wir notiert:
+danke für deinen Kauf! Hier ist dein Gutschein:
 
-${angaben.bezeichnung}${angaben.fuer ? `\nFür: ${angaben.fuer}` : ""}${angaben.widmung ? `\nWidmung: „${angaben.widmung}“` : ""}
-${angaben.studioName ? `Studio: ${angaben.studioName}` : ""}
+${angaben.bezeichnung}${angaben.fuer ? `\nFür: ${angaben.fuer}` : ""}
+Code: ${angaben.code}
+Gültig bis: ${angaben.gueltigBis}
 
-So geht es weiter: Das Studio meldet sich bei dir. Bezahlt und abgeholt
-wird vor Ort - online zahlst du nichts. Der Gutschein gilt erst, wenn er
-bezahlt ist.${
-      angaben.studioAdresse
-        ? `\n\n${angaben.studioName}\n${angaben.studioAdresse}${angaben.studioTelefon ? `\nTelefon ${angaben.studioTelefon}` : ""}`
-        : ""
-    }
+Zum Ausdrucken oder Weiterleiten:
+${angaben.karteLink}
+
+Eingelöst wird im Studio: Die beschenkte Person meldet sich dort mit dem
+Code und vereinbart ihren ersten Termin.
 
 Viele Grüße
 Dein Körperformen-Team`,
   });
 }
 
-/** Neue Gutscheinanfrage - ans Studio. */
-export async function sendGutscheinInternEmail(an: string, angaben: GutscheinAngaben) {
-  const zeilen = [
-    `Gutschein:   ${angaben.bezeichnung}`,
-    angaben.fuer ? `Für:         ${angaben.fuer}` : null,
-    angaben.widmung ? `Widmung:     „${angaben.widmung}“` : null,
-    `Käufer:      ${angaben.kaeuferName}`,
-    angaben.kaeuferTelefon ? `Telefon:     ${angaben.kaeuferTelefon}` : null,
-    angaben.kaeuferEmail ? `E-Mail:      ${angaben.kaeuferEmail}` : null,
-  ].filter(Boolean);
-
+/** Ein Gutschein wurde online gekauft - ans Team. */
+export async function sendGutscheinGekauftInternEmail(an: string, angaben: GutscheinKaufAngaben) {
   return verschicken("GUTSCHEIN_INTERN", {
     to: an,
     replyTo: angaben.kaeuferEmail,
-    subject: `Gutscheinanfrage: ${angaben.bezeichnung} für ${angaben.kaeuferName}`,
-    text: `Jemand möchte einen Gutschein kaufen.
+    subject: `Gutschein verkauft: ${angaben.bezeichnung} (${angaben.code})`,
+    text: `Ein Gutschein wurde online gekauft und bezahlt.
 
-${zeilen.join("\n")}
+Gutschein:   ${angaben.bezeichnung} - ${angaben.betrag}
+Code:        ${angaben.code}
+Käufer:      ${angaben.kaeuferName} (${angaben.kaeuferEmail})${angaben.fuer ? `\nFür:         ${angaben.fuer}` : ""}
 
-Bitte melden, Termin zum Bezahlen und Abholen ausmachen. Nach dem Bezahlen
-im Adminbereich auf „Bezahlt - ausstellen“ klicken; dann gilt der Code und
-der Gutschein kann gedruckt werden:
+Nichts zu tun - der Gutschein steht schon in der Verwaltung und gilt.
+Beim Einlösen den Code dort eingeben:
 ${siteConfig.url}/admin/gutscheine`,
   });
 }

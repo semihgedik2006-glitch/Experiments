@@ -437,6 +437,16 @@ export default function DatenschutzPage() {
               Gutschein selbst bewahren wir die Angaben bis zum Ende seiner Gültigkeit auf,
               danach gelten die gesetzlichen Aufbewahrungsfristen.
             </p>
+            <p>
+              <strong>Online-Kauf von Gutscheinen.</strong> Kaufen Sie einen Gutschein online, geben
+              Sie Ihre Zahlungsdaten nicht bei uns ein, sondern beim Zahlungsdienst. Je nach Angebot
+              ist das die Stripe Payments Europe Ltd. (Irland) oder die Digistore24 GmbH
+              (Deutschland), die den Gutschein dann im eigenen Namen verkauft. Wir erhalten von
+              Stripe Ihren Namen, Ihre E-Mail-Adresse, den bezahlten Betrag und die freiwillige
+              Angabe, für wen der Gutschein ist, um den Gutschein auszustellen und Ihnen
+              zuzusenden (Art. 6 Abs. 1 lit. b DSGVO). Kartendaten erhalten wir nicht. Für die
+              Verarbeitung durch den Zahlungsdienst gelten dessen Datenschutzhinweise.
+            </p>
           </Section>
 
           <Section title="15. Empfänger personenbezogener Daten und Auftragsverarbeitung">

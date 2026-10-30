@@ -1109,6 +1109,16 @@ model Gutschein {
   /// Im Studio verkauft statt über die Website angefragt.
   vorOrt         Boolean @default(false)
 
+  /// Wie bezahlt wurde: "studio", "stripe", "digistore", "ueberweisung".
+  zahlweg String?
+  /// Die Checkout-Sitzung bei Stripe. Eindeutig: Kommt die Bestätigung
+  /// zweimal an (Webhook und Dankeseite), entsteht trotzdem nur ein
+  /// Gutschein.
+  stripeSessionId String? @unique
+  /// Schlüssel für die Gutscheinkarte zum Ausdrucken, die der Käufer per
+  /// Mail bekommt. Nicht erratbar, ohne Bezug zur Kennung.
+  karteToken String? @unique
+
   ausgestelltAm DateTime?
   /// Drei Jahre zum Jahresende - die gesetzliche Verjährung (§ 195 BGB).
   gueltigBis    DateTime?

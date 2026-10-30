@@ -66,6 +66,8 @@ export type Aktion = {
   kicker: string;
   titel: string;
   preis: string;
+  /** Derselbe Preis als Zahl in Euro - für die Online-Zahlung über Stripe. */
+  betrag: number;
   text: string;
   punkte: string[];
   kaufen: string;
@@ -76,6 +78,7 @@ export const WEIHNACHTSAKTION: Aktion = {
   kicker: "Weihnachtsaktion",
   titel: "4 Wochen EMS-Training",
   preis: "90 €",
+  betrag: 90,
   text: "Zum Verschenken oder selbst nutzen: vier Einheiten à 20 Minuten, jede mit persönlichem Trainer.",
   punkte: [
     "4 Einheiten à 20 Minuten mit deinem Trainer",
@@ -90,6 +93,7 @@ export const WEIHNACHTSAKTION_EN: Aktion = {
   kicker: "Christmas offer",
   titel: "4 weeks of EMS training",
   preis: "€90",
+  betrag: 90,
   text: "Give it as a gift or use it yourself: four 20-minute sessions, each with a personal trainer.",
   punkte: [
     "4 sessions of 20 minutes with your trainer",
@@ -104,4 +108,43 @@ export const WEIHNACHTSAKTION_EN: Aktion = {
 export function gutscheinKaufUrl(): string | null {
   const url = process.env.DIGISTORE_GUTSCHEIN_URL?.trim();
   return url && /^https:\/\//.test(url) ? url : null;
+}
+
+/**
+ * Wie die Weihnachtsaktion online bezahlt wird - Stripe oder Digistore24.
+ *
+ * Beide Wege sind fertig eingebaut; welcher gilt, entscheidet die
+ * Umgebungsvariable GUTSCHEIN_ZAHLUNG ("stripe" oder "digistore", ohne
+ * Angabe: "digistore"). Der Unterschied ist vor allem rechtlich:
+ *
+ * DIGISTORE24 ist Wiederverkäufer. Er verkauft den Gutschein im eigenen
+ * Namen, stellt die Rechnung, führt die Umsatzsteuer ab und kümmert sich
+ * um den Widerruf. Dafür behält er deutlich mehr pro Verkauf ein, und der
+ * Gutschein entsteht außerhalb unserer Verwaltung.
+ *
+ * STRIPE ist nur Zahlungsdienst. Verkäufer ist das Studio selbst - mit
+ * eigener Widerrufsbelehrung und eigenen Bedingungen für den Online-Kauf.
+ * Dafür ist es deutlich günstiger, und der Gutschein landet nach der
+ * Zahlung automatisch mit Code in der Gutscheinverwaltung.
+ *
+ * Ist der gewählte Weg nicht eingerichtet (Schlüssel bzw. Adresse fehlt),
+ * gilt "anfrage": Die Seite führt zum Anfrageformular, nie zu einem toten
+ * Knopf. Angemeldete Admins können mit ?zahlung=stripe bzw.
+ * ?zahlung=digistore beide Wege vergleichen.
+ */
+export type Zahlweg = "stripe" | "digistore" | "anfrage";
+
+export function stripeEingerichtet(): boolean {
+  return Boolean(process.env.STRIPE_SECRET_KEY?.trim());
+}
+
+export function gutscheinZahlweg(vorschau?: string | null): Zahlweg {
+  const gewuenscht =
+    vorschau === "stripe" || vorschau === "digistore"
+      ? vorschau
+      : process.env.GUTSCHEIN_ZAHLUNG?.trim() === "stripe"
+        ? "stripe"
+        : "digistore";
+  if (gewuenscht === "stripe") return stripeEingerichtet() ? "stripe" : "anfrage";
+  return gutscheinKaufUrl() ? "digistore" : "anfrage";
 }

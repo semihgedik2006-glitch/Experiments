@@ -7,6 +7,7 @@ import { protokollieren } from "@/lib/protokoll";
 import { emailNormalisieren } from "@/lib/kundenbereich";
 import {
   STARTPAKET_WERT,
+  WEIHNACHTEN_WERT,
   WERT_STUFEN,
   artText,
   gueltigBisAb,
@@ -92,10 +93,16 @@ export async function gutscheinVorOrtVerkaufen(formData: FormData) {
   await verlangeStudioRecht(studioId);
 
   const auswahl = String(formData.get("auswahl") ?? "");
-  const art = auswahl === "startpaket" ? "startpaket" : "wert";
+  const art = auswahl === "startpaket" || auswahl === "weihnachten" ? auswahl : "wert";
   const betrag =
-    art === "startpaket" ? Math.round(STARTPAKET_WERT) : Number(auswahl.replace("wert-", ""));
+    art === "startpaket"
+      ? Math.round(STARTPAKET_WERT)
+      : art === "weihnachten"
+        ? WEIHNACHTEN_WERT
+        : Number(auswahl.replace("wert-", ""));
   if (art === "wert" && !(WERT_STUFEN as readonly number[]).includes(betrag)) return;
+  const zahlwegRoh = String(formData.get("zahlweg") ?? "studio");
+  const zahlweg = ["studio", "digistore", "ueberweisung"].includes(zahlwegRoh) ? zahlwegRoh : "studio";
 
   const kaeuferName = String(formData.get("kaeuferName") ?? "").trim().slice(0, 80);
   if (!kaeuferName) return;
@@ -116,6 +123,7 @@ export async function gutscheinVorOrtVerkaufen(formData: FormData) {
       fuer: fuer || null,
       widmung: widmung || null,
       vorOrt: true,
+      zahlweg,
       status: "AUSGESTELLT",
       ausgestelltAm: jetzt,
       gueltigBis: gueltigBisAb(jetzt),

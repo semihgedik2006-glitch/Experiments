@@ -40,8 +40,8 @@ const artText: Record<MailArt, string> = {
   MITGLIED_JUBILAEUM: "Glückwunsch zum Jubiläum der Mitgliedschaft",
   MITGLIED_UMFRAGE: "Zufriedenheitsumfrage an ein Mitglied",
   MITGLIEDER_INTERN: "Wochenübersicht Mitgliederpflege ans Studio",
-  GUTSCHEIN_EINGANG: "Eingangsbestätigung einer Gutscheinanfrage",
-  GUTSCHEIN_INTERN: "Neue Gutscheinanfrage ans Studio",
+  GUTSCHEIN_EINGANG: "Gutschein nach dem Online-Kauf an den Käufer",
+  GUTSCHEIN_INTERN: "Gutschein verkauft - ans Team",
   MONATSBERICHT: "Monatsbericht mit den Zahlen des Vormonats",
 };
 
@@ -115,9 +115,9 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
     an: "an den Gast. Der Link gilt 30 Minuten",
   },
   {
-    titel: "Gutscheinanfrage",
-    wann: "sofort nach dem Absenden des Gutscheinformulars",
-    an: "an den Käufer (Bestätigung) und an das gewählte Studio",
+    titel: "Gutschein gekauft (Stripe)",
+    wann: "sofort nach der Online-Zahlung - nur wenn als Zahlweg Stripe eingestellt ist",
+    an: "an den Käufer (Gutschein mit Code und Karte) und an die Sammeladresse",
   },
   {
     titel: "Mitglieder-Mails",
