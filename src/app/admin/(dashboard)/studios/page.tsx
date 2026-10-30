@@ -235,6 +235,7 @@ export default async function AdminStudiosPage() {
   const ohneKoordinaten = studios.filter(
     (studio) => studio.latitude === null || studio.longitude === null,
   );
+  const ohneEigenenText = studios.filter((studio) => !studio.intro?.trim() || !studio.anfahrt?.trim());
 
   return (
     <AdminPage
@@ -276,6 +277,31 @@ export default async function AdminStudiosPage() {
             &bdquo;Am nächsten&ldquo; für alle Studios - denn solange eines unverortet ist,
             könnte ausgerechnet dieses das nächste sein. Trage die Koordinaten unten
             nach oder lösche das Studio.
+          </p>
+        </div>
+      )}
+
+      {/* Ebenfalls oben: Ob die beiden Textfelder leer sind, sieht man im
+          Formular erst, wenn man jedes Studio einzeln aufklappt. Dabei
+          entscheiden genau sie, ob eine Standortseite bei Google eine
+          eigene Seite ist oder eine von vierzehn fast gleichen. */}
+      {ohneEigenenText.length > 0 && (
+        <div className="mt-4 rounded-xl border border-amber-500/50 bg-amber-500/10 p-4 sm:p-5">
+          <p className="flex items-center gap-2 font-semibold">
+            <AlertTriangle size={17} />
+            {ohneEigenenText.length === 1
+              ? "Einem Studio fehlt der eigene Text"
+              : `${ohneEigenenText.length} Studios fehlt der eigene Text`}
+          </p>
+          <p className="mt-2 text-sm">
+            <strong>{ohneEigenenText.map((studio) => studio.name).join(", ")}</strong>
+          </p>
+          <p className="mt-2 text-sm text-muted">
+            Ohne &bdquo;Text über diesen Standort&ldquo; und &bdquo;Anfahrt&ldquo; zeigt die
+            Standortseite nur den allgemeinen Mustertext. Die Seiten unterscheiden sich
+            dann nur in Adresse und Öffnungszeiten &ndash; und wer nach &bdquo;EMS&ldquo; plus
+            Stadtteil sucht, bekommt bei Google eher ein anderes Studio angezeigt. Zwei,
+            drei Sätze je Feld genügen.
           </p>
         </div>
       )}

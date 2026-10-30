@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "wachen": "node scripts/wachen.mjs",
+    "indexnow": "node scripts/indexnow.mjs",
     "db:seed": "tsx prisma/seed.ts"
   },
   "prisma": {
