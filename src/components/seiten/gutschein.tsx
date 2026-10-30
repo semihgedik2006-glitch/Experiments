@@ -7,7 +7,17 @@ import { Reveal } from "@/components/ui/reveal";
 import { ContactForm } from "@/components/contact-form";
 import { Logo } from "@/components/logo";
 import { VorschauHinweis } from "@/components/vorschau-hinweis";
-import { GUTSCHEINE, GUTSCHEINE_EN, WEIHNACHTSAKTION, WEIHNACHTSAKTION_EN, gutscheinKaufUrl } from "@/lib/gutschein";
+import Link from "next/link";
+import {
+  GUTSCHEINE,
+  GUTSCHEINE_EN,
+  WEIHNACHTSAKTION,
+  WEIHNACHTSAKTION_EN,
+  gutscheinKaufUrl,
+  gutscheinZahlweg,
+} from "@/lib/gutschein";
+import { gutscheinBeiStripeKaufen } from "@/lib/actions/gutschein-kauf";
+import { getAdminSession } from "@/lib/auth";
 import type { Sprache } from "@/lib/sprache";
 import { seitenMetadaten } from "@/lib/i18n/metadaten";
 import { sichtbarkeit } from "@/lib/vorschau";
@@ -114,13 +124,24 @@ const ABLAUF_EN: typeof ABLAUF = [
   },
 ];
 
-export async function GutscheinSeite({ sprache }: { sprache: Sprache }) {
+export async function GutscheinSeite({
+  sprache,
+  zahlungVorschau = null,
+}: {
+  sprache: Sprache;
+  /** ?zahlung=stripe|digistore - wirkt nur für angemeldete Admins. */
+  zahlungVorschau?: string | null;
+}) {
   const en = sprache === "en";
   const stand = await sichtbarkeit("gutschein");
   if (stand === "aus") notFound();
-  const kaufUrl = gutscheinKaufUrl();
+  // Stripe oder Digistore24 - siehe gutscheinZahlweg in @/lib/gutschein.
+  const admin = await getAdminSession();
+  const zahlweg = gutscheinZahlweg(admin ? zahlungVorschau : null);
+  const kaufUrl = zahlweg === "digistore" ? gutscheinKaufUrl() : null;
+  const online = zahlweg !== "anfrage";
   const aktion = en ? WEIHNACHTSAKTION_EN : WEIHNACHTSAKTION;
-  const ablauf = kaufUrl ? (en ? ABLAUF_ONLINE_EN : ABLAUF_ONLINE) : en ? ABLAUF_EN : ABLAUF;
+  const ablauf = online ? (en ? ABLAUF_ONLINE_EN : ABLAUF_ONLINE) : en ? ABLAUF_EN : ABLAUF;
 
   return (
     <>
@@ -174,7 +195,12 @@ export async function GutscheinSeite({ sprache }: { sprache: Sprache }) {
               </h2>
               <p className="mt-4 max-w-lg text-lg leading-relaxed text-white/80">{aktion.text}</p>
               <ul className="mt-6 space-y-2">
-                {aktion.punkte.map((punkt) => (
+                {aktion.punkte
+                  // Über Stripe kommt eine Karte mit Code zum Ausdrucken, kein PDF.
+                  .map((punkt) =>
+                    zahlweg === "stripe" ? punkt.replace("als PDF", "mit Code").replace("as a PDF", "with a code") : punkt,
+                  )
+                  .map((punkt) => (
                   <li key={punkt} className="flex items-start gap-2 text-white/85">
                     <Check size={18} className="mt-0.5 shrink-0 text-[var(--ink-lime)]" aria-hidden />
                     {punkt}
@@ -185,7 +211,17 @@ export async function GutscheinSeite({ sprache }: { sprache: Sprache }) {
             <div className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
               <p className="font-display text-5xl font-black text-[var(--ink-lime)]">{aktion.preis}</p>
               <p className="mt-1 text-sm text-white/70">{en ? "one-off, incl. VAT" : "einmalig, inkl. MwSt."}</p>
-              {kaufUrl ? (
+              {zahlweg === "stripe" ? (
+                <form action={gutscheinBeiStripeKaufen}>
+                  <input type="hidden" name="sprache" value={sprache} />
+                  <button
+                    type="submit"
+                    className="mt-6 flex w-full items-center justify-center rounded-full bg-lime px-6 py-3.5 font-semibold text-on-lime transition-transform hover:scale-[1.02]"
+                  >
+                    {aktion.kaufen}
+                  </button>
+                </form>
+              ) : kaufUrl ? (
                 <a
                   href={kaufUrl}
                   target="_blank"
@@ -203,7 +239,20 @@ export async function GutscheinSeite({ sprache }: { sprache: Sprache }) {
                 </a>
               )}
               <p className="mt-3 text-xs leading-relaxed text-white/60">
-                {kaufUrl
+                {zahlweg === "stripe" ? (
+                  <>
+                    {en
+                      ? "Secure payment via Stripe – card and other payment methods. The voucher with its code arrives by email right away. "
+                      : "Sichere Bezahlung über Stripe – mit Karte und weiteren Zahlarten. Der Gutschein mit Code kommt sofort per E-Mail. "}
+                    <Link href="/agb" className="underline">
+                      {en ? "Terms" : "AGB"}
+                    </Link>
+                    {" · "}
+                    <Link href="/widerruf" className="underline">
+                      {en ? "Right of withdrawal" : "Widerrufsbelehrung"}
+                    </Link>
+                  </>
+                ) : kaufUrl
                   ? aktion.hinweisKauf
                   : en
                     ? "Online purchase coming soon – until then we arrange everything personally."
@@ -256,7 +305,7 @@ export async function GutscheinSeite({ sprache }: { sprache: Sprache }) {
         <Container className="max-w-2xl">
           <Reveal>
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              {kaufUrl ? (en ? "Questions or another voucher?" : "Fragen oder ein anderer Gutschein?") : en ? "Request a voucher" : "Gutschein anfragen"}
+              {online ? (en ? "Questions or another voucher?" : "Fragen oder ein anderer Gutschein?") : en ? "Request a voucher" : "Gutschein anfragen"}
             </h2>
             <p className="mt-3 text-muted">
               {en ? "We will get back to you within one or two working days." : "Wir melden uns innerhalb von ein, zwei Werktagen."}

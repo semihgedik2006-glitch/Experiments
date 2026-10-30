@@ -65,6 +65,18 @@ enum MailArt {
   NEWSLETTER_TEST
   /// Der Zugangslink zum eigenen Terminbereich.
   KUNDENBEREICH
+  /// Die Willkommensmails in den ersten Wochen einer Mitgliedschaft.
+  MITGLIED_WILLKOMMEN
+  /// Glückwunsch zum Jubiläum der Mitgliedschaft.
+  MITGLIED_JUBILAEUM
+  /// Die Frage nach der Zufriedenheit nach vier Wochen.
+  MITGLIED_UMFRAGE
+  /// Die Wochenübersicht "Mitgliederpflege" an das Studio.
+  MITGLIEDER_INTERN
+  /// An den Käufer, sobald eine Gutscheinanfrage angekommen ist.
+  GUTSCHEIN_EINGANG
+  /// An das Studio, sobald eine Gutscheinanfrage da ist.
+  GUTSCHEIN_INTERN
   /// Einmal im Monat an das Team: die Zahlen des Vormonats.
   MONATSBERICHT
 }
@@ -161,6 +173,9 @@ model StudioLocation {
   empfehlungen  Empfehlung[]
   verwandlungen Verwandlung[]
   stimmen       Kundenstimme[]
+  mitglieder    Mitglied[]
+  gutscheine    Gutschein[]
+  kennzahlen    Kennzahl[]
 }
 
 /// Wer im Studio betreut.
@@ -974,4 +989,175 @@ model Kundenstimme {
 
   @@index([sortOrder])
   @@index([studioId])
+}
+
+/// Ein Mitglied - übernommen aus LogX oder vom Studio eingetragen.
+///
+/// Bis hierher kannte die Website nur Interessenten. Wer einen Vertrag
+/// unterschrieb, verschwand aus ihrem Blickfeld - dabei entscheidet sich
+/// genau danach, ob jemand bleibt. Dieser Datensatz ist die Grundlage für
+/// die Willkommensmails, die Frage nach der Zufriedenheit und die Liste der
+/// Verträge, deren Erstlaufzeit bald endet.
+///
+/// BEWUSST SCHMAL. Der LogX-Export enthält Trainingsziel, Trainingsnotiz
+/// (Anamnese), Körpergröße und interne Notizen. Nichts davon kommt hierher:
+/// Das sind Gesundheitsdaten (Art. 9 DSGVO) oder Dinge, die für eine Mail
+/// nicht gebraucht werden. Geführt werden sie weiter in LogX.
+model Mitglied {
+  id String @id @default(cuid())
+
+  /// Die Kundennummer aus LogX. Darüber erkennt ein erneuter Import, wer
+  /// schon da ist - Namen ändern sich, E-Mail-Adressen auch.
+  logxNummer String? @unique
+
+  vorname  String
+  nachname String
+  /// Immer kleingeschrieben, wie im Kundenbereich.
+  email    String?
+
+  /// Leer heißt: noch keinem Standort zugeordnet. Der LogX-Export enthält
+  /// keinen Standort; beim Import wird er für die ganze Datei gewählt.
+  studio   StudioLocation? @relation(fields: [studioId], references: [id], onDelete: SetNull)
+  studioId String?
+
+  /// Steht nicht im LogX-Export und wird deshalb im Studio nachgetragen.
+  /// Ohne Vertragsbeginn gibt es keine Willkommensmails und keine
+  /// Laufzeit-Erinnerung - lieber nichts als eine Mail zur falschen Zeit.
+  vertragsbeginn DateTime?
+  /// 12 oder 24 - so steht es im Anmeldeformular.
+  laufzeitMonate Int?
+
+  /// Status "Mitglied" in LogX. Ehemalige bleiben stehen, bekommen aber
+  /// keine Mails mehr - und ihr Wechsel ist ein Abgang, den man sieht.
+  aktiv Boolean @default(true)
+
+  /// Einwilligung in Werbung per E-Mail. Ohne sie gehen nur Service-Mails
+  /// raus (Willkommen, Jubiläum, Umfrage) - keine Angebote.
+  werbungErlaubt   Boolean   @default(false)
+  werbungErlaubtAm DateTime?
+  /// Woher die Einwilligung stammt: "LogX-Newsletter", "Mitgliederbereich",
+  /// "Formular im Studio". Für den Nachweis.
+  werbungQuelle    String?
+
+  /// Hat abbestellt. Dann geht gar nichts mehr raus, auch kein Glückwunsch.
+  mailsAbbestellt Boolean @default(false)
+
+  /// Schlüssel für den Mitgliederbereich, die Umfrage und die Abmeldung.
+  /// Nicht erratbar und ohne Bezug zur Kennung - wie beim Newsletter.
+  token String @unique
+
+  /// Welche Mails schon raus sind ("willkommen-1", "jubilaeum-12", ...).
+  /// Eine Liste statt einer Spalte je Mail: Kommt eine Mail dazu, ändert
+  /// sich die Datenbank nicht.
+  mailsVersandt String[]
+
+  /// Antwort auf "Wie zufrieden bist du?" - 1 bis 5.
+  umfrageNote      Int?
+  umfrageKommentar String?
+  umfrageAm        DateTime?
+  /// Wann das Studio sich nach einer schlechten Note gemeldet hat.
+  nachgehaktAm     DateTime?
+
+  /// Wann das Gespräch vor dem Ende der Erstlaufzeit geführt wurde.
+  gespraechAm DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([studioId])
+  @@index([email])
+}
+
+enum GutscheinStatus {
+  /// Über die Website angefragt, noch nicht bezahlt.
+  ANGEFRAGT
+  /// Bezahlt und ausgehändigt - ab hier gilt der Code.
+  AUSGESTELLT
+  EINGELOEST
+  STORNIERT
+}
+
+/// Ein Gutschein.
+///
+/// Bezahlt wird im Studio, nicht auf der Website: Es gibt keine
+/// Online-Zahlung, und für ein paar Gutscheine im Jahr lohnt sich keine.
+/// Die Website nimmt die Anfrage an, das Studio meldet sich, kassiert und
+/// händigt den Gutschein aus.
+model Gutschein {
+  id   String @id @default(cuid())
+  /// Kurz und diktierbar, z.B. "KF-7K2M-Q9". Ohne 0/O und 1/I.
+  code String @unique
+
+  /// "wert" oder "startpaket" - siehe src/lib/gutschein.ts.
+  art    String
+  /// Der Betrag in Euro. Beim Startpaket der Wert des Pakets.
+  betrag Int
+
+  status GutscheinStatus @default(ANGEFRAGT)
+
+  /// Wo bezahlt, abgeholt und eingelöst wird.
+  studio   StudioLocation? @relation(fields: [studioId], references: [id], onDelete: SetNull)
+  studioId String?
+
+  kaeuferName    String
+  kaeuferEmail   String?
+  kaeuferTelefon String?
+  /// Steht auf dem Gutschein: "Für Anna".
+  fuer           String?
+  /// Ein Satz, der mit auf den Gutschein gedruckt wird.
+  widmung        String?
+  /// Im Studio verkauft statt über die Website angefragt.
+  vorOrt         Boolean @default(false)
+
+  /// Wie bezahlt wurde: "studio", "stripe", "digistore", "ueberweisung".
+  zahlweg String?
+  /// Die Checkout-Sitzung bei Stripe. Eindeutig: Kommt die Bestätigung
+  /// zweimal an (Webhook und Dankeseite), entsteht trotzdem nur ein
+  /// Gutschein.
+  stripeSessionId String? @unique
+  /// Schlüssel für die Gutscheinkarte zum Ausdrucken, die der Käufer per
+  /// Mail bekommt. Nicht erratbar, ohne Bezug zur Kennung.
+  karteToken String? @unique
+
+  ausgestelltAm DateTime?
+  /// Drei Jahre zum Jahresende - die gesetzliche Verjährung (§ 195 BGB).
+  gueltigBis    DateTime?
+  eingeloestAm  DateTime?
+
+  /// Interner Vermerk. Geht nie an den Käufer.
+  notiz String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([studioId])
+  @@index([status])
+}
+
+/// Die Zahlen eines Standorts für einen Monat.
+///
+/// Abgeschrieben aus LogX (Statistik -> Kennzahlen) und um das ergänzt,
+/// was dort nicht steht: Gespräche, Pausen statt Kündigung, Zusatzverkäufe.
+/// Gutscheine und Umfragenoten rechnet die Website selbst.
+///
+/// Der Zweck ist der Vergleich: Hürth testet, die anderen Studios sind der
+/// Maßstab. Ohne Ausgangswert lässt sich später nicht sagen, ob etwas
+/// gewirkt hat oder ob es nur ein guter Monat war.
+model Kennzahl {
+  id       String         @id @default(cuid())
+  studio   StudioLocation @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  studioId String
+  /// Der Monatserste, 00:00 UTC.
+  monat    DateTime
+
+  mitglieder      Int?
+  zugaenge        Int?
+  kuendigungen    Int?
+  pausen          Int?
+  gespraeche      Int?
+  zusatzverkaeufe Int?
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([studioId, monat])
 }
