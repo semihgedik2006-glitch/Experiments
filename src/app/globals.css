@@ -813,7 +813,12 @@ h3,
    stehen - gemessen kostet das beim Scrollen acht Bilder pro Sekunde.
    "paused" statt "none": Beim Zurückscrollen läuft die Bewegung dort
    weiter, wo sie stehengeblieben ist, statt sichtbar neu zu starten. */
-.bewegung-aus * {
+.bewegung-aus,
+.bewegung-aus *,
+.bewegung-aus::before,
+.bewegung-aus::after,
+.bewegung-aus *::before,
+.bewegung-aus *::after {
   animation-play-state: paused !important;
 }
 
@@ -842,6 +847,22 @@ h3,
 .zierde-ruht {
   content-visibility: auto;
   contain-intrinsic-size: 360px 360px;
+}
+
+/*
+   Dasselbe für ganze Abschnitte der Startseite (ZielAbschnitte).
+
+   Gemessen (Lighthouse, Handy): "Style & Layout" lag bei gut einer
+   Sekunde - der Browser setzt sonst die ganze, fünfzehn Bildschirme lange
+   Seite schon beim Laden. Mit content-visibility nur das, was im Bild ist.
+
+   "auto 900px": 900 Pixel als Schätzung, bis der Abschnitt einmal gesetzt
+   wurde; danach merkt sich der Browser die echte Höhe ("auto") und die
+   Bildlaufleiste springt beim Zurückscrollen nicht mehr.
+*/
+.abschnitt-ruht {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
 }
 
 /*

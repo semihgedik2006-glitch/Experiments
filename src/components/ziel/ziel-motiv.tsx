@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion, type Transition } from "motion/react";
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion, type Transition } from "motion/react";
 import type { ZielWert } from "@/lib/ziel-inhalte";
 
 /**
@@ -19,7 +20,9 @@ import type { ZielWert } from "@/lib/ziel-inhalte";
  *   Fitness       Ein Puls läuft durch, Ringe atmen im Takt.
  *   Gelenke       Ein Gelenk beugt sich, ein Bogen zeigt den Bewegungsweg.
  *
- * Bei "Bewegung reduzieren" steht das Endbild.
+ * Bei "Bewegung reduzieren" steht das Endbild - ebenso, solange das Motiv
+ * nicht im Bild ist: Die Schleifen laufen sonst endlos weiter, auch zehn
+ * Bildschirme entfernt, und kosten auf dem Handy Rechenzeit.
  */
 
 const LIME = "var(--ink-lime)";
@@ -35,10 +38,12 @@ export function ZielMotiv({
   /** Nur das Endbild, ohne Bewegung - wo mehrere Motive nebeneinander stehen. */
   stehend?: boolean;
 }) {
-  const still = (useReducedMotion() ?? false) || stehend;
+  const ref = useRef<SVGSVGElement>(null);
+  const imBild = useInView(ref, { margin: "200px 0px" });
+  const still = (useReducedMotion() ?? false) || stehend || !imBild;
   const Motiv = { ruecken: Ruecken, straffen: Straffen, abnehmen: Abnehmen, muskelaufbau: Muskeln, fitness: Fitness, gelenke: Gelenke }[ziel];
   return (
-    <svg viewBox="0 0 200 200" aria-hidden className={className}>
+    <svg ref={ref} viewBox="0 0 200 200" aria-hidden className={className}>
       <Motiv still={still} />
     </svg>
   );
