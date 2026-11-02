@@ -179,6 +179,7 @@ export function kennzahlen(b: Beweise, sprache: Sprache = "de"): Kennzahl[] {
   // pflegt die Zentrale, sie steht in site-config.
   liste.push({
     wert: String(siteConfig.netzwerk.studiosGesamt),
+    einheit: "+",
     label: en
       ? "Körperformen studios – we are the largest partner"
       : "Körperformen-Studios – wir sind der größte Partner",

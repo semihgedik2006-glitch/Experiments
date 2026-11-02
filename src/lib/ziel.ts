@@ -43,6 +43,7 @@ export const ZIELE: readonly Ziel[] = [
   { wert: "abnehmen", label: "Abnehmen" },
   { wert: "muskelaufbau", label: "Muskeln aufbauen" },
   { wert: "fitness", label: "Fitter im Alltag" },
+  { wert: "gelenke", label: "Gelenke schonen" },
   { wert: "unsicher", label: "Weiß ich noch nicht" },
 ] as const;
 

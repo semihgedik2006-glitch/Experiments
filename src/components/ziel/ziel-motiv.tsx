@@ -17,6 +17,7 @@ import type { ZielWert } from "@/lib/ziel-inhalte";
  *   Abnehmen      Woche für Woche ein Haken: Dranbleiben, nicht Kilos.
  *   Muskelaufbau  Acht Zonen laden sich auf, Stufe für Stufe.
  *   Fitness       Ein Puls läuft durch, Ringe atmen im Takt.
+ *   Gelenke       Ein Gelenk beugt sich, ein Bogen zeigt den Bewegungsweg.
  *
  * Bei "Bewegung reduzieren" steht das Endbild.
  */
@@ -35,7 +36,7 @@ export function ZielMotiv({
   stehend?: boolean;
 }) {
   const still = (useReducedMotion() ?? false) || stehend;
-  const Motiv = { ruecken: Ruecken, straffen: Straffen, abnehmen: Abnehmen, muskelaufbau: Muskeln, fitness: Fitness }[ziel];
+  const Motiv = { ruecken: Ruecken, straffen: Straffen, abnehmen: Abnehmen, muskelaufbau: Muskeln, fitness: Fitness, gelenke: Gelenke }[ziel];
   return (
     <svg viewBox="0 0 200 200" aria-hidden className={className}>
       <Motiv still={still} />
@@ -235,6 +236,46 @@ function Fitness({ still }: { still: boolean }) {
         initial={false}
         animate={still ? { pathLength: 1 } : { pathLength: [0, 1, 1], opacity: [1, 1, 0] }}
         transition={still ? { duration: 0 } : { duration: 1.8, times: [0, 0.7, 1], repeat: Infinity, repeatDelay: 0.5, ease: "easeInOut" }}
+      />
+    </g>
+  );
+}
+
+/* ---------- Gelenke: ein Gelenk beugt sich, der Bewegungsweg leuchtet ---------- */
+function Gelenke({ still }: { still: boolean }) {
+  const bogen = "M100 160 A 60 60 0 0 1 152 70";
+  return (
+    <g>
+      {/* Oberes Glied steht, das untere schwingt um das Gelenk */}
+      <rect x={92} y={28} width={16} height={64} rx={8} fill="none" stroke={SPUR} strokeWidth={2.5} />
+      <path d={bogen} fill="none" stroke={SPUR} strokeWidth={2} strokeDasharray="4 6" />
+      <motion.path
+        d={bogen}
+        fill="none"
+        stroke={LIME}
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        initial={false}
+        animate={still ? { pathLength: 1, opacity: 0.6 } : { pathLength: [0, 1, 0], opacity: [0.8, 0.8, 0.8] }}
+        transition={still ? { duration: 0 } : schleife(2.4, 0, 0.4)}
+      />
+      <motion.g
+        style={{ transformOrigin: "100px 100px" }}
+        initial={false}
+        animate={still ? { rotate: -30 } : { rotate: [0, -60, 0] }}
+        transition={still ? { duration: 0 } : schleife(2.4, 0, 0.4)}
+      >
+        <rect x={92} y={108} width={16} height={64} rx={8} fill="none" stroke={LIME} strokeWidth={2.5} />
+      </motion.g>
+      <motion.circle
+        cx={100}
+        cy={100}
+        r={10}
+        fill={LIME}
+        style={{ transformOrigin: "100px 100px" }}
+        initial={false}
+        animate={still ? { opacity: 1 } : { scale: [1, 1.15, 1], opacity: [0.9, 1, 0.9] }}
+        transition={still ? { duration: 0 } : { duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
       />
     </g>
   );

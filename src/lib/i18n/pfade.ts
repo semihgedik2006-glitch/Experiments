@@ -23,6 +23,7 @@ const PAARE: readonly (readonly [de: string, en: string])[] = [
   ["/ziel/abnehmen", "/en/goal/weight-loss"],
   ["/ziel/muskelaufbau", "/en/goal/muscle"],
   ["/ziel/fitness", "/en/goal/fitness"],
+  ["/ziel/gelenke", "/en/goal/joints"],
   ["/fragen/kosten", "/en/questions/cost"],
   ["/fragen/sicherheit", "/en/questions/safety"],
   ["/fragen/erfahrungen", "/en/questions/reviews"],

@@ -11,6 +11,7 @@ import { REELS, REELS_START, type Reel } from "@/lib/reels";
  */
 const ZUERST: Partial<Record<string, Reel>> = {
   ruecken: REELS.ruecken,
+  gelenke: REELS.ruecken,
   fitness: REELS.keineZeit,
   abnehmen: REELS.keineZeit,
 };

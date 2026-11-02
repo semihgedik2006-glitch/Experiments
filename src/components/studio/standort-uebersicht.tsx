@@ -9,6 +9,9 @@ import { useSprache } from "@/lib/i18n/use-sprache";
 
 const subscribeNothing = () => () => {};
 
+/** So viele Studios zeigt die Liste, wenn sie nach Entfernung sortiert ist. */
+const NAECHSTE_ANZAHL = 7;
+
 export type UebersichtStudio = {
   id: string;
   name: string;
@@ -41,6 +44,9 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
   const [naechsteId, setNaechsteId] = useState<string | null>(null);
   const [entfernungen, setEntfernungen] = useState<Record<string, number>>({});
   const [hervorgehoben, setHervorgehoben] = useState<string | null>(null);
+  // Mit freigegebenem Standort zeigt die Liste zuerst nur die nächsten
+  // Studios (Wunsch vom 22.10.) - wer weiter sucht, klappt alle auf.
+  const [alleZeigen, setAlleZeigen] = useState(false);
   const isClient = useSyncExternalStore(subscribeNothing, () => true, () => false);
   const en = useSprache() === "en";
 
@@ -104,6 +110,9 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
           (entfernungen[a.studio.id] ?? Infinity) - (entfernungen[b.studio.id] ?? Infinity),
       )
     : punkte;
+
+  const gekuerzt = Boolean(naechsteId) && !alleZeigen && sortiertePunkte.length > NAECHSTE_ANZAHL;
+  const sichtbarePunkte = gekuerzt ? sortiertePunkte.slice(0, NAECHSTE_ANZAHL) : sortiertePunkte;
 
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_320px]">
@@ -209,7 +218,7 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
         )}
 
         <ol className="mt-3 max-h-[26rem] space-y-1 overflow-y-auto pr-1 text-sm">
-          {sortiertePunkte.map(({ studio, nummer }) => (
+          {sichtbarePunkte.map(({ studio, nummer }) => (
             <li key={studio.id}>
               <a
                 href={`#studio-${studio.id}`}
@@ -247,6 +256,18 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
             </li>
           ))}
         </ol>
+
+        {gekuerzt && (
+          <button
+            type="button"
+            onClick={() => setAlleZeigen(true)}
+            className="mt-2 w-full rounded-lg border border-border px-3 py-2 text-sm font-medium transition-colors hover:border-lime"
+          >
+            {en
+              ? `Show all ${sortiertePunkte.length} studios`
+              : `Alle ${sortiertePunkte.length} Standorte anzeigen`}
+          </button>
+        )}
       </div>
     </div>
   );

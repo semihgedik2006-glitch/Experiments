@@ -77,9 +77,19 @@ export const metadata: Metadata = {
   // Bestätigung für die Google Search Console ("HTML-Tag"): Den Code aus
   // der Search Console in Vercel als GOOGLE_SITE_VERIFICATION eintragen,
   // neu bereitstellen, dann dort auf "Bestätigen". Ohne Code kein Tag.
-  ...(process.env.GOOGLE_SITE_VERIFICATION
-    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
-    : {}),
+  //
+  // Dasselbe für die Bing Webmaster Tools (Methode "Meta-Tag") als
+  // BING_SITE_VERIFICATION. Bing lohnt sich doppelt: Seine Suche speist
+  // auch die Websuche in ChatGPT und Copilot - wer bei Bing fehlt, fehlt
+  // dort ebenfalls.
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+      : {}),
+    ...(process.env.BING_SITE_VERIFICATION
+      ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } }
+      : {}),
+  },
 };
 
 export const viewport: Viewport = {

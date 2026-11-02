@@ -20,7 +20,7 @@ import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
  * Gefühle an, sagte aber nicht, WOFÜR jemand trainiert. Diese Fassung
  * führt über das Ziel:
  *
- *   "Fühl dich wieder wohl in deinem Körper."
+ *   "Für mehr Lebensqualität." (Wunsch Marcel, 22.10.)
  *   + "Was willst du erreichen?" mit fünf Zielen zum Antippen
  *
  * Lebensqualität als Überschrift, das Ziel als erste Handlung. Wer ein
@@ -191,8 +191,8 @@ export function Hero({
 
             <p className="hero-anim mt-6 max-w-lg text-lg leading-relaxed text-foreground/80" style={verz(0.7)}>
               {en
-                ? "EMS training with your personal trainer: 20 minutes a week, tailored to your goal, your body and your everyday life."
-                : "EMS-Training mit deinem persönlichen Trainer: 20 Minuten pro Woche, abgestimmt auf dein Ziel, deinen Körper und deinen Alltag."}
+                ? "Whether you want to strengthen your back, lose weight, build muscle or tone your body: we design every EMS session around your goals – 20 minutes a week with your personal trainer."
+                : "Egal ob du deinen Rücken stärken, abnehmen, Muskeln aufbauen oder deinen Körper straffen möchtest: Wir gestalten jedes EMS-Training individuell auf deine Ziele – 20 Minuten pro Woche, mit deinem persönlichen Trainer."}
             </p>
 
             <ZielWahl />
@@ -317,8 +317,10 @@ function ZielWahl() {
  * Zeile steigen (CSS-Animation, siehe .hero-anim-word). Beim ersten Laden
  * mit kurzer Verzögerung, beim Wechsel sofort.
  */
-const ALLGEMEIN: [string, string] = ["Fühl dich wieder\u00a0wohl", "in\u00a0deinem\u00a0Körper."];
-const ALLGEMEIN_EN: [string, string] = ["Feel at home", "in\u00a0your\u00a0body\u00a0again."];
+// Marcels Vorschlag (22.10.): "für mehr Lebensqualität" als Überschrift.
+// Vorher: "Fühl dich wieder wohl in deinem Körper."
+const ALLGEMEIN: [string, string] = ["Für mehr", "Lebensqualität."];
+const ALLGEMEIN_EN: [string, string] = ["For a better", "quality\u00a0of\u00a0life."];
 
 function Ueberschrift() {
   const { ziel, wechsel } = useZiel();

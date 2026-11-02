@@ -53,7 +53,7 @@ export function Netzwerk({ gesamt, eigene }: { gesamt: number; eigene: number })
         <div ref={ref} className="grid items-center gap-12 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
           <div>
             <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              <Zaehler bis={gesamt} start={fertig} /> {en ? "Körperformen studios." : "Körperformen-Studios."}
+              <Zaehler bis={gesamt} start={fertig} />+ {en ? "Körperformen studios." : "Körperformen-Studios."}
               <br />
               <span className="text-accent">{en ? `${eigene} of them are ours.` : `${eigene} davon sind unsere.`}</span>
             </h2>
@@ -73,8 +73,8 @@ export function Netzwerk({ gesamt, eigene }: { gesamt: number; eigene: number })
               role="img"
               aria-label={
                 en
-                  ? `${gesamt} dots for all Körperformen studios, ${eigene} of them highlighted: our studios in and around Cologne.`
-                  : `${gesamt} Punkte für alle Körperformen-Studios, ${eigene} davon hervorgehoben: unsere Studios in Köln und Umgebung.`
+                  ? `${gesamt} dots for the more than ${gesamt} Körperformen studios, ${eigene} of them highlighted: our studios in and around Cologne.`
+                  : `${gesamt} Punkte für die über ${gesamt} Körperformen-Studios, ${eigene} davon hervorgehoben: unsere Studios in Köln und Umgebung.`
               }
               className="w-full"
             >

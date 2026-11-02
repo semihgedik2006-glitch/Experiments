@@ -49,13 +49,15 @@ export function AuszeichnungAbschnitt() {
               {en ? (
                 <>
                   <strong className="text-foreground">Körperformen</strong> took{" "}
-                  <strong className="text-foreground">{auszeichnung.platz}</strong> – and the best rating in
+                  <strong className="text-foreground">{auszeichnung.platz}</strong> (score{" "}
+                  {auszeichnung.gesamtScore.replace(",", ".")} out of 10) – and the best rating in
                   all five sub-categories.
                 </>
               ) : (
                 <>
                   <strong className="text-foreground">Körperformen</strong> erreichte den{" "}
-                  <strong className="text-foreground">{auszeichnung.platz}</strong> – und in allen fünf
+                  <strong className="text-foreground">{auszeichnung.platz}</strong> (Score{" "}
+                  {auszeichnung.gesamtScore} von 10) – und in allen fünf
                   Teilkategorien die beste Bewertung.
                 </>
               )}

@@ -6,7 +6,7 @@ export function generateStaticParams() {
   return ZIEL_INHALTE.map((z) => ({ slug: z.wert }));
 }
 
-// Nur die fünf Ziele - alles andere ist eine falsche Adresse.
+// Nur die sechs Ziele - alles andere ist eine falsche Adresse.
 export const dynamicParams = false;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
