@@ -55,7 +55,7 @@ const audiences = [
   {
     icon: HeartPulse,
     title: "Rücken-Geplagte",
-    text: "EMS erreicht die tiefe Rumpfmuskulatur, die bei klassischen Übungen oft zu kurz kommt - die Basis eines stabilen Rückens.",
+    text: "EMS erreicht auch die tiefe Rumpfmuskulatur, die bei klassischen Übungen oft zu kurz kommt.",
   },
   {
     icon: Activity,
@@ -70,7 +70,7 @@ const audiences = [
   {
     icon: Clock,
     title: "Best Ager 50+",
-    text: "Muskelerhalt ist ab 50 das beste Gesundheitsinvestment. EMS ist gelenkschonend und ohne schwere Gewichte.",
+    text: "Mit den Jahren wird es wichtiger, die Muskeln zu erhalten. EMS ist gelenkschonend und kommt ohne schwere Gewichte aus.",
   },
   {
     icon: Zap,
@@ -91,9 +91,9 @@ const merkmale = [
   { label: "Intensität", ems: "für jede Muskelgruppe einzeln eingestellt" },
 ];
 
-// Auf Englisch vorsichtiger als im Deutschen: kein "Basis eines stabilen
-// Rückens", kein "bestes Gesundheitsinvestment" - beschrieben wird, für
-// wen das Training gemacht ist, nicht was es bewirkt.
+// Wie im Deutschen: kein "Basis eines stabilen Rückens", kein "bestes
+// Gesundheitsinvestment" - beschrieben wird, für wen das Training gemacht
+// ist, nicht was es bewirkt.
 const audiencesEn: typeof audiences = [
   {
     icon: Briefcase,
@@ -274,7 +274,7 @@ export function EmsSeite({ sprache }: { sprache: Sprache }) {
               <p className="mt-4 text-muted">
                 {en
                   ? "In short: for almost anyone who wants to train efficiently - to get stronger, more toned or fitter."
-                  : "Kurz: für fast alle, die effizient stärker, straffer oder schmerzfreier werden wollen."}
+                  : "Kurz: für fast alle, die effizient trainieren wollen - um stärker, straffer oder fitter zu werden."}
               </p>
             </Reveal>
             <ImpulsSzene name="ruecken" className="mx-auto hidden w-full max-w-[200px] md:block" />

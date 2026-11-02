@@ -7,7 +7,7 @@ const steps = [
   {
     step: "01",
     heading: "Nacken & Schultern",
-    text: "Die Impulse lösen zuerst Verspannungen in Schultern und Nacken - typische Problemzonen bei Bürojobs.",
+    text: "Die Impulse beginnen bei Schultern und Nacken - typische Problemzonen bei Bürojobs.",
   },
   {
     step: "02",
@@ -17,7 +17,7 @@ const steps = [
   {
     step: "03",
     heading: "Bauch & Rumpf",
-    text: "Die tiefliegende Rumpfmuskulatur wird mittrainiert - für einen stabilen Kern und einen strafferen Bauch.",
+    text: "Die tiefliegende Rumpfmuskulatur wird mittrainiert.",
   },
   {
     step: "04",
@@ -26,8 +26,8 @@ const steps = [
   },
 ];
 
-// Auf Englisch ohne "löst Verspannungen" und "strafferer Bauch": beschrieben
-// wird, welche Muskeln arbeiten, nicht was dabei herauskommt.
+// Wie im Deutschen ohne "löst Verspannungen" und "strafferer Bauch":
+// beschrieben wird, welche Muskeln arbeiten, nicht was dabei herauskommt.
 const stepsEn: typeof steps = [
   {
     step: "01",

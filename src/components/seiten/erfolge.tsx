@@ -61,7 +61,7 @@ export async function ErfolgeSeite({ sprache }: { sprache: Sprache }) {
         intro={
           en
             ? "Our members come with very different goals. This is what they say about their training at Körperformen."
-            : "Unsere Mitglieder kommen mit ganz unterschiedlichen Zielen - vom schmerzfreien Rücken bis zur Strandfigur. Das sagen sie über ihr Training bei Körperformen."
+            : "Unsere Mitglieder kommen mit ganz unterschiedlichen Zielen. Das sagen sie über ihr Training bei Körperformen."
         }
       />
 
