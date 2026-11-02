@@ -3,7 +3,8 @@
 import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Check, ChevronDown } from "lucide-react";
-import { ImpulsSzene } from "@/components/ui/impuls-szene";
+import { HakenGezeichnet } from "@/components/booking/haken-gezeichnet";
+import { FormFortschritt } from "@/components/booking/form-fortschritt";
 import { gebuchtMerken } from "@/lib/einladung";
 import { createBooking } from "@/lib/actions/booking";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
@@ -163,20 +164,32 @@ export function BookingForm({
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="rounded-2xl border border-lime bg-surface p-10 text-center"
       >
-        {/* Vorher stand hier ein Symbol in einem Kreis, 56 Pixel groß.
-            Das ist der Moment, auf den die ganze Seite hinarbeitet - der
+        {/* Das ist der Moment, auf den die ganze Seite hinarbeitet - der
             einzige, an dem jemand etwas abgeschickt hat und kurz wartet,
-            ob es geklappt hat. Dafür ist ein Bild angemessen, das den
-            Haken zeichnet, statt ihn hinzustellen. */}
-        <ImpulsSzene name="bestaetigt" className="mx-auto w-full max-w-[180px]" />
-        <h3 className="mt-2 text-xl font-semibold text-accent">{t.gesendet}</h3>
+            ob es geklappt hat. Dafür ein Haken, der sich zeichnet, statt
+            dazustehen - einmal, nicht in Schleife. */}
+        <HakenGezeichnet className="mx-auto h-24 w-24" />
+        <h3 className="mt-5 text-xl font-semibold text-accent">{t.gesendet}</h3>
         <p className="mt-3 text-muted">{state.message}</p>
       </motion.div>
     );
   }
 
+  // Die drei Teile des Formulars - für die Striche ganz oben. Der erste
+  // ist freiwillig; er zählt, sobald ein Tag oder eine Tageszeit gewählt ist.
+  const schritte = [
+    { label: sprache === "de" ? "Wann" : "When", fertig: tage.length > 0 || zeiten.length > 0 },
+    {
+      label: sprache === "de" ? "Deine Daten" : "Your details",
+      fertig: felder.name.trim().length > 1 && /\S+@\S+\.\S+/.test(felder.email) && felder.phone.replace(/\D/g, "").length >= 6,
+    },
+    { label: sprache === "de" ? "Erreichbarkeit" : "Call-back time", fertig: Boolean(felder.erreichbarkeit) },
+  ];
+
   return (
     <form onSubmit={absenden} className="space-y-8">
+      <FormFortschritt schritte={schritte} en={sprache === "en"} />
+
       {/* Bot-Falle: für echte Besucher unsichtbar, Bots füllen sie oft aus. */}
       <input
         type="text"

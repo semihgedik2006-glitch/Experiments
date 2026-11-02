@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
-import { LocateFixed, MapPin } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { ArrowDown, LocateFixed, MapPin, X } from "lucide-react";
 import { haversineDistanceKm, anyStudioLocatable, sortStudiosByDistance } from "@/lib/geo";
 import { ausschnittFuer } from "@/lib/karte";
+import { ortsname } from "@/lib/ortsname";
 import { useSprache } from "@/lib/i18n/use-sprache";
 
 const subscribeNothing = () => () => {};
@@ -11,15 +12,8 @@ const subscribeNothing = () => () => {};
 /** So viele Studios zeigt die Liste, wenn sie nach Entfernung sortiert ist. */
 const NAECHSTE_ANZAHL = 7;
 
-/**
- * Der Standort so, wie man ihn sucht: "Köln Nippes" statt nur "Köln".
- * Der Studioname trägt den Stadtteil schon ("Körperformen Köln Nippes") -
- * ohne Markennamen bleibt genau der übrig. Fehlt er, steht die Stadt da.
- */
-function standortName(studio: { name: string; city: string }) {
-  const ohneMarke = studio.name.replace(/^Körperformen\s+/i, "").trim();
-  return ohneMarke || studio.city;
-}
+/** Wie weit die Karte an ein gewähltes Studio heranfährt. */
+const NAH = 1.8;
 
 export type UebersichtStudio = {
   id: string;
@@ -43,6 +37,12 @@ export type UebersichtStudio = {
  * /api/karte). Damit bleibt die Eigenschaft erhalten, um die es ging: Der
  * Browser des Besuchers baut keine Verbindung zu einem fremden Dienst auf,
  * die Karte braucht also keine Einwilligung und steht sofort da.
+ *
+ * Liste und Karte gehören zusammen: Ein Eintrag in der Liste wählt das
+ * Studio, die Karte fährt heran und hebt die Markierung hervor; ein Tipp
+ * auf eine Markierung wählt den Eintrag in der Liste. Vorher führte die
+ * Liste nur zu den Karten weiter unten - auf dem Handy war danach die
+ * Karte aus dem Bild und man wusste nicht mehr, welcher Punkt welcher ist.
  */
 export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] }) {
   const verortet = studios.filter(
@@ -53,6 +53,10 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
   const [naechsteId, setNaechsteId] = useState<string | null>(null);
   const [entfernungen, setEntfernungen] = useState<Record<string, number>>({});
   const [hervorgehoben, setHervorgehoben] = useState<string | null>(null);
+  // Das angetippte Studio: Die Karte zoomt dorthin, bis man es wieder abwählt.
+  const [gewaehlt, setGewaehlt] = useState<string | null>(null);
+  const karteRef = useRef<HTMLDivElement>(null);
+  const listeRef = useRef<HTMLOListElement>(null);
   // Mit freigegebenem Standort zeigt die Liste zuerst nur die nächsten
   // Studios (Wunsch vom 22.10.) - wer weiter sucht, klappt alle auf.
   const [alleZeigen, setAlleZeigen] = useState(false);
@@ -97,6 +101,47 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
     standortAbfragen();
   }, [standortAbfragen, kannOrten]);
 
+  // Escape führt zurück zur ganzen Karte.
+  useEffect(() => {
+    if (!gewaehlt) return;
+    const taste = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setGewaehlt(null);
+    };
+    window.addEventListener("keydown", taste);
+    return () => window.removeEventListener("keydown", taste);
+  }, [gewaehlt]);
+
+  const ruhig = () =>
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Aus der Liste gewählt: Auf dem Handy steht die Karte darüber und ist
+  // vielleicht schon aus dem Bild - dann holen wir sie zurück.
+  const ausListeWaehlen = (id: string) => {
+    const neu = gewaehlt === id ? null : id;
+    setGewaehlt(neu);
+    if (!neu) return;
+    const karte = karteRef.current?.getBoundingClientRect();
+    if (karte && karte.top < 64) {
+      karteRef.current?.scrollIntoView({ behavior: ruhig() ? "auto" : "smooth", block: "start" });
+    }
+  };
+
+  // Von der Karte gewählt: Der Eintrag rückt in der Liste ins Bild - nur
+  // innerhalb der Liste, die Seite selbst springt dabei nicht.
+  const ausKarteWaehlen = (id: string) => {
+    if (sortiertePunkte.findIndex((p) => p.studio.id === id) >= NAECHSTE_ANZAHL) setAlleZeigen(true);
+    setGewaehlt(id);
+    window.requestAnimationFrame(() => {
+      const liste = listeRef.current;
+      const eintrag = liste?.querySelector<HTMLElement>(`[data-studio="${id}"]`);
+      if (!liste || !eintrag) return;
+      const oben = eintrag.offsetTop - liste.offsetTop;
+      if (oben < liste.scrollTop || oben + eintrag.offsetHeight > liste.scrollTop + liste.clientHeight) {
+        liste.scrollTo({ top: oben - 8, behavior: ruhig() ? "auto" : "smooth" });
+      }
+    });
+  };
+
   if (verortet.length < 2) return null;
 
   const ausschnitt = ausschnittFuer(verortet);
@@ -122,14 +167,31 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
 
   const gekuerzt = Boolean(naechsteId) && !alleZeigen && sortiertePunkte.length > NAECHSTE_ANZAHL;
   const sichtbarePunkte = gekuerzt ? sortiertePunkte.slice(0, NAECHSTE_ANZAHL) : sortiertePunkte;
+  const auswahl = punkte.find((p) => p.studio.id === gewaehlt) ?? null;
 
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_320px]">
       <div className="card overflow-hidden">
         <div
-          className="karte relative w-full overflow-hidden"
+          ref={karteRef}
+          className="karte relative w-full scroll-mt-24 overflow-hidden"
           style={{ aspectRatio: `${ausschnitt.fensterBreite} / ${ausschnitt.fensterHoehe}` }}
         >
+          {/* Kacheln und Markierungen liegen auf einer gemeinsamen Ebene:
+              Beim Heranfahren wird sie um das gewählte Studio vergrößert und
+              so verschoben, dass es in der Mitte steht. Nur transform - das
+              rechnet die Grafikkarte, nicht der Hauptthread. */}
+          <div
+            className="absolute inset-0 motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out"
+            style={
+              auswahl
+                ? {
+                    transformOrigin: `${auswahl.x}% ${auswahl.y}%`,
+                    transform: `translate(${50 - auswahl.x}%, ${50 - auswahl.y}%) scale(${NAH})`,
+                  }
+                : undefined
+            }
+          >
           {/* Das Kachelraster ist größer als das Fenster und liegt
               verschoben darunter - dadurch zeigt die Karte den Bereich der
               Standorte und nicht den, den die Kachelgrenzen vorgeben. */}
@@ -167,7 +229,11 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
               der richtigen Stelle. */}
           {punkte.map(({ studio, nummer, x, y }) => {
             const istNaechste = studio.id === naechsteId;
-            const aktiv = hervorgehoben === studio.id;
+            const istGewaehlt = gewaehlt === studio.id;
+            const aktiv = hervorgehoben === studio.id || istGewaehlt;
+            // Beim Heranfahren wächst die Ebene mit - die Markierungen sollen
+            // dabei ihre Größe behalten.
+            const masstab = (aktiv ? 1.25 : 1) / (auswahl ? NAH : 1);
             return (
               <a
                 key={studio.id}
@@ -180,21 +246,54 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
                 title={`${studio.name} - ${studio.street}, ${studio.postalCode} ${studio.city}`}
                 onMouseEnter={() => setHervorgehoben(studio.id)}
                 onMouseLeave={() => setHervorgehoben(null)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  ausKarteWaehlen(studio.id);
+                }}
                 // Feste Farben statt der Themenfarben: Die Markierung liegt
                 // auf einem Kartenbild, nicht auf einer Fläche der Seite. Mit
                 // text-white auf dem Akzentgrün stand sie in der dunklen
                 // Ansicht bei 1,27:1 - dort ist das Akzentgrün ein helles
                 // Limette. Diese beiden Paare erfüllen 4,5:1 auf hellem wie
                 // auf dunklem Kartenbild (7,4:1 und 14,4:1).
-                className={`karte-marke absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white text-xs font-bold shadow-md transition-transform hover:scale-125 ${
+                className={`karte-marke absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white text-xs font-bold shadow-md motion-safe:transition-[scale] ${
                   istNaechste ? "karte-marke-naechste" : ""
-                } ${aktiv ? "z-20 scale-125" : "z-10"}`}
-                style={{ left: `${x}%`, top: `${y}%` }}
+                } ${istGewaehlt ? "karte-marke-gewaehlt z-20" : aktiv ? "z-20" : "z-10"}`}
+                style={{ left: `${x}%`, top: `${y}%`, scale: String(masstab) }}
               >
                 {nummer}
               </a>
             );
           })}
+          </div>
+
+          {/* Das gewählte Studio, unten auf der Karte: Name, Adresse und
+              der Weg zu den Einzelheiten. */}
+          {auswahl && (
+            <div className="absolute inset-x-2 bottom-2 z-30 flex items-start gap-3 rounded-xl border border-border bg-background/95 p-3 text-sm shadow-lg backdrop-blur">
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-semibold">{ortsname(auswahl.studio.name, auswahl.studio.city)}</span>
+                <span className="block truncate text-xs text-muted">
+                  {auswahl.studio.street}, {auswahl.studio.postalCode} {auswahl.studio.city}
+                </span>
+                <a
+                  href={`#studio-${auswahl.studio.id}`}
+                  className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-accent underline-offset-2 hover:underline"
+                >
+                  {en ? "Opening hours & trial session" : "Öffnungszeiten & Probetraining"}
+                  <ArrowDown size={12} aria-hidden />
+                </a>
+              </span>
+              <button
+                type="button"
+                onClick={() => setGewaehlt(null)}
+                className="-m-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground"
+                aria-label={en ? "Show the whole map" : "Ganze Karte zeigen"}
+              >
+                <X size={16} aria-hidden />
+              </button>
+            </div>
+          )}
         </div>
 
         <p className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-3 py-2 text-[11px] text-muted">
@@ -226,21 +325,30 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
           </p>
         )}
 
-        <ol className="mt-3 max-h-[26rem] space-y-1 overflow-y-auto pr-1 text-sm">
+        <p className="mt-1 text-xs text-muted">
+          {en ? "Tap a studio to see it on the map." : "Tipp ein Studio an, um es auf der Karte zu sehen."}
+        </p>
+
+        <ol ref={listeRef} className="mt-3 max-h-[26rem] space-y-1 overflow-y-auto pr-1 text-sm">
           {sichtbarePunkte.map(({ studio, nummer }) => (
-            <li key={studio.id}>
-              <a
-                href={`#studio-${studio.id}`}
+            <li key={studio.id} data-studio={studio.id}>
+              <button
+                type="button"
+                onClick={() => ausListeWaehlen(studio.id)}
+                aria-current={gewaehlt === studio.id ? "true" : undefined}
+                aria-label={`${ortsname(studio.name, studio.city)}, ${studio.street} – ${en ? "show on map" : "auf der Karte zeigen"}`}
                 onMouseEnter={() => setHervorgehoben(studio.id)}
                 onMouseLeave={() => setHervorgehoben(null)}
                 onFocus={() => setHervorgehoben(studio.id)}
                 onBlur={() => setHervorgehoben(null)}
-                className={`flex items-center gap-3 rounded-lg border px-3 py-2 transition-colors hover:border-lime ${
-                  studio.id === naechsteId
-                    ? "border-lime bg-lime/10"
-                    : hervorgehoben === studio.id
-                      ? "border-lime/50"
-                      : "border-transparent"
+                className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2 text-left transition-colors hover:border-lime ${
+                  gewaehlt === studio.id
+                    ? "border-lime bg-lime/20"
+                    : studio.id === naechsteId
+                      ? "border-lime bg-lime/10"
+                      : hervorgehoben === studio.id
+                        ? "border-lime/50"
+                        : "border-transparent"
                 }`}
               >
                 <span
@@ -253,7 +361,7 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
                   {nummer}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium">{standortName(studio)}</span>
+                  <span className="block truncate font-medium">{ortsname(studio.name, studio.city)}</span>
                   <span className="block truncate text-xs text-muted">{studio.street}</span>
                 </span>
                 {entfernungen[studio.id] !== undefined && (
@@ -261,7 +369,7 @@ export function StandortUebersicht({ studios }: { studios: UebersichtStudio[] })
                     {Math.round(entfernungen[studio.id])} km
                   </span>
                 )}
-              </a>
+              </button>
             </li>
           ))}
         </ol>

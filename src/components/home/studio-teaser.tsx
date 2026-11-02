@@ -7,6 +7,7 @@ import { ImpulsStreu } from "@/components/ui/impuls-streu";
 import { ImpulsSzene } from "@/components/ui/impuls-szene";
 import { studioMapUrl } from "@/lib/studio-map";
 import { getStudios } from "@/lib/data";
+import { ortsname } from "@/lib/ortsname";
 import type { Sprache } from "@/lib/sprache";
 import { oeffnungszeiten } from "@/lib/i18n/oeffnungszeiten";
 
@@ -27,7 +28,7 @@ export async function StudioTeaser({ sprache = "de" }: { sprache?: Sprache }) {
               {en ? "Location" : "Standort"}
             </span>
             <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              {en ? `Your studio in ${studio.city}` : `Dein Studio in ${studio.city}`}
+              {en ? `Your studio in ${ortsname(studio.name, studio.city)}` : `Dein Studio in ${ortsname(studio.name, studio.city)}`}
             </h2>
             <p className="mt-4 text-muted">
               {en

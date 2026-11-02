@@ -10,15 +10,14 @@
  *   2. Alle anderen Gutscheine: Anfrage über das Formular, bezahlt wird im
  *      Studio oder per Überweisung.
  *
- * PREISE TRAGT IHR HIER EIN. Solange "preis" null ist, steht dort
- * "Preis auf Anfrage" - eine erfundene Zahl wäre schlimmer als keine.
+ * Für die Gutscheine über das Formular stehen KEINE PREISE auf der Seite -
+ * so gewünscht (Oktober 2026); den Preis nennt das Studio auf die Anfrage
+ * hin. Einzige Ausnahme ist die Weihnachtsaktion mit festem Preis.
  */
 
 export type GutscheinArt = {
   titel: string;
   text: string;
-  /** z. B. "149 €" - null, solange noch nicht festgelegt. */
-  preis: string | null;
   hervorgehoben?: boolean;
 };
 
@@ -27,26 +26,22 @@ export const GUTSCHEINE: GutscheinArt[] = [
   {
     titel: "Wertgutschein",
     text: "Ein Betrag eurer Wahl – einlösbar für Training und Mitgliedschaft, in der Regel in allen unseren Studios.",
-    preis: null,
   },
   {
     titel: "Zehnerkarte",
     text: "Zehn Einheiten, frei über das Jahr verteilt – für alle, die erst einmal reinschnuppern wollen.",
-    preis: null,
   },
 ];
 
-/** Dieselben Gutscheine auf Englisch (Seite /en/voucher). Preise wie oben. */
+/** Dieselben Gutscheine auf Englisch (Seite /en/voucher). */
 export const GUTSCHEINE_EN: GutscheinArt[] = [
   {
     titel: "Gift voucher",
     text: "An amount of your choice – redeemable for training and membership, usually at all of our studios.",
-    preis: GUTSCHEINE[0].preis,
   },
   {
     titel: "10-session card",
     text: "Ten sessions, spread freely over the year – for anyone who wants to give it a try first.",
-    preis: GUTSCHEINE[1].preis,
   },
 ];
 

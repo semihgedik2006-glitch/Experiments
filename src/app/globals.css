@@ -813,7 +813,12 @@ h3,
    stehen - gemessen kostet das beim Scrollen acht Bilder pro Sekunde.
    "paused" statt "none": Beim Zurückscrollen läuft die Bewegung dort
    weiter, wo sie stehengeblieben ist, statt sichtbar neu zu starten. */
-.bewegung-aus * {
+.bewegung-aus,
+.bewegung-aus *,
+.bewegung-aus::before,
+.bewegung-aus::after,
+.bewegung-aus *::before,
+.bewegung-aus *::after {
   animation-play-state: paused !important;
 }
 
@@ -842,6 +847,22 @@ h3,
 .zierde-ruht {
   content-visibility: auto;
   contain-intrinsic-size: 360px 360px;
+}
+
+/*
+   Dasselbe für ganze Abschnitte der Startseite (ZielAbschnitte).
+
+   Gemessen (Lighthouse, Handy): "Style & Layout" lag bei gut einer
+   Sekunde - der Browser setzt sonst die ganze, fünfzehn Bildschirme lange
+   Seite schon beim Laden. Mit content-visibility nur das, was im Bild ist.
+
+   "auto 900px": 900 Pixel als Schätzung, bis der Abschnitt einmal gesetzt
+   wurde; danach merkt sich der Browser die echte Höhe ("auto") und die
+   Bildlaufleiste springt beim Zurückscrollen nicht mehr.
+*/
+.abschnitt-ruht {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
 }
 
 /*
@@ -1053,6 +1074,34 @@ h3,
 .karte-marke-naechste {
   background-color: #c3f53c;
   color: #12160b;
+}
+/* Das gewählte Studio: heller Kern und ein Ring, der einmal pro Sekunde
+   ausläuft - auf der Karte sofort zu finden, auch zwischen dreizehn
+   anderen Punkten. */
+.karte-marke-gewaehlt {
+  background-color: #c3f53c;
+  color: #12160b;
+  box-shadow: 0 0 0 3px rgb(195 245 60 / 0.45), 0 4px 12px rgb(0 0 0 / 0.35);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .karte-marke-gewaehlt::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 9999px;
+    border: 2px solid #c3f53c;
+    animation: karte-ring 1.4s ease-out infinite;
+  }
+}
+@keyframes karte-ring {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.2);
+  }
 }
 
 /* Aufklappbare Zeilen: Das eigene Dreieck ersetzt das Standardsymbol.
@@ -2496,5 +2545,33 @@ body {
   ::view-transition-old(*),
   ::view-transition-new(*) {
     animation: none !important;
+  }
+}
+
+/* Der Haken nach dem Absenden (booking/haken-gezeichnet.tsx): erst der
+   Kreis, dann der Haken - einmal, dann steht er. pathLength="100" am SVG
+   macht die Länge unabhängig von der tatsächlichen Pfadlänge. */
+.haken-kreis {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+}
+.haken-strich {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .haken-kreis {
+    animation: haken-zeichnen 0.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+  .haken-strich {
+    animation: haken-zeichnen 0.45s 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+@keyframes haken-zeichnen {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
   }
 }
