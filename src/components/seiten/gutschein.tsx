@@ -14,7 +14,7 @@ import { sichtbarkeit } from "@/lib/vorschau";
 import { isVisible } from "@/lib/site-toggles";
 
 /**
- * "Gutschein verschenken" - mit der Weihnachtsaktion 2026 (4 Wochen / 90 €,
+ * "Gutschein verschenken" - mit der Weihnachtsaktion 2026 (4 Wochen / 99 €,
  * Kauf über Digistore24, siehe @/lib/gutschein).
  *
  * Öffentlich erst, wenn im Adminbereich unter "Sichtbarkeit" die
@@ -29,12 +29,12 @@ export async function gutscheinMetadaten(sprache: Sprache): Promise<Metadata> {
       ? {
           title: "Give a voucher",
           description:
-            "Christmas offer: 4 weeks of EMS training with a personal trainer for €90 – buy online, give it as a gift or use it yourself. Körperformen in and around Cologne.",
+            "Christmas offer: 4 weeks of EMS training with a personal trainer for €99 – buy online, give it as a gift or use it yourself. Körperformen in and around Cologne.",
         }
       : {
           title: "Gutschein verschenken",
           description:
-            "Weihnachtsaktion: 4 Wochen EMS-Training mit persönlichem Trainer für 90 € – online kaufen, verschenken oder selbst nutzen. Körperformen in Köln und Umgebung.",
+            "Weihnachtsaktion: 4 Wochen EMS-Training mit persönlichem Trainer für 99 € – online kaufen, verschenken oder selbst nutzen. Körperformen in Köln und Umgebung.",
         }),
     // Solange die Seite nur Vorschau ist, soll sie nirgends auftauchen.
     ...(live ? {} : { robots: { index: false, follow: false } }),
