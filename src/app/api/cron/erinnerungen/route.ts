@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import {
   sendBewertungEmail,
+  sendMitgliedJubilaeumEmail,
+  sendMitgliedUmfrageEmail,
+  sendMitgliedWillkommenEmail,
+  sendMitgliederInternEmail,
   sendNachfassInternEmail,
   sendMonatsberichtEmail,
   sendReminderEmail,
@@ -14,6 +18,16 @@ import { formatDate } from "@/lib/format";
 import { terminAngaben } from "@/lib/termin-angaben";
 import { PROTOKOLL_TAGE } from "@/lib/protokoll";
 import { alteZugaengeLoeschen } from "@/lib/kundenbereich";
+import { isVisible } from "@/lib/site-toggles";
+import {
+  NACHHAKEN_BIS_NOTE,
+  NOTEN,
+  faelligeMail,
+  jubilaeumText,
+  laufzeitstand,
+  mitgliederbereichLink,
+  umfrageLink,
+} from "@/lib/mitglieder";
 
 /**
  * Ab wann eine offene Anfrage als liegengeblieben gilt.
@@ -128,6 +142,10 @@ export async function GET(request: NextRequest) {
   // wirkungslos - hier verschwindet nur die Zeile, die noch die E-Mail-
   // Adresse enthält.
   const zugaengeAufgeraeumt = await alteZugaengeLoeschen();
+  // Nur, wenn unter Sichtbarkeit eingeschaltet - siehe mitgliederMails.
+  const mitglieder = (await isVisible("mitglieder-mails"))
+    ? { mails: await mitgliederMails(), wochenuebersicht: await wochenuebersicht() }
+    : "ausgeschaltet";
   // Einmal im Monat die Zahlen des Vormonats ans Team (@/lib/monatsbericht).
   const monatsbericht = await monatsberichtFaellig(sendMonatsberichtEmail, TEAM_EMAIL);
 
@@ -142,8 +160,142 @@ export async function GET(request: NextRequest) {
     protokollGeloescht: aufgeraeumt,
     aenderungsprotokollGeloescht: protokollAufgeraeumt,
     zugaengeGeloescht: zugaengeAufgeraeumt,
+    mitglieder,
     monatsbericht,
   });
+}
+
+/**
+ * Die Mails an Mitglieder: Willkommen, Umfrage, Jubiläum.
+ *
+ * Was fällig ist, rechnet src/lib/mitglieder.ts aus - höchstens eine Mail
+ * am Tag je Mitglied. Vermerkt wird wie bei der Bewertung auch ein
+ * gescheiterter Versuch: Eine Willkommensmail, die drei Tage lang erneut
+ * versucht wird, kommt irgendwann zur falschen Zeit an.
+ *
+ * Der ganze Ablauf hängt am Schalter "Mitglieder-Mails". Er steht zu
+ * Beginn auf aus, damit nichts rausgeht, bevor die Mitgliederliste
+ * gepflegt ist.
+ */
+async function mitgliederMails() {
+  const heute = new Date();
+  const kandidaten = await prisma.mitglied.findMany({
+    where: {
+      aktiv: true,
+      mailsAbbestellt: false,
+      email: { not: null },
+      vertragsbeginn: { not: null },
+    },
+    include: { studio: { select: { name: true, email: true } } },
+  });
+
+  let verschickt = 0;
+  let faellig = 0;
+  for (const m of kandidaten) {
+    const mail = faelligeMail(m.vertragsbeginn, m.mailsVersandt, heute, m.werbungErlaubt);
+    if (!mail || !m.email) continue;
+    faellig++;
+
+    const angaben = {
+      email: m.email,
+      vorname: m.vorname,
+      studioName: m.studio?.name ?? null,
+      antwortAn: m.studio?.email ?? null,
+      bereichLink: mitgliederbereichLink(m.token),
+    };
+
+    let ok = false;
+    try {
+      if (mail === "willkommen-1") ok = await sendMitgliedWillkommenEmail(1, angaben);
+      else if (mail === "willkommen-3") ok = await sendMitgliedWillkommenEmail(3, angaben);
+      else if (mail === "willkommen-6") ok = await sendMitgliedWillkommenEmail(6, angaben);
+      else if (mail === "umfrage") {
+        ok = await sendMitgliedUmfrageEmail({
+          ...angaben,
+          notenLinks: NOTEN.map((n) => ({ ...n, note: n.wert, link: umfrageLink(m.token, n.wert) })),
+        });
+      } else {
+        const monate = Number(mail.replace("jubilaeum-", ""));
+        ok = await sendMitgliedJubilaeumEmail({ ...angaben, dauer: jubilaeumText(monate) });
+      }
+    } catch (error) {
+      console.error(`Mitglieder-Mail ${mail} für ${m.id} fehlgeschlagen:`, error);
+    }
+
+    await prisma.mitglied.update({
+      where: { id: m.id },
+      data: { mailsVersandt: { push: mail } },
+    });
+    if (ok) verschickt++;
+  }
+
+  return { faellig, verschickt };
+}
+
+/** Montag in deutscher Ortszeit? */
+function istMontag(): boolean {
+  return (
+    new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: "Europe/Berlin" }).format(
+      new Date(),
+    ) === "Mon"
+  );
+}
+
+/**
+ * Montags an jedes Studio: wen anrufen, mit wem ein Gespräch vereinbaren.
+ *
+ * Nur wenn es etwas gibt - siehe sendMitgliederInternEmail.
+ */
+async function wochenuebersicht() {
+  if (!istMontag()) return { mails: 0 };
+  const heute = new Date();
+
+  const studios = await prisma.studioLocation.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      mitglieder: {
+        where: { aktiv: true },
+        select: {
+          vorname: true,
+          nachname: true,
+          umfrageNote: true,
+          umfrageKommentar: true,
+          nachgehaktAm: true,
+          vertragsbeginn: true,
+          laufzeitMonate: true,
+          gespraechAm: true,
+        },
+      },
+    },
+  });
+
+  let mails = 0;
+  for (const studio of studios) {
+    const an = studio.email?.trim();
+    if (!an) continue;
+
+    const anrufen = studio.mitglieder
+      .filter((m) => m.umfrageNote !== null && m.umfrageNote <= NACHHAKEN_BIS_NOTE && !m.nachgehaktAm)
+      .map((m) => ({
+        name: `${m.vorname} ${m.nachname}`,
+        note: m.umfrageNote as number,
+        kommentar: m.umfrageKommentar,
+      }));
+
+    const gespraeche = studio.mitglieder.flatMap((m) => {
+      const stand = laufzeitstand(m.vertragsbeginn, m.laufzeitMonate, heute);
+      if (stand.art !== "gespraech-faellig" || m.gespraechAm) return [];
+      return [{ name: `${m.vorname} ${m.nachname}`, ende: formatDate(stand.ende) }];
+    });
+
+    if (anrufen.length === 0 && gespraeche.length === 0) continue;
+    const ok = await sendMitgliederInternEmail(an, { studioName: studio.name, anrufen, gespraeche });
+    if (ok) mails++;
+  }
+
+  return { mails };
 }
 
 /**

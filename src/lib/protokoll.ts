@@ -82,6 +82,9 @@ export const BEREICHE = [
   "Inhalte",
   "Warteliste",
   "Empfehlung",
+  "Mitglied",
+  "Gutschein",
+  "Kennzahlen",
 ] as const;
 
 export const ART_TEXT: Record<ProtokollArt, string> = {

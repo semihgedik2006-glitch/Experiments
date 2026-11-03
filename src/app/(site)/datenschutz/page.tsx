@@ -407,6 +407,46 @@ export default function DatenschutzPage() {
               Vorschriften, erfolgt die weitere Speicherung auf Grundlage von Art. 6 Abs. 1
               lit. c DSGVO.
             </p>
+            <p>
+              <strong>Mitglieder-E-Mails und Mitgliederbereich.</strong> Für Mitglieder
+              speichern wir auf dieser Website Vor- und Nachname, E-Mail-Adresse, Studio,
+              Vertragsbeginn und Laufzeit sowie die Kundennummer aus unserer Studiosoftware.
+              Damit begrüßen wir neue Mitglieder in den ersten Wochen und geben Hinweise zu
+              Terminen (Art. 6 Abs. 1 lit. b DSGVO) und stellen einen persönlichen
+              Mitgliederbereich bereit. Trainings- oder Gesundheitsangaben werden hier nicht
+              gespeichert. Diese E-Mails können Sie jederzeit im Mitgliederbereich oder über
+              eine Nachricht an {email} abbestellen. Die Angaben werden gelöscht, sobald die
+              Mitgliedschaft beendet ist und sie nicht mehr benötigt werden.
+            </p>
+            <p>
+              <strong>Angebote, Zufriedenheitsumfrage, Jubiläum.</strong> E-Mails mit
+              Angeboten, die Frage nach Ihrer Zufriedenheit und Glückwünsche zum Jubiläum
+              senden wir nur mit Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Wann und auf
+              welchem Weg Sie eingewilligt haben, halten wir als Nachweis fest. Sie können die
+              Einwilligung jederzeit im Mitgliederbereich, über den Link in jeder E-Mail oder
+              formlos gegenüber Ihrem Studio widerrufen. Ihre Antwort auf die Umfrage (Note und
+              freiwilliger Kommentar) sieht nur Ihr Studio; wir nutzen sie, um uns bei Ihnen zu
+              melden und unser Angebot zu verbessern.
+            </p>
+            <p>
+              <strong>Gutscheine.</strong> Wenn Sie über die Website einen Gutschein anfragen,
+              speichern wir Ihren Namen, Ihre E-Mail-Adresse und Telefonnummer, den gewählten
+              Gutschein, das Studio und - falls angegeben - den Namen des Beschenkten und die
+              Widmung. Wir verwenden diese Angaben, um Sie zur Bezahlung und Abholung zu
+              kontaktieren und den Gutschein auszustellen (Art. 6 Abs. 1 lit. b DSGVO). Zum
+              Gutschein selbst bewahren wir die Angaben bis zum Ende seiner Gültigkeit auf,
+              danach gelten die gesetzlichen Aufbewahrungsfristen.
+            </p>
+            <p>
+              <strong>Online-Kauf von Gutscheinen.</strong> Kaufen Sie einen Gutschein online, geben
+              Sie Ihre Zahlungsdaten nicht bei uns ein, sondern beim Zahlungsdienst. Je nach Angebot
+              ist das die Stripe Payments Europe Ltd. (Irland) oder die Digistore24 GmbH
+              (Deutschland), die den Gutschein dann im eigenen Namen verkauft. Wir erhalten von
+              Stripe Ihren Namen, Ihre E-Mail-Adresse, den bezahlten Betrag und die freiwillige
+              Angabe, für wen der Gutschein ist, um den Gutschein auszustellen und Ihnen
+              zuzusenden (Art. 6 Abs. 1 lit. b DSGVO). Kartendaten erhalten wir nicht. Für die
+              Verarbeitung durch den Zahlungsdienst gelten dessen Datenschutzhinweise.
+            </p>
           </Section>
 
           <Section title="15. Empfänger personenbezogener Daten und Auftragsverarbeitung">

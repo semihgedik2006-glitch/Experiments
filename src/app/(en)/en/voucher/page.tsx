@@ -4,6 +4,12 @@ export function generateMetadata() {
   return gutscheinMetadaten("en");
 }
 
-export default function VoucherPage() {
-  return <GutscheinSeite sprache="en" />;
+export default async function VoucherPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ zahlung?: string }>;
+}) {
+  // ?zahlung=stripe|digistore: nur für angemeldete Admins, zum Vergleichen.
+  const { zahlung } = await searchParams;
+  return <GutscheinSeite sprache="en" zahlungVorschau={zahlung ?? null} />;
 }

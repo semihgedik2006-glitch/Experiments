@@ -31,6 +31,10 @@ import {
   Quote,
   Globe,
   ClipboardCheck,
+  HeartHandshake,
+  IdCard,
+  TicketPercent,
+  ChartLine,
 } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/social-icons";
 import type { SymbolTyp } from "@/components/admin/ui";
@@ -62,6 +66,17 @@ const groups: NavGroup[] = [
       { href: "/admin/warteliste", label: "Warteliste", icon: Hourglass },
       { href: "/admin/auswertung", label: "Auswertung", icon: BarChart3 },
       { href: "/admin/protokoll", label: "Protokoll", icon: History },
+    ],
+  },
+  {
+    // Alles nach dem Vertragsabschluss. Nicht nurLeitung: Die
+    // Mitglieder kennt der Standort, und er ruft sie an.
+    title: "Mitglieder",
+    items: [
+      { href: "/admin/mitgliederpflege", label: "Mitgliederpflege", icon: HeartHandshake },
+      { href: "/admin/mitglieder", label: "Mitgliederliste", icon: IdCard },
+      { href: "/admin/gutscheine", label: "Gutscheine", icon: TicketPercent },
+      { href: "/admin/kennzahlen", label: "Kennzahlen", icon: ChartLine },
     ],
   },
   {
