@@ -517,7 +517,19 @@ export default function PrivacyPage() {
             </p>
           </Section>
 
-          <Section title="27. Currency and changes to this privacy policy">
+          <Section title="27. Google reviews on the studio pages">
+            <p>
+              On the studio pages we show each studio&apos;s overall rating and a few recent
+              reviews from Google. Our server retrieves this information through Google&apos;s
+              interface (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4,
+              Ireland) and keeps it for up to one day. Your browser does <strong>not</strong>{" "}
+              connect to Google for this, and no data about you is sent to Google. Only when you
+              click &ldquo;All reviews on Google&rdquo; or a reviewer&apos;s name do you open a
+              Google page; Google&apos;s privacy policy applies there.
+            </p>
+          </Section>
+
+          <Section title="28. Currency and changes to this privacy policy">
             <p>
               We reserve the right to adapt this privacy policy if legal requirements, our website, the
               technical services used or our data processing change. The current version published on this

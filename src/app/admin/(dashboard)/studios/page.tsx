@@ -4,6 +4,7 @@ import { createStudio, updateStudio, deleteStudio } from "@/lib/actions/admin-st
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AlertTriangle, Building2, ChevronRight } from "lucide-react";
 import { StudioImport } from "@/components/admin/studio-import";
+import { PlaceIdSuche } from "@/components/admin/place-id-suche";
 import { OpeningHoursImport } from "@/components/admin/opening-hours-import";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
@@ -28,6 +29,8 @@ function StudioFields({
     openingHours: string;
     whatsapp: string | null;
     googleReviewUrl: string | null;
+    googlePlaceId?: string | null;
+    id?: string;
     intro: string | null;
     anfahrt: string | null;
     openingHoursEn: string | null;
@@ -109,6 +112,29 @@ function StudioFields({
           nach dem Termin keine Bitte um eine Bewertung raus.
         </span>
       </label>
+
+      {/* Für die Sterne und die neuesten Google-Bewertungen auf der
+          Studioseite (@/lib/google-bewertungen). Ohne ID - oder ohne den
+          Schlüssel GOOGLE_PLACES_API_KEY in Vercel - erscheint dort nichts. */}
+      <div className="block">
+        <label className="block">
+          <span className="text-xs text-muted">Google-Place-ID (optional)</span>
+          <input
+            type="text"
+            id={`googlePlaceId-${defaults?.id ?? "neu"}`}
+            name="googlePlaceId"
+            defaultValue={defaults?.googlePlaceId ?? ""}
+            placeholder="ChIJ..."
+            className={`${inputClass} mt-1`}
+          />
+        </label>
+        <span className="mt-1 block text-xs text-muted">
+          Damit zeigt die Studioseite eure echten Google-Sterne und die neuesten
+          Bewertungen. Am einfachsten über den Knopf: Er sucht mit Name und
+          Adresse aus diesem Formular.
+        </span>
+        <PlaceIdSuche studioId={defaults?.id ?? null} feldId={`googlePlaceId-${defaults?.id ?? "neu"}`} />
+      </div>
       <input
         type="url"
         name="mapEmbedUrl"

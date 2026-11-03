@@ -392,7 +392,7 @@ export default async function AdminBookingsPage({
                   {FORTSCHRITT_WERTE.map((wert) => (
                     <option key={wert} value={wert}>
                       {FORTSCHRITT_LABEL[wert]}
-                      {wert === "NICHT_ERSCHIENEN" ? " (Gast bekommt einmal eine Mail)" : ""}
+                      {wert === "NICHT_ERSCHIENEN" ? " – Mail an Gast" : ""}
                     </option>
                   ))}
                 </select>

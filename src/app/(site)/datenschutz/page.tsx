@@ -607,7 +607,20 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="27. Aktualität und Änderung dieser Datenschutzerklärung">
+          <Section title="27. Google-Bewertungen auf den Studioseiten">
+            <p>
+              Auf den Studioseiten zeigen wir die Gesamtbewertung und einige aktuelle
+              Bewertungen des jeweiligen Studios bei Google. Diese Angaben ruft unser Server
+              über die Schnittstelle von Google (Google Ireland Limited, Gordon House, Barrow
+              Street, Dublin 4, Irland) ab und speichert sie für bis zu einen Tag zwischen.
+              Ihr Browser stellt dafür <strong>keine</strong> Verbindung zu Google her, und es
+              werden dabei keine Daten über Sie an Google übertragen. Erst wenn Sie den Link
+              „Alle Bewertungen auf Google“ oder den Namen eines Verfassers anklicken, öffnen
+              Sie eine Seite von Google; dort gilt die Datenschutzerklärung von Google.
+            </p>
+          </Section>
+
+          <Section title="28. Aktualität und Änderung dieser Datenschutzerklärung">
             <p>
               Wir behalten uns vor, diese Datenschutzerklärung anzupassen, wenn sich
               gesetzliche Vorgaben, unsere Website, die eingesetzten technischen Dienste oder

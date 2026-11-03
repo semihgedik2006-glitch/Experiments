@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { verlangeLeitungAktion, verlangeStudioRecht } from "@/lib/admin-rechte";
 import { istGueltigerSlug, studioSlug } from "@/lib/slug";
 import { protokollieren } from "@/lib/protokoll";
+import { placeIdsSuchen, type PlaceTreffer } from "@/lib/google-bewertungen";
 
 /**
  * Seiten, auf denen Studiodaten stehen.
@@ -86,6 +87,13 @@ function readStudioForm(formData: FormData) {
     openingHours: String(formData.get("openingHours") ?? "").trim(),
     whatsapp: String(formData.get("whatsapp") ?? "").trim() || null,
     googleReviewUrl: String(formData.get("googleReviewUrl") ?? "").trim().slice(0, 500) || null,
+    // Place-IDs sind kurze Zeichenfolgen aus Buchstaben, Ziffern, - und _.
+    // Alles andere ist ein Kopierfehler (etwa ein ganzer Link) und wird
+    // verworfen, statt später eine Fehlermeldung von Google auszulösen.
+    googlePlaceId: (() => {
+      const id = String(formData.get("googlePlaceId") ?? "").trim();
+      return /^[A-Za-z0-9_-]{10,200}$/.test(id) ? id : null;
+    })(),
     intro: String(formData.get("intro") ?? "").trim().slice(0, 600) || null,
     anfahrt: String(formData.get("anfahrt") ?? "").trim().slice(0, 800) || null,
     openingHoursEn: enText(formData, "openingHoursEn", 600),
@@ -320,4 +328,19 @@ export async function importOpeningHours(
 
   revalidateStudios();
   return result;
+}
+
+/**
+ * Für den Knopf "Place-ID suchen": fragt Google nach Name und Adresse des
+ * Studios. Nur angemeldete Admins, und nur für den eigenen Standort - die
+ * Abfrage kostet bei Google Geld.
+ */
+export async function placeIdSuchen(
+  studioId: string | null,
+  suche: string,
+): Promise<PlaceTreffer[] | { fehler: string }> {
+  await verlangeStudioRecht(studioId);
+  const text = suche.trim().slice(0, 200);
+  if (text.length < 3) return { fehler: "Bitte zuerst Name und Adresse eintragen." };
+  return placeIdsSuchen(text);
 }
