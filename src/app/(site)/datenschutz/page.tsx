@@ -620,7 +620,22 @@ export default function DatenschutzPage() {
             </p>
           </Section>
 
-          <Section title="28. Aktualität und Änderung dieser Datenschutzerklärung">
+          <Section title="28. Terminsystem LogX bei der Probetraining-Anfrage">
+            <p>
+              Einige Studios zeigen im Anfrageformular freie Probetraining-Zeiten aus ihrem
+              Terminsystem LogX der miha bodytec GmbH, die für uns als Auftragsverarbeiter
+              tätig ist. Wählen Sie eine dieser Zeiten und stimmen dem im Formular zu,
+              übermitteln wir Name, Anrede, Telefonnummer, E-Mail-Adresse, die gewählte Zeit
+              sowie Ihre Angaben zu Erreichbarkeit, Ziel und Nachricht an LogX. Der Termin
+              wird dort als unbestätigt vorgemerkt und erst nach unserem Anruf bestätigt.
+              Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Durchführung vorvertraglicher
+              Maßnahmen auf Ihre Anfrage). Die freien Zeiten ruft unser Server ab; Ihr Browser
+              stellt dafür keine Verbindung zu miha bodytec her. Wählen Sie keine dieser
+              Zeiten, sondern geben Wunschzeiten an, geht nichts an LogX.
+            </p>
+          </Section>
+
+          <Section title="29. Aktualität und Änderung dieser Datenschutzerklärung">
             <p>
               Wir behalten uns vor, diese Datenschutzerklärung anzupassen, wenn sich
               gesetzliche Vorgaben, unsere Website, die eingesetzten technischen Dienste oder

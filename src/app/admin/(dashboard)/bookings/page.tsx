@@ -209,6 +209,16 @@ export default async function AdminBookingsPage({
                     <span className="text-muted"> &middot; {booking.studio.name}</span>
                   )}
                 </p>
+                {/* Der Gast hat eine freie Zeit aus LogX gewählt - dort steht
+                    der Termin schon, als unbestätigt. Nach dem Anruf in LogX
+                    freigeben, hier bestätigen. */}
+                {booking.logxGebuchtAm && (
+                  <p className="mt-1.5 inline-flex rounded-full bg-sky-500/15 px-2.5 py-0.5 text-xs font-semibold text-sky-800 dark:text-sky-300">
+                    In LogX vorgemerkt{booking.logxAppointmentId ? ` (Termin-Nr. ${booking.logxAppointmentId})` : ""}
+                    {booking.status === "PENDING" ? " - noch unbestätigt" : ""}
+                    {booking.status === "CANCELLED" ? " - storniert: bitte in LogX löschen" : ""}
+                  </p>
+                )}
                 {/* Ob die Mail ans Studio rausging.
                     Der Merker wurde beim Absenden gesetzt, stand aber
                     nirgends - man konnte also nicht sehen, ob jemand im
@@ -337,11 +347,22 @@ export default async function AdminBookingsPage({
                     <>
                       <label className="text-xs">
                         <span className="block text-muted">Vereinbarter Tag</span>
-                        <input type="date" name="terminTag" className={`${adminInput} mt-1 !py-1.5`} />
+                        <input
+                          type="date"
+                          name="terminTag"
+                          defaultValue={booking.terminTag ? booking.terminTag.toISOString().slice(0, 10) : undefined}
+                          className={`${adminInput} mt-1 !py-1.5`}
+                        />
                       </label>
                       <label className="text-xs">
                         <span className="block text-muted">Uhrzeit</span>
-                        <input type="time" name="terminUhrzeit" step={300} className={`${adminInput} mt-1 !py-1.5`} />
+                        <input
+                          type="time"
+                          name="terminUhrzeit"
+                          step={300}
+                          defaultValue={booking.terminUhrzeit ?? undefined}
+                          className={`${adminInput} mt-1 !py-1.5`}
+                        />
                       </label>
                     </>
                   )}
@@ -368,7 +389,9 @@ export default async function AdminBookingsPage({
                   <ConfirmButton
                     label="Ablehnen"
                     icon="termin"
-                    question={`Anfrage von ${booking.name} ablehnen? Es geht dabei keine E-Mail raus - bitte selbst absagen.`}
+                    question={`Anfrage von ${booking.name} ablehnen? Es geht dabei keine E-Mail raus - bitte selbst absagen.${
+                      booking.logxGebuchtAm ? " Bitte den Termin auch in LogX löschen - die Schnittstelle kann das nicht." : ""
+                    }`}
                     confirmLabel="Ja, ablehnen"
                     pendingLabel="Wird abgelehnt..."
                   />
@@ -466,7 +489,9 @@ export default async function AdminBookingsPage({
                   <ConfirmButton
                     label="Stornieren"
                     icon="termin"
-                    question={`Bestätigten Termin von ${booking.name} stornieren? Der Platz wird wieder frei, eine Absage-E-Mail geht nicht automatisch raus.`}
+                    question={`Bestätigten Termin von ${booking.name} stornieren? Der Platz wird wieder frei, eine Absage-E-Mail geht nicht automatisch raus.${
+                      booking.logxGebuchtAm ? " Bitte den Termin auch in LogX löschen - die Schnittstelle kann das nicht." : ""
+                    }`}
                     confirmLabel="Ja, stornieren"
                     pendingLabel="Wird storniert..."
                   />

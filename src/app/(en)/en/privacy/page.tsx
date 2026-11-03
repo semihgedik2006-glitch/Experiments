@@ -529,7 +529,21 @@ export default function PrivacyPage() {
             </p>
           </Section>
 
-          <Section title="28. Currency and changes to this privacy policy">
+          <Section title="28. LogX booking system for trial session requests">
+            <p>
+              Some studios show free trial slots from their booking system LogX by miha bodytec
+              GmbH, which acts as our processor, in the request form. If you choose one of these
+              slots and agree to it in the form, we send your name, form of address, phone
+              number, email address, the chosen slot and what you told us about when to reach
+              you, your goal and your message to LogX. The appointment is reserved there as
+              unconfirmed and only confirmed after our call. The legal basis is Art. 6(1)(b)
+              GDPR (steps taken at your request prior to entering into a contract). Our server
+              retrieves the free slots; your browser does not connect to miha bodytec for this.
+              If you give preferred times instead of choosing a slot, nothing is sent to LogX.
+            </p>
+          </Section>
+
+          <Section title="29. Currency and changes to this privacy policy">
             <p>
               We reserve the right to adapt this privacy policy if legal requirements, our website, the
               technical services used or our data processing change. The current version published on this

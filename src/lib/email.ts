@@ -444,6 +444,8 @@ export type AnfrageAngaben = {
   sprache?: Sprache;
   /** Für die englische Eingangsbestätigung: dieselben Angaben auf Englisch. */
   englisch?: { erreichbarkeit: string; terminZeile: string; ziel: string | null };
+  /** Gesetzt, wenn die gewählte Zeit schon in LogX vorgemerkt ist (0 = ohne Nummer). */
+  logxTerminNr?: number | null;
 };
 
 /**
@@ -522,6 +524,11 @@ export async function sendAnfrageInternEmail(an: string, angaben: AnfrageAngaben
     angaben.ziel ? `Ziel:        ${angaben.ziel}` : null,
     angaben.aktionsCode ? `Aktionscode: ${angaben.aktionsCode}` : null,
     angaben.herkunft ? `Kam über:    ${angaben.herkunft}` : null,
+    // Schon im LogX-Kalender, aber noch nicht bestätigt: Nach dem Anruf
+    // dort freigeben - oder löschen, wenn es nicht passt.
+    angaben.logxTerminNr != null
+      ? `LogX:        als UNBESTÄTIGT vorgemerkt${angaben.logxTerminNr ? ` (Termin-Nr. ${angaben.logxTerminNr})` : ""} - nach dem Anruf in LogX freigeben oder löschen`
+      : null,
     // Damit niemand auf Deutsch zurückruft, wenn jemand die englische
     // Seite gelesen hat.
     angaben.sprache === "en" ? "Sprache:     ENGLISCH - bitte auf Englisch zurückrufen" : null,
