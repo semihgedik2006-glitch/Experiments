@@ -67,6 +67,30 @@ enum MailArt {
   KUNDENBEREICH
   /// Einmal im Monat an das Team: die Zahlen des Vormonats.
   MONATSBERICHT
+  /// An den Gast, wenn er zum vereinbarten Termin nicht gekommen ist:
+  /// freundlich, mit dem Link, über den er einen neuen Termin wählt.
+  NICHT_ERSCHIENEN
+  /// Jeden Morgen an jedes Studio: offene Anfragen und die Termine des Tages.
+  TAGESLISTE
+}
+
+/// Wie weit eine Anfrage gekommen ist - von "eben eingegangen" bis
+/// "Mitglied geworden".
+///
+/// Getrennt vom BookingStatus (offen / bestätigt / storniert), der den
+/// Termin selbst beschreibt und an dem Mails und Kalender hängen. Der
+/// Fortschritt beschreibt dagegen den Menschen: ob das Studio ihn erreicht
+/// hat, ob er gekommen ist, was daraus wurde. Daraus entsteht in der
+/// Auswertung der Weg von der Anfrage zum Mitglied.
+enum Fortschritt {
+  NEU
+  ANGERUFEN
+  NICHT_ERREICHT
+  TERMIN_VEREINBART
+  ERSCHIENEN
+  NICHT_ERSCHIENEN
+  MITGLIED
+  KEIN_INTERESSE
 }
 
 /// Nachweis, dass eine E-Mail den Weg nach draußen gefunden hat.
@@ -148,6 +172,11 @@ model StudioLocation {
   /// Ohne ihn unterbleibt die Bitte um eine Bewertung - eine Mail, die
   /// jemanden auf die Suche schickt, bringt keine Bewertung.
   googleReviewUrl String?
+  /// Die Google-Place-ID des Studios ("ChIJ..."). Damit holt die Website
+  /// Sternebewertung und die neuesten Bewertungen von Google - echte Daten,
+  /// serverseitig, siehe @/lib/google-bewertungen. Leer: es wird nichts
+  /// angezeigt.
+  googlePlaceId   String?
   /// WhatsApp-Nummer dieses Standorts. Getrennt vom Telefonfeld, weil
   /// nicht jede Festnetznummer bei WhatsApp erreichbar ist.
   whatsapp      String?
@@ -425,6 +454,17 @@ model Booking {
   /// Kommt zu zweit. Belegt dann zwei Plätze des Termins - sonst stünde
   /// bei einem Termin für eine Person plötzlich ein Paar.
   zuZweit                Boolean   @default(false)
+
+  /// Wie weit die Anfrage gekommen ist (siehe enum Fortschritt), gesetzt
+  /// vom Studio in der Buchungsliste.
+  fortschritt            Fortschritt @default(NEU)
+  /// Wann der Fortschritt zuletzt geändert wurde.
+  fortschrittAm          DateTime?
+  /// Wann die freundliche "Schade, dass es nicht geklappt hat"-Mail
+  /// rausging. Verhindert, dass sie bei erneutem Setzen doppelt kommt.
+  nichtErschienenGesendetAm DateTime?
+
+  @@index([fortschritt])
 }
 
 model BlogPost {
