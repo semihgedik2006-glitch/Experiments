@@ -3,7 +3,7 @@
  *
  * Zwei Wege:
  *   1. Die WEIHNACHTSAKTION (unten) wird online über Digistore24 gekauft -
- *      Wunsch Marcel, 26.10.2026: "4 Wochen für 90 €", ab 1. Dezember,
+ *      Wunsch Marcel, 26.10.2026: "4 Wochen für 90 €" (am 03.11.2026 auf 99 € geändert), ab 1. Dezember,
  *      zum Verschenken oder selbst nutzen. Digistore24 übernimmt Zahlung,
  *      Rechnung und Widerrufsbelehrung; der Kunde bekommt den Gutschein
  *      als PDF.
@@ -70,7 +70,7 @@ export type Aktion = {
 export const WEIHNACHTSAKTION: Aktion = {
   kicker: "Weihnachtsaktion",
   titel: "4 Wochen EMS-Training",
-  preis: "90 €",
+  preis: "99 €",
   text: "Zum Verschenken oder selbst nutzen: vier Einheiten à 20 Minuten, jede mit persönlichem Trainer.",
   punkte: [
     "4 Einheiten à 20 Minuten mit deinem Trainer",
@@ -84,7 +84,7 @@ export const WEIHNACHTSAKTION: Aktion = {
 export const WEIHNACHTSAKTION_EN: Aktion = {
   kicker: "Christmas offer",
   titel: "4 weeks of EMS training",
-  preis: "€90",
+  preis: "€99",
   text: "Give it as a gift or use it yourself: four 20-minute sessions, each with a personal trainer.",
   punkte: [
     "4 sessions of 20 minutes with your trainer",
