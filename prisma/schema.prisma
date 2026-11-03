@@ -177,6 +177,13 @@ model StudioLocation {
   /// serverseitig, siehe @/lib/google-bewertungen. Leer: es wird nichts
   /// angezeigt.
   googlePlaceId   String?
+  /// LogX-Anbindung (TryNow, miha bodytec): Kennung des Studios in LogX,
+  /// optional das TryNow-Profil, und der API-Schlüssel. Der Schlüssel wird
+  /// nur auf dem Server benutzt und nie an den Browser gegeben. Fehlt
+  /// etwas davon, bleibt es beim Anfrageformular mit Wunschzeiten.
+  logxStudioHash  String?
+  logxProfileId   Int?
+  logxApiKey      String?
   /// WhatsApp-Nummer dieses Standorts. Getrennt vom Telefonfeld, weil
   /// nicht jede Festnetznummer bei WhatsApp erreichbar ist.
   whatsapp      String?
@@ -384,6 +391,12 @@ model Booking {
   /// Kalendertag als Mitternacht, die Uhrzeit als "18:30".
   terminTag      DateTime?
   terminUhrzeit  String?
+
+  /// Die Terminnummer in LogX, wenn der Gast eine freie Zeit aus dem
+  /// LogX-Kalender gewählt hat. Der Termin steht dort dann schon - als
+  /// UNBESTÄTIGT vermerkt, bis das Studio ihn nach dem Anruf freigibt.
+  logxAppointmentId Int?
+  logxGebuchtAm     DateTime?
 
   /// Was der Gast erreichen will - einer der Werte aus src/lib/ziel.ts.
   /// Freiwillig: Eine Anfrage darf nicht daran scheitern, dass jemand sein

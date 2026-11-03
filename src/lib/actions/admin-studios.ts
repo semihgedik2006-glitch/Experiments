@@ -94,6 +94,16 @@ function readStudioForm(formData: FormData) {
       const id = String(formData.get("googlePlaceId") ?? "").trim();
       return /^[A-Za-z0-9_-]{10,200}$/.test(id) ? id : null;
     })(),
+    // LogX (TryNow): die Kennung des Studios in LogX ist eine UUID, die
+    // Profil-Nummer eine Zahl. Alles andere ist ein Tippfehler.
+    logxStudioHash: (() => {
+      const hash = String(formData.get("logxStudioHash") ?? "").trim();
+      return /^[A-Za-z0-9-]{8,100}$/.test(hash) ? hash : null;
+    })(),
+    logxProfileId: (() => {
+      const nr = Number.parseInt(String(formData.get("logxProfileId") ?? ""), 10);
+      return Number.isFinite(nr) && nr > 0 ? nr : null;
+    })(),
     intro: String(formData.get("intro") ?? "").trim().slice(0, 600) || null,
     anfahrt: String(formData.get("anfahrt") ?? "").trim().slice(0, 800) || null,
     openingHoursEn: enText(formData, "openingHoursEn", 600),
@@ -103,6 +113,17 @@ function readStudioForm(formData: FormData) {
     longitude: longitude ? Number(longitude) : null,
     sortOrder: Number(formData.get("sortOrder") ?? 0) || 0,
   };
+}
+
+/**
+ * Der LogX-Schlüssel steht nie im Formular (er soll nicht im Browser
+ * landen). Ein leeres Feld heißt deshalb "unverändert", nicht "löschen";
+ * gelöscht wird nur über das eigene Häkchen.
+ */
+function logxSchluesselAusFormular(formData: FormData): { logxApiKey?: string | null } {
+  if (formData.get("logxApiKeyLoeschen") === "on") return { logxApiKey: null };
+  const neu = String(formData.get("logxApiKey") ?? "").trim();
+  return /^[A-Za-z0-9._-]{8,200}$/.test(neu) ? { logxApiKey: neu } : {};
 }
 
 export async function createStudio(formData: FormData) {
@@ -115,6 +136,7 @@ export async function createStudio(formData: FormData) {
   await prisma.studioLocation.create({
     data: {
       ...data,
+      ...logxSchluesselAusFormular(formData),
       // Die Adresse der Standortseite entsteht aus dem Namen. Von Hand
       // eintragen lässt sie sich danach beim Ändern.
       slug: await freierSlug(studioSlug(data.name)),
@@ -144,7 +166,7 @@ export async function updateStudio(formData: FormData) {
 
   await prisma.studioLocation.update({
     where: { id },
-    data: { ...data, ...(slug ? { slug } : {}) },
+    data: { ...data, ...logxSchluesselAusFormular(formData), ...(slug ? { slug } : {}) },
   });
   revalidateStudios();
 
