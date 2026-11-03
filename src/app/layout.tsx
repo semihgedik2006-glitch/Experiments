@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Figtree } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MotionProvider } from "@/components/motion-provider";
@@ -7,24 +7,28 @@ import { GoogleAnalytics } from "@/components/google-analytics";
 import { CookieConsent } from "@/components/cookie-consent";
 import { siteConfig } from "@/lib/site-config";
 
+// Die Schriften liegen im Projekt (src/app/fonts, SIL Open Font License)
+// statt über next/font/google geladen zu werden: Das holt sie bei jedem
+// Build von Google, und zweimal ist der Build daran gescheitert, dass
+// Google kurz nicht erreichbar war. Es sind die variablen Fassungen mit
+// dem Zeichensatz "latin" (inkl. Umlaute) - alle Stärken in einer Datei.
+
 // Fließtext: Figtree - ruhig, gut lesbar, mit leicht warmem Charakter, der
-// zur sandfarbenen Grundfläche passt. Geladen werden nur die Stärken, die
-// im Code tatsächlich vorkommen.
-const figtree = Figtree({
+// zur sandfarbenen Grundfläche passt.
+const figtree = localFont({
+  src: "./fonts/figtree-latin.woff2",
   variable: "--font-body",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "300 900",
   display: "swap",
 });
 
 // Überschriften: Archivo in den schweren Schnitten. Kräftig und breit
 // genug, um sportlich zu wirken, ohne ins Technisch-Verspielte zu kippen -
-// die Vorgängerschrift Orbitron las sich eher nach Science-Fiction als nach
-// Fitnessstudio.
-const archivo = Archivo({
+// die Vorgängerschrift Orbitron las sich eher nach Science-Fiction.
+const archivo = localFont({
+  src: "./fonts/archivo-latin.woff2",
   variable: "--font-heading",
-  subsets: ["latin"],
-  weight: ["700", "800", "900"],
+  weight: "100 900",
   display: "swap",
 });
 
