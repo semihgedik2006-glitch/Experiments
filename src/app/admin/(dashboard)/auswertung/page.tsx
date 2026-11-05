@@ -8,6 +8,7 @@ import { AdminPage, AdminSection, EmptyState, Panel } from "@/components/admin/u
 import { Kennzahl, Rangbalken, Wochenbalken } from "@/components/admin/balken";
 import { FilterChips } from "@/components/admin/list-nav";
 import { param, type SuchParams } from "@/lib/admin-list";
+import { STUFEN, STUFE_LABEL, anteil, einzaehlen, leererTrichter, type Trichter } from "@/lib/fortschritt";
 
 /**
  * Auswertung: Wie viele Anfragen kommen, wann und wo.
@@ -63,6 +64,7 @@ export default async function AdminAuswertungPage({
       select: {
         createdAt: true,
         status: true,
+        fortschritt: true,
         studioId: true,
         erreichbarkeit: true,
         ziel: true,
@@ -94,6 +96,9 @@ export default async function AdminAuswertungPage({
   let ohneZiel = 0;
   let bestaetigt = 0;
   let offen = 0;
+  // Der Weg von der Anfrage zum Mitglied, gesamt und je Standort.
+  const trichter = leererTrichter();
+  const trichterProStudio = new Map<string, Trichter>();
 
   for (const anfrage of anfragen) {
     const index = wocheVon(anfrage.createdAt, wochen);
@@ -101,6 +106,13 @@ export default async function AdminAuswertungPage({
 
     if (anfrage.status === "CONFIRMED") bestaetigt += 1;
     if (anfrage.status === "PENDING") offen += 1;
+
+    einzaehlen(trichter, anfrage.fortschritt);
+    if (anfrage.studioId) {
+      const t = trichterProStudio.get(anfrage.studioId) ?? leererTrichter();
+      einzaehlen(t, anfrage.fortschritt);
+      trichterProStudio.set(anfrage.studioId, t);
+    }
 
     if (anfrage.erreichbarkeit) {
       proErreichbarkeit.set(
@@ -280,6 +292,70 @@ export default async function AdminAuswertungPage({
               hinweis={offen > 0 ? "wartet auf eine Antwort" : "nichts liegen geblieben"}
             />
           </div>
+
+          {/* Wo gehen Interessenten verloren? Jede Stufe zählt alle, die
+              mindestens so weit gekommen sind; der Prozentwert bezieht sich
+              auf die Anfragen. Grundlage ist der "Stand", den die Studios
+              bei jeder Anfrage setzen - steht er noch auf "Neu", zählt die
+              Anfrage nur als Anfrage. */}
+          <AdminSection
+            title="Von der Anfrage zum Mitglied"
+            description="Wie viele Anfragen erreicht wurden, einen Termin hatten, da waren und Mitglied wurden. Grundlage ist der Stand, den ihr bei jeder Anfrage setzt."
+            className="mt-8"
+          >
+            <Panel>
+              <div className="grid grid-cols-5 gap-2 text-center">
+                {STUFEN.map((stufe) => (
+                  <div key={stufe}>
+                    <p className="font-display text-xl font-bold sm:text-2xl">{trichter[stufe]}</p>
+                    <p className="text-[11px] text-muted sm:text-xs">{STUFE_LABEL[stufe]}</p>
+                    {stufe !== "anfragen" && (
+                      <p className="text-[11px] font-semibold text-accent">
+                        {anteil(trichter[stufe], trichter.anfragen) ?? 0} %
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {studios.length > 1 && (
+                <div className="mt-5 overflow-x-auto border-t border-border pt-4">
+                  <table className="w-full min-w-[30rem] text-sm">
+                    <thead>
+                      <tr className="text-left text-xs text-muted">
+                        <th className="py-1 pr-3 font-medium">Standort</th>
+                        {STUFEN.map((stufe) => (
+                          <th key={stufe} className="py-1 pr-3 text-right font-medium">
+                            {STUFE_LABEL[stufe]}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {studios
+                        .map((studio) => ({ studio, t: trichterProStudio.get(studio.id) ?? leererTrichter() }))
+                        .filter(({ t }) => t.anfragen > 0)
+                        .sort((a, b) => b.t.anfragen - a.t.anfragen)
+                        .map(({ studio, t }) => (
+                          <tr key={studio.id} className="border-t border-border/60">
+                            <td className="py-1.5 pr-3">{ohneMarke(studio.name)}</td>
+                            {STUFEN.map((stufe) => (
+                              <td key={stufe} className="py-1.5 pr-3 text-right tabular-nums">
+                                {t[stufe]}
+                                {stufe !== "anfragen" && t.anfragen > 0 && (
+                                  <span className="ml-1 text-xs text-muted">
+                                    ({anteil(t[stufe], t.anfragen)} %)
+                                  </span>
+                                )}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Panel>
+          </AdminSection>
 
           <AdminSection
             title="Anfragen je Kalenderwoche"

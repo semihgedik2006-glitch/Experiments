@@ -7,6 +7,8 @@ import { HakenGezeichnet } from "@/components/booking/haken-gezeichnet";
 import { FormFortschritt } from "@/components/booking/form-fortschritt";
 import { gebuchtMerken } from "@/lib/einladung";
 import { createBooking } from "@/lib/actions/booking";
+import { freieZeitenLaden } from "@/lib/actions/logx";
+import type { FreierTag, FreieZeit } from "@/lib/logx";
 import { ERREICHBARKEITEN } from "@/lib/erreichbarkeit";
 import { ZIELE, istZiel } from "@/lib/ziel";
 import { ZIEL_EREIGNIS, ZIEL_SPEICHER } from "@/components/ziel/ziel-kontext";
@@ -42,6 +44,45 @@ export function BookingForm({
   // Die freiwilligen Felder - zugeklappt, bis jemand sie braucht.
   const [mehr, setMehr] = useState(false);
   const [state, formAction, pending] = useActionState(createBooking, initialState);
+
+  // Freie Zeiten aus LogX (@/lib/logx) - nur bei Studios, die dort
+  // angebunden sind. Sonst bleibt die Liste leer und das Formular zeigt
+  // die Wunschzeiten wie bisher.
+  // Mit dem Studio gespeichert, für das geladen wurde: So zeigt ein
+  // Studiowechsel nie die Zeiten des vorigen Studios.
+  const [geladen, setGeladen] = useState<{ studio: string; tage: FreierTag[] }>({ studio: "", tage: [] });
+  const logxTage = geladen.studio === studioId ? geladen.tage : [];
+  const [logxTag, setLogxTag] = useState<string | null>(null);
+  const [logxZeit, setLogxZeit] = useState<FreieZeit | null>(null);
+  // "Keine passende Zeit?" schaltet auf die Wunschzeiten um.
+  const [lieberWunsch, setLieberWunsch] = useState(false);
+  const [anrede, setAnrede] = useState("");
+  const [einwilligung, setEinwilligung] = useState(false);
+  const [ladeZaehler, setLadeZaehler] = useState(0);
+  useEffect(() => {
+    let aktuell = true;
+    if (!studioId) return;
+    freieZeitenLaden(studioId)
+      .then((tage) => {
+        if (!aktuell) return;
+        setGeladen({ studio: studioId, tage });
+        setLogxTag(tage[0]?.tag ?? null);
+        setLogxZeit(null);
+      })
+      .catch(() => aktuell && setGeladen({ studio: studioId, tage: [] }));
+    return () => {
+      aktuell = false;
+    };
+  }, [studioId, ladeZaehler]);
+  const logxAktiv = logxTage.length > 0 && !lieberWunsch;
+  // War die gewählte Zeit beim Absenden schon weg, die Liste neu holen.
+  useEffect(() => {
+    if (!state.ok && state.message && logxZeit) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- nach Serverantwort neu laden
+      setLadeZaehler((n) => n + 1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   // Die Eingaben liegen in React und nicht nur im Formular.
   //
@@ -178,7 +219,7 @@ export function BookingForm({
   // Die drei Teile des Formulars - für die Striche ganz oben. Der erste
   // ist freiwillig; er zählt, sobald ein Tag oder eine Tageszeit gewählt ist.
   const schritte = [
-    { label: sprache === "de" ? "Wann" : "When", fertig: tage.length > 0 || zeiten.length > 0 },
+    { label: sprache === "de" ? "Wann" : "When", fertig: logxAktiv ? Boolean(logxZeit) : tage.length > 0 || zeiten.length > 0 },
     {
       label: sprache === "de" ? "Deine Daten" : "Your details",
       fertig: felder.name.trim().length > 1 && /\S+@\S+\.\S+/.test(felder.email) && felder.phone.replace(/\D/g, "").length >= 6,
@@ -202,6 +243,93 @@ export function BookingForm({
 
       <div className="space-y-6">
         <p className="text-sm font-semibold">{t.wannPasstNummeriert}</p>
+
+        {/* Freie Zeiten aus dem LogX-Kalender. Die gewählte Zeit wird dort
+            als unbestätigt vorgemerkt; das Studio ruft an und bestätigt. */}
+        {logxAktiv && (
+          <div>
+            <p className="lesebreite mb-3 text-xs text-muted">
+              {sprache === "de"
+                ? "Freie Probetraining-Zeiten - such dir eine aus. Wir merken sie vor und bestätigen sie dir am Telefon."
+                : "Free trial slots - pick one. We reserve it and confirm it with you by phone."}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {logxTage.map((tag) => {
+                const an = logxTag === tag.tag;
+                return (
+                  <button
+                    key={tag.tag}
+                    type="button"
+                    aria-pressed={an}
+                    onClick={() => {
+                      setLogxTag(tag.tag);
+                      setLogxZeit(null);
+                    }}
+                    className={`rounded-full border px-4 py-2.5 text-sm transition-colors ${
+                      an ? "border-lime bg-lime text-on-lime" : "border-border hover:border-lime"
+                    }`}
+                  >
+                    {new Date(`${tag.tag}T12:00:00Z`).toLocaleDateString(sprache === "de" ? "de-DE" : "en-GB", {
+                      weekday: "short",
+                      day: "numeric",
+                      month: "short",
+                    })}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {logxTage
+                .find((tag) => tag.tag === logxTag)
+                ?.zeiten.map((zeit) => {
+                  const an = logxZeit?.token === zeit.token;
+                  return (
+                    <button
+                      key={zeit.token}
+                      type="button"
+                      aria-pressed={an}
+                      onClick={() => setLogxZeit(an ? null : zeit)}
+                      className={`rounded-full border px-4 py-2.5 text-sm tabular-nums transition-colors ${
+                        an ? "border-lime bg-lime text-on-lime" : "border-border hover:border-lime"
+                      }`}
+                    >
+                      {zeit.von}
+                      {sprache === "de" ? " Uhr" : ""}
+                    </button>
+                  );
+                })}
+            </div>
+            {logxZeit && logxTag && (
+              <>
+                <input type="hidden" name="logxToken" value={logxZeit.token} />
+                <input type="hidden" name="logxTag" value={logxTag} />
+                <input type="hidden" name="logxVon" value={logxZeit.von} />
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                setLieberWunsch(true);
+                setLogxZeit(null);
+              }}
+              className="mt-4 text-sm font-semibold text-accent underline-offset-4 hover:underline"
+            >
+              {sprache === "de" ? "Keine passende Zeit? Wunschzeiten angeben" : "No time that suits you? Tell us your preferences"}
+            </button>
+          </div>
+        )}
+        {logxTage.length > 0 && lieberWunsch && (
+          <button
+            type="button"
+            onClick={() => setLieberWunsch(false)}
+            className="text-sm font-semibold text-accent underline-offset-4 hover:underline"
+          >
+            {sprache === "de" ? "Zurück zu den freien Zeiten" : "Back to the free slots"}
+          </button>
+        )}
+
+        {!logxAktiv && (
+          <>
 
         {/* Wochentage und Tageszeit statt fester Termine: Das Team wird
             nach den Anfragen eingeteilt, nicht umgekehrt (siehe
@@ -256,6 +384,8 @@ export function BookingForm({
           </div>
         </div>
         <input type="hidden" name="terminWunsch" value={wunschzeitText(tage, zeiten)} />
+          </>
+        )}
 
         {/* Zu zweit ist keine Nebensache, sondern eine Frage der Plätze:
             Zwei Personen brauchen zwei Geräte und zwei Westen. Steht es
@@ -318,6 +448,54 @@ export function BookingForm({
             className="rounded-lg border border-border bg-transparent px-4 py-3 text-sm outline-none focus:border-lime"
           />
         </div>
+
+        {/* Nur wenn eine freie Zeit aus LogX gewählt ist: LogX braucht die
+            Anrede, und die Daten gehen an das Terminsystem - darum fragen
+            wir hier ausdrücklich. */}
+        {logxAktiv && logxZeit && (
+          <div className="mt-4 space-y-4">
+            <fieldset>
+              <legend className="text-xs text-muted">{sprache === "de" ? "Anrede" : "How should we address you?"}</legend>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {[
+                  { wert: "frau", de: "Frau", en: "Ms" },
+                  { wert: "herr", de: "Herr", en: "Mr" },
+                  { wert: "divers", de: "Divers", en: "Other" },
+                ].map((option) => (
+                  <label key={option.wert} className="cursor-pointer">
+                    <input
+                      type="radio"
+                      name="anrede"
+                      value={option.wert}
+                      required
+                      checked={anrede === option.wert}
+                      onChange={() => setAnrede(option.wert)}
+                      className="peer sr-only"
+                    />
+                    <span className="block rounded-full border border-border px-4 py-2 text-sm transition-colors peer-hover:border-lime peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-lime">
+                      {sprache === "de" ? option.de : option.en}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <label className="flex cursor-pointer items-start gap-3 text-xs text-muted">
+              <input
+                type="checkbox"
+                name="logxEinwilligung"
+                required
+                checked={einwilligung}
+                onChange={(event) => setEinwilligung(event.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-lime"
+              />
+              <span>
+                {sprache === "de"
+                  ? "Ich bin einverstanden, dass meine Angaben zur Vormerkung des Termins in das Terminsystem des Studios (LogX von miha bodytec) eingetragen werden. Mehr in der Datenschutzerklärung."
+                  : "I agree that my details are entered into the studio's booking system (LogX by miha bodytec) to reserve the appointment. More in the privacy policy."}
+              </span>
+            </label>
+          </div>
+        )}
 
       </div>
 

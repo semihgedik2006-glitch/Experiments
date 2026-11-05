@@ -517,7 +517,33 @@ export default function PrivacyPage() {
             </p>
           </Section>
 
-          <Section title="27. Currency and changes to this privacy policy">
+          <Section title="27. Google reviews on the studio pages">
+            <p>
+              On the studio pages we show each studio&apos;s overall rating and a few recent
+              reviews from Google. Our server retrieves this information through Google&apos;s
+              interface (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4,
+              Ireland) and keeps it for up to one day. Your browser does <strong>not</strong>{" "}
+              connect to Google for this, and no data about you is sent to Google. Only when you
+              click &ldquo;All reviews on Google&rdquo; or a reviewer&apos;s name do you open a
+              Google page; Google&apos;s privacy policy applies there.
+            </p>
+          </Section>
+
+          <Section title="28. LogX booking system for trial session requests">
+            <p>
+              Some studios show free trial slots from their booking system LogX by miha bodytec
+              GmbH, which acts as our processor, in the request form. If you choose one of these
+              slots and agree to it in the form, we send your name, form of address, phone
+              number, email address, the chosen slot and what you told us about when to reach
+              you, your goal and your message to LogX. The appointment is reserved there as
+              unconfirmed and only confirmed after our call. The legal basis is Art. 6(1)(b)
+              GDPR (steps taken at your request prior to entering into a contract). Our server
+              retrieves the free slots; your browser does not connect to miha bodytec for this.
+              If you give preferred times instead of choosing a slot, nothing is sent to LogX.
+            </p>
+          </Section>
+
+          <Section title="29. Currency and changes to this privacy policy">
             <p>
               We reserve the right to adapt this privacy policy if legal requirements, our website, the
               technical services used or our data processing change. The current version published on this

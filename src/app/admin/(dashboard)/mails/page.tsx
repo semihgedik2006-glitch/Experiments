@@ -37,6 +37,8 @@ const artText: Record<MailArt, string> = {
   NEWSLETTER_TEST: "Newsletter-Probeversand an den eigenen Zugang",
   KUNDENBEREICH: "Zugangslink zu den eigenen Terminen",
   MONATSBERICHT: "Monatsbericht mit den Zahlen des Vormonats",
+  NICHT_ERSCHIENEN: "Nicht erschienen: Weg zu einem neuen Termin",
+  TAGESLISTE: "Tagesliste fürs Studio",
 };
 
 const ablaeufe: { titel: string; wann: string; an: string }[] = [
@@ -69,6 +71,16 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
     titel: "Monatsbericht",
     wann: "am 1. jedes Monats mit dem täglichen Lauf, mit den Zahlen des Vormonats",
     an: "an die Sammeladresse",
+  },
+  {
+    titel: "Tagesliste",
+    wann: "jeden Morgen gegen 7 Uhr: offene Anfragen (neu oder nicht erreicht) und die Termine des Tages - nur, wenn es etwas gibt",
+    an: "an die E-Mail-Adresse jedes Studios",
+  },
+  {
+    titel: "Nicht erschienen",
+    wann: "einmal, wenn ihr bei einer Anfrage den Stand „Nicht erschienen“ setzt - freundlich, mit dem Weg zu einem neuen Termin",
+    an: "an den Gast",
   },
   {
     titel: "Erinnerung an offene Anfragen",

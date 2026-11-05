@@ -9,6 +9,7 @@ import { studioMapUrl } from "@/lib/studio-map";
 import { haversineDistanceKm } from "@/lib/geo";
 import { Container } from "@/components/ui/container";
 import { TrainerWand } from "@/components/studio/trainer-wand";
+import { GoogleBewertungenAbschnitt } from "@/components/studio/google-bewertungen";
 import { Zusatzangebote } from "@/components/preise/zusatzangebote";
 import { giltAn } from "@/lib/zusatzangebote";
 import { PageHeader } from "@/components/ui/page-header";
@@ -285,6 +286,9 @@ export async function StudioDetailSeite({ sprache, slug }: { sprache: Sprache; s
           </Container>
         </section>
       )}
+
+      {/* Echte Google-Bewertungen, sofern Place-ID und Schlüssel da sind. */}
+      <GoogleBewertungenAbschnitt placeId={studio.googlePlaceId} ort={ort} sprache={sprache} />
 
       {/* Wer betreut - steht vor der Terminbuchung, weil er genau die
           Frage beantwortet, die unmittelbar davor aufkommt. */}

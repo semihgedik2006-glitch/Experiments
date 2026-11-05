@@ -4,6 +4,8 @@ import { createStudio, updateStudio, deleteStudio } from "@/lib/actions/admin-st
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
 import { AlertTriangle, Building2, ChevronRight } from "lucide-react";
 import { StudioImport } from "@/components/admin/studio-import";
+import { PlaceIdSuche } from "@/components/admin/place-id-suche";
+import { LogxTest } from "@/components/admin/logx-test";
 import { OpeningHoursImport } from "@/components/admin/opening-hours-import";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { ConfirmButton } from "@/components/admin/confirm-button";
@@ -28,6 +30,12 @@ function StudioFields({
     openingHours: string;
     whatsapp: string | null;
     googleReviewUrl: string | null;
+    googlePlaceId?: string | null;
+    logxStudioHash?: string | null;
+    logxProfileId?: number | null;
+    /** Ob ein LogX-Schlüssel gespeichert ist - der Schlüssel selbst kommt nie hierher. */
+    logxSchluesselGesetzt?: boolean;
+    id?: string;
     intro: string | null;
     anfahrt: string | null;
     openingHoursEn: string | null;
@@ -109,6 +117,93 @@ function StudioFields({
           nach dem Termin keine Bitte um eine Bewertung raus.
         </span>
       </label>
+
+      {/* Für die Sterne und die neuesten Google-Bewertungen auf der
+          Studioseite (@/lib/google-bewertungen). Ohne ID - oder ohne den
+          Schlüssel GOOGLE_PLACES_API_KEY in Vercel - erscheint dort nichts. */}
+      <div className="block">
+        <label className="block">
+          <span className="text-xs text-muted">Google-Place-ID (optional)</span>
+          <input
+            type="text"
+            id={`googlePlaceId-${defaults?.id ?? "neu"}`}
+            name="googlePlaceId"
+            defaultValue={defaults?.googlePlaceId ?? ""}
+            placeholder="ChIJ..."
+            className={`${inputClass} mt-1`}
+          />
+        </label>
+        <span className="mt-1 block text-xs text-muted">
+          Damit zeigt die Studioseite eure echten Google-Sterne und die neuesten
+          Bewertungen. Am einfachsten über den Knopf: Er sucht mit Name und
+          Adresse aus diesem Formular.
+        </span>
+        <PlaceIdSuche studioId={defaults?.id ?? null} feldId={`googlePlaceId-${defaults?.id ?? "neu"}`} />
+      </div>
+
+      {/* LogX (TryNow): Ist das hier ausgefüllt und in LogX eingerichtet,
+          zeigt das Anfrageformular freie Zeiten aus dem LogX-Kalender. Eine
+          gewählte Zeit wird dort als unbestätigt vorgemerkt; das Studio
+          bestätigt sie nach dem Anruf. Anleitung: docs/logx-anleitung.md. */}
+      <fieldset className="rounded-xl border border-border p-4 sm:col-span-2">
+        <legend className="px-1 text-xs font-semibold">LogX (TryNow) &ndash; freie Zeiten im Anfrageformular</legend>
+        <p className="mb-3 text-xs text-muted">
+          Optional. Leer lassen, solange TryNow in LogX nicht eingerichtet ist &ndash; dann
+          bleibt es bei den Wunschzeiten. Gewählte Zeiten landen in LogX als unbestätigt;
+          ihr bestätigt sie nach dem Anruf.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <label className="block sm:col-span-2">
+            <span className="text-xs text-muted">Studio-Kennung (Hash) aus LogX</span>
+            <input
+              type="text"
+              name="logxStudioHash"
+              defaultValue={defaults?.logxStudioHash ?? ""}
+              placeholder="z.B. 3d44e04b-9be8-..."
+              autoComplete="off"
+              className={`${inputClass} mt-1`}
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs text-muted">TryNow-Profil-Nr. (optional)</span>
+            <input
+              type="number"
+              name="logxProfileId"
+              min={1}
+              defaultValue={defaults?.logxProfileId ?? ""}
+              placeholder="Standardprofil"
+              className={`${inputClass} mt-1`}
+            />
+          </label>
+          <label className="block sm:col-span-3">
+            <span className="text-xs text-muted">
+              API-Schlüssel{" "}
+              {defaults?.logxSchluesselGesetzt ? (
+                <strong className="text-foreground">&bull;&bull;&bull;&bull; gespeichert</strong>
+              ) : (
+                "(noch keiner gespeichert)"
+              )}
+            </span>
+            {/* Nie vorausgefüllt: Der gespeicherte Schlüssel verlässt den
+                Server nicht. Leer lassen = unverändert. */}
+            <input
+              type="password"
+              name="logxApiKey"
+              defaultValue=""
+              placeholder={defaults?.logxSchluesselGesetzt ? "Leer lassen = unverändert, oder neuen eintragen" : "Schlüssel aus LogX einfügen"}
+              autoComplete="new-password"
+              className={`${inputClass} mt-1`}
+            />
+          </label>
+          {defaults?.logxSchluesselGesetzt && (
+            <label className="flex items-center gap-2 text-xs sm:col-span-3">
+              <input type="checkbox" name="logxApiKeyLoeschen" className="accent-lime" />
+              Gespeicherten Schlüssel löschen (LogX für dieses Studio ausschalten)
+            </label>
+          )}
+        </div>
+        <LogxTest studioId={defaults?.id ?? null} />
+      </fieldset>
       <input
         type="url"
         name="mapEmbedUrl"
@@ -232,6 +327,16 @@ export default async function AdminStudiosPage() {
     where: nurStudio ? { id: nurStudio } : undefined,
     orderBy: { sortOrder: "asc" },
   });
+  // Nur ob ein LogX-Schlüssel da ist - der Schlüssel selbst bleibt auf dem
+  // Server (siehe @/lib/prisma).
+  const mitLogxSchluessel = new Set(
+    (
+      await prisma.studioLocation.findMany({
+        where: { logxApiKey: { not: null }, ...(nurStudio ? { id: nurStudio } : {}) },
+        select: { id: true },
+      })
+    ).map((s) => s.id),
+  );
   const ohneKoordinaten = studios.filter(
     (studio) => studio.latitude === null || studio.longitude === null,
   );
@@ -369,7 +474,7 @@ export default async function AdminStudiosPage() {
                 <div className="border-t border-border p-4 sm:p-5">
                   <AdminForm action={updateStudio}>
                     <input type="hidden" name="id" value={studio.id} />
-                    <StudioFields defaults={studio} />
+                    <StudioFields defaults={{ ...studio, logxSchluesselGesetzt: mitLogxSchluessel.has(studio.id) }} />
                     <div className="mt-4">
                       <SubmitButton pendingLabel="Wird gespeichert...">Speichern</SubmitButton>
                     </div>

@@ -444,6 +444,8 @@ export type AnfrageAngaben = {
   sprache?: Sprache;
   /** Für die englische Eingangsbestätigung: dieselben Angaben auf Englisch. */
   englisch?: { erreichbarkeit: string; terminZeile: string; ziel: string | null };
+  /** Gesetzt, wenn die gewählte Zeit schon in LogX vorgemerkt ist (0 = ohne Nummer). */
+  logxTerminNr?: number | null;
 };
 
 /**
@@ -522,6 +524,11 @@ export async function sendAnfrageInternEmail(an: string, angaben: AnfrageAngaben
     angaben.ziel ? `Ziel:        ${angaben.ziel}` : null,
     angaben.aktionsCode ? `Aktionscode: ${angaben.aktionsCode}` : null,
     angaben.herkunft ? `Kam über:    ${angaben.herkunft}` : null,
+    // Schon im LogX-Kalender, aber noch nicht bestätigt: Nach dem Anruf
+    // dort freigeben - oder löschen, wenn es nicht passt.
+    angaben.logxTerminNr != null
+      ? `LogX:        als UNBESTÄTIGT vorgemerkt${angaben.logxTerminNr ? ` (Termin-Nr. ${angaben.logxTerminNr})` : ""} - nach dem Anruf in LogX freigeben oder löschen`
+      : null,
     // Damit niemand auf Deutsch zurückruft, wenn jemand die englische
     // Seite gelesen hat.
     angaben.sprache === "en" ? "Sprache:     ENGLISCH - bitte auf Englisch zurückrufen" : null,
@@ -602,6 +609,68 @@ ${liste}
 Im Adminbereich abschließen:
 ${siteConfig.url}/admin/bookings?status=PENDING`,
   });
+}
+
+/**
+ * Der Gast ist zum vereinbarten Termin nicht gekommen.
+ *
+ * Freundlich und ohne Vorwurf: Meist ist schlicht etwas dazwischen-
+ * gekommen. Die Mail sagt, dass das nicht schlimm ist, und gibt den Weg zu
+ * einem neuen Termin - mehr nicht. Kein Nachhaken, keine Frist, kein
+ * "letzte Chance". Wer nicht will, bekommt keine zweite.
+ */
+export async function sendNichtErschienenEmail(angaben: {
+  email: string;
+  name: string;
+  studioName: string | null;
+  /** Die Studioseite mit dem Anfrageformular, in der Sprache des Gasts. */
+  neuerTerminLink: string;
+  antwortAn?: string | null;
+  sprache?: Sprache;
+}) {
+  const ort = angaben.studioName?.replace(/^Körperformen\s+/i, "") ?? null;
+  if (angaben.sprache === "en") {
+    return verschicken("NICHT_ERSCHIENEN", {
+      to: angaben.email,
+      replyTo: angaben.antwortAn,
+      subject: "We missed you - would you like a new time?",
+      text: `Hello ${angaben.name},
+
+we were looking forward to seeing you${ort ? ` in ${ort}` : ""} for your trial session - it
+seems something came up. No problem, that happens.
+
+If you would still like to try it, just pick a new time here:
+${angaben.neuerTerminLink}
+
+Or simply reply to this email and we will find a time together.
+
+Best wishes
+Your Körperformen team`,
+    });
+  }
+  return verschicken("NICHT_ERSCHIENEN", {
+    to: angaben.email,
+    replyTo: angaben.antwortAn,
+    subject: "Schade, dass es nicht geklappt hat",
+    text: `Hallo ${angaben.name},
+
+wir hatten uns auf dein Probetraining${ort ? ` in ${ort}` : ""} gefreut - da ist wohl etwas
+dazwischengekommen. Kein Problem, das passiert.
+
+Wenn du es trotzdem ausprobieren möchtest, such dir einfach einen neuen
+Termin aus:
+${angaben.neuerTerminLink}
+
+Oder antworte kurz auf diese Mail, dann finden wir zusammen eine Zeit.
+
+Viele Grüße
+Dein Körperformen-Team`,
+  });
+}
+
+/** Die Tagesliste an ein Studio (@/lib/tagesliste). */
+export async function sendTageslisteEmail(an: string, betreff: string, text: string) {
+  return verschicken("TAGESLISTE", { to: an, subject: betreff, text });
 }
 
 /** Der Monatsbericht an das Team (@/lib/monatsbericht). */
