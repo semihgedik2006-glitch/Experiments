@@ -9,7 +9,8 @@
     "lint": "eslint",
     "wachen": "node scripts/wachen.mjs",
     "indexnow": "node scripts/indexnow.mjs",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "test": "tsx --test tests/*.test.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
