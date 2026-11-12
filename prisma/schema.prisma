@@ -1028,3 +1028,25 @@ model Kundenstimme {
   @@index([sortOrder])
   @@index([studioId])
 }
+
+/// Vorschlag von Nox für eine FAQ oder einen Studio-Text.
+///
+/// Eigene Tabelle statt eines Entwurf-Schalters an FaqItem und
+/// StudioLocation: Die öffentlichen Seiten lesen diese Tabellen direkt, ein
+/// vergessener Filter würde einen Entwurf live stellen. Hier liest keine
+/// öffentliche Seite. Übernommen wird nur im Adminbereich.
+model NoxEntwurf {
+  id        String   @id @default(cuid())
+  /// "faq" oder "studio"
+  art       String
+  studioId  String?
+  /// Bei "studio": "intro" oder "anfahrt"
+  feld      String?
+  frage     String?
+  frageEn   String?
+  text      String
+  textEn    String?
+  createdAt DateTime @default(now())
+
+  @@index([art])
+}

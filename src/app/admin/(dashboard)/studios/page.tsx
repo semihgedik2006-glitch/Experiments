@@ -12,6 +12,7 @@ import { ConfirmButton } from "@/components/admin/confirm-button";
 import { AdminPage, EmptyState, StatusBadge, adminInput } from "@/components/admin/ui";
 import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
 import { siteConfig } from "@/lib/site-config";
+import { NoxEntwuerfe } from "@/components/admin/nox-entwuerfe";
 
 const inputClass = adminInput;
 
@@ -361,6 +362,8 @@ export default async function AdminStudiosPage() {
         )
       }
     >
+      {admin.istLeitung && <NoxEntwuerfe art="studio" />}
+
       {/* Ganz oben, weil eine einzige Lücke die Standortabfrage für alle
           Studios abschaltet. Bisher stand der Hinweis nur beim betroffenen
           Studio - man musste also jedes einzeln aufklappen, um zu sehen,
