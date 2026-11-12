@@ -8,6 +8,7 @@ import { themenLesen } from "@/lib/blog-themen";
 import { protokollieren } from "@/lib/protokoll";
 import { revalidatePath } from "@/lib/revalidieren";
 import { kurzKennung, noxSignaturPruefen, ohnePersonendaten, tagesbeginnKoeln } from "@/lib/nox";
+import { entwurfPruefen, studioFinden } from "@/lib/nox-entwurf";
 
 /**
  * Schnittstelle für Nox.
@@ -17,8 +18,9 @@ import { kurzKennung, noxSignaturPruefen, ohnePersonendaten, tagesbeginnKoeln } 
  * privater Assistent, der seine Daten an ein Sprachmodell gibt; dorthin
  * gehören keine Kundendaten.
  *
- * POST legt Entwürfe an: einen unveröffentlichten Blogbeitrag oder einen
- * inaktiven Aktionscode. Freigeben muss ein Mensch im Adminbereich.
+ * POST legt Entwürfe an: einen unveröffentlichten Blogbeitrag, einen
+ * inaktiven Aktionscode, eine FAQ oder einen Studio-Text als Vorschlag.
+ * Freigeben muss ein Mensch im Adminbereich.
  */
 
 export const dynamic = "force-dynamic";
@@ -199,6 +201,26 @@ export async function POST(request: NextRequest) {
     await protokollieren({ art: "ANGELEGT", bereich: "Aktion", betreff: `Code ${code}`, detail: "von Nox, noch inaktiv" });
     revalidatePath("/admin/aktionen");
     return Response.json({ ok: true, angelegt: "aktionscode", code, admin: "/admin/aktionen" });
+  }
+
+  if (eingabe.art === "faq_entwurf" || eingabe.art === "studio_text") {
+    const daten = entwurfPruefen(eingabe);
+    if ("fehler" in daten) return Response.json({ ok: false, fehler: daten.fehler }, { status: 400 });
+    if (daten.art === "faq") {
+      await prisma.noxEntwurf.create({ data: { art: "faq", frage: daten.frage, frageEn: daten.frageEn, text: daten.text, textEn: daten.textEn } });
+      await protokollieren({ art: "ANGELEGT", bereich: "FAQ", betreff: `Vorschlag „${daten.frage.slice(0, 80)}“`, detail: "von Nox, noch nicht übernommen" });
+      revalidatePath("/admin/faq");
+      return Response.json({ ok: true, angelegt: "faq_entwurf", admin: "/admin/faq" });
+    }
+    const studios = await prisma.studioLocation.findMany({ select: { id: true, slug: true, name: true } });
+    const studio = studioFinden(studios, daten.studio);
+    if (!studio) {
+      return Response.json({ ok: false, fehler: `Studio nicht eindeutig. Vorhanden: ${studios.map((s) => s.slug).join(", ")}` }, { status: 400 });
+    }
+    await prisma.noxEntwurf.create({ data: { art: "studio", studioId: studio.id, feld: daten.feld, text: daten.text, textEn: daten.textEn } });
+    await protokollieren({ art: "ANGELEGT", bereich: "Studio", betreff: `Vorschlag ${daten.feld === "intro" ? "Einleitung" : "Anfahrt"} ${studio.name}`, detail: "von Nox, noch nicht übernommen" });
+    revalidatePath("/admin/studios");
+    return Response.json({ ok: true, angelegt: "studio_text", studio: studio.name, admin: "/admin/studios" });
   }
 
   return Response.json({ ok: false, fehler: "Unbekannte Art." }, { status: 400 });
