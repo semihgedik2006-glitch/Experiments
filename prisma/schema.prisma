@@ -45,6 +45,8 @@ enum MailArt {
   ANFRAGE_EINGANG
   /// An das Studio, sobald eine Anfrage da ist.
   ANFRAGE_INTERN
+  /// Kopie einer neuen Anfrage an die Leitung, mit dem Stand der Studio-Mail.
+  ANFRAGE_KOPIE
   /// An das Studio, wenn eine Anfrage zu lange offen liegt.
   NACHFASS_INTERN
   /// An das Team, sobald eine Kontaktnachricht da ist.

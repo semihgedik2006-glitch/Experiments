@@ -4,7 +4,16 @@ import { revalidatePath } from "@/lib/revalidieren";
 import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verlangeStudioRecht } from "@/lib/admin-rechte";
-import { sendBookingConfirmedEmail, sendNichtErschienenEmail } from "@/lib/email";
+import {
+  sendAnfrageInternEmail,
+  sendBookingConfirmedEmail,
+  sendNichtErschienenEmail,
+  TEAM_EMAIL,
+  type AnfrageAngaben,
+} from "@/lib/email";
+import { formatDate } from "@/lib/format";
+import { erreichbarkeitText } from "@/lib/erreichbarkeit";
+import { zielText } from "@/lib/ziel";
 import { neuerVerwaltungsSchluessel, terminAngaben } from "@/lib/termin-angaben";
 import { wartelisteBenachrichtigen } from "@/lib/warteliste";
 import type { BookingStatus } from "@/generated/prisma/enums";
@@ -166,4 +175,61 @@ export async function fortschrittSetzen(formData: FormData) {
       });
     }
   }
+}
+
+/**
+ * Die Mail "Neue Anfrage" noch einmal ans Studio schicken.
+ *
+ * Für den Fall, dass sie beim Absenden nicht rausging (dann steht in der
+ * Liste "Keine Mail ans Studio rausgegangen") - oder dass im Studio
+ * jemand sie nicht findet. Geht an die Adresse, die JETZT beim Studio
+ * hinterlegt ist, also auch nach einer Korrektur der Adresse.
+ */
+export async function studioMailNachsenden(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const b = await prisma.booking.findUnique({
+    where: { id },
+    include: {
+      slot: true,
+      studio: { select: { name: true, email: true } },
+      promotion: { select: { code: true } },
+      empfehlung: { select: { code: true, name: true } },
+    },
+  });
+  if (!b) return;
+  await verlangeStudioRecht(b.studioId);
+
+  const an = b.studio?.email?.trim() || TEAM_EMAIL;
+  if (!an) return;
+
+  const angaben: AnfrageAngaben = {
+    id: b.id,
+    name: b.name,
+    email: b.email,
+    phone: b.phone,
+    erreichbarkeit: erreichbarkeitText(b.erreichbarkeit),
+    studioName: b.studio?.name ?? null,
+    antwortAn: b.studio?.email ?? null,
+    terminZeile: b.slot
+      ? `${formatDate(b.slot.date)} um ${b.slot.startTime} Uhr`
+      : b.terminUhrzeit && b.logxGebuchtAm
+        ? `Wunschtermin um ${b.terminUhrzeit} Uhr - in LogX vorgemerkt, zur Bestätigung anrufen`
+        : b.terminWunsch
+          ? `Wunsch: ${b.terminWunsch} - Termin abstimmen`
+          : "kein Wunsch angegeben - Termin abstimmen",
+    ziel: b.ziel ? zielText(b.ziel) : null,
+    nachricht: b.message,
+    aktionsCode:
+      b.promotion?.code ??
+      (b.empfehlung ? `${b.empfehlung.code} (Empfehlung von ${b.empfehlung.name})` : null),
+    herkunft: [b.herkunftKampagne, b.herkunftQuelle, b.herkunftSeite].filter(Boolean).join(" · ") || null,
+    sprache: b.sprache === "en" ? "en" : "de",
+  };
+
+  const ok = await sendAnfrageInternEmail(an, angaben);
+  if (ok) {
+    await prisma.booking.update({ where: { id }, data: { studioBenachrichtigtAm: new Date() } });
+  }
+  revalidatePath("/admin/bookings");
+  revalidatePath("/admin/mails");
 }

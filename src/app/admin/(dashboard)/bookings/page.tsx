@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { fortschrittSetzen, notizSpeichern, updateBookingStatus } from "@/lib/actions/admin-bookings";
+import {
+  fortschrittSetzen,
+  notizSpeichern,
+  studioMailNachsenden,
+  updateBookingStatus,
+} from "@/lib/actions/admin-bookings";
 import { terminAusFormular } from "@/lib/vereinbarter-termin";
 import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
@@ -237,12 +242,23 @@ export default async function AdminBookingsPage({
                   ) : (
                     <>
                       <MailWarning size={13} className="shrink-0 text-amber-600" aria-hidden />
-                      <span className="text-muted">
+                      <span className="font-semibold text-amber-700 dark:text-amber-400">
                         Keine Mail ans Studio rausgegangen &ndash; diese Anfrage steht nur hier.
                       </span>
                     </>
                   )}
                 </p>
+                <AdminForm action={studioMailNachsenden} className="mt-1.5">
+                  <input type="hidden" name="id" value={booking.id} />
+                  <SubmitButton
+                    variant={booking.studioBenachrichtigtAm ? "outline" : "primary"}
+                    className="!px-2.5 !py-1 text-xs"
+                    pendingLabel="Wird gesendet …"
+                    savedLabel="Gesendet - Ergebnis unter E-Mail-Versand"
+                  >
+                    {booking.studioBenachrichtigtAm ? "Noch einmal ans Studio senden" : "Jetzt ans Studio senden"}
+                  </SubmitButton>
+                </AdminForm>
                 {/* Zu zweit ist eine Angabe über Plätze, nicht über
                     Vorlieben: Zwei Personen brauchen zwei Geräte und zwei
                     Westen. Wer das erst an der Tür erfährt, muss jemanden

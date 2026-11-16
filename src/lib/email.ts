@@ -105,29 +105,73 @@ async function verschicken(
     return false;
   }
 
-  try {
-    const { replyTo, ...rest } = nachricht;
-    const antwortAn = replyTo?.trim() || TEAM_EMAIL;
-    const antwort = await resend.emails.send({
-      from: FROM,
-      ...rest,
-      ...(antwortAn ? { replyTo: antwortAn } : {}),
-    });
-    // Resend meldet Fehler nicht immer als Ausnahme, sondern im Ergebnis.
-    // Ohne diese Prüfung stünde im Protokoll "verschickt", obwohl der
-    // Anbieter abgelehnt hat.
-    if (antwort.error) {
-      console.error("E-Mail abgelehnt:", antwort.error);
-      await protokoll(false, antwort.error.message ?? String(antwort.error));
-      return false;
+  // Bis zu drei Versuche. Der Anbieter nimmt nur wenige Mails pro Sekunde
+  // an und meldet sich bei Überlast oder kurzen Störungen mit einem
+  // Fehler - einmal kurz warten reicht dann fast immer. Ohne die
+  // Wiederholung war eine solche Mail einfach weg, auch die ans Studio.
+  const { replyTo, ...rest } = nachricht;
+  let antwortAn: string | null = replyTo?.trim() || TEAM_EMAIL;
+  const fehlerListe: string[] = [];
+  for (let versuch = 1; versuch <= 3; versuch++) {
+    try {
+      const antwort = await resend.emails.send({
+        from: FROM,
+        ...rest,
+        ...(antwortAn ? { replyTo: antwortAn } : {}),
+      });
+      // Resend meldet Fehler nicht immer als Ausnahme, sondern im Ergebnis.
+      // Ohne diese Prüfung stünde im Protokoll "verschickt", obwohl der
+      // Anbieter abgelehnt hat.
+      if (!antwort.error) {
+        await protokoll(
+          true,
+          fehlerListe.length ? `Erst im ${versuch}. Versuch: ${fehlerListe.join(" | ")}` : undefined,
+        );
+        return true;
+      }
+      const meldung = antwort.error.message ?? String(antwort.error);
+      console.error(`E-Mail abgelehnt (Versuch ${versuch}):`, antwort.error);
+      fehlerListe.push(meldung);
+      // Eine vertippte Kundenadresse als Antwortadresse darf die Mail ans
+      // Studio nicht verhindern - dann eben ohne Antwortadresse.
+      if (/reply/i.test(meldung) && antwortAn) {
+        antwortAn = null;
+        continue;
+      }
+      // Eine ungültige Empfängeradresse wird auch beim dritten Mal nicht gültig.
+      if (/invalid|validation/i.test(meldung) && !/rate|limit/i.test(meldung)) break;
+    } catch (error) {
+      console.error(`E-Mail konnte nicht gesendet werden (Versuch ${versuch}):`, error);
+      fehlerListe.push(error instanceof Error ? error.message : String(error));
     }
-    await protokoll(true);
-    return true;
-  } catch (error) {
-    console.error("E-Mail konnte nicht gesendet werden:", error);
-    await protokoll(false, error instanceof Error ? error.message : String(error));
-    return false;
+    if (versuch < 3) await new Promise((r) => setTimeout(r, versuch * 1500));
   }
+  await protokoll(false, fehlerListe.join(" | "));
+  return false;
+}
+
+/**
+ * Wer zusätzlich eine Kopie jeder neuen Anfrage bekommt.
+ *
+ * Für den Notfall: Kommt die Mail im Studio nicht an oder ist dort gerade
+ * niemand, kann die Leitung sie weiterleiten. Einstellbar im Adminbereich
+ * unter E-Mail-Versand; ersatzweise aus ANFRAGE_KOPIE_AN. Mehrere Adressen
+ * durch Komma getrennt.
+ */
+export const KOPIE_SCHLUESSEL = "anfrage-kopie";
+
+export async function kopieEmpfaenger(): Promise<string[]> {
+  let roh = process.env.ANFRAGE_KOPIE_AN ?? "";
+  try {
+    const eintrag = await prisma.siteText.findUnique({ where: { key: KOPIE_SCHLUESSEL } });
+    if (eintrag) roh = eintrag.wert;
+  } catch (error) {
+    console.error("Kopie-Adresse konnte nicht gelesen werden:", error);
+  }
+  return roh
+    .split(/[,;\s]+/)
+    .map((a) => a.trim())
+    .filter((a) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(a));
 }
 
 export type TerminAngaben = {
@@ -545,6 +589,48 @@ ${zeilen.join("\n")}${angaben.nachricht ? `\n\nNachricht:\n${angaben.nachricht}`
 Wer auf diese Mail antwortet, schreibt direkt an ${angaben.name}.
 
 Im Adminbereich bearbeiten:
+${siteConfig.url}/admin/bookings?status=PENDING`,
+  });
+}
+
+/**
+ * Kopie einer neuen Anfrage an die Leitung - für den Notfall.
+ *
+ * Steht oben drin, ob die Mail ans Studio angekommen ist. Ist sie das
+ * nicht, sieht man es sofort und kann die Anfrage selbst weiterleiten.
+ */
+export async function sendAnfrageKopieEmail(
+  an: string,
+  angaben: AnfrageAngaben,
+  studio: { adresse: string | null; ok: boolean },
+) {
+  const lage = !studio.adresse
+    ? "ACHTUNG: Für dieses Studio ist keine E-Mail-Adresse hinterlegt - die Anfrage ist bei niemandem angekommen. Bitte weiterleiten."
+    : studio.ok
+      ? `Die Mail ans Studio ist rausgegangen (an ${studio.adresse}).`
+      : `ACHTUNG: Die Mail ans Studio (${studio.adresse}) ist NICHT rausgegangen. Bitte diese Mail an das Studio weiterleiten.`;
+  const zeilen = [
+    `Name:        ${angaben.name}`,
+    `Telefon:     ${angaben.phone}`,
+    `E-Mail:      ${angaben.email}`,
+    `Erreichbar:  ${angaben.erreichbarkeit}`,
+    `Termin:      ${angaben.terminZeile}`,
+    angaben.studioName ? `Studio:      ${angaben.studioName}` : null,
+    angaben.ziel ? `Ziel:        ${angaben.ziel}` : null,
+    angaben.aktionsCode ? `Aktionscode: ${angaben.aktionsCode}` : null,
+    angaben.herkunft ? `Kam über:    ${angaben.herkunft}` : null,
+    angaben.sprache === "en" ? "Sprache:     ENGLISCH - bitte auf Englisch zurückrufen" : null,
+  ].filter(Boolean);
+
+  return verschicken("ANFRAGE_KOPIE", {
+    to: an,
+    replyTo: angaben.email,
+    subject: `${studio.ok ? "" : "⚠ NICHT ZUGESTELLT - "}Kopie: Anfrage ${angaben.name}${angaben.studioName ? ` (${angaben.studioName})` : ""}`,
+    text: `${lage}
+
+${zeilen.join("\n")}${angaben.nachricht ? `\n\nNachricht:\n${angaben.nachricht}` : ""}
+
+Im Adminbereich:
 ${siteConfig.url}/admin/bookings?status=PENDING`,
   });
 }

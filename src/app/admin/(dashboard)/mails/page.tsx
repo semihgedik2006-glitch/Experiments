@@ -1,8 +1,16 @@
 import { AlertTriangle, CheckCircle2, Mail, XCircle } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { verlangeLeitung } from "@/lib/admin-rechte";
-import { TEAM_EMAIL, versandAbsender, versandBereit, versandNurTestadresse } from "@/lib/email";
-import { AdminPage, AdminSection, EmptyState, Panel, StatusBadge } from "@/components/admin/ui";
+import {
+  kopieEmpfaenger,
+  TEAM_EMAIL,
+  versandAbsender,
+  versandBereit,
+  versandNurTestadresse,
+} from "@/lib/email";
+import { kopieAdresseSpeichern } from "@/lib/actions/admin-mailkopie";
+import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
+import { AdminPage, AdminSection, EmptyState, Panel, StatusBadge, adminInput } from "@/components/admin/ui";
 import type { MailArt } from "@/generated/prisma/enums";
 
 /**
@@ -24,6 +32,7 @@ const PRO_SEITE = 60;
 const artText: Record<MailArt, string> = {
   ANFRAGE_EINGANG: "Eingangsbestätigung an den Interessenten",
   ANFRAGE_INTERN: "Neue Anfrage ans Studio",
+  ANFRAGE_KOPIE: "Kopie der Anfrage an die Leitung",
   NACHFASS_INTERN: "Erinnerung an offene Anfragen",
   KONTAKT_INTERN: "Neue Kontaktnachricht ans Team",
   BESTAETIGUNG: "Terminbestätigung",
@@ -51,6 +60,11 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
     titel: "Neue Anfrage",
     wann: "sofort nach dem Absenden des Anfrageformulars",
     an: "an die E-Mail-Adresse des gewählten Studios, sonst an die Sammeladresse",
+  },
+  {
+    titel: "Kopie der Anfrage",
+    wann: "sofort nach dem Absenden des Anfrageformulars - mit dem Hinweis, ob die Mail ans Studio angekommen ist",
+    an: "an die Adresse(n), die oben unter „Kopie jeder Anfrage“ eingetragen sind",
   },
   {
     titel: "Neue Kontaktnachricht",
@@ -122,6 +136,12 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
   },
 ];
 
+function vorTagen(tage: number): Date {
+  const d = new Date();
+  d.setDate(d.getDate() - tage);
+  return d;
+}
+
 function zeitpunkt(datum: Date): string {
   return new Intl.DateTimeFormat("de-DE", {
     day: "2-digit",
@@ -138,13 +158,20 @@ export default async function AdminMailsPage() {
   const bereit = versandBereit();
   const nurTestadresse = versandNurTestadresse();
 
-  const [eintraege, gescheitert, gesamt] = await Promise.all([
+  const seitSiebenTagen = vorTagen(7);
+  const [eintraege, gescheitert, gesamt, kopieAn, neueFehler] = await Promise.all([
     prisma.mailLog.findMany({
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       take: PRO_SEITE,
     }),
     prisma.mailLog.count({ where: { ok: false } }),
     prisma.mailLog.count(),
+    kopieEmpfaenger(),
+    prisma.mailLog.findMany({
+      where: { ok: false, createdAt: { gte: seitSiebenTagen } },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+    }),
   ]);
 
   return (
@@ -225,6 +252,61 @@ export default async function AdminMailsPage() {
         </div>
       )}
 
+      {/* Gescheiterte Mails der letzten Woche ganz oben - die Frage
+          "ist etwas nicht angekommen?" soll man nicht im Protokoll suchen
+          müssen. Für eine Anfrage ans Studio: unter Anfragen auf
+          "Jetzt ans Studio senden" drücken. */}
+      {neueFehler.length > 0 && (
+        <div className="mt-6 rounded-xl border border-red-500/50 bg-red-500/10 p-4 sm:p-5">
+          <p className="flex items-center gap-2 font-semibold">
+            <XCircle size={17} className="shrink-0 text-red-600" aria-hidden />
+            {neueFehler.length === 1
+              ? "1 Mail ist in den letzten 7 Tagen nicht rausgegangen"
+              : `${neueFehler.length}${neueFehler.length === 10 ? "+" : ""} Mails sind in den letzten 7 Tagen nicht rausgegangen`}
+          </p>
+          <ul className="mt-2 space-y-1 text-sm">
+            {neueFehler.map((f) => (
+              <li key={f.id}>
+                <span className="tabular-nums text-muted">{zeitpunkt(f.createdAt)}</span> &middot;{" "}
+                {artText[f.art] ?? f.art} an <strong>{f.empfaenger}</strong>
+                <span className="block text-xs text-muted">{f.betreff}{f.fehler ? ` - ${f.fehler}` : ""}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-sm text-muted">
+            Eine Anfrage, die nicht beim Studio ankam, unter <strong>Anfragen</strong> mit
+            „Jetzt ans Studio senden“ nachschicken.
+          </p>
+        </div>
+      )}
+
+      <AdminSection
+        title="Kopie jeder Anfrage"
+        description="Für den Notfall: Diese Adresse(n) bekommen jede neue Anfrage zusätzlich - mit dem Hinweis, ob die Mail ans Studio angekommen ist. So könnt ihr sie notfalls selbst weiterleiten."
+        className="mt-8"
+      >
+        <Panel>
+          <AdminForm action={kopieAdresseSpeichern} className="flex flex-wrap items-end gap-2">
+            <label className="min-w-64 flex-1 text-sm">
+              <span className="block text-muted">E-Mail-Adresse(n), mehrere mit Komma trennen</span>
+              <input
+                name="adressen"
+                type="text"
+                defaultValue={kopieAn.join(", ")}
+                placeholder="name@beispiel.de"
+                className={`${adminInput} mt-1 w-full`}
+              />
+            </label>
+            <SubmitButton variant="primary">Speichern</SubmitButton>
+          </AdminForm>
+          <p className="mt-2 text-xs text-muted">
+            {kopieAn.length
+              ? `Aktuell geht eine Kopie an: ${kopieAn.join(", ")}`
+              : "Aktuell geht keine Kopie raus."}
+          </p>
+        </Panel>
+      </AdminSection>
+
       <AdminSection
         title="Was von allein läuft"
         description="Diese Abläufe brauchen keinen Klick - außer der Terminbestätigung."
@@ -279,12 +361,20 @@ export default async function AdminMailsPage() {
                       {zeitpunkt(eintrag.createdAt)}
                     </td>
                     <td className="py-2 pr-4">{artText[eintrag.art] ?? eintrag.art}</td>
-                    <td className="py-2 pr-4 break-all">{eintrag.empfaenger}</td>
+                    <td className="py-2 pr-4 break-all">
+                      {eintrag.empfaenger}
+                      <span className="block text-xs text-muted">{eintrag.betreff}</span>
+                    </td>
                     <td className="py-2">
                       {eintrag.ok ? (
-                        <StatusBadge ton="ok" icon={CheckCircle2}>
-                          verschickt
-                        </StatusBadge>
+                        <span className="block">
+                          <StatusBadge ton="ok" icon={CheckCircle2}>
+                            verschickt
+                          </StatusBadge>
+                          {eintrag.fehler && (
+                            <span className="mt-1 block text-xs text-muted">{eintrag.fehler}</span>
+                          )}
+                        </span>
                       ) : (
                         <span className="block">
                           <StatusBadge ton="off" icon={XCircle}>
