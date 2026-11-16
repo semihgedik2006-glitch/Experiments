@@ -10,6 +10,7 @@ import { AuszeichnungMarke } from "@/components/auszeichnung/auszeichnung";
 import { getStudios } from "@/lib/data";
 import { zielInhalte } from "@/lib/ziel-inhalte";
 import { isVisible } from "@/lib/site-toggles";
+import { CookieEinstellungen } from "@/components/cookie-einstellungen";
 
 const socials = [
   { href: siteConfig.social.instagram, label: "Instagram", Icon: InstagramIcon },
@@ -219,7 +220,7 @@ export async function Footer({
               statt 32 Pixel hoch antippbar. Sie stehen in einem <nav>,
               sind also Navigation und nicht Teil eines Satzes - für die
               gilt das Mindestmaß aus WCAG 2.5.8. */}
-          <nav aria-label={en ? "Legal" : "Rechtliches"} className="-my-2 flex gap-5">
+          <nav aria-label={en ? "Legal" : "Rechtliches"} className="-my-2 flex flex-wrap justify-center gap-x-5">
             <Link href="/impressum" className="tastflaeche py-2 hover:text-foreground">
               {en ? "Imprint" : "Impressum"}
             </Link>
@@ -229,6 +230,7 @@ export async function Footer({
             <Link href="/agb" className="tastflaeche py-2 hover:text-foreground">
               {en ? "Terms" : "AGB"}
             </Link>
+            <CookieEinstellungen en={en} />
           </nav>
         </div>
       </div>

@@ -42,3 +42,9 @@ export function writeConsent(value: Consent) {
   window.localStorage.setItem(STORAGE_KEY, value);
   notify();
 }
+
+/** Entscheidung zurücknehmen: der Hinweis erscheint wieder. */
+export function resetConsent() {
+  window.localStorage.removeItem(STORAGE_KEY);
+  notify();
+}
