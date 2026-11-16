@@ -108,7 +108,7 @@ const ablaeufe: { titel: string; wann: string; an: string }[] = [
   },
   {
     titel: "Bitte um eine Bewertung",
-    wann: "täglich, einen Tag nach einem stattgefundenen Termin - und nur einmal",
+    wann: "nie von allein - nur wenn ihr bei einer Anfrage auf „Um Google-Bewertung bitten“ drückt",
     an: "an den Gast, aber nur wenn beim Studio ein Bewertungslink hinterlegt ist",
   },
   {
@@ -320,7 +320,7 @@ export default async function AdminMailsPage() {
 
       <AdminSection
         title="Was von allein läuft"
-        description="Diese Abläufe brauchen keinen Klick - außer der Terminbestätigung."
+        description="Diese Abläufe brauchen keinen Klick - außer der Terminbestätigung, der Bitte um eine Bewertung und dem Newsletter."
         className="mt-8"
       >
         <Panel>

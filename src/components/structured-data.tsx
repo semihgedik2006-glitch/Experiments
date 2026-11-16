@@ -326,6 +326,24 @@ export function FrageJsonLd({ frage }: { frage: Frage }) {
   );
 }
 
+/** Eine Liste Fragen mit Antworten, so wie sie sichtbar auf der Seite stehen. */
+export function FragenJsonLd({ fragen }: { fragen: { frage: string; antwort: string }[] }) {
+  if (fragen.length === 0) return null;
+  return (
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: fragen.map((f) => ({
+          "@type": "Question",
+          name: f.frage,
+          acceptedAnswer: { "@type": "Answer", text: f.antwort },
+        })),
+      }}
+    />
+  );
+}
+
 /**
  * Die häufigen Fragen. Sie stehen ohnehin schon auf mehreren Seiten - so
  * können sie zusätzlich aufklappbar im Suchergebnis erscheinen.

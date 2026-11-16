@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { verlangeStudioRecht } from "@/lib/admin-rechte";
 import {
   sendAnfrageInternEmail,
+  sendBewertungEmail,
   sendBookingConfirmedEmail,
   sendNichtErschienenEmail,
   TEAM_EMAIL,
@@ -232,4 +233,32 @@ export async function studioMailNachsenden(formData: FormData) {
   }
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/mails");
+}
+
+/**
+ * Per Knopf um eine Google-Bewertung bitten.
+ *
+ * Nicht mehr automatisch: Das Studio entscheidet, wann es fragt - am
+ * besten nach dem Probetraining. Geht an jeden, der gefragt wird, ohne
+ * Vorauswahl nach Zufriedenheit und ohne Gegenleistung (Richtlinien von
+ * Google). Ohne Bewertungslink beim Studio gibt es nichts zu verschicken.
+ * Ein zweiter Klick schickt erneut - der Knopf zeigt, wann zuletzt.
+ */
+export async function bewertungAnfragen(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const b = await prisma.booking.findUnique({
+    where: { id },
+    include: { slot: { include: { studio: true } }, studio: true },
+  });
+  if (!b) return;
+  await verlangeStudioRecht(b.studioId);
+
+  const link = (b.studio ?? b.slot?.studio)?.googleReviewUrl?.trim();
+  if (!link) return;
+
+  const ok = await sendBewertungEmail({ ...terminAngaben(b), bewertungsLink: link });
+  if (ok) {
+    await prisma.booking.update({ where: { id }, data: { bewertungGesendetAm: new Date() } });
+  }
+  revalidatePath("/admin/bookings");
 }
