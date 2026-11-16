@@ -20,6 +20,9 @@ const figtree = localFont({
   variable: "--font-body",
   weight: "300 900",
   display: "swap",
+  // Angeglichene Ersatzschrift bis zum Laden: globals.css, "Ersatzschriften".
+  adjustFontFallback: false,
+  fallback: ["Figtree Ersatz", "Arial", "sans-serif"],
 });
 
 // Überschriften: Archivo in den schweren Schnitten. Kräftig und breit
@@ -30,6 +33,9 @@ const archivo = localFont({
   variable: "--font-heading",
   weight: "100 900",
   display: "swap",
+  // Angeglichene Ersatzschrift bis zum Laden: globals.css, "Ersatzschriften".
+  adjustFontFallback: false,
+  fallback: ["Archivo Ersatz", "Arial", "sans-serif"],
 });
 
 /**
