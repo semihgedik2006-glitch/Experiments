@@ -4,6 +4,7 @@ import {
   fortschrittSetzen,
   notizSpeichern,
   studioMailNachsenden,
+  bewertungAnfragen,
   updateBookingStatus,
 } from "@/lib/actions/admin-bookings";
 import { terminAusFormular } from "@/lib/vereinbarter-termin";
@@ -78,7 +79,7 @@ export default async function AdminBookingsPage({
       where,
       include: {
         slot: true,
-        studio: { select: { name: true } },
+        studio: { select: { name: true, googleReviewUrl: true } },
         promotion: { select: { code: true, label: true } },
       },
       // Zweites Sortierkriterium: Ohne eindeutiges Merkmal darf die
@@ -259,6 +260,31 @@ export default async function AdminBookingsPage({
                     {booking.studioBenachrichtigtAm ? "Noch einmal ans Studio senden" : "Jetzt ans Studio senden"}
                   </SubmitButton>
                 </AdminForm>
+                {/* Bitte um eine Google-Bewertung - nur per Knopf, nie
+                    automatisch. Ohne Bewertungslink beim Studio hätte die
+                    Mail kein Ziel. */}
+                {booking.status !== "CANCELLED" &&
+                  (booking.studio?.googleReviewUrl?.trim() ? (
+                    <AdminForm action={bewertungAnfragen} className="mt-1.5 flex flex-wrap items-center gap-2">
+                      <input type="hidden" name="id" value={booking.id} />
+                      <SubmitButton
+                        className="!px-2.5 !py-1 text-xs"
+                        pendingLabel="Wird gesendet …"
+                        savedLabel="Bitte um Bewertung gesendet"
+                      >
+                        {booking.bewertungGesendetAm ? "Noch einmal um Bewertung bitten" : "Um Google-Bewertung bitten"}
+                      </SubmitButton>
+                      {booking.bewertungGesendetAm && (
+                        <span className="text-xs text-muted">
+                          Zuletzt gebeten am {formatDate(booking.bewertungGesendetAm)}
+                        </span>
+                      )}
+                    </AdminForm>
+                  ) : (
+                    <p className="mt-1.5 text-xs text-muted">
+                      Für die Bitte um eine Bewertung beim Studio den Google-Bewertungslink eintragen.
+                    </p>
+                  ))}
                 {/* Zu zweit ist eine Angabe über Plätze, nicht über
                     Vorlieben: Zwei Personen brauchen zwei Geräte und zwei
                     Westen. Wer das erst an der Tür erfährt, muss jemanden

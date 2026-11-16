@@ -114,8 +114,8 @@ function StudioFields({
             schickt, bringt keine Bewertung. */}
         <span className="mt-1 block text-xs text-muted">
           Im Google-Unternehmensprofil unter &bdquo;Rezensionen&ldquo; &rarr;
-          &bdquo;Mehr Rezensionen erhalten&ldquo;. Ohne diesen Link geht einen Tag
-          nach dem Termin keine Bitte um eine Bewertung raus.
+          &bdquo;Mehr Rezensionen erhalten&ldquo;. Mit diesem Link erscheint bei jeder
+          Anfrage der Knopf &bdquo;Um Google-Bewertung bitten&ldquo;.
         </span>
       </label>
 

@@ -322,7 +322,7 @@ export async function startklarPruefen(): Promise<Startklar> {
           id: "bewertung",
           titel: "Google-Bewertungslink je Studio",
           stand: "offen",
-          text: `${ohneBewertung.length} von ${studios.length} Studios ohne Link - dort geht nach dem Probetraining keine Bitte um eine Bewertung raus.`,
+          text: `${ohneBewertung.length} von ${studios.length} Studios ohne Link - dort fehlt bei den Anfragen der Knopf „Um Google-Bewertung bitten“.`,
           tun: "Im Google-Unternehmensprofil den Link „Rezensionen erhalten“ kopieren und beim Studio eintragen.",
           link: { href: "/admin/studios", label: "Zu den Studios" },
         },

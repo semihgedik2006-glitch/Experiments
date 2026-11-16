@@ -791,7 +791,7 @@ ${siteConfig.url}/admin/nachrichten?gelesen=neu`,
 }
 
 /**
- * Die Bitte um eine Bewertung, einen Tag nach dem Termin.
+ * Die Bitte um eine Bewertung - nur per Knopf bei der Anfrage.
  *
  * Drei Entscheidungen, die hier bewusst so getroffen sind:
  *
@@ -816,7 +816,7 @@ export async function sendBewertungEmail(
       subject: "How was your trial session?",
       text: `Hello ${angaben.name},
 
-yesterday you came to us${angaben.studioName ? ` in ${angaben.studioName.replace(/^Körperformen\s+/i, "")}` : ""} for a trial session.
+you recently came to us${angaben.studioName ? ` in ${angaben.studioName.replace(/^Körperformen\s+/i, "")}` : ""} for a trial session.
 
 If you have two minutes: a short review on Google helps us more than any
 ad - and it helps the next person who is wondering whether EMS is for them.
@@ -836,7 +836,7 @@ Your Körperformen team`,
     subject: "Wie war dein Probetraining?",
     text: `Hallo ${angaben.name},
 
-gestern warst du bei uns${angaben.studioName ? ` in ${angaben.studioName.replace(/^Körperformen\s+/i, "")}` : ""} zum Probetraining.
+vor kurzem warst du bei uns${angaben.studioName ? ` in ${angaben.studioName.replace(/^Körperformen\s+/i, "")}` : ""} zum Probetraining.
 
 Falls du dir zwei Minuten nehmen magst: Eine kurze Bewertung bei Google
 hilft uns mehr als jede Anzeige - und sie hilft dem Nächsten, der überlegt,

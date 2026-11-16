@@ -10,6 +10,7 @@ import { haversineDistanceKm } from "@/lib/geo";
 import { Container } from "@/components/ui/container";
 import { TrainerWand } from "@/components/studio/trainer-wand";
 import { GoogleBewertungenAbschnitt } from "@/components/studio/google-bewertungen";
+import { StudioFragen } from "@/components/studio/studio-fragen";
 import { Zusatzangebote } from "@/components/preise/zusatzangebote";
 import { giltAn } from "@/lib/zusatzangebote";
 import { PageHeader } from "@/components/ui/page-header";
@@ -345,6 +346,20 @@ export async function StudioDetailSeite({ sprache, slug }: { sprache: Sprache; s
           </div>
         </Container>
       </section>
+
+      {/* Fragen zu genau diesem Standort - aus den Studiodaten, damit
+          sich die vierzehn Seiten nicht nur in der Adresse unterscheiden. */}
+      <StudioFragen
+        sprache={sprache}
+        ort={ort}
+        anschrift={anschrift}
+        telefon={studio.phone}
+        oeffnungszeiten={oeffnungszeiten(sprache, studio)}
+        whatsapp={studio.whatsapp}
+        hatAnfahrt={Boolean(anfahrt)}
+        nachbar={nachbarn[0] ? { name: nachbarn[0].studio.name, km: nachbarn[0].km } : null}
+        anzahlStudios={alleStudios.length}
+      />
 
       {/* Nachbarstandorte - für Besucher der zweitbeste Treffer, wenn der
           Weg hierher zu weit ist. */}
