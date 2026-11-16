@@ -111,8 +111,8 @@ export function StudioFragen({
         </h2>
         <div className="mt-6 divide-y divide-border rounded-2xl border border-border">
           {fragen.map((f) => (
-            <details key={f.frage} className="group px-5 py-4">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium [&::-webkit-details-marker]:hidden">
+            <details key={f.frage} className="group px-5 py-2">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 py-1 font-medium [&::-webkit-details-marker]:hidden">
                 {f.frage}
                 <ChevronDown
                   size={18}
@@ -120,7 +120,7 @@ export function StudioFragen({
                   aria-hidden
                 />
               </summary>
-              <p className="mt-3 leading-relaxed text-muted">{f.antwort}</p>
+              <p className="mt-1 pb-2 leading-relaxed text-muted">{f.antwort}</p>
             </details>
           ))}
         </div>
