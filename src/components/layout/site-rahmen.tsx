@@ -10,6 +10,7 @@ import { ProbeterminEinladung } from "@/components/probetermin-einladung";
 import { HandyLeiste } from "@/components/handy-leiste";
 import { KlickImpuls } from "@/components/klick-impuls";
 import { BewegungsWaechter } from "@/components/bewegungs-waechter";
+import { EinblendWaechter } from "@/components/einblend-waechter";
 import { pfad } from "@/lib/i18n/pfade";
 import type { Sprache } from "@/lib/sprache";
 
@@ -90,6 +91,7 @@ export async function SiteRahmen({
       <HandyLeiste />
       <KlickImpuls />
       <BewegungsWaechter />
+      <EinblendWaechter />
       <ProbeterminEinladung studios={studios.map((s) => ({ id: s.id, name: s.name }))} />
     </>
   );

@@ -308,19 +308,131 @@ h3,
   border-bottom: 1px solid var(--ink-border);
 }
 
-/* Logo-Umschaltung. Neben der dunklen Ansicht muss auch ein dunkler
-   Abschnitt innerhalb der hellen Ansicht greifen - sonst steht im Footer
-   die Fassung für hellen Untergrund auf dunklem Grund. */
-.logo-on-dark {
-  display: none;
+/* Ersatzschriften, bis Archivo und Figtree geladen sind.
+   Seit das Stylesheet im HTML steht, ist die Seite oft schon zu sehen,
+   bevor die Schriften da sind. Arial ist je nach Stärke schmaler oder
+   breiter als die echte Schrift; ohne Angleichung brechen Überschriften
+   nach dem Laden anders um und der Inhalt darunter springt (CLS).
+   Die Werte sind je Stärke an Arial bzw. Liberation Sans gemessen
+   (16.11.2026, Breite typischer Überschriften und Absätze). */
+@font-face {
+  font-family: "Archivo Ersatz";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans");
+  font-weight: 100 449;
+  size-adjust: 98.4%;
+  ascent-override: 89.23%;
+  descent-override: 21.34%;
+  line-gap-override: 0%;
 }
-.dark .logo-on-light,
-.on-ink .logo-on-light {
-  display: none;
+@font-face {
+  font-family: "Archivo Ersatz";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans");
+  font-weight: 450 549;
+  size-adjust: 100.0%;
+  ascent-override: 87.80%;
+  descent-override: 21.00%;
+  line-gap-override: 0%;
 }
-.dark .logo-on-dark,
-.on-ink .logo-on-dark {
-  display: block;
+@font-face {
+  font-family: "Archivo Ersatz";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold");
+  font-weight: 550 649;
+  size-adjust: 95.1%;
+  ascent-override: 92.32%;
+  descent-override: 22.08%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Archivo Ersatz";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold");
+  font-weight: 650 749;
+  size-adjust: 98.2%;
+  ascent-override: 89.41%;
+  descent-override: 21.38%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Archivo Ersatz";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold");
+  font-weight: 750 849;
+  size-adjust: 102.9%;
+  ascent-override: 85.33%;
+  descent-override: 20.41%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Archivo Ersatz";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold");
+  font-weight: 850 900;
+  size-adjust: 109.5%;
+  ascent-override: 80.18%;
+  descent-override: 19.18%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Figtree Ersatz";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans");
+  font-weight: 300 349;
+  size-adjust: 98.7%;
+  ascent-override: 96.25%;
+  descent-override: 25.33%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Figtree Ersatz";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans");
+  font-weight: 350 449;
+  size-adjust: 99.8%;
+  ascent-override: 95.19%;
+  descent-override: 25.05%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Figtree Ersatz";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans");
+  font-weight: 450 549;
+  size-adjust: 100.5%;
+  ascent-override: 94.53%;
+  descent-override: 24.88%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Figtree Ersatz";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold");
+  font-weight: 550 649;
+  size-adjust: 94.9%;
+  ascent-override: 100.11%;
+  descent-override: 26.34%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Figtree Ersatz";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold");
+  font-weight: 650 749;
+  size-adjust: 95.8%;
+  ascent-override: 99.16%;
+  descent-override: 26.10%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Figtree Ersatz";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold");
+  font-weight: 750 900;
+  size-adjust: 97.0%;
+  ascent-override: 97.94%;
+  descent-override: 25.77%;
+  line-gap-override: 0%;
+}
+
+/* Schriftfarbe des Logos (components/logo.tsx). Neben der dunklen Ansicht
+   muss auch ein dunkler Abschnitt innerhalb der hellen Ansicht greifen -
+   sonst steht im Footer dunkle Schrift auf dunklem Grund. */
+:root {
+  --logo-schrift: #3d4543;
+}
+.dark,
+.on-ink {
+  --logo-schrift: #f5f5f7;
 }
 
 /* ---------------------------------------------------------------------------
@@ -446,10 +558,14 @@ h3,
   text-shadow: 0 0 32px color-mix(in srgb, var(--color-lime) 45%, transparent);
 }
 
-/* Überblendung beim Seitenwechsel (siehe (site)/template.tsx). */
+/* Überblendung beim Seitenwechsel (siehe (site)/template.tsx).
+   Startet bei 0.01 statt 0, wie auch hero-rise und hero-logo: Was Chrome mit
+   Deckkraft 0 zeichnet, zählt nie als größtes Element (LCP) - die Ladezeit
+   wurde sonst erst am ersten Element gemessen, das nach dem JavaScript
+   erschien. Zu sehen ist der Unterschied nicht. */
 @keyframes page-fade {
   from {
-    opacity: 0;
+    opacity: 0.01;
   }
   to {
     opacity: 1;
@@ -473,7 +589,7 @@ h3,
    dargestellt. CSS läuft dagegen los, sobald das Stylesheet da ist. */
 @keyframes hero-rise {
   from {
-    opacity: 0;
+    opacity: 0.01;
     transform: translateY(24px);
   }
   to {
@@ -484,7 +600,7 @@ h3,
 
 @keyframes hero-logo {
   from {
-    opacity: 0;
+    opacity: 0.01;
     transform: translateY(90px) scale(1.6);
   }
   to {
@@ -534,6 +650,34 @@ h3,
   transform-origin: left;
   animation: strich-waechst 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: var(--hero-delay, 0s);
+}
+
+/* Einblenden beim Hinscrollen (Reveal, Stagger, WortReveal, KickerStrich).
+   Versteckt wird nur, was der EinblendWaechter beim Laden unterhalb des
+   Bildschirms findet; der erste Bildschirm kommt fertig vom Server. */
+.einblenden-auf,
+.einblenden-auf .einblenden-kind,
+.einblenden-auf .einblenden-wort {
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--einblend-verzug, 0s);
+}
+[data-einblenden="block"].einblenden-wartet,
+[data-einblenden="gruppe"].einblenden-wartet .einblenden-kind {
+  opacity: 0;
+  transform: translateY(14px);
+}
+[data-einblenden="worte"].einblenden-wartet .einblenden-wort {
+  opacity: 0;
+  transform: translateY(105%);
+}
+[data-einblenden="strich"].einblenden-wartet {
+  transform: scaleX(0);
+}
+.einblenden-auf[data-einblenden="strich"] {
+  transition-duration: 0.5s;
+  transition-delay: 0.1s;
 }
 
 /* Wer reduzierte Bewegung eingestellt hat, sieht den Hero sofort fertig. */

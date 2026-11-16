@@ -2,6 +2,7 @@ import Link from "@/components/sprach-link";
 import { Logo } from "@/components/logo";
 import { legalConfig } from "@/lib/legal-config";
 import { KlickImpuls } from "@/components/klick-impuls";
+import { EinblendWaechter } from "@/components/einblend-waechter";
 
 /**
  * Reduzierter Rahmen für Kampagnenseiten: keine Navigation, keine
@@ -51,6 +52,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
         </div>
       </footer>
       <KlickImpuls />
+      <EinblendWaechter />
     </>
   );
 }
