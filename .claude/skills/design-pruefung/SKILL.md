@@ -14,6 +14,8 @@ description: Pflicht vor jedem PR, der auf der Webseite etwas Sichtbares ändert
 
 Gemessen: waagerechter Überlauf, Trefferflächen (Handy und Tablet 44 × 44 px, Rechner 24 × 24 px, Mitte nicht verdeckt), Kontrast 4,5 : 1 (große Schrift 3 : 1, auf Bild und Verlauf an Bildpunkten), Text ragt aus Knopf oder Kasten, lang, Zoom, Namen, Labels, alt, Überschriften, Fokus-Stil, Konsolenfehler, 4xx/5xx, Abstände außerhalb des 2-px-Rasters.
 
+Seiten mit Scroll-Animationen mit `--ruhig` prüfen: das Skript scrollt einmal durch und wartet, bis alles stillsteht.
+
 Externe Dienste (Google, Vercel-Analytics) fallen in dieser Umgebung oft aus und erscheinen als Warnung, nicht als Fehler. Gewollte Meldungen über `--vorher datei.mjs` mit `export const erlaubt = [/…/]` ausnehmen.
 
 Selbsttest: `node tools/design-pruefung.mjs --selbsttest`.

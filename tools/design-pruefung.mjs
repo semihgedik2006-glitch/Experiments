@@ -20,11 +20,12 @@ const HILFE = `Design-Prüfung
     --basis </pfad>                            Pfad-Präfix der Live-Seite, z. B. /bauwerk-previews für GitHub Pages
     --warten <ms>                              nach dem Laden warten (Standard 600)
     --vorher <datei.mjs>                       exportiert vor(page), nach(page), erlaubt (Liste von RegExp für bekannte Meldungen)
+    --ruhig                                    prefers-reduced-motion: reduce (Endzustand bei Scroll-Animationen)
     --nur-bericht                              Exit-Code 0 trotz Fehlern
   node tools/design-pruefung.mjs --selbsttest`;
 
 function argumente(argv) {
-  const o = { ziele: [], breiten: [390, 1440], profil: "", schema: "", aus: "design-pruefung", wurzel: ".", basis: "", warten: 600, vorher: "", nurBericht: false, selbsttest: false };
+  const o = { ziele: [], breiten: [390, 1440], profil: "", schema: "", aus: "design-pruefung", wurzel: ".", basis: "", warten: 600, vorher: "", nurBericht: false, ruhig: false, selbsttest: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--breiten") o.breiten = argv[++i].split(",").map(Number).filter(Boolean);
@@ -36,6 +37,7 @@ function argumente(argv) {
     else if (a === "--warten") o.warten = Number(argv[++i]);
     else if (a === "--vorher") o.vorher = argv[++i];
     else if (a === "--nur-bericht") o.nurBericht = true;
+    else if (a === "--ruhig") o.ruhig = true;
     else if (a === "--selbsttest") o.selbsttest = true;
     else if (a === "-h" || a === "--hilfe" || a === "--help") { console.log(HILFE); process.exit(0); }
     else o.ziele.push(a);
@@ -128,7 +130,7 @@ function messenImBrowser({ breite, profil }) {
     const y = r.top + r.height / 2, x = r.left + r.width / 2;
     if (y > 0 && y < innerHeight && x > 0 && x < innerWidth) {
       const oben = document.elementFromPoint(x, y);
-      if (oben && oben !== el && !el.contains(oben) && !oben.contains(el) && !(el.labels && [...el.labels].some((l) => l.contains(oben)))) melde("fehler", "Trefferfläche", `Mitte ist verdeckt von ${wer(oben)}`, el);
+      if (oben && oben !== el && !el.contains(oben) && !oben.contains(el) && !(el.labels && [...el.labels].some((l) => l.contains(oben)))) { let schwebt = false; for (let u = oben; u; u = u.parentElement) if (getComputedStyle(u).position === "fixed") { schwebt = true; break; } melde(schwebt ? "warnung" : "fehler", "Trefferfläche", `Mitte ist verdeckt von ${wer(oben)}${schwebt ? " (schwebt, beim Scrollen frei)" : ""}`, el); }
     }
   }
 
@@ -164,13 +166,16 @@ function messenImBrowser({ breite, profil }) {
     if (texte > 600) continue;
     let fg = farbe(c.color);
     if (!fg) continue;
-    let deck = 1;
-    for (let e = el; e; e = e.parentElement) deck *= Number(getComputedStyle(e).opacity);
+    let deck = 1, beschnitten = false;
+    for (let e = el; e; e = e.parentElement) { const s = getComputedStyle(e); deck *= Number(s.opacity); if (s.clipPath !== "none" || s.mixBlendMode !== "normal") beschnitten = true; }
+    if (deck < 0.3) continue;
     fg = { ...fg, a: fg.a * deck };
     const schichten = [];
-    let bild = false;
+    let bild = beschnitten;
     const rr = el.getBoundingClientRect();
-    scrollTo(0, scrollY + rr.top + rr.height / 2 - innerHeight / 2);
+    let fest = false;
+    for (let e = el; e; e = e.parentElement) if (/fixed|sticky/.test(getComputedStyle(e).position)) { fest = true; break; }
+    scrollTo(0, fest ? 0 : scrollY + rr.top + rr.height / 2 - innerHeight / 2);
     const r2 = el.getBoundingClientRect();
     const px = Math.min(Math.max(r2.left + Math.min(r2.width, 40) / 2, 1), innerWidth - 1), py = r2.top + r2.height / 2;
     if (py > 0 && py < innerHeight) {
@@ -320,7 +325,7 @@ async function pruefeSeite(browser, url, name, o) {
   const ergebnisse = [];
   for (const breite of o.breiten) {
     const hoehe = breite <= 430 ? 844 : breite <= 820 ? 1180 : breite >= 1920 ? 1080 : 900;
-    const ctx = await browser.newContext({ viewport: { width: breite, height: hoehe }, deviceScaleFactor: 1, colorScheme: o.schema === "hell" ? "light" : o.schema === "dunkel" ? "dark" : undefined, hasTouch: breite <= 820, isMobile: breite <= 820 });
+    const ctx = await browser.newContext({ viewport: { width: breite, height: hoehe }, deviceScaleFactor: 1, colorScheme: o.schema === "hell" ? "light" : o.schema === "dunkel" ? "dark" : undefined, hasTouch: breite <= 820, isMobile: breite <= 820, reducedMotion: o.ruhig ? "reduce" : "no-preference" });
     const page = await ctx.newPage();
     const konsole = [];
     let misst = false;
@@ -336,7 +341,14 @@ async function pruefeSeite(browser, url, name, o) {
     await page.waitForTimeout(o.warten);
     if (hilfe.nach) { await hilfe.nach(page, { breite }); await page.waitForTimeout(200); }
     const bild = join(o.aus, `${name}-${breite}.png`);
-    await page.evaluate(() => { for (const a of document.getAnimations()) { try { a.finish(); } catch {} } });
+    await page.evaluate(async () => {
+      const warte = (ms) => new Promise((ok) => setTimeout(ok, ms));
+      for (let y = 0; y < document.documentElement.scrollHeight; y += innerHeight * 0.7) { scrollTo(0, y); await warte(60); }
+      scrollTo(0, 0); await warte(250);
+      const stand = () => [...document.querySelectorAll("[style]")].map(e => getComputedStyle(e).opacity + getComputedStyle(e).transform).join();
+      for (let i = 0, a = stand(); i < 40; i++) { await warte(100); const b = stand(); if (b === a) break; a = b; }
+      for (const a of document.getAnimations()) { try { a.finish(); } catch {} }
+    });
     misst = true;
     const m = await page.evaluate(messenImBrowser, { breite, profil: o.profil });
     const px = await pixelKontrast(page);
