@@ -8,7 +8,7 @@ import {
   versandBereit,
   versandNurTestadresse,
 } from "@/lib/email";
-import { kopieAdresseSpeichern } from "@/lib/actions/admin-mailkopie";
+import { kopieAdresseSpeichern, testAnfrageSenden } from "@/lib/actions/admin-mailkopie";
 import { AdminForm, SubmitButton } from "@/components/admin/admin-form";
 import { AdminPage, AdminSection, EmptyState, Panel, StatusBadge, adminInput } from "@/components/admin/ui";
 import type { MailArt } from "@/generated/prisma/enums";
@@ -304,6 +304,17 @@ export default async function AdminMailsPage() {
               ? `Aktuell geht eine Kopie an: ${kopieAn.join(", ")}`
               : "Aktuell geht keine Kopie raus."}
           </p>
+          {kopieAn.length > 0 && (
+            <AdminForm action={testAnfrageSenden} className="mt-3 border-t border-border pt-3">
+              <SubmitButton pendingLabel="Wird gesendet …" savedLabel="Gesendet - bitte Postfach prüfen">
+                Test-Anfrage an diese Adresse(n) senden
+              </SubmitButton>
+              <p className="mt-1.5 text-xs text-muted">
+                Schickt eine erfundene Anfrage nur an die Kopie-Adresse(n): einmal so, wie sie im
+                Studio ankommt, und einmal als Kopie. Kein Studio und kein Kunde bekommt etwas.
+              </p>
+            </AdminForm>
+          )}
         </Panel>
       </AdminSection>
 
