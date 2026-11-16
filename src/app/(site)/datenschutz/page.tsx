@@ -197,8 +197,8 @@ export default function DatenschutzPage() {
             </p>
             <p>
               Eine erteilte Einwilligung können Sie jederzeit mit Wirkung für die Zukunft
-              widerrufen, indem Sie die Website-Daten in Ihrem Browser löschen und beim
-              nächsten Aufruf im Cookie-Hinweis „Nur notwendige“ wählen. Der Widerruf
+              widerrufen: Ein Klick auf „Cookie-Einstellungen“ am Ende jeder Seite öffnet den
+              Cookie-Hinweis erneut, dort wählen Sie „Nur notwendige“. Der Widerruf
               berührt nicht die Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung.
             </p>
           </Section>

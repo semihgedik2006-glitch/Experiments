@@ -179,8 +179,8 @@ export default function PrivacyPage() {
               in these cases is Art. 6 (1) (a) GDPR in conjunction with § 25 (1) TDDDG.
             </p>
             <p>
-              You can withdraw your consent at any time with effect for the future by deleting the website data
-              in your browser and choosing “Necessary only” in the cookie notice on your next visit. Withdrawal
+              You can withdraw your consent at any time with effect for the future: click “Cookie settings” at
+              the bottom of any page to reopen the cookie notice and choose “Necessary only”. Withdrawal
               does not affect the lawfulness of processing carried out before the withdrawal.
             </p>
           </Section>
