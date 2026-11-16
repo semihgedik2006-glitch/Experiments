@@ -7,6 +7,8 @@ import { formatDate } from "@/lib/format";
 import {
   sendAnfrageEingangEmail,
   sendAnfrageInternEmail,
+  sendAnfrageKopieEmail,
+  kopieEmpfaenger,
   sendWartelisteInternEmail,
   TEAM_EMAIL,
   type AnfrageAngaben,
@@ -354,20 +356,26 @@ export async function createBooking(
           : undefined,
     };
 
-    await sendAnfrageEingangEmail(angaben);
-
-    // An das Studio, sonst an die Sammeladresse. Gibt es beides nicht,
-    // unterbleibt die Benachrichtigung - eine Mail an eine geratene
-    // Adresse wäre schlimmer als keine.
+    // Zuerst ans Studio - das ist die Mail, ohne die niemand zurückruft.
+    // Gibt es dort keine Adresse, an die Sammeladresse; fehlt auch die,
+    // fängt die Kopie an die Leitung das auf.
     const an = buchung.studio?.email?.trim() || TEAM_EMAIL;
+    let studioOk = false;
     if (an) {
-      const ok = await sendAnfrageInternEmail(an, angaben);
-      if (ok) {
+      studioOk = await sendAnfrageInternEmail(an, angaben);
+      if (studioOk) {
         await prisma.booking.update({
           where: { id: buchung.id },
           data: { studioBenachrichtigtAm: new Date() },
         });
       }
+    }
+
+    await sendAnfrageEingangEmail(angaben);
+
+    for (const kopieAn of await kopieEmpfaenger()) {
+      if (kopieAn.toLowerCase() === an?.toLowerCase()) continue;
+      await sendAnfrageKopieEmail(kopieAn, angaben, { adresse: an, ok: studioOk });
     }
   });
 
