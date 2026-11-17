@@ -60,11 +60,9 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // Seitenübergänge über die View-Transitions-Schnittstelle des Browsers
-  // (siehe src/components/ui/ziel-uebergang.tsx). Experimentell in Next 16;
-  // Browser ohne Unterstützung wechseln die Seite einfach wie bisher.
+  // Seitenübergänge (src/components/ui/ziel-uebergang.tsx) brauchen seit
+  // Next 16.3 keinen Schalter mehr.
   experimental: {
-    viewTransition: true,
     // Das Stylesheet steht direkt im HTML statt als eigene Datei. Am Handy
     // spart das beim ersten Besuch eine Runde zum Server, bevor überhaupt
     // etwas zu sehen ist: gemessen rund 0,9 s früher sichtbar (16.11.2026).

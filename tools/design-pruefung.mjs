@@ -222,8 +222,30 @@ function messenImBrowser({ breite, profil }) {
     if (!kasten || /hidden|clip|auto|scroll/.test(getComputedStyle(kasten).overflowX)) continue;
     const bereich = document.createRange(); bereich.selectNodeContents(e);
     const t = bereich.getBoundingClientRect(), k = kasten.getBoundingClientRect();
-    const ueber = Math.max(t.right - k.right, k.left - t.left);
+    let links = t.left, rechts = t.right;
+    for (let a = e; a && a !== kasten; a = a.parentElement) {
+      if (!/hidden|clip|auto|scroll/.test(getComputedStyle(a).overflowX)) continue;
+      const r = a.getBoundingClientRect(); links = Math.max(links, r.left); rechts = Math.min(rechts, r.right);
+    }
+    const ueber = Math.max(rechts - k.right, k.left - links);
     if (ueber > 1.5) { raus++; melde("fehler", "Abgeschnitten", `Text ragt ${Math.round(ueber)}px aus seinem Kasten (${wer(kasten).split(" ")[0]}) und überlappt die Nachbarn`, e); }
+  }
+
+  let eng = 0;
+  for (const e of document.body.querySelectorAll("*")) {
+    if (eng >= 5 || e.children.length || !sichtbar(e) || versteckt(e)) continue;
+    const woerter = (e.textContent || "").trim().split(/\s+/).filter(Boolean);
+    if (woerter.length < 5) continue;
+    const bereich = document.createRange(); bereich.selectNodeContents(e);
+    let unten = Infinity;
+    for (let a = e, n = 0; a && a !== document.body && n < 4; a = a.parentElement, n++) if (/hidden|clip/.test(getComputedStyle(a).overflowY)) unten = Math.min(unten, a.getBoundingClientRect().bottom);
+    const zeilen = new Set([...bereich.getClientRects()].filter((r) => r.top < unten - 1).map((r) => Math.round(r.top))).size;
+    const breite = bereich.getBoundingClientRect().width;
+    if (zeilen < 4 || breite >= 110 || woerter.length / zeilen >= 2) continue;
+    let platz = null;
+    for (let a = e.parentElement, n = 0; a && a !== document.body && n < 4; a = a.parentElement, n++) if (a.clientWidth >= breite * 3) { platz = a; break; }
+    if (!platz) continue;
+    eng++; melde("fehler", "Gequetscht", `Text bricht in ${zeilen} Zeilen auf ${Math.round(breite)}px um, obwohl ${platz.clientWidth}px Platz da sind`, e);
   }
 
   const werte = {};
@@ -408,7 +430,7 @@ ul{list-style:none;padding:0;margin:16px 0}li{padding:12px 16px;border-radius:14
   "/schlecht.html": `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Probe</title><style>body{margin:0;background:#fff;color:#000;font:16px Georgia}
 .breit{width:900px;height:20px}.grau{color:#bbb}.mini{width:20px;height:20px;padding:0;border:0;background:#0a84ff;color:#fff}.label{text-transform:uppercase;letter-spacing:.3em;font-size:12px}
 .glow{box-shadow:0 0 24px rgba(0,255,200,.9);padding:8px}.schraeg{clip-path:polygon(0 0,100% 0,95% 100%,0 100%);background:#333;color:#fff;padding:8px}.decke{position:relative}.decke::after{content:"";position:absolute;inset:0}</style></head>
-<body><div class="breit"></div><p class="grau">Kaum lesbar</p><button class="mini"></button><span class="label">Status</span><div class="glow">Leuchten</div><div class="schraeg">Ecke</div><button>Weiter →</button><button>🔥 Los</button><img src="fehlt.png"><input placeholder="Name"><div style="display:flex;gap:4px"><button style="width:48px;height:48px;white-space:nowrap;overflow:visible">Übermorgen</button><button style="width:48px;height:48px">Mi</button></div></body></html>`,
+<body><div class="breit"></div><p class="grau">Kaum lesbar</p><button class="mini"></button><span class="label">Status</span><div class="glow">Leuchten</div><div class="schraeg">Ecke</div><button>Weiter →</button><button>🔥 Los</button><img src="fehlt.png"><input placeholder="Name"><ul style="width:320px;padding:0"><li style="display:grid;grid-template-columns:64px 1fr auto;list-style:none"><span>Keine offenen Leads. Erzähl Nox von einem neuen.</span></li></ul><div style="display:flex;gap:4px"><button style="width:48px;height:48px;white-space:nowrap;overflow:visible">Übermorgen</button><button style="width:48px;height:48px">Mi</button></div></body></html>`,
 };
 
 async function selbsttest() {
@@ -419,7 +441,7 @@ async function selbsttest() {
   const erwartet = ["Überlauf", "Kontrast", "Trefferfläche", "Barrierefreiheit", "Apple-Look", "Kaputt"];
   const fehlt = erwartet.filter((a) => !schlecht.some((b) => b.art === a));
   const texte = schlecht.map((b) => b.text).join(" | ");
-  const regeln = ["schräge Ecken", "farbiger Glow", "gesperrte Großbuchstaben", "Emoji", "Pfeil im Knopf", "Zoomen ist gesperrt", "lang> fehlt", "aus seinem Kasten"].filter((t) => !texte.includes(t));
+  const regeln = ["schräge Ecken", "farbiger Glow", "gesperrte Großbuchstaben", "Emoji", "Pfeil im Knopf", "Zoomen ist gesperrt", "lang> fehlt", "aus seinem Kasten", "obwohl"].filter((t) => !texte.includes(t));
   if (gut.length) console.error("Gute Probe hat Fehler:", gut);
   if (fehlt.length || regeln.length) console.error("Schlechte Probe, nicht erkannt:", fehlt, regeln);
   const ok = !gut.length && !fehlt.length && !regeln.length;
