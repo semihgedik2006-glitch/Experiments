@@ -12,7 +12,7 @@ description: Pflicht vor jedem PR, der auf der Webseite etwas Sichtbares ändert
 5. Screenshots selbst ansehen (mindestens 390 und 1440): Hierarchie, Ausrichtung, gleiche Ecken und Abstände je Ebene, Zustände (Hover, Fokus, leer, Fehler, Laden), am Rechner keine einzelne Spalte über 1.200 px.
 6. Tabelle aus `bericht.md` und je Breite ein Satz zu den Screenshots in die PR-Beschreibung. Neue Fehler gegenüber vorher: nicht mergen.
 
-Gemessen: waagerechter Überlauf, Trefferflächen (Handy und Tablet 44 × 44 px, Rechner 24 × 24 px, Mitte nicht verdeckt), Kontrast 4,5 : 1 (große Schrift 3 : 1, auf Bild und Verlauf an Bildpunkten), Text ragt aus Knopf oder Kasten, lang, Zoom, Namen, Labels, alt, Überschriften, Fokus-Stil, Konsolenfehler, 4xx/5xx, Abstände außerhalb des 2-px-Rasters.
+Gemessen: waagerechter Überlauf, Trefferflächen (Handy und Tablet 44 × 44 px, Rechner 24 × 24 px, Mitte nicht verdeckt), Kontrast 4,5 : 1 (große Schrift 3 : 1, auf Bild und Verlauf an Bildpunkten), Text ragt aus Knopf oder Kasten, Text bricht Wort für Wort um, obwohl daneben Platz ist, lang, Zoom, Namen, Labels, alt, Überschriften, Fokus-Stil, Konsolenfehler, 4xx/5xx, Abstände außerhalb des 2-px-Rasters.
 
 Seiten mit Scroll-Animationen mit `--ruhig` prüfen: das Skript scrollt einmal durch und wartet, bis alles stillsteht.
 
