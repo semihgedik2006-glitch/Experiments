@@ -23,7 +23,8 @@ export type ToggleKey =
   | "kommentare"
   | "instagram"
   | "gutschein"
-  | "aktion-neues-jahr";
+  | "aktion-neues-jahr"
+  | "mitglieder-mails";
 
 export const toggleDefinitions: {
   key: ToggleKey;
@@ -118,6 +119,15 @@ export const toggleDefinitions: {
     description:
       "Kommentarformular und Kommentarliste unter den Beiträgen. Ausgeblendet bleiben bereits vorhandene Kommentare erhalten.",
     defaultVisible: true,
+  },
+  // Neu und deshalb auf aus: geht erst live, wenn jemand ihn bewusst
+  // einschaltet - nicht schon dadurch, dass der Code veröffentlicht wird.
+  {
+    key: "mitglieder-mails",
+    label: "Mitglieder-Mails",
+    description:
+      "Willkommensmails, Zufriedenheitsumfrage und Jubiläumsglückwünsche an Mitglieder sowie die Wochenübersicht „Mitgliederpflege“ an die Studios. Erst einschalten, wenn die Mitgliederliste gepflegt ist - sonst geht nichts raus, und es fehlt auch nichts.",
+    defaultVisible: false,
   },
 ];
 
