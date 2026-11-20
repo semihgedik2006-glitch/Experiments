@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cronPruefen } from "@/lib/cron-auth";
 import { schluesselErneuern, zugangsstand } from "@/lib/instagram";
 
 /**
@@ -17,13 +18,8 @@ import { schluesselErneuern, zugangsstand } from "@/lib/instagram";
  * ein Fehler wäre es nicht, Instagram ist freiwillig.
  */
 export async function GET(request: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Nicht autorisiert." }, { status: 401 });
-    }
-  }
+  const abgelehnt = cronPruefen(request);
+  if (abgelehnt) return abgelehnt;
 
   const stand = await zugangsstand();
   if (!stand.verbunden) {

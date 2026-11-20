@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cronPruefen } from "@/lib/cron-auth";
 import { prisma } from "@/lib/prisma";
 import {
   sendNachfassInternEmail,
@@ -74,13 +75,8 @@ function tagesGrenzenMorgen() {
 }
 
 export async function GET(request: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Nicht autorisiert." }, { status: 401 });
-    }
-  }
+  const abgelehnt = cronPruefen(request);
+  if (abgelehnt) return abgelehnt;
 
   const { morgen, uebermorgen } = tagesGrenzenMorgen();
 
