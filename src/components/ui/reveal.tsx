@@ -1,17 +1,19 @@
-"use client";
+import type { CSSProperties, ReactNode } from "react";
 
-import { motion, type Variants } from "motion/react";
-import type { ReactNode } from "react";
-
-const easeOut = [0.16, 1, 0.3, 1] as const;
-
-// Bewusst zurückhaltend: kurzer Weg, keine Skalierung. Ein gleichzeitiges
-// Zoomen lässt besonders Fließtext beim Einblenden "wabern".
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: easeOut } },
-};
-
+/**
+ * Einblenden beim Hinscrollen - ohne JavaScript im ersten Bild.
+ *
+ * Früher steuerte Motion das: Der Server lieferte jeden Abschnitt mit
+ * opacity 0 aus, sichtbar wurde er erst nach der Hydration. Auf einem
+ * langsamen Handy stand der erste Bildschirm so bis zu drei Sekunden halb
+ * leer, und Google maß die Ladezeit (LCP) erst ab dann.
+ *
+ * Jetzt kommt alles sichtbar vom Server. Der EinblendWaechter
+ * (components/einblend-waechter.tsx) versteckt nach dem Laden nur, was
+ * unterhalb des Bildschirms liegt, und blendet es beim Hinscrollen per CSS
+ * ein (globals.css, "Einblenden"). Was beim Laden schon im Bild ist, bleibt
+ * einfach stehen.
+ */
 export function Reveal({
   children,
   delay = 0,
@@ -22,26 +24,17 @@ export function Reveal({
   className?: string;
 }) {
   return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
-      variants={itemVariants}
-      transition={{ duration: 0.7, delay, ease: easeOut }}
+    <div
+      data-einblenden="block"
       className={className}
+      style={delay ? ({ "--einblend-verzug": `${delay}s` } as CSSProperties) : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
-const containerVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.06 },
-  },
-};
-
+/** Gruppe, deren Kinder (StaggerItem) nacheinander einblenden. */
 export function Stagger({
   children,
   className,
@@ -50,15 +43,9 @@ export function Stagger({
   className?: string;
 }) {
   return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
-      variants={containerVariants}
-      className={className}
-    >
+    <div data-einblenden="gruppe" className={className}>
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -69,9 +56,5 @@ export function StaggerItem({
   children: ReactNode;
   className?: string;
 }) {
-  return (
-    <motion.div variants={itemVariants} className={className}>
-      {children}
-    </motion.div>
-  );
+  return <div className={`einblenden-kind ${className ?? ""}`}>{children}</div>;
 }

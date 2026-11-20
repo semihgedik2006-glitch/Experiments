@@ -105,29 +105,73 @@ async function verschicken(
     return false;
   }
 
-  try {
-    const { replyTo, ...rest } = nachricht;
-    const antwortAn = replyTo?.trim() || TEAM_EMAIL;
-    const antwort = await resend.emails.send({
-      from: FROM,
-      ...rest,
-      ...(antwortAn ? { replyTo: antwortAn } : {}),
-    });
-    // Resend meldet Fehler nicht immer als Ausnahme, sondern im Ergebnis.
-    // Ohne diese Prüfung stünde im Protokoll "verschickt", obwohl der
-    // Anbieter abgelehnt hat.
-    if (antwort.error) {
-      console.error("E-Mail abgelehnt:", antwort.error);
-      await protokoll(false, antwort.error.message ?? String(antwort.error));
-      return false;
+  // Bis zu drei Versuche. Der Anbieter nimmt nur wenige Mails pro Sekunde
+  // an und meldet sich bei Überlast oder kurzen Störungen mit einem
+  // Fehler - einmal kurz warten reicht dann fast immer. Ohne die
+  // Wiederholung war eine solche Mail einfach weg, auch die ans Studio.
+  const { replyTo, ...rest } = nachricht;
+  let antwortAn: string | null = replyTo?.trim() || TEAM_EMAIL;
+  const fehlerListe: string[] = [];
+  for (let versuch = 1; versuch <= 3; versuch++) {
+    try {
+      const antwort = await resend.emails.send({
+        from: FROM,
+        ...rest,
+        ...(antwortAn ? { replyTo: antwortAn } : {}),
+      });
+      // Resend meldet Fehler nicht immer als Ausnahme, sondern im Ergebnis.
+      // Ohne diese Prüfung stünde im Protokoll "verschickt", obwohl der
+      // Anbieter abgelehnt hat.
+      if (!antwort.error) {
+        await protokoll(
+          true,
+          fehlerListe.length ? `Erst im ${versuch}. Versuch: ${fehlerListe.join(" | ")}` : undefined,
+        );
+        return true;
+      }
+      const meldung = antwort.error.message ?? String(antwort.error);
+      console.error(`E-Mail abgelehnt (Versuch ${versuch}):`, antwort.error);
+      fehlerListe.push(meldung);
+      // Eine vertippte Kundenadresse als Antwortadresse darf die Mail ans
+      // Studio nicht verhindern - dann eben ohne Antwortadresse.
+      if (/reply/i.test(meldung) && antwortAn) {
+        antwortAn = null;
+        continue;
+      }
+      // Eine ungültige Empfängeradresse wird auch beim dritten Mal nicht gültig.
+      if (/invalid|validation/i.test(meldung) && !/rate|limit/i.test(meldung)) break;
+    } catch (error) {
+      console.error(`E-Mail konnte nicht gesendet werden (Versuch ${versuch}):`, error);
+      fehlerListe.push(error instanceof Error ? error.message : String(error));
     }
-    await protokoll(true);
-    return true;
-  } catch (error) {
-    console.error("E-Mail konnte nicht gesendet werden:", error);
-    await protokoll(false, error instanceof Error ? error.message : String(error));
-    return false;
+    if (versuch < 3) await new Promise((r) => setTimeout(r, versuch * 1500));
   }
+  await protokoll(false, fehlerListe.join(" | "));
+  return false;
+}
+
+/**
+ * Wer zusätzlich eine Kopie jeder neuen Anfrage bekommt.
+ *
+ * Für den Notfall: Kommt die Mail im Studio nicht an oder ist dort gerade
+ * niemand, kann die Leitung sie weiterleiten. Einstellbar im Adminbereich
+ * unter E-Mail-Versand; ersatzweise aus ANFRAGE_KOPIE_AN. Mehrere Adressen
+ * durch Komma getrennt.
+ */
+export const KOPIE_SCHLUESSEL = "anfrage-kopie";
+
+export async function kopieEmpfaenger(): Promise<string[]> {
+  let roh = process.env.ANFRAGE_KOPIE_AN ?? "";
+  try {
+    const eintrag = await prisma.siteText.findUnique({ where: { key: KOPIE_SCHLUESSEL } });
+    if (eintrag) roh = eintrag.wert;
+  } catch (error) {
+    console.error("Kopie-Adresse konnte nicht gelesen werden:", error);
+  }
+  return roh
+    .split(/[,;\s]+/)
+    .map((a) => a.trim())
+    .filter((a) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(a));
 }
 
 export type TerminAngaben = {
@@ -444,6 +488,8 @@ export type AnfrageAngaben = {
   sprache?: Sprache;
   /** Für die englische Eingangsbestätigung: dieselben Angaben auf Englisch. */
   englisch?: { erreichbarkeit: string; terminZeile: string; ziel: string | null };
+  /** Gesetzt, wenn die gewählte Zeit schon in LogX vorgemerkt ist (0 = ohne Nummer). */
+  logxTerminNr?: number | null;
 };
 
 /**
@@ -522,6 +568,11 @@ export async function sendAnfrageInternEmail(an: string, angaben: AnfrageAngaben
     angaben.ziel ? `Ziel:        ${angaben.ziel}` : null,
     angaben.aktionsCode ? `Aktionscode: ${angaben.aktionsCode}` : null,
     angaben.herkunft ? `Kam über:    ${angaben.herkunft}` : null,
+    // Schon im LogX-Kalender, aber noch nicht bestätigt: Nach dem Anruf
+    // dort freigeben - oder löschen, wenn es nicht passt.
+    angaben.logxTerminNr != null
+      ? `LogX:        als UNBESTÄTIGT vorgemerkt${angaben.logxTerminNr ? ` (Termin-Nr. ${angaben.logxTerminNr})` : ""} - nach dem Anruf in LogX freigeben oder löschen`
+      : null,
     // Damit niemand auf Deutsch zurückruft, wenn jemand die englische
     // Seite gelesen hat.
     angaben.sprache === "en" ? "Sprache:     ENGLISCH - bitte auf Englisch zurückrufen" : null,
@@ -538,6 +589,48 @@ ${zeilen.join("\n")}${angaben.nachricht ? `\n\nNachricht:\n${angaben.nachricht}`
 Wer auf diese Mail antwortet, schreibt direkt an ${angaben.name}.
 
 Im Adminbereich bearbeiten:
+${siteConfig.url}/admin/bookings?status=PENDING`,
+  });
+}
+
+/**
+ * Kopie einer neuen Anfrage an die Leitung - für den Notfall.
+ *
+ * Steht oben drin, ob die Mail ans Studio angekommen ist. Ist sie das
+ * nicht, sieht man es sofort und kann die Anfrage selbst weiterleiten.
+ */
+export async function sendAnfrageKopieEmail(
+  an: string,
+  angaben: AnfrageAngaben,
+  studio: { adresse: string | null; ok: boolean },
+) {
+  const lage = !studio.adresse
+    ? "ACHTUNG: Für dieses Studio ist keine E-Mail-Adresse hinterlegt - die Anfrage ist bei niemandem angekommen. Bitte weiterleiten."
+    : studio.ok
+      ? `Die Mail ans Studio ist rausgegangen (an ${studio.adresse}).`
+      : `ACHTUNG: Die Mail ans Studio (${studio.adresse}) ist NICHT rausgegangen. Bitte diese Mail an das Studio weiterleiten.`;
+  const zeilen = [
+    `Name:        ${angaben.name}`,
+    `Telefon:     ${angaben.phone}`,
+    `E-Mail:      ${angaben.email}`,
+    `Erreichbar:  ${angaben.erreichbarkeit}`,
+    `Termin:      ${angaben.terminZeile}`,
+    angaben.studioName ? `Studio:      ${angaben.studioName}` : null,
+    angaben.ziel ? `Ziel:        ${angaben.ziel}` : null,
+    angaben.aktionsCode ? `Aktionscode: ${angaben.aktionsCode}` : null,
+    angaben.herkunft ? `Kam über:    ${angaben.herkunft}` : null,
+    angaben.sprache === "en" ? "Sprache:     ENGLISCH - bitte auf Englisch zurückrufen" : null,
+  ].filter(Boolean);
+
+  return verschicken("ANFRAGE_KOPIE", {
+    to: an,
+    replyTo: angaben.email,
+    subject: `${studio.ok ? "" : "⚠ NICHT ZUGESTELLT - "}Kopie: Anfrage ${angaben.name}${angaben.studioName ? ` (${angaben.studioName})` : ""}`,
+    text: `${lage}
+
+${zeilen.join("\n")}${angaben.nachricht ? `\n\nNachricht:\n${angaben.nachricht}` : ""}
+
+Im Adminbereich:
 ${siteConfig.url}/admin/bookings?status=PENDING`,
   });
 }
@@ -604,6 +697,68 @@ ${siteConfig.url}/admin/bookings?status=PENDING`,
   });
 }
 
+/**
+ * Der Gast ist zum vereinbarten Termin nicht gekommen.
+ *
+ * Freundlich und ohne Vorwurf: Meist ist schlicht etwas dazwischen-
+ * gekommen. Die Mail sagt, dass das nicht schlimm ist, und gibt den Weg zu
+ * einem neuen Termin - mehr nicht. Kein Nachhaken, keine Frist, kein
+ * "letzte Chance". Wer nicht will, bekommt keine zweite.
+ */
+export async function sendNichtErschienenEmail(angaben: {
+  email: string;
+  name: string;
+  studioName: string | null;
+  /** Die Studioseite mit dem Anfrageformular, in der Sprache des Gasts. */
+  neuerTerminLink: string;
+  antwortAn?: string | null;
+  sprache?: Sprache;
+}) {
+  const ort = angaben.studioName?.replace(/^Körperformen\s+/i, "") ?? null;
+  if (angaben.sprache === "en") {
+    return verschicken("NICHT_ERSCHIENEN", {
+      to: angaben.email,
+      replyTo: angaben.antwortAn,
+      subject: "We missed you - would you like a new time?",
+      text: `Hello ${angaben.name},
+
+we were looking forward to seeing you${ort ? ` in ${ort}` : ""} for your trial session - it
+seems something came up. No problem, that happens.
+
+If you would still like to try it, just pick a new time here:
+${angaben.neuerTerminLink}
+
+Or simply reply to this email and we will find a time together.
+
+Best wishes
+Your Körperformen team`,
+    });
+  }
+  return verschicken("NICHT_ERSCHIENEN", {
+    to: angaben.email,
+    replyTo: angaben.antwortAn,
+    subject: "Schade, dass es nicht geklappt hat",
+    text: `Hallo ${angaben.name},
+
+wir hatten uns auf dein Probetraining${ort ? ` in ${ort}` : ""} gefreut - da ist wohl etwas
+dazwischengekommen. Kein Problem, das passiert.
+
+Wenn du es trotzdem ausprobieren möchtest, such dir einfach einen neuen
+Termin aus:
+${angaben.neuerTerminLink}
+
+Oder antworte kurz auf diese Mail, dann finden wir zusammen eine Zeit.
+
+Viele Grüße
+Dein Körperformen-Team`,
+  });
+}
+
+/** Die Tagesliste an ein Studio (@/lib/tagesliste). */
+export async function sendTageslisteEmail(an: string, betreff: string, text: string) {
+  return verschicken("TAGESLISTE", { to: an, subject: betreff, text });
+}
+
 /** Der Monatsbericht an das Team (@/lib/monatsbericht). */
 export async function sendMonatsberichtEmail(an: string, betreff: string, text: string) {
   return verschicken("MONATSBERICHT", { to: an, subject: betreff, text });
@@ -636,7 +791,7 @@ ${siteConfig.url}/admin/nachrichten?gelesen=neu`,
 }
 
 /**
- * Die Bitte um eine Bewertung, einen Tag nach dem Termin.
+ * Die Bitte um eine Bewertung - nur per Knopf bei der Anfrage.
  *
  * Drei Entscheidungen, die hier bewusst so getroffen sind:
  *
@@ -661,7 +816,7 @@ export async function sendBewertungEmail(
       subject: "How was your trial session?",
       text: `Hello ${angaben.name},
 
-yesterday you came to us${angaben.studioName ? ` in ${angaben.studioName.replace(/^Körperformen\s+/i, "")}` : ""} for a trial session.
+you recently came to us${angaben.studioName ? ` in ${angaben.studioName.replace(/^Körperformen\s+/i, "")}` : ""} for a trial session.
 
 If you have two minutes: a short review on Google helps us more than any
 ad - and it helps the next person who is wondering whether EMS is for them.
@@ -681,7 +836,7 @@ Your Körperformen team`,
     subject: "Wie war dein Probetraining?",
     text: `Hallo ${angaben.name},
 
-gestern warst du bei uns${angaben.studioName ? ` in ${angaben.studioName.replace(/^Körperformen\s+/i, "")}` : ""} zum Probetraining.
+vor kurzem warst du bei uns${angaben.studioName ? ` in ${angaben.studioName.replace(/^Körperformen\s+/i, "")}` : ""} zum Probetraining.
 
 Falls du dir zwei Minuten nehmen magst: Eine kurze Bewertung bei Google
 hilft uns mehr als jede Anzeige - und sie hilft dem Nächsten, der überlegt,

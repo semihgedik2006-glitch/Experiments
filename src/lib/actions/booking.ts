@@ -7,6 +7,8 @@ import { formatDate } from "@/lib/format";
 import {
   sendAnfrageEingangEmail,
   sendAnfrageInternEmail,
+  sendAnfrageKopieEmail,
+  kopieEmpfaenger,
   sendWartelisteInternEmail,
   TEAM_EMAIL,
   type AnfrageAngaben,
@@ -22,6 +24,7 @@ import { passtNoch } from "@/lib/kapazitaet";
 import type { ActionResult } from "@/lib/actions/newsletter";
 import { erreichbarkeitLabel, spanneLabel, spracheAusText, texte, zielLabel } from "@/lib/sprache";
 import { oeffnungszeitenAufEnglisch } from "@/lib/i18n/oeffnungszeiten";
+import { buchen, logxZugang } from "@/lib/logx";
 
 export async function createBooking(
   _prevState: ActionResult | undefined,
@@ -111,6 +114,77 @@ export async function createBooking(
     return { ok: false, message: codePruefung.meldung };
   }
 
+  // Freie Zeit aus LogX gewählt? Dann wird sie dort jetzt gebucht - als
+  // UNBESTÄTIGT vermerkt (@/lib/logx). Bei uns bleibt die Anfrage offen,
+  // bis das Studio nach dem Anruf bestätigt.
+  const logxToken = String(formData.get("logxToken") ?? "").trim().slice(0, 500);
+  const logxTag = String(formData.get("logxTag") ?? "").trim();
+  const logxVon = String(formData.get("logxVon") ?? "").trim();
+  let logxGebucht: { terminNr: number | null; tag: string; von: string } | null = null;
+  // Ging die Buchung in LogX schief, bleibt die gewählte Zeit als Wunsch
+  // an der Anfrage stehen - verloren geht keine.
+  let logxWunsch: string | null = null;
+  if (logxToken && studio && /^\d{4}-\d{2}-\d{2}$/.test(logxTag) && /^\d{2}:\d{2}$/.test(logxVon)) {
+    const en = sprache === "en";
+    const geschlecht = ({ frau: "female", herr: "male", divers: "diverse" } as const)[
+      String(formData.get("anrede") ?? "") as "frau" | "herr" | "divers"
+    ];
+    if (!geschlecht) {
+      return { ok: false, message: en ? "Please choose how we should address you." : "Bitte wähle eine Anrede." };
+    }
+    if (formData.get("logxEinwilligung") !== "on") {
+      return {
+        ok: false,
+        message: en
+          ? "Please confirm that we may enter the appointment in our booking system."
+          : "Bitte bestätige, dass wir den Termin in unser Terminsystem eintragen dürfen.",
+      };
+    }
+    const zugangDaten = await prisma.studioLocation
+      .findUnique({
+        where: { id: studio.id },
+        select: { logxStudioHash: true, logxProfileId: true, logxApiKey: true },
+      })
+      .catch(() => null);
+    const zugang = zugangDaten ? logxZugang(zugangDaten) : null;
+    const teile = name.split(/\s+/);
+    const ergebnis = zugang
+      ? await buchen(zugang, {
+          token: logxToken,
+          vorname: teile.length > 1 ? teile.slice(0, -1).join(" ") : name,
+          nachname: teile.length > 1 ? teile[teile.length - 1] : "-",
+          geschlecht,
+          telefon: phone,
+          email,
+          einwilligung: true,
+          bemerkung: [
+            "Website-Anfrage - NOCH UNBESTÄTIGT, bitte anrufen und bestätigen.",
+            `Erreichbar: ${erreichbarkeitText(erreichbarkeit)}.`,
+            ziel ? `Ziel: ${zielText(ziel)}.` : null,
+            zuZweit ? "Kommt zu zweit (zweites Gerät nötig)." : null,
+            sprache === "en" ? "Spricht Englisch - bitte auf Englisch anrufen." : null,
+            message ? `Nachricht: ${message}` : null,
+          ]
+            .filter(Boolean)
+            .join(" "),
+        })
+      : ({ ok: false, grund: "fehler" } as const);
+
+    if (ergebnis.ok) {
+      logxGebucht = { terminNr: ergebnis.terminNr, tag: ergebnis.tag, von: ergebnis.von };
+    } else if (ergebnis.grund === "belegt") {
+      return {
+        ok: false,
+        message: en
+          ? "That time has just been taken - please choose another one."
+          : "Diese Zeit ist gerade weg - bitte eine andere wählen.",
+      };
+    } else {
+      const [j, m, t2] = logxTag.split("-").map(Number);
+      logxWunsch = `Gewählt: ${formatDate(new Date(Date.UTC(j, m - 1, t2)))} um ${logxVon} Uhr (nicht in LogX eingetragen - bitte von Hand)`;
+    }
+  }
+
   if (slotId) {
     const slot = await prisma.availabilitySlot.findUnique({
       where: { id: slotId },
@@ -184,15 +258,26 @@ export async function createBooking(
 
   const herkunft = herkunftAusFormular(formData);
 
+  const logxTagAlsDatum = logxGebucht
+    ? (() => {
+        const [j, m, t2] = logxGebucht.tag.split("-").map(Number);
+        return new Date(Date.UTC(j, m - 1, t2));
+      })()
+    : null;
+
   const buchung = await prisma.booking.create({
     data: {
-      slotId,
+      slotId: logxToken ? null : slotId,
+      terminTag: logxTagAlsDatum,
+      terminUhrzeit: logxGebucht?.von ?? null,
+      logxAppointmentId: logxGebucht?.terminNr ?? null,
+      logxGebuchtAm: logxGebucht ? new Date() : null,
       studioId: studio?.id ?? null,
       name,
       email,
       phone,
       message: message || null,
-      terminWunsch,
+      terminWunsch: logxWunsch ?? terminWunsch,
       ziel,
       erreichbarkeit,
       zuZweit,
@@ -227,6 +312,8 @@ export async function createBooking(
       antwortAn: buchung.studio?.email ?? null,
       terminZeile: buchung.slot
         ? `${formatDate(buchung.slot.date)} um ${buchung.slot.startTime} Uhr`
+        : logxTagAlsDatum
+          ? `Wunschtermin ${formatDate(logxTagAlsDatum)} um ${buchung.terminUhrzeit} Uhr - vorgemerkt, wir rufen zur Bestätigung an`
         : buchung.terminWunsch
           ? `Wunsch: ${buchung.terminWunsch} - Termin abstimmen`
           : "kein Wunsch angegeben - Termin abstimmen",
@@ -245,6 +332,7 @@ export async function createBooking(
         .filter(Boolean)
         .join(" · ") || null,
       sprache,
+      logxTerminNr: logxGebucht ? (logxGebucht.terminNr ?? 0) : null,
       // Für die Eingangsbestätigung an den Gast. Die Mail ans Studio
       // bleibt deutsch.
       englisch:
@@ -258,6 +346,8 @@ export async function createBooking(
                 .join(", "),
               terminZeile: buchung.slot
                 ? `${formatDate(buchung.slot.date, "en")} at ${oeffnungszeitenAufEnglisch(buchung.slot.startTime)}`
+                : logxTagAlsDatum
+                  ? `Preferred slot ${formatDate(logxTagAlsDatum, "en")} at ${oeffnungszeitenAufEnglisch(buchung.terminUhrzeit ?? "")} - reserved, we will call you to confirm`
                 : buchung.terminWunsch
                   ? `Preferred: ${buchung.terminWunsch} - we will agree the exact time with you`
                   : "No preference given - we will agree the time with you",
@@ -266,20 +356,26 @@ export async function createBooking(
           : undefined,
     };
 
-    await sendAnfrageEingangEmail(angaben);
-
-    // An das Studio, sonst an die Sammeladresse. Gibt es beides nicht,
-    // unterbleibt die Benachrichtigung - eine Mail an eine geratene
-    // Adresse wäre schlimmer als keine.
+    // Zuerst ans Studio - das ist die Mail, ohne die niemand zurückruft.
+    // Gibt es dort keine Adresse, an die Sammeladresse; fehlt auch die,
+    // fängt die Kopie an die Leitung das auf.
     const an = buchung.studio?.email?.trim() || TEAM_EMAIL;
+    let studioOk = false;
     if (an) {
-      const ok = await sendAnfrageInternEmail(an, angaben);
-      if (ok) {
+      studioOk = await sendAnfrageInternEmail(an, angaben);
+      if (studioOk) {
         await prisma.booking.update({
           where: { id: buchung.id },
           data: { studioBenachrichtigtAm: new Date() },
         });
       }
+    }
+
+    await sendAnfrageEingangEmail(angaben);
+
+    for (const kopieAn of await kopieEmpfaenger()) {
+      if (kopieAn.toLowerCase() === an?.toLowerCase()) continue;
+      await sendAnfrageKopieEmail(kopieAn, angaben, { adresse: an, ok: studioOk });
     }
   });
 
@@ -290,5 +386,14 @@ export async function createBooking(
   // er dort bis zu fünf Minuten frei (siehe app/layout.tsx).
   if (buchung.slot) revalidatePath("/", "layout");
 
+  if (logxTagAlsDatum) {
+    return {
+      ok: true,
+      message:
+        sprache === "en"
+          ? `Your preferred slot on ${formatDate(logxTagAlsDatum, "en")} at ${oeffnungszeitenAufEnglisch(logxGebucht?.von ?? "")} is reserved - we will call you to confirm it.`
+          : `Dein Wunschtermin am ${formatDate(logxTagAlsDatum)} um ${logxGebucht?.von} Uhr ist vorgemerkt - wir rufen dich an und bestätigen ihn.`,
+    };
+  }
   return { ok: true, message: t.danke };
 }

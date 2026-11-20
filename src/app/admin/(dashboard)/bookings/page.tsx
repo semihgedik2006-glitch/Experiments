@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { notizSpeichern, updateBookingStatus } from "@/lib/actions/admin-bookings";
+import {
+  fortschrittSetzen,
+  notizSpeichern,
+  studioMailNachsenden,
+  bewertungAnfragen,
+  updateBookingStatus,
+} from "@/lib/actions/admin-bookings";
 import { terminAusFormular } from "@/lib/vereinbarter-termin";
 import { formatDate } from "@/lib/format";
 import { AdminStagger, AdminStaggerItem } from "@/components/admin/admin-stagger";
@@ -25,6 +31,8 @@ import { PRO_SEITE, param, seitenZahl, suchFilter, type SuchParams } from "@/lib
 import type { Prisma } from "@/generated/prisma/client";
 import type { BookingStatus } from "@/generated/prisma/enums";
 import { STATUS_LABEL, STATUS_TON, statusAusText } from "@/lib/buchung-status";
+import { FORTSCHRITT_LABEL, FORTSCHRITT_TON, FORTSCHRITT_WERTE, fortschrittAusText } from "@/lib/fortschritt";
+import type { Fortschritt } from "@/generated/prisma/enums";
 import { studioEinschraenkung, verlangeAdmin } from "@/lib/admin-rechte";
 import { AntwortKnopf } from "@/components/admin/antwort-knopf";
 
@@ -43,6 +51,7 @@ export default async function AdminBookingsPage({
   const studioFilter = nurStudio ?? param(params, "studio");
   const begriff = param(params, "q");
   const status = statusAusText(param(params, "status"));
+  const stand = fortschrittAusText(param(params, "stand"));
   const seite = seitenZahl(params);
 
   const where: Prisma.BookingWhereInput = {
@@ -51,6 +60,7 @@ export default async function AdminBookingsPage({
     // einem Studio zugeordnet - vorher sah sie nur die Leitung.
     ...(studioFilter ? { studioId: studioFilter } : {}),
     ...(status ? { status } : {}),
+    ...(stand ? { fortschritt: stand } : {}),
     ...(suchFilter(begriff, ["name", "email", "phone", "message", "terminWunsch"]) ?? {}),
   };
 
@@ -59,15 +69,17 @@ export default async function AdminBookingsPage({
   // Meier, nicht alle offenen überhaupt.
   const ohneStatus: Prisma.BookingWhereInput = { ...where };
   delete ohneStatus.status;
+  const ohneStand: Prisma.BookingWhereInput = { ...where };
+  delete ohneStand.fortschritt;
 
-  const [studios, gesamt, bookings, zaehler, vorlagen] = await Promise.all([
+  const [studios, gesamt, bookings, zaehler, vorlagen, standZaehler] = await Promise.all([
     prisma.studioLocation.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.booking.count({ where }),
     prisma.booking.findMany({
       where,
       include: {
         slot: true,
-        studio: { select: { name: true } },
+        studio: { select: { name: true, googleReviewUrl: true } },
         promotion: { select: { code: true, label: true } },
       },
       // Zweites Sortierkriterium: Ohne eindeutiges Merkmal darf die
@@ -85,13 +97,16 @@ export default async function AdminBookingsPage({
       select: { id: true, titel: true, betreff: true, text: true },
       orderBy: [{ sortOrder: "asc" }, { titel: "asc" }],
     }),
+    prisma.booking.groupBy({ by: ["fortschritt"], where: ohneStand, _count: true }),
   ]);
+  const standAnzahl = (f: Fortschritt) =>
+    standZaehler.find((eintrag) => eintrag.fortschritt === f)?._count ?? 0;
 
   const anzahl = (s: BookingStatus) =>
     zaehler.find((eintrag) => eintrag.status === s)?._count ?? 0;
   const alle = zaehler.reduce((summe, eintrag) => summe + eintrag._count, 0);
 
-  const gefiltert = Boolean(begriff || status || (admin.istLeitung && studioFilter));
+  const gefiltert = Boolean(begriff || status || stand || (admin.istLeitung && studioFilter));
 
   return (
     <AdminPage
@@ -133,6 +148,22 @@ export default async function AdminBookingsPage({
             { wert: "PENDING", label: "Offen", anzahl: anzahl("PENDING") },
             { wert: "CONFIRMED", label: "Bestätigt", anzahl: anzahl("CONFIRMED") },
             { wert: "CANCELLED", label: "Storniert", anzahl: anzahl("CANCELLED") },
+          ]}
+        />
+
+        {/* Wie weit die Anfragen gekommen sind. "Neu" und "Nicht
+            erreicht" sind die Liste für den nächsten Anruf. */}
+        <FilterChips
+          basis="/admin/bookings"
+          params={params}
+          name="stand"
+          optionen={[
+            { wert: "", label: "Jeder Stand" },
+            ...FORTSCHRITT_WERTE.map((wert) => ({
+              wert,
+              label: FORTSCHRITT_LABEL[wert],
+              anzahl: standAnzahl(wert),
+            })),
           ]}
         />
 
@@ -184,6 +215,16 @@ export default async function AdminBookingsPage({
                     <span className="text-muted"> &middot; {booking.studio.name}</span>
                   )}
                 </p>
+                {/* Der Gast hat eine freie Zeit aus LogX gewählt - dort steht
+                    der Termin schon, als unbestätigt. Nach dem Anruf in LogX
+                    freigeben, hier bestätigen. */}
+                {booking.logxGebuchtAm && (
+                  <p className="mt-1.5 inline-flex rounded-full bg-sky-500/15 px-2.5 py-0.5 text-xs font-semibold text-sky-800 dark:text-sky-300">
+                    In LogX vorgemerkt{booking.logxAppointmentId ? ` (Termin-Nr. ${booking.logxAppointmentId})` : ""}
+                    {booking.status === "PENDING" ? " - noch unbestätigt" : ""}
+                    {booking.status === "CANCELLED" ? " - storniert: bitte in LogX löschen" : ""}
+                  </p>
+                )}
                 {/* Ob die Mail ans Studio rausging.
                     Der Merker wurde beim Absenden gesetzt, stand aber
                     nirgends - man konnte also nicht sehen, ob jemand im
@@ -202,12 +243,48 @@ export default async function AdminBookingsPage({
                   ) : (
                     <>
                       <MailWarning size={13} className="shrink-0 text-amber-600" aria-hidden />
-                      <span className="text-muted">
+                      <span className="font-semibold text-amber-700 dark:text-amber-400">
                         Keine Mail ans Studio rausgegangen &ndash; diese Anfrage steht nur hier.
                       </span>
                     </>
                   )}
                 </p>
+                <AdminForm action={studioMailNachsenden} className="mt-1.5">
+                  <input type="hidden" name="id" value={booking.id} />
+                  <SubmitButton
+                    variant={booking.studioBenachrichtigtAm ? "outline" : "primary"}
+                    className="!px-2.5 !py-1 text-xs"
+                    pendingLabel="Wird gesendet …"
+                    savedLabel="Gesendet - Ergebnis unter E-Mail-Versand"
+                  >
+                    {booking.studioBenachrichtigtAm ? "Noch einmal ans Studio senden" : "Jetzt ans Studio senden"}
+                  </SubmitButton>
+                </AdminForm>
+                {/* Bitte um eine Google-Bewertung - nur per Knopf, nie
+                    automatisch. Ohne Bewertungslink beim Studio hätte die
+                    Mail kein Ziel. */}
+                {booking.status !== "CANCELLED" &&
+                  (booking.studio?.googleReviewUrl?.trim() ? (
+                    <AdminForm action={bewertungAnfragen} className="mt-1.5 flex flex-wrap items-center gap-2">
+                      <input type="hidden" name="id" value={booking.id} />
+                      <SubmitButton
+                        className="!px-2.5 !py-1 text-xs"
+                        pendingLabel="Wird gesendet …"
+                        savedLabel="Bitte um Bewertung gesendet"
+                      >
+                        {booking.bewertungGesendetAm ? "Noch einmal um Bewertung bitten" : "Um Google-Bewertung bitten"}
+                      </SubmitButton>
+                      {booking.bewertungGesendetAm && (
+                        <span className="text-xs text-muted">
+                          Zuletzt gebeten am {formatDate(booking.bewertungGesendetAm)}
+                        </span>
+                      )}
+                    </AdminForm>
+                  ) : (
+                    <p className="mt-1.5 text-xs text-muted">
+                      Für die Bitte um eine Bewertung beim Studio den Google-Bewertungslink eintragen.
+                    </p>
+                  ))}
                 {/* Zu zweit ist eine Angabe über Plätze, nicht über
                     Vorlieben: Zwei Personen brauchen zwei Geräte und zwei
                     Westen. Wer das erst an der Tür erfährt, muss jemanden
@@ -274,6 +351,9 @@ export default async function AdminBookingsPage({
                 <StatusBadge ton={STATUS_TON[booking.status]}>
                   {STATUS_LABEL[booking.status]}
                 </StatusBadge>
+                <StatusBadge ton={FORTSCHRITT_TON[booking.fortschritt]}>
+                  {FORTSCHRITT_LABEL[booking.fortschritt]}
+                </StatusBadge>
                 {/* Antworten auch hier: Nicht jede Anfrage wird am Telefon
                     erledigt, und wer dreimal nicht drangeht, bekommt sonst
                     gar nichts. */}
@@ -309,11 +389,22 @@ export default async function AdminBookingsPage({
                     <>
                       <label className="text-xs">
                         <span className="block text-muted">Vereinbarter Tag</span>
-                        <input type="date" name="terminTag" className={`${adminInput} mt-1 !py-1.5`} />
+                        <input
+                          type="date"
+                          name="terminTag"
+                          defaultValue={booking.terminTag ? booking.terminTag.toISOString().slice(0, 10) : undefined}
+                          className={`${adminInput} mt-1 !py-1.5`}
+                        />
                       </label>
                       <label className="text-xs">
                         <span className="block text-muted">Uhrzeit</span>
-                        <input type="time" name="terminUhrzeit" step={300} className={`${adminInput} mt-1 !py-1.5`} />
+                        <input
+                          type="time"
+                          name="terminUhrzeit"
+                          step={300}
+                          defaultValue={booking.terminUhrzeit ?? undefined}
+                          className={`${adminInput} mt-1 !py-1.5`}
+                        />
                       </label>
                     </>
                   )}
@@ -340,13 +431,46 @@ export default async function AdminBookingsPage({
                   <ConfirmButton
                     label="Ablehnen"
                     icon="termin"
-                    question={`Anfrage von ${booking.name} ablehnen? Es geht dabei keine E-Mail raus - bitte selbst absagen.`}
+                    question={`Anfrage von ${booking.name} ablehnen? Es geht dabei keine E-Mail raus - bitte selbst absagen.${
+                      booking.logxGebuchtAm ? " Bitte den Termin auch in LogX löschen - die Schnittstelle kann das nicht." : ""
+                    }`}
                     confirmLabel="Ja, ablehnen"
                     pendingLabel="Wird abgelehnt..."
                   />
                 </form>
               </div>
             )}
+
+            {/* Stand der Anfrage: angerufen, nicht erreicht, war da ...
+                Daraus entsteht in der Auswertung der Weg von der Anfrage
+                zum Mitglied. "Nicht erschienen" schickt dem Gast einmal
+                eine freundliche Mail mit dem Weg zu einem neuen Termin. */}
+            <AdminForm action={fortschrittSetzen} className="mt-4 flex flex-wrap items-end gap-2">
+              <input type="hidden" name="id" value={booking.id} />
+              <label className="text-xs">
+                <span className="block text-muted">Stand</span>
+                <select
+                  name="fortschritt"
+                  defaultValue={booking.fortschritt}
+                  className={`${adminInput} mt-1 !py-1.5`}
+                >
+                  {FORTSCHRITT_WERTE.map((wert) => (
+                    <option key={wert} value={wert}>
+                      {FORTSCHRITT_LABEL[wert]}
+                      {wert === "NICHT_ERSCHIENEN" ? " – Mail an Gast" : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <SubmitButton className="!px-4 !py-2 !text-xs" pendingLabel="Wird gesetzt..." savedLabel="Gesetzt">
+                Stand setzen
+              </SubmitButton>
+              {booking.fortschrittAm && (
+                <span className="pb-2 text-xs text-muted">
+                  zuletzt geändert am {formatDate(booking.fortschrittAm)}
+                </span>
+              )}
+            </AdminForm>
 
             {/* Interner Vermerk - nur hier sichtbar, nie in einer E-Mail.
                 Bewusst offen statt hinter einem Knopf: Ein Vermerk, den man
@@ -407,7 +531,9 @@ export default async function AdminBookingsPage({
                   <ConfirmButton
                     label="Stornieren"
                     icon="termin"
-                    question={`Bestätigten Termin von ${booking.name} stornieren? Der Platz wird wieder frei, eine Absage-E-Mail geht nicht automatisch raus.`}
+                    question={`Bestätigten Termin von ${booking.name} stornieren? Der Platz wird wieder frei, eine Absage-E-Mail geht nicht automatisch raus.${
+                      booking.logxGebuchtAm ? " Bitte den Termin auch in LogX löschen - die Schnittstelle kann das nicht." : ""
+                    }`}
                     confirmLabel="Ja, stornieren"
                     pendingLabel="Wird storniert..."
                   />

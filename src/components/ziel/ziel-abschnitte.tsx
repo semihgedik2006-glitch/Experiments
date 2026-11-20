@@ -21,6 +21,11 @@ import { useSprache } from "@/lib/i18n/use-sprache";
  * die Reihenfolge eines Ziels nicht nennt, entfällt für dieses Ziel; so
  * wird die Seite für jeden kürzer. Ohne Ziel steht alles da, wie immer -
  * auch für Suchmaschinen, die nie ein Ziel wählen.
+ *
+ * Jeder Abschnitt trägt .abschnitt-ruht: Was nicht im Bild ist, rechnet
+ * der Browser nicht (siehe globals.css). Die Startseite ist auf dem Handy
+ * gut fünfzehn Bildschirme lang - ohne das wird alles schon beim Laden
+ * gesetzt und gezeichnet, auch was nie jemand sieht.
  */
 export function ZielAbschnitte({ abschnitte }: { abschnitte: Partial<Record<AbschnittKey, ReactNode>> }) {
   const { ziel } = useZiel();
@@ -28,7 +33,11 @@ export function ZielAbschnitte({ abschnitte }: { abschnitte: Partial<Record<Absc
   return (
     <>
       {reihenfolge.map((key) =>
-        abschnitte[key] ? <div key={key}>{abschnitte[key]}</div> : null,
+        abschnitte[key] ? (
+          <div key={key} className="abschnitt-ruht">
+            {abschnitte[key]}
+          </div>
+        ) : null,
       )}
     </>
   );

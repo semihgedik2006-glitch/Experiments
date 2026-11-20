@@ -1,3 +1,4 @@
+import { STUFEN, STUFE_LABEL, einzaehlen, leererTrichter } from "@/lib/fortschritt";
 import { prisma } from "@/lib/prisma";
 import { zielText } from "@/lib/ziel";
 
@@ -74,6 +75,7 @@ export async function monatsberichtText(jetzt = new Date()): Promise<{ betreff: 
       where: { createdAt: { gte: von, lt: bis } },
       select: {
         status: true,
+        fortschritt: true,
         studioId: true,
         ziel: true,
         herkunftKampagne: true,
@@ -94,11 +96,13 @@ export async function monatsberichtText(jetzt = new Date()): Promise<{ betreff: 
   let bestaetigt = 0;
   let offen = 0;
   let abgesagt = 0;
+  const trichter = leererTrichter();
 
   for (const a of anfragen) {
     if (a.status === "CONFIRMED") bestaetigt++;
     else if (a.status === "PENDING") offen++;
     else if (a.status === "CANCELLED") abgesagt++;
+    einzaehlen(trichter, a.fortschritt);
     zaehlen(proStudio, a.studioId ? (studioName.get(a.studioId) ?? "unbekannt") : "ohne Standort");
     zaehlen(
       proHerkunft,
@@ -126,6 +130,9 @@ ANFRAGEN: ${n}${vergleich}
   bestätigt   ${bestaetigt}${anteil(bestaetigt)}
   noch offen  ${offen}${anteil(offen)}
   abgesagt    ${abgesagt}${anteil(abgesagt)}
+
+VON DER ANFRAGE ZUM MITGLIED (nach dem Stand, den die Studios setzen)
+${STUFEN.map((stufe) => `  ${STUFE_LABEL[stufe].padEnd(11)} ${String(trichter[stufe]).padStart(3)}${stufe === "anfragen" ? "" : anteil(trichter[stufe])}`).join("\n")}
 
 JE STUDIO
 ${liste(proStudio, 20)}

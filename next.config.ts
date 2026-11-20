@@ -1,14 +1,39 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV === "development";
+
 /**
- * Sicherheits-Header für alle Seiten.
- *
- * Bewusst ohne Content-Security-Policy: Google Analytics und die
- * Google-Maps-Einbettung würden eine CSP erfordern, die beide Dienste
- * explizit erlaubt. Eine zu strenge CSP legt die Seite still lahm, eine zu
- * lockere bringt wenig - das gehört gesondert getestet.
+ * Content-Security-Policy ohne Nonces: Nonces erzwängen dynamisches Rendern
+ * jeder Seite (kein statisches Ausliefern, kein ISR). Deshalb bleibt
+ * 'unsafe-inline' für Skripte, aber fremde Skript-Quellen, Rahmen, Formular-
+ * ziele, <base> und Plugins sind gesperrt. Erlaubt sind nur Google Analytics
+ * (nach Zustimmung) und die Google-Maps-Karte. Bilder dürfen von jeder
+ * https-Adresse kommen, weil Titel- und Trainerbilder als freie Adresse im
+ * Adminbereich gepflegt werden. Wer einen neuen Dienst einbindet, trägt ihn
+ * hier und in tests/csp.test.ts ein.
  */
+export const contentSecurityPolicy = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data:",
+  "media-src 'self' blob:",
+  "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.g.doubleclick.net https://www.google.com",
+  "frame-src https://www.google.com https://maps.google.com",
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+  "upgrade-insecure-requests",
+].join("; ");
+
+/** Sicherheits-Header für alle Seiten. */
 const securityHeaders = [
+  { key: "Content-Security-Policy", value: contentSecurityPolicy },
+
   // Verhindert, dass die Seite in einen fremden Rahmen eingebettet wird
   // (Clickjacking, z.B. um Klicks auf den Buchungs-Button zu erschleichen).
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
@@ -35,11 +60,13 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // Seitenübergänge über die View-Transitions-Schnittstelle des Browsers
-  // (siehe src/components/ui/ziel-uebergang.tsx). Experimentell in Next 16;
-  // Browser ohne Unterstützung wechseln die Seite einfach wie bisher.
+  // Seitenübergänge (src/components/ui/ziel-uebergang.tsx) brauchen seit
+  // Next 16.3 keinen Schalter mehr.
   experimental: {
-    viewTransition: true,
+    // Das Stylesheet steht direkt im HTML statt als eigene Datei. Am Handy
+    // spart das beim ersten Besuch eine Runde zum Server, bevor überhaupt
+    // etwas zu sehen ist: gemessen rund 0,9 s früher sichtbar (16.11.2026).
+    inlineCss: true,
   },
   async headers() {
     return [

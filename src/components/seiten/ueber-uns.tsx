@@ -170,7 +170,7 @@ export async function UeberUnsSeite({ sprache }: { sprache: Sprache }) {
         intro={
           en
             ? "20 minutes a week, personally supervised - whether your goal is losing weight, building muscle or a stronger back."
-            : "20 Minuten pro Woche, persönlich betreut - ob Abnehmen, Muskelaufbau oder ein gesünderer Rücken."
+            : "20 Minuten pro Woche, persönlich betreut - ob Abnehmen, Muskelaufbau oder ein kräftigerer Rücken."
         }
       >
         <p className="mt-6 max-w-2xl font-semibold text-accent">

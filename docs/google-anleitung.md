@@ -65,3 +65,44 @@ doppelten Seiten.
 
 Dasselbe Prinzip funktioniert überall: `?k=instagram-bio`, `?k=flyer-messe`
 usw. – was hinter `k=` steht, erscheint bei der Anfrage als Kampagne.
+
+## 3. Echte Google-Bewertungen auf den Studioseiten (ca. 20 Minuten)
+
+Die Studioseiten können die Google-Sterne und die drei neuesten
+Bewertungen mit Text zeigen – echte Daten direkt von Google, nichts
+Erfundenes. Dafür braucht es einmalig einen Schlüssel von Google und pro
+Studio die sogenannte Place-ID.
+
+**Kosten:** Google verlangt eine hinterlegte Zahlungsart. Die Website fragt
+pro Studio höchstens einmal am Tag ab; das liegt bei 14 Studios weit
+innerhalb des Freikontingents, das Google jeden Monat gutschreibt.
+
+### Schlüssel anlegen
+
+1. https://console.cloud.google.com öffnen und mit dem Google-Konto
+   anmelden.
+2. Oben auf die Projektauswahl → **„Neues Projekt“** → Name z. B.
+   „Körperformen Website“ → Erstellen.
+3. Links **„APIs & Dienste“ → „Bibliothek“** → nach **„Places API (New)“**
+   suchen → **Aktivieren**. (Falls gefragt: Abrechnungskonto anlegen.)
+4. **„APIs & Dienste“ → „Anmeldedaten“ → „Anmeldedaten erstellen“ →
+   „API-Schlüssel“**. Der Schlüssel beginnt mit `AIza…`.
+5. Beim Schlüssel auf **„Schlüssel bearbeiten“** → unter
+   „API-Einschränkungen“ **„Schlüssel einschränken“** → nur
+   **„Places API (New)“** anhaken → Speichern. So taugt der Schlüssel für
+   nichts anderes, falls er je in falsche Hände gerät.
+6. In Vercel: Projekt → Settings → Environment Variables → Name
+   `GOOGLE_PLACES_API_KEY`, Wert = der Schlüssel, Umgebung „Production“ →
+   Save → unter Deployments einmal **Redeploy**.
+
+### Place-ID je Studio eintragen
+
+1. Im Adminbereich unter **Studios** ein Studio öffnen.
+2. Beim Feld **„Google-Place-ID“** auf **„Place-ID suchen“** klicken. Die
+   Suche nimmt Name und Adresse aus dem Formular und zeigt passende Treffer.
+3. Den richtigen Treffer anklicken – die ID steht dann im Feld – und das
+   Studio **speichern**.
+
+Danach erscheinen auf der Studioseite die Sterne und die Bewertungen
+(spätestens nach einigen Minuten). Fehlt Schlüssel oder ID, zeigt die
+Seite an dieser Stelle einfach nichts.

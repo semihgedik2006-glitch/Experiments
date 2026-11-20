@@ -30,7 +30,7 @@ export const STARTPAKET_WERT = 99.9;
 export type GutscheinArt = "wert" | "startpaket" | "weihnachten";
 
 /** Die Weihnachtsaktion als ausgegebener Gutschein - vier Einheiten. */
-export const WEIHNACHTEN_WERT = 90;
+export const WEIHNACHTEN_WERT = 99;
 
 export const ZAHLWEG_TEXT: Record<string, string> = {
   studio: "im Studio bezahlt",

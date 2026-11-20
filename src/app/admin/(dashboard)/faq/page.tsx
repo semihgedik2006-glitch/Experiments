@@ -6,6 +6,7 @@ import { ConfirmButton } from "@/components/admin/confirm-button";
 import { AdminPage, EmptyState, adminInput } from "@/components/admin/ui";
 import { HelpCircle } from "lucide-react";
 import { verlangeLeitung } from "@/lib/admin-rechte";
+import { NoxEntwuerfe } from "@/components/admin/nox-entwuerfe";
 
 export default async function AdminFaqPage() {
   await verlangeLeitung();
@@ -21,6 +22,8 @@ export default async function AdminFaqPage() {
         </>
       }
     >
+      <NoxEntwuerfe art="faq" />
+
       {/* Neue Frage anlegen */}
       <AdminForm
         action={createFaqItem}

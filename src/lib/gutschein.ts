@@ -3,22 +3,21 @@
  *
  * Zwei Wege:
  *   1. Die WEIHNACHTSAKTION (unten) wird online über Digistore24 gekauft -
- *      Wunsch Marcel, 26.10.2026: "4 Wochen für 90 €", ab 1. Dezember,
+ *      Wunsch Marcel, 26.10.2026: "4 Wochen für 90 €" (am 03.11.2026 auf 99 € geändert), ab 1. Dezember,
  *      zum Verschenken oder selbst nutzen. Digistore24 übernimmt Zahlung,
  *      Rechnung und Widerrufsbelehrung; der Kunde bekommt den Gutschein
  *      als PDF.
  *   2. Alle anderen Gutscheine: Anfrage über das Formular, bezahlt wird im
  *      Studio oder per Überweisung.
  *
- * PREISE TRAGT IHR HIER EIN. Solange "preis" null ist, steht dort
- * "Preis auf Anfrage" - eine erfundene Zahl wäre schlimmer als keine.
+ * Für die Gutscheine über das Formular stehen KEINE PREISE auf der Seite -
+ * so gewünscht (Oktober 2026); den Preis nennt das Studio auf die Anfrage
+ * hin. Einzige Ausnahme ist die Weihnachtsaktion mit festem Preis.
  */
 
 export type GutscheinArt = {
   titel: string;
   text: string;
-  /** z. B. "149 €" - null, solange noch nicht festgelegt. */
-  preis: string | null;
   hervorgehoben?: boolean;
 };
 
@@ -27,26 +26,22 @@ export const GUTSCHEINE: GutscheinArt[] = [
   {
     titel: "Wertgutschein",
     text: "Ein Betrag eurer Wahl – einlösbar für Training und Mitgliedschaft, in der Regel in allen unseren Studios.",
-    preis: null,
   },
   {
     titel: "Zehnerkarte",
     text: "Zehn Einheiten, frei über das Jahr verteilt – für alle, die erst einmal reinschnuppern wollen.",
-    preis: null,
   },
 ];
 
-/** Dieselben Gutscheine auf Englisch (Seite /en/voucher). Preise wie oben. */
+/** Dieselben Gutscheine auf Englisch (Seite /en/voucher). */
 export const GUTSCHEINE_EN: GutscheinArt[] = [
   {
     titel: "Gift voucher",
     text: "An amount of your choice – redeemable for training and membership, usually at all of our studios.",
-    preis: GUTSCHEINE[0].preis,
   },
   {
     titel: "10-session card",
     text: "Ten sessions, spread freely over the year – for anyone who wants to give it a try first.",
-    preis: GUTSCHEINE[1].preis,
   },
 ];
 
@@ -77,8 +72,8 @@ export type Aktion = {
 export const WEIHNACHTSAKTION: Aktion = {
   kicker: "Weihnachtsaktion",
   titel: "4 Wochen EMS-Training",
-  preis: "90 €",
-  betrag: 90,
+  preis: "99 €",
+  betrag: 99,
   text: "Zum Verschenken oder selbst nutzen: vier Einheiten à 20 Minuten, jede mit persönlichem Trainer.",
   punkte: [
     "4 Einheiten à 20 Minuten mit deinem Trainer",
@@ -92,8 +87,8 @@ export const WEIHNACHTSAKTION: Aktion = {
 export const WEIHNACHTSAKTION_EN: Aktion = {
   kicker: "Christmas offer",
   titel: "4 weeks of EMS training",
-  preis: "€90",
-  betrag: 90,
+  preis: "€99",
+  betrag: 99,
   text: "Give it as a gift or use it yourself: four 20-minute sessions, each with a personal trainer.",
   punkte: [
     "4 sessions of 20 minutes with your trainer",

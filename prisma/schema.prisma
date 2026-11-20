@@ -45,6 +45,8 @@ enum MailArt {
   ANFRAGE_EINGANG
   /// An das Studio, sobald eine Anfrage da ist.
   ANFRAGE_INTERN
+  /// Kopie einer neuen Anfrage an die Leitung, mit dem Stand der Studio-Mail.
+  ANFRAGE_KOPIE
   /// An das Studio, wenn eine Anfrage zu lange offen liegt.
   NACHFASS_INTERN
   /// An das Team, sobald eine Kontaktnachricht da ist.
@@ -79,6 +81,30 @@ enum MailArt {
   GUTSCHEIN_INTERN
   /// Einmal im Monat an das Team: die Zahlen des Vormonats.
   MONATSBERICHT
+  /// An den Gast, wenn er zum vereinbarten Termin nicht gekommen ist:
+  /// freundlich, mit dem Link, über den er einen neuen Termin wählt.
+  NICHT_ERSCHIENEN
+  /// Jeden Morgen an jedes Studio: offene Anfragen und die Termine des Tages.
+  TAGESLISTE
+}
+
+/// Wie weit eine Anfrage gekommen ist - von "eben eingegangen" bis
+/// "Mitglied geworden".
+///
+/// Getrennt vom BookingStatus (offen / bestätigt / storniert), der den
+/// Termin selbst beschreibt und an dem Mails und Kalender hängen. Der
+/// Fortschritt beschreibt dagegen den Menschen: ob das Studio ihn erreicht
+/// hat, ob er gekommen ist, was daraus wurde. Daraus entsteht in der
+/// Auswertung der Weg von der Anfrage zum Mitglied.
+enum Fortschritt {
+  NEU
+  ANGERUFEN
+  NICHT_ERREICHT
+  TERMIN_VEREINBART
+  ERSCHIENEN
+  NICHT_ERSCHIENEN
+  MITGLIED
+  KEIN_INTERESSE
 }
 
 /// Nachweis, dass eine E-Mail den Weg nach draußen gefunden hat.
@@ -160,6 +186,18 @@ model StudioLocation {
   /// Ohne ihn unterbleibt die Bitte um eine Bewertung - eine Mail, die
   /// jemanden auf die Suche schickt, bringt keine Bewertung.
   googleReviewUrl String?
+  /// Die Google-Place-ID des Studios ("ChIJ..."). Damit holt die Website
+  /// Sternebewertung und die neuesten Bewertungen von Google - echte Daten,
+  /// serverseitig, siehe @/lib/google-bewertungen. Leer: es wird nichts
+  /// angezeigt.
+  googlePlaceId   String?
+  /// LogX-Anbindung (TryNow, miha bodytec): Kennung des Studios in LogX,
+  /// optional das TryNow-Profil, und der API-Schlüssel. Der Schlüssel wird
+  /// nur auf dem Server benutzt und nie an den Browser gegeben. Fehlt
+  /// etwas davon, bleibt es beim Anfrageformular mit Wunschzeiten.
+  logxStudioHash  String?
+  logxProfileId   Int?
+  logxApiKey      String?
   /// WhatsApp-Nummer dieses Standorts. Getrennt vom Telefonfeld, weil
   /// nicht jede Festnetznummer bei WhatsApp erreichbar ist.
   whatsapp      String?
@@ -371,6 +409,12 @@ model Booking {
   terminTag      DateTime?
   terminUhrzeit  String?
 
+  /// Die Terminnummer in LogX, wenn der Gast eine freie Zeit aus dem
+  /// LogX-Kalender gewählt hat. Der Termin steht dort dann schon - als
+  /// UNBESTÄTIGT vermerkt, bis das Studio ihn nach dem Anruf freigibt.
+  logxAppointmentId Int?
+  logxGebuchtAm     DateTime?
+
   /// Was der Gast erreichen will - einer der Werte aus src/lib/ziel.ts.
   /// Freiwillig: Eine Anfrage darf nicht daran scheitern, dass jemand sein
   /// Ziel noch nicht benennen kann. Bewusst KEINE Gesundheitsangabe, siehe
@@ -440,6 +484,17 @@ model Booking {
   /// Kommt zu zweit. Belegt dann zwei Plätze des Termins - sonst stünde
   /// bei einem Termin für eine Person plötzlich ein Paar.
   zuZweit                Boolean   @default(false)
+
+  /// Wie weit die Anfrage gekommen ist (siehe enum Fortschritt), gesetzt
+  /// vom Studio in der Buchungsliste.
+  fortschritt            Fortschritt @default(NEU)
+  /// Wann der Fortschritt zuletzt geändert wurde.
+  fortschrittAm          DateTime?
+  /// Wann die freundliche "Schade, dass es nicht geklappt hat"-Mail
+  /// rausging. Verhindert, dass sie bei erneutem Setzen doppelt kommt.
+  nichtErschienenGesendetAm DateTime?
+
+  @@index([fortschritt])
 }
 
 model BlogPost {
@@ -1160,4 +1215,26 @@ model Kennzahl {
   updatedAt DateTime @updatedAt
 
   @@unique([studioId, monat])
+}
+
+/// Vorschlag von Nox für eine FAQ oder einen Studio-Text.
+///
+/// Eigene Tabelle statt eines Entwurf-Schalters an FaqItem und
+/// StudioLocation: Die öffentlichen Seiten lesen diese Tabellen direkt, ein
+/// vergessener Filter würde einen Entwurf live stellen. Hier liest keine
+/// öffentliche Seite. Übernommen wird nur im Adminbereich.
+model NoxEntwurf {
+  id        String   @id @default(cuid())
+  /// "faq" oder "studio"
+  art       String
+  studioId  String?
+  /// Bei "studio": "intro" oder "anfahrt"
+  feld      String?
+  frage     String?
+  frageEn   String?
+  text      String
+  textEn    String?
+  createdAt DateTime @default(now())
+
+  @@index([art])
 }

@@ -4,10 +4,23 @@ import { revalidatePath } from "@/lib/revalidieren";
 import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verlangeStudioRecht } from "@/lib/admin-rechte";
-import { sendBookingConfirmedEmail } from "@/lib/email";
+import {
+  sendAnfrageInternEmail,
+  sendBewertungEmail,
+  sendBookingConfirmedEmail,
+  sendNichtErschienenEmail,
+  TEAM_EMAIL,
+  type AnfrageAngaben,
+} from "@/lib/email";
+import { formatDate } from "@/lib/format";
+import { erreichbarkeitText } from "@/lib/erreichbarkeit";
+import { zielText } from "@/lib/ziel";
 import { neuerVerwaltungsSchluessel, terminAngaben } from "@/lib/termin-angaben";
 import { wartelisteBenachrichtigen } from "@/lib/warteliste";
 import type { BookingStatus } from "@/generated/prisma/enums";
+import { FORTSCHRITT_LABEL, fortschrittAusText } from "@/lib/fortschritt";
+import { pfad } from "@/lib/i18n/pfade";
+import { siteConfig } from "@/lib/site-config";
 import { protokollieren } from "@/lib/protokoll";
 import { STATUS_LABEL } from "@/lib/buchung-status";
 
@@ -96,5 +109,156 @@ export async function notizSpeichern(formData: FormData) {
     data: { internalNote: notiz || null },
   });
 
+  revalidatePath("/admin/bookings");
+}
+
+/**
+ * Fortschritt einer Anfrage setzen: angerufen, nicht erreicht, war da ...
+ *
+ * Steht neben dem Buchungsstatus und ändert ihn nicht - "Termin vereinbart"
+ * bestätigt nichts und verschickt keine Bestätigung. Dafür gibt es weiter
+ * den Knopf "Bestätigen".
+ *
+ * Eine Ausnahme mit Folgen: "Nicht erschienen" schickt dem Gast einmal
+ * eine freundliche Mail mit dem Weg zu einem neuen Termin. Einmal heißt
+ * einmal - wer den Schalter hin- und herschiebt, verschickt sie nicht
+ * zweimal (nichtErschienenGesendetAm).
+ */
+export async function fortschrittSetzen(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const fortschritt = fortschrittAusText(String(formData.get("fortschritt") ?? ""));
+  if (!fortschritt) return;
+
+  const zugehoerig = await prisma.booking.findUnique({
+    where: { id },
+    select: { studioId: true },
+  });
+  await verlangeStudioRecht(zugehoerig?.studioId);
+
+  const booking = await prisma.booking.update({
+    where: { id },
+    data: { fortschritt, fortschrittAm: new Date() },
+    include: { studio: true, slot: { include: { studio: true } } },
+  });
+  revalidatePath("/admin/bookings");
+  revalidatePath("/admin/auswertung");
+
+  await protokollieren({
+    art: "STATUS",
+    bereich: "Buchung",
+    betreff: `Anfrage von ${booking.name}`,
+    detail: `Fortschritt „${FORTSCHRITT_LABEL[fortschritt]}“`,
+    studioId: booking.studioId,
+  });
+
+  if (fortschritt === "NICHT_ERSCHIENEN" && !booking.nichtErschienenGesendetAm) {
+    const ort = booking.studio ?? booking.slot?.studio ?? null;
+    const sprache = booking.sprache === "en" ? "en" : "de";
+    const ziel = ort ? `/studio/${ort.slug}` : "/probetermin";
+    const gesendet = await sendNichtErschienenEmail({
+      email: booking.email,
+      name: booking.name,
+      studioName: ort?.name ?? null,
+      neuerTerminLink: `${siteConfig.url}${pfad(sprache, ziel)}#termin`,
+      antwortAn: ort?.email?.trim() || null,
+      sprache,
+    }).catch((error) => {
+      console.error("Mail 'nicht erschienen' konnte nicht gesendet werden:", error);
+      return false;
+    });
+    // Nur bei Erfolg merken: Ging sie nicht raus (etwa weil der Versand
+    // noch nicht eingerichtet ist), darf ein späteres erneutes Setzen sie
+    // nachholen.
+    if (gesendet) {
+      await prisma.booking.update({
+        where: { id },
+        data: { nichtErschienenGesendetAm: new Date() },
+      });
+    }
+  }
+}
+
+/**
+ * Die Mail "Neue Anfrage" noch einmal ans Studio schicken.
+ *
+ * Für den Fall, dass sie beim Absenden nicht rausging (dann steht in der
+ * Liste "Keine Mail ans Studio rausgegangen") - oder dass im Studio
+ * jemand sie nicht findet. Geht an die Adresse, die JETZT beim Studio
+ * hinterlegt ist, also auch nach einer Korrektur der Adresse.
+ */
+export async function studioMailNachsenden(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const b = await prisma.booking.findUnique({
+    where: { id },
+    include: {
+      slot: true,
+      studio: { select: { name: true, email: true } },
+      promotion: { select: { code: true } },
+      empfehlung: { select: { code: true, name: true } },
+    },
+  });
+  if (!b) return;
+  await verlangeStudioRecht(b.studioId);
+
+  const an = b.studio?.email?.trim() || TEAM_EMAIL;
+  if (!an) return;
+
+  const angaben: AnfrageAngaben = {
+    id: b.id,
+    name: b.name,
+    email: b.email,
+    phone: b.phone,
+    erreichbarkeit: erreichbarkeitText(b.erreichbarkeit),
+    studioName: b.studio?.name ?? null,
+    antwortAn: b.studio?.email ?? null,
+    terminZeile: b.slot
+      ? `${formatDate(b.slot.date)} um ${b.slot.startTime} Uhr`
+      : b.terminUhrzeit && b.logxGebuchtAm
+        ? `Wunschtermin um ${b.terminUhrzeit} Uhr - in LogX vorgemerkt, zur Bestätigung anrufen`
+        : b.terminWunsch
+          ? `Wunsch: ${b.terminWunsch} - Termin abstimmen`
+          : "kein Wunsch angegeben - Termin abstimmen",
+    ziel: b.ziel ? zielText(b.ziel) : null,
+    nachricht: b.message,
+    aktionsCode:
+      b.promotion?.code ??
+      (b.empfehlung ? `${b.empfehlung.code} (Empfehlung von ${b.empfehlung.name})` : null),
+    herkunft: [b.herkunftKampagne, b.herkunftQuelle, b.herkunftSeite].filter(Boolean).join(" · ") || null,
+    sprache: b.sprache === "en" ? "en" : "de",
+  };
+
+  const ok = await sendAnfrageInternEmail(an, angaben);
+  if (ok) {
+    await prisma.booking.update({ where: { id }, data: { studioBenachrichtigtAm: new Date() } });
+  }
+  revalidatePath("/admin/bookings");
+  revalidatePath("/admin/mails");
+}
+
+/**
+ * Per Knopf um eine Google-Bewertung bitten.
+ *
+ * Nicht mehr automatisch: Das Studio entscheidet, wann es fragt - am
+ * besten nach dem Probetraining. Geht an jeden, der gefragt wird, ohne
+ * Vorauswahl nach Zufriedenheit und ohne Gegenleistung (Richtlinien von
+ * Google). Ohne Bewertungslink beim Studio gibt es nichts zu verschicken.
+ * Ein zweiter Klick schickt erneut - der Knopf zeigt, wann zuletzt.
+ */
+export async function bewertungAnfragen(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const b = await prisma.booking.findUnique({
+    where: { id },
+    include: { slot: { include: { studio: true } }, studio: true },
+  });
+  if (!b) return;
+  await verlangeStudioRecht(b.studioId);
+
+  const link = (b.studio ?? b.slot?.studio)?.googleReviewUrl?.trim();
+  if (!link) return;
+
+  const ok = await sendBewertungEmail({ ...terminAngaben(b), bewertungsLink: link });
+  if (ok) {
+    await prisma.booking.update({ where: { id }, data: { bewertungGesendetAm: new Date() } });
+  }
   revalidatePath("/admin/bookings");
 }

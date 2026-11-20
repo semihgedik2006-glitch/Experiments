@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/format";
 import { erreichbarkeitText } from "@/lib/erreichbarkeit";
 import { zielText } from "@/lib/ziel";
 import { STATUS_LABEL } from "@/lib/buchung-status";
+import { FORTSCHRITT_LABEL } from "@/lib/fortschritt";
 
 /**
  * Buchungen und Newsletter-Abonnenten als Tabelle zum Weiterverarbeiten.
@@ -62,6 +63,8 @@ export async function GET(
         "E-Mail",
         "Telefon",
         "Status",
+        "Stand",
+        "Stand geändert am",
         "Termin",
         "Uhrzeit",
         "Studio",
@@ -83,6 +86,8 @@ export async function GET(
         b.email,
         b.phone,
         STATUS_LABEL[b.status] ?? b.status,
+        FORTSCHRITT_LABEL[b.fortschritt] ?? b.fortschritt,
+        b.fortschrittAm ? formatDate(b.fortschrittAm) : "",
         b.slot ? formatDate(b.slot.date) : b.terminTag ? formatDate(b.terminTag) : "kein fester Termin",
         b.slot ? `${b.slot.startTime} - ${b.slot.endTime}` : (b.terminUhrzeit ?? ""),
         b.studio?.name ?? "",

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "@/components/sprach-link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { MapPin, Menu, X } from "lucide-react";
@@ -33,6 +33,30 @@ export function Header({
     setScrolled(latest > 12);
   });
 
+  // Das Logo führt immer ganz nach oben auf die Startseite. Von selbst tut
+  // es das nicht zuverlässig: Auf der Startseite selbst passiert beim
+  // Antippen gar nichts (gleiche Adresse), mit offenem Handymenü bleibt das
+  // Menü über der neuen Seite liegen, und von Unterseiten landet man knapp
+  // unter dem Seitenanfang. Deshalb hier ausdrücklich.
+  const startseite = en ? "/en" : "/";
+  const nachOben = useRef(false);
+  useEffect(() => {
+    if (!nachOben.current) return;
+    nachOben.current = false;
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  function zumStart(e: React.MouseEvent) {
+    setOpen(false);
+    if (pathname === startseite) {
+      e.preventDefault();
+      const ruhig = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: ruhig ? "auto" : "smooth" });
+    } else {
+      nachOben.current = true;
+    }
+  }
+
   return (
     <header
       className={`sticky top-0 z-50 border-b border-border bg-background/95 transition-shadow duration-300 ${
@@ -41,7 +65,13 @@ export function Header({
     >
       <ScrollProgress />
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-6">
-        <Link href="/" className="tastflaeche shrink-0 transition-transform hover:scale-105">
+        <Link
+          href="/"
+          onClick={zumStart}
+          scroll={false}
+          aria-label={en ? "Körperformen, to the home page" : "Körperformen, zur Startseite"}
+          className="tastflaeche shrink-0 transition-transform hover:scale-105"
+        >
           <Logo className="h-8 w-auto" />
         </Link>
 
@@ -156,7 +186,7 @@ export function Header({
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={() => setOpen(false)}
+                  onClick={item.href === startseite ? zumStart : () => setOpen(false)}
                   className="text-sm text-muted hover:text-foreground"
                 >
                   {item.label}
