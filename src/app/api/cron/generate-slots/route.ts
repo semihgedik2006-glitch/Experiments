@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cronPruefen } from "@/lib/cron-auth";
 import { syncSlotsForAllTemplates } from "@/lib/slot-templates";
 import { tageslistenVerschicken } from "@/lib/tagesliste";
 import { sendTageslisteEmail } from "@/lib/email";
@@ -12,13 +13,8 @@ import { sendTageslisteEmail } from "@/lib/email";
 // Auslöser dafür wäre der vierte - der Tarif bei Vercel erlaubt nicht
 // beliebig viele.
 export async function GET(request: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Nicht autorisiert." }, { status: 401 });
-    }
-  }
+  const abgelehnt = cronPruefen(request);
+  if (abgelehnt) return abgelehnt;
 
   const result = await syncSlotsForAllTemplates();
   // Die Tagesliste darf das Nachfüllen der Termine nicht verhindern - und
