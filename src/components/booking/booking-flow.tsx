@@ -266,6 +266,7 @@ export function BookingFlow({
           die Anfrage beim gewählten Studio. */}
       <BookingForm
         studioId={selectedStudioId}
+        studioName={studios.find((studio) => studio.id === selectedStudioId)?.name ?? ""}
         sprache={sprache}
       />
     </div>

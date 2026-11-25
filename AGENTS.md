@@ -44,6 +44,25 @@ Live unter **https://www.koerperformen-koeln.de** (auch ems-training.koeln).
   Tests bei Neon einen Branch der Datenbank anlegen und dessen URL in die
   eigene `.env` schreiben (Vorlage: `.env.example`).
 
+## Datenbank-Verbrauch (Neon) – seit dem Ausfall am 25.11.2026
+
+Neon rechnet nach Laufzeit ab, und die Datenbank schläft erst nach fünf
+Minuten Ruhe ein. Alles, was regelmäßig abfragt, hält sie wach. Im
+November 2026 war so das Kontingent aufgebraucht, die Formulare fielen aus.
+
+- Öffentliche Seiten erneuern sich einmal am Tag (`revalidate` in
+  `src/app/layout.tsx`) und sofort bei Änderungen (`revalidatePath`).
+  Keine kurzen Fristen einbauen, kein Abruf im Minutentakt von außen.
+- Der morgendliche Lauf `api/cron/generate-slots` erneuert alle Seiten in
+  einem Rutsch (`src/lib/aufwaermen.ts`).
+- Fällt die Datenbank aus, gehen Probetermin-Anfragen und
+  Kontaktnachrichten per Mail an `TEAM_EMAIL` und die Kopie-Empfänger
+  (`src/lib/notweg.ts`, Betreff beginnt mit „NOTWEG“). Diese Anfragen
+  stehen dann nicht im Adminbereich.
+- Schalter und Texte fallen nur noch bei fehlender Tabelle auf
+  Standardwerte zurück, nicht bei einem Ausfall – sonst würden
+  ausgeblendete Bereiche sichtbar.
+
 ## Geheimnisse
 
 - Keine Schlüssel, Passwörter oder API-Keys ins Repo schreiben. Sie stehen

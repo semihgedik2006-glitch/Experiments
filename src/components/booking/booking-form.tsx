@@ -23,8 +23,12 @@ const initialState: ActionResult = { ok: false, message: "" };
 
 export function BookingForm({
   studioId,
+  studioName,
   sprache: spracheVorgabe,
 }: {
+  /** Der Name dazu. Nur für den Notweg (@/lib/notweg): Antwortet die
+      Datenbank nicht, lässt sich die Kennung nicht mehr nachschlagen. */
+  studioName?: string;
   /** Der oben gewählte Standort. Er wird mitgeschickt, damit die Anfrage
       auch dann bei einem Studio landet, wenn keine feste Zeit dabei ist. */
   studioId: string;
@@ -411,6 +415,7 @@ export function BookingForm({
           dessen Anfrage kam ohne Standort an und musste von Hand zugeordnet
           werden. */}
       <input type="hidden" name="studioId" value={studioId} />
+      <input type="hidden" name="studioName" value={studioName ?? ""} />
 
       <div>
         <p className="mb-3 text-sm font-semibold">

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { tabelleFehlt } from "@/lib/notweg";
 
 /**
  * Ein- und ausschaltbare Bereiche der Website.
@@ -142,9 +143,11 @@ export async function getToggles(): Promise<Toggles> {
     for (const row of rows) {
       if (row.key in result) result[row.key as ToggleKey] = row.visible;
     }
-  } catch {
+  } catch (error) {
     // Ist die Tabelle noch nicht angelegt, bleibt es bei den Standardwerten,
-    // statt dass die ganze Seite ausfällt.
+    // statt dass die ganze Seite ausfällt. Jeder andere Fehler bleibt ein
+    // Fehler - siehe tabelleFehlt.
+    if (!tabelleFehlt(error)) throw error;
   }
 
   return result;

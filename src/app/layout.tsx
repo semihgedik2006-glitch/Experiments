@@ -39,21 +39,23 @@ const archivo = localFont({
 });
 
 /**
- * Spätestens alle fünf Minuten frisch.
+ * Einmal am Tag frisch - und sofort, wenn sich etwas ändert.
  *
  * Die öffentlichen Seiten werden einmal erzeugt und dann als fertige
- * Fassung ausgeliefert - schnell, aber mit dem Stand von damals. Darauf
- * stehen freie Termine ("Nächster freier Termin: Mi., 30.09. um 18:17").
- * Ohne Frist blieb diese Angabe stehen, bis jemand im Adminbereich etwas
- * änderte oder neu veröffentlicht wurde: ein längst belegter Termin, oder
- * einer, der schon vorbei ist, wurde weiter als frei angezeigt.
+ * Fassung ausgeliefert. Eine Anfrage, Absage, Verschiebung oder Änderung
+ * im Adminbereich frischt sie sofort auf (revalidatePath in lib/actions).
+ * Was nur mit dem Datum veraltet - ein Termin, der gestern war -,
+ * erneuert der morgendliche Lauf (api/cron/generate-slots): Er erklärt
+ * alle Seiten für veraltet und ruft sie gleich danach einmal auf.
  *
- * Jetzt wird jede Seite beim ersten Aufruf nach Ablauf der fünf Minuten im
- * Hintergrund neu erzeugt; der Besucher bekommt trotzdem sofort eine
- * Antwort. Eine Anfrage, Absage oder Verschiebung frischt zusätzlich sofort
- * auf (lib/actions/booking.ts, termin.ts).
+ * Hier standen bis zum 25.11.2026 fünf Minuten. Jede Seite hat sich
+ * dadurch bis zu 288-mal am Tag neu erzeugt, und jedes Mal wurde die
+ * Datenbank geweckt. Sie schläft erst nach fünf Minuten Ruhe wieder ein -
+ * lief also rund um die Uhr, bis das Monatskontingent aufgebraucht war
+ * und die Formulare ausfielen. Die Frist hier ist nur noch das Netz für
+ * den Fall, dass der morgendliche Lauf ausfällt.
  */
-export const revalidate = 300;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),

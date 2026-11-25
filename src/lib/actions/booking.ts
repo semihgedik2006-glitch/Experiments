@@ -10,6 +10,7 @@ import {
   sendAnfrageKopieEmail,
   kopieEmpfaenger,
   sendWartelisteInternEmail,
+  sendNotwegEmail,
   TEAM_EMAIL,
   type AnfrageAngaben,
 } from "@/lib/email";
@@ -25,8 +26,29 @@ import type { ActionResult } from "@/lib/actions/newsletter";
 import { erreichbarkeitLabel, spanneLabel, spracheAusText, texte, zielLabel } from "@/lib/sprache";
 import { oeffnungszeitenAufEnglisch } from "@/lib/i18n/oeffnungszeiten";
 import { buchen, logxZugang } from "@/lib/logx";
+import { notwegAnfrage, notwegFehlermeldung } from "@/lib/notweg";
+import { siteConfig } from "@/lib/site-config";
 
 export async function createBooking(
+  prevState: ActionResult | undefined,
+  formData: FormData,
+): Promise<ActionResult> {
+  try {
+    return await anfrageAnlegen(prevState, formData);
+  } catch (error) {
+    // Die Datenbank antwortet nicht. Die Anfrage darf trotzdem nicht
+    // verloren gehen - siehe @/lib/notweg.
+    console.error("Anfrage konnte nicht gespeichert werden, Notweg per Mail:", error);
+    const sprache = spracheAusText(String(formData.get("sprache") ?? ""));
+    const mail = notwegAnfrage(formData);
+    if (mail && (await sendNotwegEmail("ANFRAGE_INTERN", mail))) {
+      return { ok: true, message: texte(sprache).danke };
+    }
+    return { ok: false, message: notwegFehlermeldung(sprache === "en", siteConfig.contact.phone) };
+  }
+}
+
+async function anfrageAnlegen(
   _prevState: ActionResult | undefined,
   formData: FormData,
 ): Promise<ActionResult> {
