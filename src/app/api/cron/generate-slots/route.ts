@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { syncSlotsForAllTemplates } from "@/lib/slot-templates";
 import { tageslistenVerschicken } from "@/lib/tagesliste";
 import { sendTageslisteEmail } from "@/lib/email";
+import { revalidatePath } from "next/cache";
+import { seitenAufwaermen } from "@/lib/aufwaermen";
+import { siteConfig } from "@/lib/site-config";
+
+export const maxDuration = 300;
 
 // Called daily by Vercel Cron (see vercel.json) to keep the rolling
 // window of auto-generated availability slots topped up for every
@@ -26,5 +31,15 @@ export async function GET(request: NextRequest) {
   const tagesliste = await tageslistenVerschicken(sendTageslisteEmail).catch((error) => ({
     fehler: error instanceof Error ? error.message : String(error),
   }));
-  return NextResponse.json({ ok: true, ...result, tagesliste });
+  // Einmal am Tag alle Seiten erneuern, in einem Rutsch (siehe
+  // app/layout.tsx und @/lib/aufwaermen). Nur im Betrieb: Eine Vorschau
+  // soll nicht die echte Seite aufrufen.
+  let seiten: unknown = "übersprungen";
+  if (process.env.VERCEL_ENV === "production") {
+    revalidatePath("/", "layout");
+    seiten = await seitenAufwaermen(siteConfig.url).catch((error) => ({
+      fehler: error instanceof Error ? error.message : String(error),
+    }));
+  }
+  return NextResponse.json({ ok: true, ...result, tagesliste, seiten });
 }

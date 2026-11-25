@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { tabelleFehlt } from "@/lib/notweg";
 import type { Sprache } from "@/lib/sprache";
 
 /**
@@ -68,9 +69,11 @@ export async function getTexte(sprache: Sprache = "de"): Promise<Texte> {
       ergebnis[zeile.key as TextKey] =
         sprache === "en" ? (zeile.wertEn?.trim() ? zeile.wertEn : zeile.wert) : zeile.wert;
     }
-  } catch {
+  } catch (error) {
     // Ist die Tabelle noch nicht angelegt, bleibt es bei den
-    // Standardtexten, statt dass die ganze Seite ausfällt.
+    // Standardtexten, statt dass die ganze Seite ausfällt. Jeder andere
+    // Fehler bleibt ein Fehler - siehe tabelleFehlt.
+    if (!tabelleFehlt(error)) throw error;
   }
 
   return ergebnis;

@@ -3,7 +3,9 @@
 import { revalidatePath } from "@/lib/revalidieren";
 import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { sendKontaktInternEmail, TEAM_EMAIL } from "@/lib/email";
+import { sendKontaktInternEmail, sendNotwegEmail, TEAM_EMAIL } from "@/lib/email";
+import { notwegFehlermeldung, notwegKontakt } from "@/lib/notweg";
+import { siteConfig } from "@/lib/site-config";
 import { checkRateLimit, getClientIp, waitMessage } from "@/lib/rate-limit";
 import type { ActionResult } from "@/lib/actions/newsletter";
 import { spracheAusText } from "@/lib/sprache";
@@ -41,9 +43,20 @@ export async function sendContactMessage(
     return { ok: false, message: en ? "Please fill in all required fields." : "Bitte fülle alle Pflichtfelder aus." };
   }
 
-  await prisma.contactMessage.create({
-    data: { name, email, phone: phone || null, subject, message },
-  });
+  try {
+    await prisma.contactMessage.create({
+      data: { name, email, phone: phone || null, subject, message },
+    });
+  } catch (error) {
+    // Die Datenbank antwortet nicht. Die Nachricht darf trotzdem nicht
+    // verloren gehen - siehe @/lib/notweg.
+    console.error("Nachricht konnte nicht gespeichert werden, Notweg per Mail:", error);
+    const mail = notwegKontakt(formData);
+    if (mail && (await sendNotwegEmail("KONTAKT_INTERN", mail))) {
+      return { ok: true, message: danke };
+    }
+    return { ok: false, message: notwegFehlermeldung(en, siteConfig.contact.phone) };
+  }
 
   // Nach der Antwort: Der Absender soll nicht auf den Mailanbieter warten.
   // Ohne diese Benachrichtigung erfährt von einer Nachricht nur, wer den

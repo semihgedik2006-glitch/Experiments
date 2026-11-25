@@ -21,7 +21,7 @@ import { auszeichnung } from "@/lib/auszeichnung";
  * Frisch wie die übrigen Seiten (spätestens alle fünf Minuten), damit ein
  * neues Studio auch hier sofort auftaucht.
  */
-export const revalidate = 300;
+export const revalidate = 86400;
 
 export async function GET() {
   const studios = await getStudios().catch(() => []);

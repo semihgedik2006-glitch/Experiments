@@ -151,6 +151,27 @@ async function verschicken(
 }
 
 /**
+ * Der Notweg (@/lib/notweg): eine Anfrage oder Nachricht, die sich nicht
+ * speichern ließ, mit allen Angaben an die Sammeladresse und an die
+ * Empfänger der Kopie. Liefert true, sobald eine Mail angenommen wurde.
+ */
+export async function sendNotwegEmail(
+  art: "ANFRAGE_INTERN" | "KONTAKT_INTERN",
+  mail: { betreff: string; text: string; antwortAn: string | null },
+): Promise<boolean> {
+  const empfaenger = new Map<string, string>();
+  for (const adresse of [TEAM_EMAIL, ...(await kopieEmpfaenger())]) {
+    if (adresse) empfaenger.set(adresse.toLowerCase(), adresse);
+  }
+  let angekommen = false;
+  for (const an of empfaenger.values()) {
+    const ok = await verschicken(art, { to: an, subject: mail.betreff, text: mail.text, replyTo: mail.antwortAn });
+    angekommen = angekommen || ok;
+  }
+  return angekommen;
+}
+
+/**
  * Wer zusätzlich eine Kopie jeder neuen Anfrage bekommt.
  *
  * Für den Notfall: Kommt die Mail im Studio nicht an oder ist dort gerade
