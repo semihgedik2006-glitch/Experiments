@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { syncSlotsForAllTemplates } from "@/lib/slot-templates";
 import { tageslistenVerschicken } from "@/lib/tagesliste";
 import { sendTageslisteEmail } from "@/lib/email";
@@ -34,12 +34,21 @@ export async function GET(request: NextRequest) {
   // Einmal am Tag alle Seiten erneuern, in einem Rutsch (siehe
   // app/layout.tsx und @/lib/aufwaermen). Nur im Betrieb: Eine Vorschau
   // soll nicht die echte Seite aufrufen.
-  let seiten: unknown = "übersprungen";
+  //
+  // Das Aufrufen läuft NACH der Antwort. revalidatePath wirkt erst, wenn
+  // dieser Aufruf fertig ist - am 26.11.2026 liefen die Abrufe noch davor
+  // und trafen die alten Fassungen, erneuert wurde nichts.
+  let seiten = "übersprungen";
   if (process.env.VERCEL_ENV === "production") {
     revalidatePath("/", "layout");
-    seiten = await seitenAufwaermen(siteConfig.url).catch((error) => ({
-      fehler: error instanceof Error ? error.message : String(error),
-    }));
+    seiten = "werden nach der Antwort aufgerufen";
+    after(async () => {
+      await new Promise((fertig) => setTimeout(fertig, 3000));
+      const ergebnis = await seitenAufwaermen(siteConfig.url).catch((error) => ({
+        fehler: error instanceof Error ? error.message : String(error),
+      }));
+      console.log("Seiten aufgewärmt:", JSON.stringify(ergebnis));
+    });
   }
   return NextResponse.json({ ok: true, ...result, tagesliste, seiten });
 }
