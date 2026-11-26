@@ -1,4 +1,4 @@
-# Google: Search Console und Google-Profile
+# Google und Bing: Search Console, Bing Webmaster Tools, Google-Profile
 
 Stand: Oktober 2026. Website: https://www.koerperformen-koeln.de
 
@@ -25,6 +25,28 @@ wie oft sie angeklickt wird und ob Google Fehler findet. Kostenlos.
 Danach braucht Google ein paar Tage, bis die ersten Zahlen erscheinen.
 Interessant sind später vor allem: **Leistung** (Suchbegriffe, Klicks) und
 **Seitenindexierung** (welche Seiten Google kennt).
+
+## 1b. Bing Webmaster Tools einrichten (ca. 5 Minuten)
+
+Bing liefert auch die Websuche von ChatGPT und Copilot. Am einfachsten
+geht es, wenn die Search Console (Abschnitt 1) schon bestätigt ist.
+
+1. https://www.bing.com/webmasters öffnen und mit demselben Google-Konto
+   anmelden („Sign in with Google").
+2. **„Import from Google Search Console"** wählen → Zugriff erlauben →
+   `https://www.koerperformen-koeln.de` ankreuzen → Import. Bestätigung
+   und Sitemap kommen dabei automatisch mit, ein Code ist nicht nötig.
+3. Nur falls der Import nicht geht: „Add site manually" →
+   `https://www.koerperformen-koeln.de` → Methode **„HTML Meta Tag"**. Den
+   Teil nach `content=` kopieren, in Vercel als `BING_SITE_VERIFICATION`
+   eintragen (wie in Abschnitt 1, Schritt 4 und 5), dann „Verify". Danach
+   unter „Sitemaps" die Adresse
+   `https://www.koerperformen-koeln.de/sitemap.xml` einreichen.
+
+Zusätzlich meldet die Website ihre Seiten per IndexNow selbst an Bing:
+Der Schlüssel steht in Vercel als `INDEXNOW_KEY` (seit 26.11.2026) und
+ist unter `/indexnow.txt` abrufbar. Nach größeren Änderungen:
+`INDEXNOW_KEY=... npm run indexnow`.
 
 ## 2. Google-Profile mit Kennung verlinken
 
